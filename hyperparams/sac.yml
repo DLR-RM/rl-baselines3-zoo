@@ -25,7 +25,7 @@ LunarLanderContinuous-v2:
 
 BipedalWalker-v2:
   n_timesteps: !!float 1e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 64
@@ -36,7 +36,7 @@ BipedalWalker-v2:
 
 BipedalWalkerHardcore-v2:
   n_timesteps: !!float 5e7
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 2000000
   batch_size: 64
@@ -49,7 +49,7 @@ BipedalWalkerHardcore-v2:
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 2e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
   buffer_size: 1000000
   batch_size: 256
@@ -62,7 +62,7 @@ HalfCheetahBulletEnv-v0:
 
 HalfCheetah-v2:
   n_timesteps: !!float 1e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
   buffer_size: 1000000
   batch_size: 256
@@ -75,7 +75,7 @@ HalfCheetah-v2:
 AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 2e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
   buffer_size: 1000000
   batch_size: 256
@@ -89,7 +89,7 @@ AntBulletEnv-v0:
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 2e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 256
@@ -101,7 +101,7 @@ HopperBulletEnv-v0:
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 2e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 256
@@ -112,7 +112,7 @@ Walker2DBulletEnv-v0:
 
 ReacherBulletEnv-v0:
   n_timesteps: !!float 1e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 64
@@ -124,7 +124,7 @@ ReacherBulletEnv-v0:
 HumanoidBulletEnv-v0:
   normalize: "{'norm_obs': True, 'norm_reward': False}"
   n_timesteps: !!float 2e7
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 64
@@ -135,7 +135,7 @@ HumanoidBulletEnv-v0:
 
 InvertedDoublePendulumBulletEnv-v0:
   n_timesteps: !!float 1e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 64
@@ -146,7 +146,7 @@ InvertedDoublePendulumBulletEnv-v0:
 
 InvertedPendulumSwingupBulletEnv-v0:
   n_timesteps: !!float 1e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 64
@@ -159,7 +159,7 @@ InvertedPendulumSwingupBulletEnv-v0:
 MinitaurBulletEnv-v0:
   normalize: "{'norm_obs': True, 'norm_reward': False}"
   n_timesteps: !!float 1e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 64
@@ -173,7 +173,7 @@ MinitaurBulletEnv-v0:
 MinitaurBulletDuckEnv-v0:
   # normalize: "{'norm_obs': True, 'norm_reward': False}"
   n_timesteps: !!float 1e6
-  policy: 'CustomSACPolicy'
+  policy: 'MlpPolicy'
   learning_rate: lin_3e-4
   buffer_size: 1000000
   batch_size: 256

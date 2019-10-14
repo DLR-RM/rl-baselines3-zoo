@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
         # Load hyperparameters from yaml file
         with open('hyperparams/{}.yml'.format(args.algo), 'r') as f:
-            hyperparams_dict = yaml.load(f)
+            hyperparams_dict = yaml.safe_load(f)
             if env_id in list(hyperparams_dict.keys()):
                 hyperparams = hyperparams_dict[env_id]
             elif is_atari:
@@ -123,9 +123,10 @@ if __name__ == '__main__':
         if args.verbose > 0:
             print("Using {} environments".format(n_envs))
 
-        # Create learning rate schedules for ppo2 and sac
-        if algo_ in ["ppo2", "sac", "td3"]:
-            for key in ['learning_rate', 'cliprange', 'cliprange_vf']:
+        # Create learning rate schedules for ppo, sac and td3
+        # TODO: add support for schedules
+        if algo_ in ["ppo", "sac", "td3"]:
+            for key in ['learning_rate', 'clip_range', 'clip_range_vf']:
                 if key not in hyperparams:
                     continue
                 if isinstance(hyperparams[key], str):
@@ -136,7 +137,8 @@ if __name__ == '__main__':
                     # Negative value: ignore (ex: for clipping)
                     if hyperparams[key] < 0:
                         continue
-                    hyperparams[key] = constfn(float(hyperparams[key]))
+                    # hyperparams[key] = constfn(float(hyperparams[key]))
+                    hyperparams[key] = float(hyperparams[key])
                 else:
                     raise ValueError('Invalid value for {}: {}'.format(key, hyperparams[key]))
 

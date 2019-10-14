@@ -32,7 +32,7 @@ HalfCheetah-v2:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -47,7 +47,7 @@ HalfCheetahBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 BipedalWalker-v2:
   n_timesteps: !!float 2e6
@@ -61,7 +61,7 @@ BipedalWalker-v2:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # To be tuned
 BipedalWalkerHardcore-v2:
@@ -76,7 +76,7 @@ BipedalWalkerHardcore-v2:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -91,7 +91,7 @@ AntBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -106,7 +106,7 @@ HopperBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -122,7 +122,7 @@ Walker2DBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 HumanoidBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -137,7 +137,7 @@ HumanoidBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 ReacherBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -152,7 +152,7 @@ ReacherBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 InvertedDoublePendulumBulletEnv-v0:
   n_timesteps: !!float 1e6
@@ -166,7 +166,7 @@ InvertedDoublePendulumBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 InvertedPendulumSwingupBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -181,7 +181,7 @@ InvertedPendulumSwingupBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 MinitaurBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -196,4 +196,4 @@ MinitaurBulletEnv-v0:
   learning_rate: !!float 1e-3
   train_freq: 1000
   gradient_steps: 1000
-  policy_kwargs: "dict(layers=[400, 300])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
