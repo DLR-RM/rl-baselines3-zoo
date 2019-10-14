@@ -1,0 +1,316 @@
+atari:
+  policy: 'CnnPolicy'
+  n_envs: 8
+  n_steps: 128
+  noptepochs: 4
+  nminibatches: 4
+  n_timesteps: !!float 1e7
+  learning_rate: lin_2.5e-4
+  clip_range: lin_0.1
+  vf_coef: 0.5
+  ent_coef: 0.01
+  clip_range_vf: -1
+
+Pendulum-v0:
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: !!float 3e-4
+  clip_range: 0.2
+
+# Tuned
+CartPole-v1:
+  n_envs: 8
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 32
+  nminibatches: 1
+  gae_lambda: 0.8
+  gamma: 0.98
+  noptepochs: 20
+  ent_coef: 0.0
+  learning_rate: lin_0.001
+  clip_range: lin_0.2
+
+MountainCar-v0:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  n_steps: 16
+  nminibatches: 1
+  gae_lambda: 0.98
+  gamma: 0.99
+  noptepochs: 4
+  ent_coef: 0.0
+
+MountainCarContinuous-v0:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  n_steps: 256
+  nminibatches: 8
+  gae_lambda: 0.94
+  gamma: 0.99
+  noptepochs: 4
+  ent_coef: 0.0
+
+Acrobot-v1:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  n_steps: 256
+  nminibatches: 8
+  gae_lambda: 0.94
+  gamma: 0.99
+  noptepochs: 4
+  ent_coef: 0.0
+
+BipedalWalker-v2:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.001
+  learning_rate: !!float 2.5e-4
+  clip_range: 0.2
+
+BipedalWalkerHardcore-v2:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 10e7
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.001
+  learning_rate: lin_2.5e-4
+  clip_range: lin_0.2
+
+LunarLander-v2:
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  batch_size: 64
+  gae_lambda: 0.98
+  gamma: 0.999
+  noptepochs: 4
+  ent_coef: 0.01
+
+LunarLanderContinuous-v2:
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  batch_size: 64
+  gae_lambda: 0.98
+  gamma: 0.999
+  noptepochs: 4
+  ent_coef: 0.01
+
+Walker2DBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  nminibatches: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: lin_2.5e-4
+  clip_range: 0.1
+  clip_range_vf: -1
+
+
+HalfCheetahBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 1
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: !!float 3e-4
+  clip_range: 0.2
+
+HalfCheetah-v2:
+  normalize: true
+  n_envs: 1
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: lin_3e-4
+  clip_range: 0.2
+  clip_range_vf: -1
+
+AntBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'CustomMlpPolicy'
+  n_steps: 256
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+HopperBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  nminibatches: 128
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+ReacherBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+MinitaurBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+MinitaurBulletDuckEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+# To be tuned
+HumanoidBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 1e7
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+InvertedDoublePendulumBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+InvertedPendulumSwingupBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+# Following https://github.com/lcswillems/rl-starter-files
+MiniGrid-DoorKey-5x5-v0:
+  env_wrapper: gym_minigrid.wrappers.FlatObsWrapper # requires --gym-packages gym_minigrid
+  normalize: true
+  n_envs: 8 # number of environment copies running in parallel
+  n_timesteps: !!float 1e5
+  policy: MlpPolicy
+  n_steps: 128 # batch size is n_steps * n_env
+  batch_size: 64 # Number of training minibatches per update
+  gae_lambda: 0.95 #  Factor for trade-off of bias vs variance for Generalized Advantage Estimator
+  gamma: 0.99
+  n_epochs: 10 #  Number of epoch when optimizing the surrogate
+  ent_coef: 0.0 # Entropy coefficient for the loss caculation
+  learning_rate: 2.5e-4 # The learning rate, it can be a function
+  clip_range: 0.2 # Clipping parameter, it can be a function
+
+MiniGrid-FourRooms-v0:
+  env_wrapper: gym_minigrid.wrappers.FlatObsWrapper # requires --gym-packages gym_minigrid
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 4e6
+  policy: 'MlpPolicy'
+  n_steps: 512
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2

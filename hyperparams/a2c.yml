@@ -1,0 +1,136 @@
+atari:
+  policy: 'CnnPolicy'
+  n_envs: 16
+  n_timesteps: !!float 1e7
+  lr_schedule: 'constant'
+
+CartPole-v1:
+  n_envs: 8
+  n_timesteps: !!float 5e5
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+
+LunarLander-v2:
+  n_envs: 8
+  n_timesteps: !!float 2e5
+  policy: 'MlpPolicy'
+  gamma: 0.995
+  n_steps: 5
+  learning_rate: 0.00083
+  lr_schedule: 'linear'
+  ent_coef: 0.00001
+
+MountainCar-v0:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  ent_coef: .0
+
+Acrobot-v1:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 5e5
+  policy: 'MlpPolicy'
+  ent_coef: .0
+
+Pendulum-v0:
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  gamma: 0.95
+
+LunarLanderContinuous-v2:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  gamma: 0.999
+  ent_coef: 0.001
+  lr_schedule: 'linear'
+
+MountainCarContinuous-v0:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+
+BipedalWalker-v2:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  lr_schedule: 'linear'
+  ent_coef: 0.0
+
+HalfCheetahBulletEnv-v0:
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  n_steps: 32
+  vf_coef: 0.5
+  lr_schedule: 'linear'
+  gamma: 0.99
+  learning_rate: 0.002
+
+BipedalWalkerHardcore-v2:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 10e7
+  policy: 'MlpPolicy'
+  frame_stack: 4
+  ent_coef: 0.001
+  lr_schedule: 'linear'
+
+Walker2DBulletEnv-v0:
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  n_steps: 32
+  vf_coef: 0.5
+  lr_schedule: 'linear'
+  gamma: 0.99
+  learning_rate: 0.002
+
+AntBulletEnv-v0:
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  n_steps: 32
+  vf_coef: 0.5
+  lr_schedule: 'linear'
+  gamma: 0.99
+  learning_rate: 0.002
+
+HopperBulletEnv-v0:
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  n_steps: 32
+  vf_coef: 0.5
+  lr_schedule: 'linear'
+  gamma: 0.99
+  learning_rate: 0.002
+
+# Not working yet
+ReacherBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.001
+  n_steps: 32
+  vf_coef: 0.5
+  lr_schedule: 'linear'
+  gamma: 0.99
+  learning_rate: 0.002
