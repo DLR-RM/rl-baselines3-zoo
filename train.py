@@ -5,6 +5,7 @@ from collections import OrderedDict
 from pprint import pprint
 import warnings
 import importlib
+import time
 
 # For pybullet envs
 # warnings.filterwarnings("ignore")
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('--log-interval', help='Override log interval (default: -1, no change)', default=-1,
                         type=int)
     parser.add_argument('-f', '--log-folder', help='Log folder', type=str, default='logs')
-    parser.add_argument('--seed', help='Random generator seed', type=int, default=0)
+    parser.add_argument('--seed', help='Random generator seed', type=int, default=-1)
     parser.add_argument('--n-trials', help='Number of trials for optimizing hyperparameters', type=int, default=10)
     parser.add_argument('-optimize', '--optimize-hyperparameters', action='store_true', default=False,
                         help='Run hyperparameters search')
@@ -77,6 +78,9 @@ if __name__ == '__main__':
                 closest_match = "'no close match found...'"
             raise ValueError('{} not found in gym registry, you maybe meant {}?'.format(env_id, closest_match))
 
+    if args.seed < 0:
+        args.seed = int(time.time() + 1000 * np.random.rand())
+
     set_random_seed(args.seed)
 
     if args.trained_agent != "":
@@ -93,6 +97,7 @@ if __name__ == '__main__':
             is_atari = True
 
         print("=" * 10, env_id, "=" * 10)
+        print("Seed: {}".format(args.seed))
 
         # Load hyperparameters from yaml file
         with open('hyperparams/{}.yml'.format(args.algo), 'r') as f:
