@@ -13,20 +13,16 @@ except ImportError:
 
 from gym.envs.registration import load
 
-# from torchy_baselines.deepq.policies import FeedForwardPolicy
-# from torchy_baselines.common.policies import FeedForwardPolicy as BasePolicy
-# from torchy_baselines.common.policies import register_policy
-# from torchy_baselines.sac.policies import FeedForwardPolicy as SACPolicy
 from torchy_baselines.common.monitor import Monitor
 # from torchy_baselines.common import logger
-from torchy_baselines import PPO, SAC, TD3, CEMRL
+from torchy_baselines import A2C, PPO, SAC, TD3, CEMRL
 from torchy_baselines.common.vec_env import DummyVecEnv, VecNormalize, \
     VecFrameStack, SubprocVecEnv
 # from torchy_baselines.common.cmd_util import make_atari_env
 from torchy_baselines.common.utils import set_random_seed
 
 ALGOS = {
-    # 'a2c': A2C,
+    'a2c': A2C,
     'cemrl': CEMRL,
     'ppo': PPO,
     'sac': SAC,

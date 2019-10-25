@@ -2,7 +2,7 @@ atari:
   policy: 'CnnPolicy'
   n_envs: 8
   n_steps: 128
-  noptepochs: 4
+  n_epochs: 4
   nminibatches: 4
   n_timesteps: !!float 1e7
   learning_rate: lin_2.5e-4
@@ -30,10 +30,10 @@ CartPole-v1:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
   n_steps: 32
-  nminibatches: 1
+  batch_size: 256
   gae_lambda: 0.8
   gamma: 0.98
-  noptepochs: 20
+  n_epochs: 20
   ent_coef: 0.0
   learning_rate: lin_0.001
   clip_range: lin_0.2
@@ -47,7 +47,7 @@ MountainCar-v0:
   nminibatches: 1
   gae_lambda: 0.98
   gamma: 0.99
-  noptepochs: 4
+  n_epochs: 4
   ent_coef: 0.0
 
 MountainCarContinuous-v0:
@@ -59,7 +59,7 @@ MountainCarContinuous-v0:
   nminibatches: 8
   gae_lambda: 0.94
   gamma: 0.99
-  noptepochs: 4
+  n_epochs: 4
   ent_coef: 0.0
 
 Acrobot-v1:
@@ -71,7 +71,7 @@ Acrobot-v1:
   nminibatches: 8
   gae_lambda: 0.94
   gamma: 0.99
-  noptepochs: 4
+  n_epochs: 4
   ent_coef: 0.0
 
 BipedalWalker-v2:
@@ -110,7 +110,7 @@ LunarLander-v2:
   batch_size: 64
   gae_lambda: 0.98
   gamma: 0.999
-  noptepochs: 4
+  n_epochs: 4
   ent_coef: 0.01
 
 LunarLanderContinuous-v2:
@@ -121,7 +121,7 @@ LunarLanderContinuous-v2:
   batch_size: 64
   gae_lambda: 0.98
   gamma: 0.999
-  noptepochs: 4
+  n_epochs: 4
   ent_coef: 0.01
 
 Walker2DBulletEnv-v0:
