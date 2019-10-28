@@ -25,7 +25,7 @@ from torchy_baselines.common.utils import set_random_seed
 # from torchy_baselines.common.cmd_util import make_atari_env
 from torchy_baselines.common.vec_env import VecFrameStack, SubprocVecEnv, VecNormalize, DummyVecEnv
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-# from torchy_baselines.ppo2.ppo2 import constfn
+from torchy_baselines.common.utils import constant_fn
 
 from utils import make_env, ALGOS, linear_schedule, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
@@ -128,24 +128,21 @@ if __name__ == '__main__':
         if args.verbose > 0:
             print("Using {} environments".format(n_envs))
 
-        # Create learning rate schedules for ppo, sac and td3
-        # TODO: add support for schedules
-        if algo_ in ["ppo", "sac", "td3"]:
-            for key in ['learning_rate', 'clip_range', 'clip_range_vf']:
-                if key not in hyperparams:
+        # Create learning rate schedules
+        for key in ['learning_rate', 'clip_range', 'clip_range_vf']:
+            if key not in hyperparams:
+                continue
+            if isinstance(hyperparams[key], str):
+                schedule, initial_value = hyperparams[key].split('_')
+                initial_value = float(initial_value)
+                hyperparams[key] = linear_schedule(initial_value)
+            elif isinstance(hyperparams[key], (float, int)):
+                # Negative value: ignore (ex: for clipping)
+                if hyperparams[key] < 0:
                     continue
-                if isinstance(hyperparams[key], str):
-                    schedule, initial_value = hyperparams[key].split('_')
-                    initial_value = float(initial_value)
-                    hyperparams[key] = linear_schedule(initial_value)
-                elif isinstance(hyperparams[key], (float, int)):
-                    # Negative value: ignore (ex: for clipping)
-                    if hyperparams[key] < 0:
-                        continue
-                    # hyperparams[key] = constfn(float(hyperparams[key]))
-                    hyperparams[key] = float(hyperparams[key])
-                else:
-                    raise ValueError('Invalid value for {}: {}'.format(key, hyperparams[key]))
+                hyperparams[key] = constant_fn(float(hyperparams[key]))
+            else:
+                raise ValueError('Invalid value for {}: {}'.format(key, hyperparams[key]))
 
         # Should we overwrite the number of timesteps?
         if args.n_timesteps > 0:

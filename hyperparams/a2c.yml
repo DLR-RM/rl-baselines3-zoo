@@ -62,6 +62,7 @@ BipedalWalker-v2:
   ent_coef: 0.0
 
 HalfCheetahBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
@@ -69,8 +70,9 @@ HalfCheetahBulletEnv-v0:
   ent_coef: 0.0
   n_steps: 32
   vf_coef: 0.5
+  # gae_lambda: 0.95
   gamma: 0.99
-  learning_rate: 0.002
+  learning_rate: lin_0.002
 
 BipedalWalkerHardcore-v2:
   normalize: true
