@@ -237,7 +237,7 @@ def sample_a2c_params(trial):
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
     ent_coef = trial.suggest_loguniform('ent_coef', 0.00000001, 0.1)
     vf_coef = trial.suggest_uniform('vf_coef', 0, 1)
-    log_std_init = trial.suggest_uniform('log_std_init', 0, 1)
+    log_std_init = trial.suggest_uniform('log_std_init', -3, 1)
     ortho_init = trial.suggest_categorical('ortho_init', [False, True])
     net_arch = trial.suggest_categorical('net_arch', ["big", "small"])
 
