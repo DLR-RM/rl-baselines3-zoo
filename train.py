@@ -32,9 +32,6 @@ from utils.hyperparams_opt import hyperparam_optimization
 from utils.noise import LinearNormalActionNoise
 
 
-# TODO: pass the seed to the algorithm
-# TODO: create eval env
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--env', type=str, nargs='+', default=["CartPole-v1"], help='environment ID(s)')
@@ -46,6 +43,8 @@ if __name__ == '__main__':
     parser.add_argument('-n', '--n-timesteps', help='Overwrite the number of timesteps', default=-1,
                         type=int)
     parser.add_argument('--log-interval', help='Override log interval (default: -1, no change)', default=-1,
+                        type=int)
+    parser.add_argument('--eval-freq', help='Evaluate the agent every n steps (if negative, no evaluation)', default=10000,
                         type=int)
     parser.add_argument('-f', '--log-folder', help='Log folder', type=str, default='logs')
     parser.add_argument('--seed', help='Random generator seed', type=int, default=-1)
@@ -220,6 +219,20 @@ if __name__ == '__main__':
 
 
         env = create_env(n_envs)
+        # Create test env if needed, do not normalize reward
+        eval_env = None
+        if args.eval_freq > 0:
+            old_kwargs = None
+            if normalize and len(normalize_kwargs) > 0:
+                old_kwargs = normalize_kwargs.copy()
+                normalize_kwargs['norm_reward'] = False
+
+            eval_env = create_env(1)
+
+            # Restore original kwargs
+            if old_kwargs is not None:
+                normalize_kwargs = old_kwargs.copy()
+
         # Stop env processes to free memory
         if args.optimize_hyperparameters and n_envs > 1:
             env.close()
@@ -255,7 +268,7 @@ if __name__ == '__main__':
             # Policy should not be changed
             del hyperparams['policy']
 
-            model = ALGOS[args.algo].load(args.trained_agent, env=env,
+            model = ALGOS[args.algo].load(args.trained_agent, env=env, seed=args.seed,
                                           tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams)
 
             exp_folder = args.trained_agent.split('.pkl')[0]
@@ -296,13 +309,14 @@ if __name__ == '__main__':
             exit()
         else:
             # Train an agent from scratch
-            model = ALGOS[args.algo](env=env, tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams)
+            model = ALGOS[args.algo](env=env, tensorboard_log=tensorboard_log,
+                                     seed=args.seed, verbose=args.verbose, **hyperparams)
 
         kwargs = {}
         if args.log_interval > -1:
             kwargs = {'log_interval': args.log_interval}
 
-        model.learn(n_timesteps, **kwargs)
+        model.learn(n_timesteps, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
 
         # Save trained model
         log_path = "{}/{}/".format(args.log_folder, args.algo)
