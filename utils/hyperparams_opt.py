@@ -229,7 +229,7 @@ def sample_a2c_params(trial):
     """
     gamma = trial.suggest_categorical('gamma', [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     normalize_advantage = trial.suggest_categorical('normalize_advantage', [False, True])
-    max_grad_norm = trial.suggest_categorical('max_grad_norm', [0.5, 1, 5, 10])
+    max_grad_norm = trial.suggest_categorical('max_grad_norm', [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5])
     use_rms_prop = trial.suggest_categorical('use_rms_prop', [False, True])
     gae_lambda = trial.suggest_categorical('gae_lambda', [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
     n_steps = trial.suggest_categorical('n_steps', [8, 16, 32, 64, 128, 256, 512, 1024, 2048])
