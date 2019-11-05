@@ -223,9 +223,12 @@ if __name__ == '__main__':
         eval_env = None
         if args.eval_freq > 0:
             old_kwargs = None
-            if normalize and len(normalize_kwargs) > 0:
-                old_kwargs = normalize_kwargs.copy()
-                normalize_kwargs['norm_reward'] = False
+            if normalize:
+                if len(normalize_kwargs) > 0:
+                    old_kwargs = normalize_kwargs.copy()
+                    normalize_kwargs['norm_reward'] = False
+                else:
+                    normalize_kwargs = {'norm_reward': False}
 
             eval_env = create_env(1)
 
