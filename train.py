@@ -58,7 +58,7 @@ if __name__ == '__main__':
                         default='median', choices=['halving', 'median', 'none'])
     parser.add_argument('--verbose', help='Verbose mode (0: no output, 1: INFO)', default=1,
                         type=int)
-    parser.add_argument('--gym-packages', type=str, nargs='+', default=[], help='Additional external Gym environemnt package modules to import (e.g. gym_minigrid)')
+    parser.add_argument('--gym-packages', type=str, nargs='+', default=[], help='Additional external Gym environment package modules to import (e.g. gym_minigrid)')
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -230,6 +230,8 @@ if __name__ == '__main__':
                 else:
                     normalize_kwargs = {'norm_reward': False}
 
+            if args.verbose > 0:
+                print("Creating test environment")
             eval_env = create_env(1)
 
             # Restore original kwargs
