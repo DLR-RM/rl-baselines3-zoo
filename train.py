@@ -214,7 +214,6 @@ if __name__ == '__main__':
                 n_stack = hyperparams['frame_stack']
                 env = VecFrameStack(env, n_stack)
                 print("Stacking {} frames".format(n_stack))
-                del hyperparams['frame_stack']
             return env
 
 
@@ -237,6 +236,11 @@ if __name__ == '__main__':
             # Restore original kwargs
             if old_kwargs is not None:
                 normalize_kwargs = old_kwargs.copy()
+
+        # TODO: check for hyperparameters optimization
+        # TODO: check What happens with the eval env when using frame stack
+        if 'frame_stack' in hyperparams:
+            del hyperparams['frame_stack']
 
         # Stop env processes to free memory
         if args.optimize_hyperparameters and n_envs > 1:
