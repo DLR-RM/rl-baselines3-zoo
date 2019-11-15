@@ -308,10 +308,33 @@ def sample_td3_params(trial):
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 100, 128, 256, 512])
     buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(1e5), int(1e6)])
-    train_freq = trial.suggest_categorical('train_freq', [1, 10, 100, 1000, 2000])
-    gradient_steps = train_freq
-    noise_type = trial.suggest_categorical('noise_type', ['ornstein-uhlenbeck', 'normal'])
-    noise_std = trial.suggest_uniform('noise_std', 0, 1)
+    sde_max_grad_norm = trial.suggest_categorical('sde_max_grad_norm', [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5, 1000])
+
+    episodic = trial.suggest_categorical('episodic', [True, False])
+
+    if episodic:
+        n_episodes_rollout = 1
+        train_freq, gradient_steps = -1, -1
+    else:
+        train_freq = trial.suggest_categorical('train_freq', [1, 16, 128, 256, 1000, 2000])
+        gradient_steps = train_freq
+        n_episodes_rollout = -1
+
+    # TODO: reintroduce noise when sde is tuned
+    # noise_type = trial.suggest_categorical('noise_type', ['ornstein-uhlenbeck', 'normal', None])
+    # noise_std = trial.suggest_uniform('noise_std', 0, 1)
+    noise_type = 'sde'
+
+    use_sde = True
+    log_std_init = trial.suggest_uniform('log_std_init', -3, 1)
+    lr_sde = trial.suggest_loguniform('lr_sde', 1e-5, 1)
+    net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
+
+    net_arch = {
+        'small': [64, 64],
+        'medium': [256, 256],
+        'big': [400, 300],
+    }[net_arch]
 
     hyperparams = {
         'gamma': gamma,
@@ -320,6 +343,10 @@ def sample_td3_params(trial):
         'buffer_size': buffer_size,
         'train_freq': train_freq,
         'gradient_steps': gradient_steps,
+        'n_episodes_rollout': n_episodes_rollout,
+        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, lr_sde=lr_sde),
+        'use_sde': use_sde,
+        'sde_max_grad_norm': sde_max_grad_norm
     }
 
     if noise_type == 'normal':
