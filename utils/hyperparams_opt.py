@@ -326,7 +326,7 @@ def sample_td3_params(trial):
     noise_type = 'sde'
 
     use_sde = True
-    log_std_init = trial.suggest_uniform('log_std_init', -3, 1)
+    log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
     lr_sde = trial.suggest_loguniform('lr_sde', 1e-5, 1)
     net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
 
