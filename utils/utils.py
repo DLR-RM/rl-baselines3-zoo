@@ -205,6 +205,29 @@ def linear_schedule(initial_value):
     return func
 
 
+def linear_schedule_std(initial_value, final_value=-5.5):
+    """
+    Linear learning rate schedule for log std.
+    It will decrease linearly from initial_value to final_value
+    (by default exp(-5.5) = 0.004 will be the final value of the std)
+
+    :param initial_value: (float or str)
+    :return: (function)
+    """
+    if isinstance(initial_value, str):
+        initial_value = float(initial_value)
+
+    def func(progress):
+        """
+        Progress will decrease from 1 (beginning) to 0
+        :param progress: (float)
+        :return: (float)
+        """
+        return progress * initial_value + (1 - progress) * final_value
+
+    return func
+
+
 def get_trained_models(log_folder):
     """
     :param log_folder: (str) Root log folder

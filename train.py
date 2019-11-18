@@ -27,7 +27,7 @@ from torchy_baselines.common.vec_env import VecFrameStack, SubprocVecEnv, VecNor
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torchy_baselines.common.utils import constant_fn
 
-from utils import make_env, ALGOS, linear_schedule, get_latest_run_id, get_wrapper_class
+from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.noise import LinearNormalActionNoise
 
@@ -127,14 +127,17 @@ if __name__ == '__main__':
         if args.verbose > 0:
             print("Using {} environments".format(n_envs))
 
-        # Create learning rate schedules
-        for key in ['learning_rate', 'clip_range', 'clip_range_vf']:
+        # Create schedules
+        for key in ['learning_rate', 'clip_range', 'clip_range_vf', 'sde_log_std_scheduler']:
             if key not in hyperparams:
                 continue
             if isinstance(hyperparams[key], str):
                 schedule, initial_value = hyperparams[key].split('_')
                 initial_value = float(initial_value)
-                hyperparams[key] = linear_schedule(initial_value)
+                if key == 'sde_log_std_scheduler':
+                    hyperparams[key] = linear_schedule_std(initial_value)
+                else:
+                    hyperparams[key] = linear_schedule(initial_value)
             elif isinstance(hyperparams[key], (float, int)):
                 # Negative value: ignore (ex: for clipping)
                 if hyperparams[key] < 0:
