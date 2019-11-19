@@ -2,7 +2,6 @@ import numpy as np
 from torchy_baselines.common.noise import ActionNoise
 
 
-
 class LinearNormalActionNoise(ActionNoise):
     """
     A gaussian action noise with linear decay for the standard deviation.

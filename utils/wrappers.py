@@ -73,3 +73,25 @@ class TimeFeatureWrapper(gym.Wrapper):
             time_feature = 1.0
         # Optionnaly: concatenate [time_feature, time_feature ** 2]
         return np.concatenate((obs, [time_feature]))
+
+
+class ActionNoiseWrapper(gym.Wrapper):
+    """
+    Add gaussian noise to the action (without telling the agent),
+    to test the robustness of the control.
+
+    :param env: (gym.Env)
+    :param noise_std: (float) Standard deviation of the noise
+    :param time_wrapper: (bool) Whether to wrap it with a TimeFeatureWrapper too
+        (so we can use it from the hyperparam file)
+    """
+    def __init__(self, env, noise_std=0.1, time_wrapper=True):
+        if time_wrapper:
+            env = TimeFeatureWrapper(env)
+        super(ActionNoiseWrapper, self).__init__(env)
+        self.noise_std = noise_std
+
+    def step(self, action):
+        noise = np.random.normal(np.zeros_like(action), np.ones_like(action) * self.noise_std)
+        noisy_action = action + noise
+        return self.env.step(noisy_action)
