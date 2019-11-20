@@ -140,7 +140,7 @@ if __name__ == '__main__':
                     hyperparams[key] = linear_schedule(initial_value)
             elif isinstance(hyperparams[key], (float, int)):
                 # Negative value: ignore (ex: for clipping)
-                if hyperparams[key] < 0:
+                if hyperparams[key] < 0 and key != 'sde_log_std_scheduler':
                     continue
                 hyperparams[key] = constant_fn(float(hyperparams[key]))
             else:
