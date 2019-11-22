@@ -95,3 +95,41 @@ class ActionNoiseWrapper(gym.Wrapper):
         noise = np.random.normal(np.zeros_like(action), np.ones_like(action) * self.noise_std)
         noisy_action = action + noise
         return self.env.step(noisy_action)
+
+
+class DelayedRewardWrapper(gym.Wrapper):
+    """
+    Delay the reward by `delay` steps, it makes the task harder but more realistic.
+    The reward is accumulated during those steps.
+
+    :param env: (gym.Env)
+    :param delay: (float) Number of steps the reward should be delayed.
+    :param time_wrapper: (bool) Whether to wrap it with a TimeFeatureWrapper too
+        (so we can use it from the hyperparam file)
+    """
+    def __init__(self, env, delay=10, time_wrapper=True):
+        if time_wrapper:
+            env = TimeFeatureWrapper(env)
+        super(DelayedRewardWrapper, self).__init__(env)
+        print("DelayedRewardWrapper", "delay=", delay)
+        self.delay = delay
+        self.current_step = 0
+        self.accumulated_reward = 0.0
+
+    def reset(self):
+        self.current_step = 0
+        self.accumulated_reward = 0.0
+        return self.env.reset()
+
+    def step(self, action):
+        obs, reward, done, info = self.env.step(action)
+
+        self.accumulated_reward += reward
+        self.current_step += 1
+
+        if self.current_step % self.delay == 0 or done:
+            reward = self.accumulated_reward
+            self.accumulated_reward = 0.0
+        else:
+            reward = 0.0
+        return obs, reward, done, info
