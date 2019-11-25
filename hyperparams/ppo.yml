@@ -50,17 +50,25 @@ MountainCar-v0:
   n_epochs: 4
   ent_coef: 0.0
 
+# Tuned
 MountainCarContinuous-v0:
   normalize: true
-  n_envs: 16
-  n_timesteps: !!float 1e6
+  n_envs: 1
+  n_timesteps: !!float 20000
   policy: 'MlpPolicy'
-  n_steps: 256
-  nminibatches: 8
-  gae_lambda: 0.94
-  gamma: 0.99
-  n_epochs: 4
-  ent_coef: 0.0
+  batch_size: 256
+  n_steps: 8
+  gamma: 0.9999
+  learning_rate: !!float 7.77e-05
+  ent_coef: 0.00429
+  clip_range: 0.1
+  n_epochs: 10
+  gae_lambda: 0.9
+  max_grad_norm: 5
+  vf_coef: 0.19
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3.29, ortho_init=False)"
+
 
 Acrobot-v1:
   normalize: true

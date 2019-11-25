@@ -208,7 +208,7 @@ def sample_ppo_params(trial):
     ent_coef = trial.suggest_loguniform('ent_coef', 0.00000001, 0.1)
     clip_range = trial.suggest_categorical('clip_range', [0.1, 0.2, 0.3, 0.4])
     n_epochs = trial.suggest_categorical('n_epochs', [1, 5, 10, 20])
-    gae_lambda = trial.suggest_categorical('lamdba', [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
+    gae_lambda = trial.suggest_categorical('gae_lambda', [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
     max_grad_norm = trial.suggest_categorical('max_grad_norm', [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5])
     vf_coef = trial.suggest_uniform('vf_coef', 0, 1)
     net_arch = trial.suggest_categorical('net_arch', ['small', 'medium'])
