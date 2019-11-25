@@ -20,6 +20,8 @@ try:
     import highway_env
 except ImportError:
     highway_env = None
+# For custom activation fn
+import torch.nn as nn # pylint: disable=unused-import
 
 from torchy_baselines.common.utils import set_random_seed
 # from torchy_baselines.common.cmd_util import make_atari_env

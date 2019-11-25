@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+import torch.nn as nn
 import numpy as np
 import optuna
 from optuna.pruners import SuccessiveHalvingPruner, MedianPruner
@@ -200,13 +201,33 @@ def sample_ppo_params(trial):
     :return: (dict)
     """
     batch_size = trial.suggest_categorical('batch_size', [32, 64, 128, 256])
-    n_steps = trial.suggest_categorical('n_steps', [16, 32, 64, 128, 256, 512, 1024, 2048])
+    n_steps = trial.suggest_categorical('n_steps', [8, 16, 32, 64, 128, 256, 512, 1024, 2048])
     gamma = trial.suggest_categorical('gamma', [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
+    lr_schedule = trial.suggest_categorical('lr_schedule', ['linear', 'constant'])
     ent_coef = trial.suggest_loguniform('ent_coef', 0.00000001, 0.1)
     clip_range = trial.suggest_categorical('clip_range', [0.1, 0.2, 0.3, 0.4])
-    n_epochs = trial.suggest_categorical('n_epochs', [1, 5, 10, 20, 30, 50])
+    n_epochs = trial.suggest_categorical('n_epochs', [1, 5, 10, 20])
     gae_lambda = trial.suggest_categorical('lamdba', [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
+    max_grad_norm = trial.suggest_categorical('max_grad_norm', [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5])
+    vf_coef = trial.suggest_uniform('vf_coef', 0, 1)
+    net_arch = trial.suggest_categorical('net_arch', ['small', 'medium'])
+    log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
+    ortho_init = trial.suggest_categorical('ortho_init', [False, True])
+    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+
+    # TODO: account when using multiple envs
+    # if batch_size > n_steps:
+    #     batch_size = n_steps
+
+    if lr_schedule == 'linear':
+        learning_rate = linear_schedule(learning_rate)
+
+    net_arch = {
+        'small': [dict(pi=[64, 64], vf=[64, 64])],
+        'medium': [dict(pi=[256, 256], vf=[256, 256])],
+    }[net_arch]
+
 
     return {
         'n_steps': n_steps,
@@ -216,7 +237,10 @@ def sample_ppo_params(trial):
         'ent_coef': ent_coef,
         'clip_range': clip_range,
         'n_epochs': n_epochs,
-        'gae_lambda': gae_lambda
+        'gae_lambda': gae_lambda,
+        'max_grad_norm': max_grad_norm,
+        'vf_coef': vf_coef,
+        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, activation_fn=activation_fn)
     }
 
 
@@ -237,17 +261,18 @@ def sample_a2c_params(trial):
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
     ent_coef = trial.suggest_loguniform('ent_coef', 0.00000001, 0.1)
     vf_coef = trial.suggest_uniform('vf_coef', 0, 1)
-    log_std_init = trial.suggest_uniform('log_std_init', -3, 1)
+    log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
     ortho_init = trial.suggest_categorical('ortho_init', [False, True])
-    net_arch = trial.suggest_categorical('net_arch', ["big", "small"])
+    net_arch = trial.suggest_categorical('net_arch', ['small', 'medium'])
+    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
     if lr_schedule == 'linear':
         learning_rate = linear_schedule(learning_rate)
 
-    if net_arch == 'big':
-        net_arch = [dict(pi=[256, 256], vf=[256, 256])]
-    else:
-        net_arch = [dict(pi=[64, 64], vf=[64, 64])]
+    net_arch = {
+        'small': [dict(pi=[64, 64], vf=[64, 64])],
+        'medium': [dict(pi=[256, 256], vf=[256, 256])],
+    }[net_arch]
 
     return {
         'n_steps': n_steps,
@@ -259,7 +284,7 @@ def sample_a2c_params(trial):
         'max_grad_norm': max_grad_norm,
         'use_rms_prop': use_rms_prop,
         'vf_coef': vf_coef,
-        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch)
+        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, activation_fn=activation_fn)
     }
 
 
@@ -329,6 +354,8 @@ def sample_td3_params(trial):
     log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
     lr_sde = trial.suggest_loguniform('lr_sde', 1e-5, 1)
     net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
+    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+
 
     net_arch = {
         'small': [64, 64],
@@ -344,7 +371,8 @@ def sample_td3_params(trial):
         'train_freq': train_freq,
         'gradient_steps': gradient_steps,
         'n_episodes_rollout': n_episodes_rollout,
-        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, lr_sde=lr_sde),
+        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch,
+                              lr_sde=lr_sde, activation_fn=activation_fn),
         'use_sde': use_sde,
         'sde_max_grad_norm': sde_max_grad_norm
     }
