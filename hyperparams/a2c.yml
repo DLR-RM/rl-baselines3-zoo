@@ -79,8 +79,7 @@ HalfCheetahBulletEnv-v0:
   normalize_advantage: False
   learning_rate: lin_0.00096
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-2, ortho_init=False, net_arch=[dict(pi=[64, 64], vf=[64, 64])])"
-  # policy_kwargs: "dict(log_std_init=-1, ortho_init=False, net_arch=[dict(pi=[256, 256], vf=[256, 256])])"
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
 BipedalWalkerHardcore-v2:
   normalize: true

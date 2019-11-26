@@ -264,6 +264,8 @@ def sample_a2c_params(trial):
     log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
     ortho_init = trial.suggest_categorical('ortho_init', [False, True])
     net_arch = trial.suggest_categorical('net_arch', ['small', 'medium'])
+    sde_net_arch = trial.suggest_categorical('sde_net_arch', [None, 'tiny', 'small'])
+    full_std = trial.suggest_categorical('full_std', [False, True])
     activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
     if lr_schedule == 'linear':
@@ -273,6 +275,12 @@ def sample_a2c_params(trial):
         'small': [dict(pi=[64, 64], vf=[64, 64])],
         'medium': [dict(pi=[256, 256], vf=[256, 256])],
     }[net_arch]
+
+    sde_net_arch = {
+        None: None,
+        'tiny': [64],
+        'small': [64, 64],
+    }[sde_net_arch]
 
     return {
         'n_steps': n_steps,
@@ -284,7 +292,8 @@ def sample_a2c_params(trial):
         'max_grad_norm': max_grad_norm,
         'use_rms_prop': use_rms_prop,
         'vf_coef': vf_coef,
-        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, activation_fn=activation_fn)
+        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, full_std=full_std,
+                              activation_fn=activation_fn, sde_net_arch=sde_net_arch)
     }
 
 
