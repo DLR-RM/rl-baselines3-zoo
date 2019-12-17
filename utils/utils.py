@@ -277,7 +277,7 @@ def get_saved_hyperparams(stats_path, norm_reward=False, test_mode=False):
         if os.path.isfile(config_file):
             # Load saved hyperparameters
             with open(os.path.join(stats_path, 'config.yml'), 'r') as f:
-                hyperparams = yaml.safe_load(f)
+                hyperparams = yaml.load(f)
             hyperparams['normalize'] = hyperparams.get('normalize', False)
         else:
             obs_rms_path = os.path.join(stats_path, 'obs_rms.pkl')
