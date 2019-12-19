@@ -214,7 +214,8 @@ def sample_ppo_params(trial):
     net_arch = trial.suggest_categorical('net_arch', ['small', 'medium'])
     log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
     ortho_init = trial.suggest_categorical('ortho_init', [False, True])
-    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+    # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU])
 
     # TODO: account when using multiple envs
     # if batch_size > n_steps:
@@ -266,7 +267,8 @@ def sample_a2c_params(trial):
     net_arch = trial.suggest_categorical('net_arch', ['small', 'medium'])
     sde_net_arch = trial.suggest_categorical('sde_net_arch', [None, 'tiny', 'small'])
     full_std = trial.suggest_categorical('full_std', [False, True])
-    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+    # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU])
 
     if lr_schedule == 'linear':
         learning_rate = linear_schedule(learning_rate)
@@ -363,7 +365,7 @@ def sample_td3_params(trial):
     log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
     lr_sde = trial.suggest_loguniform('lr_sde', 1e-5, 1)
     net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
-    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+    # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
 
     net_arch = {
@@ -381,7 +383,7 @@ def sample_td3_params(trial):
         'gradient_steps': gradient_steps,
         'n_episodes_rollout': n_episodes_rollout,
         'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch,
-                              lr_sde=lr_sde, activation_fn=activation_fn),
+                              lr_sde=lr_sde),
         'use_sde': use_sde,
         'sde_max_grad_norm': sde_max_grad_norm
     }
