@@ -315,6 +315,8 @@ def sample_sac_params(trial):
     learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 10000, 20000])
     # train_freq = trial.suggest_categorical('train_freq', [1, 10, 100, 300])
     train_freq = trial.suggest_categorical('train_freq', [8, 16, 32, 64, 128, 256, 512])
+    # Polyak coeff
+    tau = trial.suggest_categorical('tau', [0.001, 0.005, 0.01, 0.02])
     # gradient_steps takes too much time
     # gradient_steps = trial.suggest_categorical('gradient_steps', [1, 100, 300])
     gradient_steps = train_freq
@@ -343,6 +345,7 @@ def sample_sac_params(trial):
         'train_freq': train_freq,
         'gradient_steps': gradient_steps,
         'ent_coef': ent_coef,
+        'tau': tau,
         'target_entropy': target_entropy,
         'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch)
     }
