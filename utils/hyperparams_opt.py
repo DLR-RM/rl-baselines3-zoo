@@ -155,12 +155,14 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
             # Free memory
             model.env.close()
             model.test_env.close()
-        except AssertionError:
+        except AssertionError as e:
             # Sometimes, random hyperparams can generate NaN
             # Free memory
             model.env.close()
             model.test_env.close()
-            raise
+            # Prune hyperparams that generate NaNs
+            print(e)
+            raise optuna.structs.TrialPruned()
         is_pruned = False
         cost = np.inf
         if hasattr(model, 'is_pruned'):
