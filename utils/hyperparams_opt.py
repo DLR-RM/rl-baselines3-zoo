@@ -202,11 +202,12 @@ def sample_ppo_params(trial):
     :param trial: (optuna.trial)
     :return: (dict)
     """
-    batch_size = trial.suggest_categorical('batch_size', [32, 64, 128, 256])
+    batch_size = trial.suggest_categorical('batch_size', [8, 16, 32, 64, 128, 256, 512])
     n_steps = trial.suggest_categorical('n_steps', [8, 16, 32, 64, 128, 256, 512, 1024, 2048])
     gamma = trial.suggest_categorical('gamma', [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
-    lr_schedule = trial.suggest_categorical('lr_schedule', ['linear', 'constant'])
+    lr_schedule = 'constant'
+    # lr_schedule = trial.suggest_categorical('lr_schedule', ['linear', 'constant'])
     ent_coef = trial.suggest_loguniform('ent_coef', 0.00000001, 0.1)
     clip_range = trial.suggest_categorical('clip_range', [0.1, 0.2, 0.3, 0.4])
     n_epochs = trial.suggest_categorical('n_epochs', [1, 5, 10, 20])
@@ -215,13 +216,15 @@ def sample_ppo_params(trial):
     vf_coef = trial.suggest_uniform('vf_coef', 0, 1)
     net_arch = trial.suggest_categorical('net_arch', ['small', 'medium'])
     log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
-    ortho_init = trial.suggest_categorical('ortho_init', [False, True])
+    sde_sample_freq = trial.suggest_categorical('sde_sample_freq', [-1, 8, 16, 32, 64, 128, 256])
+    ortho_init = False
+    # ortho_init = trial.suggest_categorical('ortho_init', [False, True])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
     activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU])
 
     # TODO: account when using multiple envs
-    # if batch_size > n_steps:
-    #     batch_size = n_steps
+    if batch_size > n_steps:
+        batch_size = n_steps
 
     if lr_schedule == 'linear':
         learning_rate = linear_schedule(learning_rate)
@@ -243,6 +246,7 @@ def sample_ppo_params(trial):
         'gae_lambda': gae_lambda,
         'max_grad_norm': max_grad_norm,
         'vf_coef': vf_coef,
+        'sde_sample_freq': sde_sample_freq,
         'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, activation_fn=activation_fn)
     }
 
