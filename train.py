@@ -310,8 +310,8 @@ if __name__ == '__main__':
                                                  sampler_method=args.sampler, pruner_method=args.pruner,
                                                  verbose=args.verbose)
 
-            report_name = "report_{}_{}-trials-{}-{}-{}.csv".format(env_id, args.n_trials, n_timesteps,
-                                                                    args.sampler, args.pruner)
+            report_name = "report_{}_{}-trials-{}-{}-{}_{}.csv".format(env_id, args.n_trials, n_timesteps,
+                                                                    args.sampler, args.pruner, int(time.time()))
 
             log_path = os.path.join(args.log_folder, args.algo, report_name)
 
