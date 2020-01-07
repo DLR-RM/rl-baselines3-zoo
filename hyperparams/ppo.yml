@@ -133,21 +133,30 @@ LunarLanderContinuous-v2:
   ent_coef: 0.01
 
 Walker2DBulletEnv-v0:
+# Tuned
+HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
-  n_envs: 4
+  n_envs: 8
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
-  n_steps: 1024
-  nminibatches: 64
-  gae_lambda: 0.95
+  batch_size: 64
+  n_steps: 512
   gamma: 0.99
-  n_epochs: 10
+  gae_lambda: 0.9
+  n_epochs: 20
   ent_coef: 0.0
-  learning_rate: lin_2.5e-4
-  clip_range: 0.1
-  clip_range_vf: -1
-
+  sde_sample_freq: 8
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  learning_rate: !!float 3e-5
+  use_sde: True
+  clip_range: 0.4
+  policy_kwargs: "dict(log_std_init=-2.7,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
 
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
