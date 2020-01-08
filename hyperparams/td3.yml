@@ -36,18 +36,17 @@ HalfCheetah-v2:
 
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 2e6
+  n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  gamma: 0.99
-  buffer_size: 1000000
-  noise_type: 'normal'
-  noise_std: 0.1
+  gamma: 0.98
+  buffer_size: 200000
   learning_starts: 10000
-  batch_size: 100
-  learning_rate: !!float 1e-3
-  train_freq: 1000
-  gradient_steps: 1000
-  policy_kwargs: "dict(net_arch=[400, 300])"
+  train_freq: 64
+  gradient_steps: 64
+  n_episodes_rollout: -1
+  learning_rate: !!float 6e-4
+  policy_kwargs: "dict(net_arch=[400, 300], log_std_init=-3.62, lr_sde=1.5e-3)"
+  use_sde: True
 
 BipedalWalker-v2:
   n_timesteps: !!float 2e6
