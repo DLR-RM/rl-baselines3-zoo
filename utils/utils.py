@@ -89,7 +89,7 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
             env = wrapper_class(env)
 
         env.seed(seed + rank)
-        env = Monitor(env, os.path.join(log_dir, str(rank)), allow_early_resets=True)
+        env = Monitor(env, os.path.join(log_dir, str(rank)))
         return env
 
     return _init
@@ -158,7 +158,7 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
             env = class_(**{**spec._kwargs}, **{render_name: should_render})
             env.seed(0)
             if log_dir is not None:
-                env = Monitor(env, os.path.join(log_dir, "0"), allow_early_resets=True)
+                env = Monitor(env, os.path.join(log_dir, "0"))
             return env
 
         if use_subproc:
