@@ -60,11 +60,11 @@ HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  learning_rate: 7.3e-4
-  buffer_size: 200000
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
   batch_size: 256
   ent_coef: 'auto'
-  gamma: 0.99
+  gamma: 0.98
   tau: 0.02
   train_freq: 64
   gradient_steps: 64
@@ -77,11 +77,11 @@ AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  learning_rate: 7.3e-4
-  buffer_size: 200000
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
   batch_size: 256
   ent_coef: 'auto'
-  gamma: 0.99
+  gamma: 0.98
   tau: 0.02
   train_freq: 64
   gradient_steps: 64
@@ -94,37 +94,48 @@ HopperBulletEnv-v0:
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
-  buffer_size: 200000
+  buffer_size: 300000
   batch_size: 256
   ent_coef: 'auto'
-  gamma: 0.99
+  gamma: 0.98
   tau: 0.02
   train_freq: 64
   gradient_steps: 64
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
-
-# {'gamma': 0.95, 'lr': 0.005061176140825452, 'batch_size': 256, 'buffer_size': 100000, 'learning_starts': 1000,
-# 'train_freq': 8, 'tau': 0.02, 'log_std_init': -2.374695580824029, 'net_arch': 'big'}
-# {'gamma': 0.95, 'lr': 0.0012729874642010439, 'batch_size': 256, 'buffer_size': 1000000, 'learning_starts': 10000,
-# 'train_freq': 16, 'tau': 0.02, 'log_std_init': -1.4996920231221118, 'net_arch': 'medium'}
 
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
-  buffer_size: 200000
+  buffer_size: 300000
   batch_size: 256
   ent_coef: 'auto'
-  gamma: 0.99
+  gamma: 0.98
   tau: 0.02
   train_freq: 64
   gradient_steps: 64
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
+
+# Walker2DBulletEnv-v0:
+#   env_wrapper: utils.wrappers.TimeFeatureWrapper
+#   n_timesteps: !!float 1e6
+#   policy: 'MlpPolicy'
+#   learning_rate: lin_7.3e-4
+#   buffer_size: 200000
+#   batch_size: 256
+#   ent_coef: 'auto'
+#   gamma: 0.95
+#   tau: 0.02
+#   train_freq: 16
+#   gradient_steps: 16
+#   learning_starts: 10000
+#   use_sde: True
+#   policy_kwargs: "dict(log_std_init=-2.37, net_arch=[400, 300])"
 
 ReacherBulletEnv-v0:
   n_timesteps: !!float 1e6
