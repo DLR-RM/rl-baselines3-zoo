@@ -1,17 +1,18 @@
 # Tuned
 MountainCarContinuous-v0:
+  # env_wrapper: utils.wrappers.PlotActionWrapper
   normalize: True
-  n_timesteps: !!float 25000
+  n_timesteps: !!float 50000
   policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
   buffer_size: 50000
   batch_size: 256
   ent_coef: 'auto'
-  gradient_steps: 8
-  train_freq: 8
+  gradient_steps: 128
+  train_freq: 128
   learning_starts: 0
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
+  policy_kwargs: "dict(log_std_init=-1, net_arch=[64, 64])"
 
 Pendulum-v0:
   n_timesteps: 20000
