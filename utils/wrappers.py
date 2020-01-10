@@ -82,12 +82,8 @@ class ActionNoiseWrapper(gym.Wrapper):
 
     :param env: (gym.Env)
     :param noise_std: (float) Standard deviation of the noise
-    :param time_wrapper: (bool) Whether to wrap it with a TimeFeatureWrapper too
-        (so we can use it from the hyperparam file)
     """
-    def __init__(self, env, noise_std=0.1, time_wrapper=True):
-        if time_wrapper:
-            env = TimeFeatureWrapper(env)
+    def __init__(self, env, noise_std=0.1):
         super(ActionNoiseWrapper, self).__init__(env)
         self.noise_std = noise_std
 
@@ -104,12 +100,8 @@ class DelayedRewardWrapper(gym.Wrapper):
 
     :param env: (gym.Env)
     :param delay: (float) Number of steps the reward should be delayed.
-    :param time_wrapper: (bool) Whether to wrap it with a TimeFeatureWrapper too
-        (so we can use it from the hyperparam file)
     """
-    def __init__(self, env, delay=10, time_wrapper=True):
-        if time_wrapper:
-            env = TimeFeatureWrapper(env)
+    def __init__(self, env, delay=10):
         super(DelayedRewardWrapper, self).__init__(env)
         print("DelayedRewardWrapper", "delay=", delay)
         self.delay = delay
