@@ -202,33 +202,55 @@ AntBulletEnv-v0:
   learning_rate: 2.5e-4
   clip_range: 0.2
 
+# Tuned
 HopperBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 8
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
-  n_steps: 2048
-  nminibatches: 128
-  gae_lambda: 0.95
+  batch_size: 128
+  n_steps: 512
   gamma: 0.99
-  n_epochs: 10
+  gae_lambda: 0.9
+  n_epochs: 20
   ent_coef: 0.0
-  learning_rate: 2.5e-4
-  clip_range: 0.2
+  sde_sample_freq: 8
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  learning_rate: !!float 3e-5
+  use_sde: True
+  clip_range: lin_0.4
+  policy_kwargs: "dict(log_std_init=-2.7,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
 
+# Tuned
 ReacherBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 8
-  n_timesteps: !!float 2e6
+  n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  n_steps: 2048
   batch_size: 64
-  gae_lambda: 0.95
+  n_steps: 512
   gamma: 0.99
-  n_epochs: 10
+  gae_lambda: 0.9
+  n_epochs: 20
   ent_coef: 0.0
-  learning_rate: 2.5e-4
-  clip_range: 0.2
+  sde_sample_freq: 8
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  learning_rate: !!float 3e-5
+  use_sde: True
+  clip_range: lin_0.4
+  policy_kwargs: "dict(log_std_init=-2.7,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
 
 MinitaurBulletEnv-v0:
   normalize: true
