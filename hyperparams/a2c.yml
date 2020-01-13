@@ -102,36 +102,59 @@ Walker2DBulletEnv-v0:
   gamma: 0.99
   learning_rate: lin_0.002
 
+# Tuned
 AntBulletEnv-v0:
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
-  n_steps: 32
-  vf_coef: 0.5
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.0008
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
+# Tuned
 HopperBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
-  n_steps: 32
-  vf_coef: 0.5
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False, net_arch=[dict(pi=[64, 64], vf=[64, 64])])"
 
-# Not working yet
+# Tuned but unstable
+# Not working without SDE?
 ReacherBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
-  n_envs: 8
-  n_timesteps: !!float 1e6
+  n_envs: 4
+  n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
-  ent_coef: 0.001
-  n_steps: 32
-  vf_coef: 0.5
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.0008
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"

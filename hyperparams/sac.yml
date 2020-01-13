@@ -138,16 +138,22 @@ Walker2DBulletEnv-v0:
 #   use_sde: True
 #   policy_kwargs: "dict(log_std_init=-2.37, net_arch=[400, 300])"
 
+# Tuned
 ReacherBulletEnv-v0:
-  n_timesteps: !!float 1e6
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
-  learning_rate: lin_3e-4
-  buffer_size: 1000000
-  batch_size: 64
-  ent_coef: 0.01
-  train_freq: 1
-  gradient_steps: 1
-  learning_starts: 1000
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
 
 HumanoidBulletEnv-v0:
   normalize: "{'norm_obs': True, 'norm_reward': False}"
@@ -161,27 +167,39 @@ HumanoidBulletEnv-v0:
   gradient_steps: 1
   learning_starts: 1000
 
+# Tuned
 InvertedDoublePendulumBulletEnv-v0:
-  n_timesteps: !!float 1e6
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
-  learning_rate: lin_3e-4
-  buffer_size: 1000000
-  batch_size: 64
-  ent_coef: 0.01
-  train_freq: 1
-  gradient_steps: 1
-  learning_starts: 1000
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
 
+# Tuned
 InvertedPendulumSwingupBulletEnv-v0:
-  n_timesteps: !!float 1e6
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
-  learning_rate: lin_3e-4
-  buffer_size: 1000000
-  batch_size: 64
-  ent_coef: 0.01
-  train_freq: 1
-  gradient_steps: 1
-  learning_starts: 1000
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
 
 # To be tuned
 MinitaurBulletEnv-v0:

@@ -136,7 +136,7 @@ HumanoidBulletEnv-v0:
   policy_kwargs: "dict(net_arch=[400, 300], log_std_init=-3.62, lr_sde=1.5e-3)"
   use_sde: True
 
-
+# Tuned
 ReacherBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
@@ -151,6 +151,7 @@ ReacherBulletEnv-v0:
   policy_kwargs: "dict(net_arch=[400, 300], log_std_init=-3.62, lr_sde=1.5e-3)"
   use_sde: True
 
+# Tuned
 InvertedDoublePendulumBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
@@ -165,6 +166,7 @@ InvertedDoublePendulumBulletEnv-v0:
   policy_kwargs: "dict(net_arch=[400, 300], log_std_init=-3.62, lr_sde=1.5e-3)"
   use_sde: True
 
+# Tuned
 InvertedPendulumSwingupBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
