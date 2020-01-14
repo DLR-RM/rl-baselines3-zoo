@@ -69,7 +69,6 @@ MountainCarContinuous-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3.29, ortho_init=False)"
 
-
 Acrobot-v1:
   normalize: true
   n_envs: 16
@@ -132,7 +131,6 @@ LunarLanderContinuous-v2:
   n_epochs: 4
   ent_coef: 0.01
 
-Walker2DBulletEnv-v0:
 # Tuned
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -158,37 +156,32 @@ HalfCheetahBulletEnv-v0:
                        net_arch=[dict(pi=[256, 256], vf=[256, 256])]
                        )"
 
-HalfCheetahBulletEnv-v0:
+# Tuned
+AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
-  n_envs: 1
+  n_envs: 16
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
-  n_steps: 2048
-  batch_size: 64
-  gae_lambda: 0.95
+  batch_size: 128
+  n_steps: 512
   gamma: 0.99
-  n_epochs: 10
+  gae_lambda: 0.9
+  n_epochs: 20
   ent_coef: 0.0
-  learning_rate: !!float 3e-4
-  clip_range: 0.2
+  sde_sample_freq: 8
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  learning_rate: !!float 3e-5
+  use_sde: True
+  clip_range: 0.4
+  policy_kwargs: "dict(log_std_init=-1,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
 
-HalfCheetah-v2:
-  normalize: true
-  n_envs: 1
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  n_steps: 2048
-  batch_size: 64
-  gae_lambda: 0.95
-  gamma: 0.99
-  n_epochs: 10
-  ent_coef: 0.0
-  learning_rate: lin_3e-4
-  clip_range: 0.2
-  clip_range_vf: -1
 
-AntBulletEnv-v0:
   normalize: true
   n_envs: 8
   n_timesteps: !!float 2e6
