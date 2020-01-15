@@ -32,28 +32,54 @@ Acrobot-v1:
   policy: 'MlpPolicy'
   ent_coef: .0
 
+# Almost tuned
 Pendulum-v0:
+  normalize: True
   n_envs: 8
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  ent_coef: 0.0
-  gamma: 0.95
-
-LunarLanderContinuous-v2:
-  normalize: true
-  n_envs: 16
-  n_timesteps: !!float 5e6
-  policy: 'MlpPolicy'
-  gamma: 0.999
-  ent_coef: 0.001
-  learning_rate: lin_7e-4
-
-MountainCarContinuous-v0:
-  normalize: true
-  n_envs: 16
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_7e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
+LunarLanderContinuous-v2:
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_7e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
+MountainCarContinuous-v0:
+  # env_wrapper: utils.wrappers.PlotActionWrapper
+  normalize: true
+  n_envs: 4
+  n_steps: 100
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  use_sde: True
+  sde_sample_freq: 16
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=False)"
 
 BipedalWalker-v2:
   normalize: true
@@ -77,6 +103,7 @@ HalfCheetahBulletEnv-v0:
   gamma: 0.99
   use_rms_prop: True
   normalize_advantage: False
+  # Both works
   # learning_rate: lin_0.00096
   learning_rate: !!float 3e-4
   use_sde: True
