@@ -135,10 +135,13 @@ class PlotActionWrapper(gym.Wrapper):
 
     :param env: (gym.Env)
     :param plot_freq: (int) Plot every `plot_freq` episodes
+    :param fft_plot: (bool) Whether to plot the fft plot of the actions
+        (to see the frequency) needs some tuning (regarding the sampling frequency)
     """
-    def __init__(self, env, plot_freq=5):
+    def __init__(self, env, plot_freq=5, fft_plot=False):
         super(PlotActionWrapper, self).__init__(env)
         self.plot_freq = plot_freq
+        self.fft_plot = fft_plot
         self.current_episode = 0
         # Observation buffer (Optional)
         # self.observations = []
@@ -178,5 +181,18 @@ class PlotActionWrapper(gym.Wrapper):
             # plt.scatter(x[start:end], np.clip(self.actions[i], -1, 1), s=1)
             # plt.scatter(x[start:end], self.actions[i], s=1)
             start = end
+
+        # Plot Frequency plot
+        if self.fft_plot:
+            signal = np.concatenate(tuple(self.actions))
+            n_samples = len(signal)
+            # TODO: change the time_delta to match the real one
+            time_delta = 1 / 4e4
+            # Sanity check: sinusoidal signal
+            # signal = np.sin(10 * 2 * np.pi * np.arange(n_samples) * time_delta)
+            signal_fft = np.fft.fft(signal)
+            freq = np.fft.fftfreq(n_samples, time_delta)
+            plt.figure("FFT")
+            plt.plot(freq[:n_samples // 2], np.abs(signal_fft[:n_samples // 2]))
 
         plt.show()
