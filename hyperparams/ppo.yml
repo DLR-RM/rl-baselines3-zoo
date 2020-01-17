@@ -141,10 +141,10 @@ LunarLanderContinuous-v2:
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
-  n_envs: 8
+  n_envs: 16
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
-  batch_size: 64
+  batch_size: 128
   n_steps: 512
   gamma: 0.99
   gae_lambda: 0.9
@@ -156,7 +156,7 @@ HalfCheetahBulletEnv-v0:
   learning_rate: !!float 3e-5
   use_sde: True
   clip_range: 0.4
-  policy_kwargs: "dict(log_std_init=-2.7,
+  policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
                        net_arch=[dict(pi=[256, 256], vf=[256, 256])]
@@ -227,13 +227,13 @@ Walker2DBulletEnv-v0:
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
-  n_envs: 8
+  n_envs: 16
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   batch_size: 128
   n_steps: 512
   gamma: 0.99
-  gae_lambda: 0.9
+  gae_lambda: 0.92
   n_epochs: 20
   ent_coef: 0.0
   sde_sample_freq: 8
@@ -242,7 +242,7 @@ HopperBulletEnv-v0:
   learning_rate: !!float 3e-5
   use_sde: True
   clip_range: lin_0.4
-  policy_kwargs: "dict(log_std_init=-2.7,
+  policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
                        net_arch=[dict(pi=[256, 256], vf=[256, 256])]
