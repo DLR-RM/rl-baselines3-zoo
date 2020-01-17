@@ -81,14 +81,44 @@ MountainCarContinuous-v0:
   sde_sample_freq: 16
   policy_kwargs: "dict(log_std_init=0.0, ortho_init=False)"
 
+# Tuned
 BipedalWalker-v2:
   normalize: true
   n_envs: 16
   n_timesteps: !!float 5e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
-  learning_rate: lin_7e-4
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
+BipedalWalkerHardcore-v2:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 10e7
+  policy: 'MlpPolicy'
+  # frame_stack: 4
+  ent_coef: 0.001
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  # learning_rate: lin_0.0006
+  learning_rate: !!float 7e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
@@ -109,25 +139,39 @@ HalfCheetahBulletEnv-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False, full_std=True)"
 
-BipedalWalkerHardcore-v2:
-  normalize: true
-  n_envs: 16
-  n_timesteps: !!float 10e7
-  policy: 'MlpPolicy'
-  frame_stack: 4
-  ent_coef: 0.001
-  learning_rate: lin_7e-4
-
 Walker2DBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
-  n_steps: 32
-  vf_coef: 0.5
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# normalize: true
+# n_envs: 4
+# n_timesteps: !!float 2e6
+# policy: 'MlpPolicy'
+# ent_coef: 0.0
+# max_grad_norm: 0.5
+# n_steps: 32
+# gae_lambda: 0.9
+# vf_coef: 0.4
+# gamma: 0.99
+# use_rms_prop: True
+# normalize_advantage: False
+# learning_rate: 0.0002
+# use_sde: True
+# policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
 # Tuned
 AntBulletEnv-v0:
