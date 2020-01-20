@@ -1,27 +1,27 @@
 import argparse
 import difflib
 import os
-from collections import OrderedDict
-from pprint import pprint
-import warnings
 import importlib
 import time
+from collections import OrderedDict
+from pprint import pprint
 
-# For pybullet envs
-# warnings.filterwarnings("ignore")
+import numpy as np
+import yaml
 import gym
+# For custom activation fn
+import torch.nn as nn  # pylint: disable=unused-import
+
 try:
     import pybullet_envs
 except ImportError:
     pybullet_envs = None
-import numpy as np
-import yaml
+
 try:
     import highway_env
 except ImportError:
     highway_env = None
-# For custom activation fn
-import torch.nn as nn # pylint: disable=unused-import
+
 
 from torchy_baselines.common.utils import set_random_seed
 # from torchy_baselines.common.cmd_util import make_atari_env
@@ -32,7 +32,6 @@ from torchy_baselines.common.utils import constant_fn
 from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.noise import LinearNormalActionNoise
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -46,8 +45,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--log-interval', help='Override log interval (default: -1, no change)', default=-1,
                         type=int)
-    parser.add_argument('--eval-freq', help='Evaluate the agent every n steps (if negative, no evaluation)', default=10000,
-                        type=int)
+    parser.add_argument('--eval-freq', help='Evaluate the agent every n steps (if negative, no evaluation)',
+                        default=10000, type=int)
     parser.add_argument('-f', '--log-folder', help='Log folder', type=str, default='logs')
     parser.add_argument('--seed', help='Random generator seed', type=int, default=-1)
     parser.add_argument('--n-trials', help='Number of trials for optimizing hyperparameters', type=int, default=10)
@@ -60,7 +59,8 @@ if __name__ == '__main__':
                         default='median', choices=['halving', 'median', 'none'])
     parser.add_argument('--verbose', help='Verbose mode (0: no output, 1: INFO)', default=1,
                         type=int)
-    parser.add_argument('--gym-packages', type=str, nargs='+', default=[], help='Additional external Gym environment package modules to import (e.g. gym_minigrid)')
+    parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
+                        help='Additional external Gym environment package modules to import (e.g. gym_minigrid)')
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -179,6 +179,7 @@ if __name__ == '__main__':
         if 'env_wrapper' in hyperparams.keys():
             del hyperparams['env_wrapper']
 
+
         def create_env(n_envs):
             """
             Create the environment and wrap it if necessary
@@ -206,7 +207,8 @@ if __name__ == '__main__':
                 else:
                     # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
                     # On most env, SubprocVecEnv does not help and is quite memory hungry
-                    env = DummyVecEnv([make_env(env_id, i, args.seed, wrapper_class=env_wrapper) for i in range(n_envs)])
+                    env = DummyVecEnv([make_env(env_id, i, args.seed,
+                                                wrapper_class=env_wrapper) for i in range(n_envs)])
                 if normalize:
                     if args.verbose > 0:
                         if len(normalize_kwargs) > 0:
@@ -258,9 +260,10 @@ if __name__ == '__main__':
             n_actions = env.action_space.shape[0]
             if 'normal' in noise_type:
                 if 'lin' in noise_type:
+                    final_sigma = hyperparams.get('noise_std_final', 0.0) * np.ones(n_actions)
                     hyperparams['action_noise'] = LinearNormalActionNoise(mean=np.zeros(n_actions),
                                                                           sigma=noise_std * np.ones(n_actions),
-                                                                          final_sigma=hyperparams.get('noise_std_final', 0.0) * np.ones(n_actions),
+                                                                          final_sigma=final_sigma,
                                                                           max_steps=n_timesteps)
                 else:
                     hyperparams['action_noise'] = NormalActionNoise(mean=np.zeros(n_actions),
@@ -276,7 +279,7 @@ if __name__ == '__main__':
             if 'noise_std_final' in hyperparams:
                 del hyperparams['noise_std_final']
 
-        if args.trained_agent.endswith('.pkl') and os.path.isfile(args.trained_agent):
+        if args.trained_agent.endswith('.zip') and os.path.isfile(args.trained_agent):
             # Continue training
             print("Loading pretrained agent")
             # Policy should not be changed
@@ -285,7 +288,7 @@ if __name__ == '__main__':
             model = ALGOS[args.algo].load(args.trained_agent, env=env, seed=args.seed,
                                           tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams)
 
-            exp_folder = args.trained_agent.split('.pkl')[0]
+            exp_folder = args.trained_agent.split('.zip')[0]
             if normalize:
                 print("Loading saved running average")
                 env.load_running_average(exp_folder)
@@ -311,7 +314,7 @@ if __name__ == '__main__':
                                                  verbose=args.verbose)
 
             report_name = "report_{}_{}-trials-{}-{}-{}_{}.csv".format(env_id, args.n_trials, n_timesteps,
-                                                                    args.sampler, args.pruner, int(time.time()))
+                                                                       args.sampler, args.pruner, int(time.time()))
 
             log_path = os.path.join(args.log_folder, args.algo, report_name)
 
@@ -337,7 +340,6 @@ if __name__ == '__main__':
         save_path = os.path.join(log_path, "{}_{}".format(env_id, get_latest_run_id(log_path, env_id) + 1))
         params_path = "{}/{}".format(save_path, env_id)
         os.makedirs(params_path, exist_ok=True)
-
 
         print("Saving to {}".format(save_path))
 

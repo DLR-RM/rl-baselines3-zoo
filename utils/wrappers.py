@@ -8,6 +8,7 @@ class DoneOnSuccessWrapper(gym.Wrapper):
     Reset on success and offsets the reward.
     Useful for GoalEnv.
     """
+
     def __init__(self, env, reward_offset=1.0):
         super(DoneOnSuccessWrapper, self).__init__(env)
         self.reward_offset = reward_offset
@@ -35,11 +36,12 @@ class TimeFeatureWrapper(gym.Wrapper):
         equal to zero. This allow to check that the agent did not overfit this feature,
         learning a deterministic pre-defined sequence of actions.
     """
+
     def __init__(self, env, max_steps=1000, test_mode=False):
         assert isinstance(env.observation_space, gym.spaces.Box)
         # Add a time feature to the observation
         low, high = env.observation_space.low, env.observation_space.high
-        low, high= np.concatenate((low, [0])), np.concatenate((high, [1.]))
+        low, high = np.concatenate((low, [0])), np.concatenate((high, [1.]))
         env.observation_space = gym.spaces.Box(low=low, high=high, dtype=np.float32)
 
         super(TimeFeatureWrapper, self).__init__(env)
@@ -83,6 +85,7 @@ class ActionNoiseWrapper(gym.Wrapper):
     :param env: (gym.Env)
     :param noise_std: (float) Standard deviation of the noise
     """
+
     def __init__(self, env, noise_std=0.1):
         super(ActionNoiseWrapper, self).__init__(env)
         self.noise_std = noise_std
@@ -101,6 +104,7 @@ class DelayedRewardWrapper(gym.Wrapper):
     :param env: (gym.Env)
     :param delay: (float) Number of steps the reward should be delayed.
     """
+
     def __init__(self, env, delay=10):
         super(DelayedRewardWrapper, self).__init__(env)
         print("DelayedRewardWrapper", "delay=", delay)
@@ -138,6 +142,7 @@ class PlotActionWrapper(gym.Wrapper):
     :param fft_plot: (bool) Whether to plot the fft plot of the actions
         (to see the frequency) needs some tuning (regarding the sampling frequency)
     """
+
     def __init__(self, env, plot_freq=5, fft_plot=False):
         super(PlotActionWrapper, self).__init__(env)
         self.plot_freq = plot_freq

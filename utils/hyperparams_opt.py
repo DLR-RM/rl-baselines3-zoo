@@ -6,11 +6,9 @@ import optuna
 from optuna.pruners import SuccessiveHalvingPruner, MedianPruner
 from optuna.samplers import RandomSampler, TPESampler
 from optuna.integration.skopt import SkoptSampler
-from torchy_baselines import SAC, TD3
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-from torchy_baselines.common.vec_env import VecNormalize, VecEnv
+from torchy_baselines.common.vec_env import VecNormalize
 # from torchy_baselines.her import HERGoalEnvWrapper
-# from torchy_baselines.common.base_class import _UnvecWrapper
 
 from utils import linear_schedule
 

@@ -55,10 +55,10 @@ def get_wrapper_class(hyperparams):
              create another Gym env giving an original env.
     """
 
-    def get_module_name(fullname):
+    def get_module_name(wrapper_name):
         return '.'.join(wrapper_name.split('.')[:-1])
 
-    def get_class_name(fullname):
+    def get_class_name(wrapper_name):
         return wrapper_name.split('.')[-1]
 
     if 'env_wrapper' in hyperparams.keys():
@@ -97,7 +97,7 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
     :param rank: (int)
     :param seed: (int)
     :param log_dir: (str)
-    :param wrapper: (type) a subclass of gym.Wrapper to wrap the original
+    :param wrapper_class: (Type[gym.Wrapper]) a subclass of gym.Wrapper to wrap the original
                     env with
     """
     if log_dir is None and log_dir != '':
@@ -134,8 +134,6 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
     :param seed: (int) Seed for random number generator
     :param log_dir: (str) Where to log rewards
     :param should_render: (bool) For Pybullet env, display the GUI
-    :param env_wrapper: (type) A subclass of gym.Wrapper to wrap the original
-                        env with
     :param hyperparams: (dict) Additional hyperparams (ex: n_stack)
     :return: (gym.Env)
     """
@@ -238,6 +236,7 @@ def linear_schedule_std(initial_value, final_value=-5.5):
     (by default exp(-5.5) = 0.004 will be the final value of the std)
 
     :param initial_value: (float or str)
+    :param final_value: (float)
     :return: (function)
     """
     if isinstance(initial_value, str):
