@@ -1,26 +1,24 @@
 import argparse
 import os
-import warnings
-import sys
 import importlib
 
-# For pybullet envs
-warnings.filterwarnings("ignore")
 import gym
+
 try:
     import pybullet_envs
 except ImportError:
     pybullet_envs = None
 import numpy as np
+
 try:
     import highway_env
 except ImportError:
     highway_env = None
-import torchy_baselines
 from torchy_baselines.common.utils import set_random_seed
-from torchy_baselines.common.vec_env import VecNormalize, VecFrameStack, VecEnv
+from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv
 
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -46,7 +44,8 @@ def main():
                         help='Normalize reward if applicable (trained with VecNormalize)')
     parser.add_argument('--seed', help='Random generator seed', type=int, default=0)
     parser.add_argument('--reward-log', help='Where to log reward', default='', type=str)
-    parser.add_argument('--gym-packages', type=str, nargs='+', default=[], help='Additional external Gym environemnt package modules to import (e.g. gym_minigrid)')
+    parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
+                        help='Additional external Gym environemnt package modules to import (e.g. gym_minigrid)')
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -66,7 +65,6 @@ def main():
         log_path = os.path.join(folder, algo, '{}_{}'.format(env_id, args.exp_id))
     else:
         log_path = os.path.join(folder, algo)
-
 
     assert os.path.isdir(log_path), "The {} folder was not found".format(log_path)
 
@@ -166,7 +164,7 @@ def main():
         if args.n_envs == 1 and 'Bullet' not in env_id and not is_atari and isinstance(env, VecEnv):
             # DummyVecEnv
             # Unwrap env
-            while isinstance(env, VecNormalize) or isinstance(env, VecFrameStack):
+            while isinstance(env, VecEnvWrapper):
                 env = env.venv
             env.envs[0].env.close()
         else:

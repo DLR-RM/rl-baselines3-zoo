@@ -38,26 +38,52 @@ def flatten_dict_observations(env):
 
 def get_wrapper_class(hyperparams):
     """
-    Get a Gym environment wrapper class specified as a hyper parameter
+    Get one or more Gym environment wrapper class specified as a hyper parameter
     "env_wrapper".
     e.g.
     env_wrapper: gym_minigrid.wrappers.FlatObsWrapper
+
+    for multiple, specify a list:
+
+    env_wrapper:
+        - utils.wrappers.PlotActionWrapper
+        - utils.wrappers.TimeFeatureWrapper
+
 
     :param hyperparams: (dict)
     :return: a subclass of gym.Wrapper (class object) you can use to
              create another Gym env giving an original env.
     """
 
-    def get_module_name(fullname):
+    def get_module_name(wrapper_name):
         return '.'.join(wrapper_name.split('.')[:-1])
 
-    def get_class_name(fullname):
+    def get_class_name(wrapper_name):
         return wrapper_name.split('.')[-1]
 
     if 'env_wrapper' in hyperparams.keys():
         wrapper_name = hyperparams.get('env_wrapper')
-        wrapper_module = importlib.import_module(get_module_name(wrapper_name))
-        return getattr(wrapper_module, get_class_name(wrapper_name))
+        if not isinstance(wrapper_name, list):
+            wrapper_names = [wrapper_name]
+        else:
+            wrapper_names = wrapper_name
+
+        wrapper_classes = []
+        # Handle multiple wrappers
+        for wrapper_name in wrapper_names:
+            wrapper_module = importlib.import_module(get_module_name(wrapper_name))
+            wrapper_class = getattr(wrapper_module, get_class_name(wrapper_name))
+            wrapper_classes.append(wrapper_class)
+
+        def wrap_env(env):
+            """
+            :param env: (gym.Env)
+            :return: (gym.Env)
+            """
+            for wrapper_class in wrapper_classes:
+                env = wrapper_class(env)
+            return env
+        return wrap_env
     else:
         return None
 
@@ -71,7 +97,7 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
     :param rank: (int)
     :param seed: (int)
     :param log_dir: (str)
-    :param wrapper: (type) a subclass of gym.Wrapper to wrap the original
+    :param wrapper_class: (Type[gym.Wrapper]) a subclass of gym.Wrapper to wrap the original
                     env with
     """
     if log_dir is None and log_dir != '':
@@ -89,7 +115,7 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
             env = wrapper_class(env)
 
         env.seed(seed + rank)
-        env = Monitor(env, os.path.join(log_dir, str(rank)), allow_early_resets=True)
+        env = Monitor(env, os.path.join(log_dir, str(rank)))
         return env
 
     return _init
@@ -108,8 +134,6 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
     :param seed: (int) Seed for random number generator
     :param log_dir: (str) Where to log rewards
     :param should_render: (bool) For Pybullet env, display the GUI
-    :param env_wrapper: (type) A subclass of gym.Wrapper to wrap the original
-                        env with
     :param hyperparams: (dict) Additional hyperparams (ex: n_stack)
     :return: (gym.Env)
     """
@@ -158,7 +182,7 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
             env = class_(**{**spec._kwargs}, **{render_name: should_render})
             env.seed(0)
             if log_dir is not None:
-                env = Monitor(env, os.path.join(log_dir, "0"), allow_early_resets=True)
+                env = Monitor(env, os.path.join(log_dir, "0"))
             return env
 
         if use_subproc:
@@ -201,6 +225,30 @@ def linear_schedule(initial_value):
         :return: (float)
         """
         return progress * initial_value
+
+    return func
+
+
+def linear_schedule_std(initial_value, final_value=-5.5):
+    """
+    Linear learning rate schedule for log std.
+    It will decrease linearly from initial_value to final_value
+    (by default exp(-5.5) = 0.004 will be the final value of the std)
+
+    :param initial_value: (float or str)
+    :param final_value: (float)
+    :return: (function)
+    """
+    if isinstance(initial_value, str):
+        initial_value = float(initial_value)
+
+    def func(progress):
+        """
+        Progress will decrease from 1 (beginning) to 0
+        :param progress: (float)
+        :return: (float)
+        """
+        return progress * initial_value + (1 - progress) * final_value
 
     return func
 
@@ -254,7 +302,7 @@ def get_saved_hyperparams(stats_path, norm_reward=False, test_mode=False):
         if os.path.isfile(config_file):
             # Load saved hyperparameters
             with open(os.path.join(stats_path, 'config.yml'), 'r') as f:
-                hyperparams = yaml.safe_load(f)
+                hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)
             hyperparams['normalize'] = hyperparams.get('normalize', False)
         else:
             obs_rms_path = os.path.join(stats_path, 'obs_rms.pkl')

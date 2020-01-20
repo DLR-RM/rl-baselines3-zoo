@@ -32,98 +32,199 @@ Acrobot-v1:
   policy: 'MlpPolicy'
   ent_coef: .0
 
+# Almost tuned
 Pendulum-v0:
+  normalize: True
   n_envs: 8
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  ent_coef: 0.0
-  gamma: 0.95
-
-LunarLanderContinuous-v2:
-  normalize: true
-  n_envs: 16
-  n_timesteps: !!float 5e6
-  policy: 'MlpPolicy'
-  gamma: 0.999
-  ent_coef: 0.001
-  learning_rate: lin_7e-4
-
-MountainCarContinuous-v0:
-  normalize: true
-  n_envs: 16
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_7e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
+# Tuned
+LunarLanderContinuous-v2:
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_7e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
+MountainCarContinuous-v0:
+  # env_wrapper: utils.wrappers.PlotActionWrapper
+  normalize: true
+  n_envs: 4
+  n_steps: 100
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  use_sde: True
+  sde_sample_freq: 16
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=False)"
+
+# Tuned
 BipedalWalker-v2:
   normalize: true
   n_envs: 16
   n_timesteps: !!float 5e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
-  learning_rate: lin_7e-4
-
-HalfCheetahBulletEnv-v0:
-  normalize: true
-  n_envs: 4
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  ent_coef: 0.0
-  n_steps: 32
-  vf_coef: 0.5
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
+# Tuned
 BipedalWalkerHardcore-v2:
   normalize: true
-  n_envs: 16
-  n_timesteps: !!float 10e7
+  n_envs: 32
+  n_timesteps: !!float 20e7
   policy: 'MlpPolicy'
-  frame_stack: 4
   ent_coef: 0.001
-  learning_rate: lin_7e-4
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.0008
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
-Walker2DBulletEnv-v0:
+# Tuned
+HalfCheetahBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
-  n_steps: 32
-  vf_coef: 0.5
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  # Both works
+  # learning_rate: lin_0.00096
+  learning_rate: !!float 3e-4
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False, full_std=True)"
 
+Walker2DBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 4
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
+  gamma: 0.99
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# normalize: true
+# n_envs: 4
+# n_timesteps: !!float 2e6
+# policy: 'MlpPolicy'
+# ent_coef: 0.0
+# max_grad_norm: 0.5
+# n_steps: 32
+# gae_lambda: 0.9
+# vf_coef: 0.4
+# gamma: 0.99
+# use_rms_prop: True
+# normalize_advantage: False
+# learning_rate: 0.0002
+# use_sde: True
+# policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+
+# Tuned
 AntBulletEnv-v0:
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
-  n_steps: 32
-  vf_coef: 0.5
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.0008
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
+# Tuned
 HopperBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   ent_coef: 0.0
-  n_steps: 32
-  vf_coef: 0.5
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.00096
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False, net_arch=[dict(pi=[64, 64], vf=[64, 64])])"
 
-# Not working yet
+# Tuned but unstable
+# Not working without SDE?
 ReacherBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
-  n_envs: 8
-  n_timesteps: !!float 1e6
+  n_envs: 4
+  n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
-  ent_coef: 0.001
-  n_steps: 32
-  vf_coef: 0.5
+  ent_coef: 0.0
+  max_grad_norm: 0.5
+  n_steps: 8
+  gae_lambda: 0.9
+  vf_coef: 0.4
   gamma: 0.99
-  learning_rate: lin_0.002
+  use_rms_prop: True
+  normalize_advantage: False
+  learning_rate: lin_0.0008
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
