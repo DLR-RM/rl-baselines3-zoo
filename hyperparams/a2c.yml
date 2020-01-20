@@ -99,12 +99,12 @@ BipedalWalker-v2:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
+# Tuned
 BipedalWalkerHardcore-v2:
   normalize: true
-  n_envs: 16
-  n_timesteps: !!float 10e7
+  n_envs: 32
+  n_timesteps: !!float 20e7
   policy: 'MlpPolicy'
-  # frame_stack: 4
   ent_coef: 0.001
   max_grad_norm: 0.5
   n_steps: 8
@@ -113,8 +113,7 @@ BipedalWalkerHardcore-v2:
   gamma: 0.99
   use_rms_prop: True
   normalize_advantage: False
-  # learning_rate: lin_0.0006
-  learning_rate: !!float 7e-4
+  learning_rate: lin_0.0008
   use_sde: True
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
