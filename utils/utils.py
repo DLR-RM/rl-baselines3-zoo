@@ -69,19 +69,29 @@ def get_wrapper_class(hyperparams):
             wrapper_names = wrapper_name
 
         wrapper_classes = []
+        wrapper_kwargs = []
         # Handle multiple wrappers
         for wrapper_name in wrapper_names:
+            # Handle keyword arguments
+            if isinstance(wrapper_name, dict):
+                assert len(wrapper_name) == 1
+                wrapper_dict = wrapper_name
+                wrapper_name = list(wrapper_dict.keys())[0]
+                kwargs = wrapper_dict[wrapper_name]
+            else:
+                kwargs = {}
             wrapper_module = importlib.import_module(get_module_name(wrapper_name))
             wrapper_class = getattr(wrapper_module, get_class_name(wrapper_name))
             wrapper_classes.append(wrapper_class)
+            wrapper_kwargs.append(kwargs)
 
         def wrap_env(env):
             """
             :param env: (gym.Env)
             :return: (gym.Env)
             """
-            for wrapper_class in wrapper_classes:
-                env = wrapper_class(env)
+            for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs):
+                env = wrapper_class(env, **kwargs)
             return env
         return wrap_env
     else:
