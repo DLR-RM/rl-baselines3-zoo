@@ -15,6 +15,11 @@ MountainCarContinuous-v0:
   policy_kwargs: "dict(log_std_init=-1, net_arch=[64, 64])"
 
 Pendulum-v0:
+  # env_wrapper:
+  #   - utils.wrappers.DelayedRewardWrapper:
+  #       delay: 5
+  #   - utils.wrappers.HistoryWrapper:
+  #       horizon: 5
   n_timesteps: 20000
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-3
