@@ -58,16 +58,22 @@ BipedalWalkerHardcore-v2:
   buffer_size: 1000000
   batch_size: 256
   ent_coef: 'auto'
-  train_freq: 64
-  gradient_steps: 64
   gamma: 0.99
   tau: 0.01
+  train_freq: 64
+  gradient_steps: 64
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300], use_expln=True)"
 
 # Tuned
 HalfCheetahBulletEnv-v0:
+  # env_wrapper:
+  #   - utils.wrappers.TimeFeatureWrapper
+  #   - utils.wrappers.DelayedRewardWrapper:
+  #       delay: 10
+  #   - utils.wrappers.HistoryWrapper:
+  #       horizon: 10
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'

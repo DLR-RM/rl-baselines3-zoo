@@ -6,3 +6,4 @@ logs/
 .idea/
 cluster_sbatch.sh
 cluster_sbatch_mpi.sh
+logs
