@@ -22,12 +22,18 @@ try:
 except ImportError:
     highway_env = None
 
+try:
+    import neck_rl
+except ImportError:
+    raise
+
 
 from torchy_baselines.common.utils import set_random_seed
 # from torchy_baselines.common.cmd_util import make_atari_env
 from torchy_baselines.common.vec_env import VecFrameStack, SubprocVecEnv, VecNormalize, DummyVecEnv
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torchy_baselines.common.utils import constant_fn
+from torchy_baselines.common.callbacks import CheckpointCallback, EvalCallback
 
 from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
@@ -47,6 +53,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--eval-freq', help='Evaluate the agent every n steps (if negative, no evaluation)',
                         default=10000, type=int)
+    parser.add_argument('--save-freq', help='Save the model every n steps (if negative, no checkpoint)',
+                        default=-1, type=int)
     parser.add_argument('-f', '--log-folder', help='Log folder', type=str, default='logs')
     parser.add_argument('--seed', help='Random generator seed', type=int, default=-1)
     parser.add_argument('--n-trials', help='Number of trials for optimizing hyperparameters', type=int, default=10)
@@ -179,6 +187,16 @@ if __name__ == '__main__':
         if 'env_wrapper' in hyperparams.keys():
             del hyperparams['env_wrapper']
 
+        log_path = "{}/{}/".format(args.log_folder, args.algo)
+        save_path = os.path.join(log_path, "{}_{}".format(env_id, get_latest_run_id(log_path, env_id) + 1))
+        params_path = "{}/{}".format(save_path, env_id)
+        os.makedirs(params_path, exist_ok=True)
+
+        callbacks = []
+        if args.save_freq > 0:
+            callbacks.append(CheckpointCallback(save_freq=args.save_freq,
+                                                save_path=save_path, name_prefix='rl_model', verbose=1))
+
 
         def create_env(n_envs):
             """
@@ -203,11 +221,11 @@ if __name__ == '__main__':
                     env = env_wrapper(env)
             else:
                 if n_envs == 1:
-                    env = DummyVecEnv([make_env(env_id, 0, args.seed, wrapper_class=env_wrapper)])
+                    env = DummyVecEnv([make_env(env_id, 0, args.seed, wrapper_class=env_wrapper, log_dir=save_path)])
                 else:
                     # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
                     # On most env, SubprocVecEnv does not help and is quite memory hungry
-                    env = DummyVecEnv([make_env(env_id, i, args.seed,
+                    env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=save_path,
                                                 wrapper_class=env_wrapper) for i in range(n_envs)])
                 if normalize:
                     if args.verbose > 0:
@@ -228,21 +246,30 @@ if __name__ == '__main__':
         # Create test env if needed, do not normalize reward
         eval_env = None
         if args.eval_freq > 0:
-            old_kwargs = None
-            if normalize:
-                if len(normalize_kwargs) > 0:
-                    old_kwargs = normalize_kwargs.copy()
-                    normalize_kwargs['norm_reward'] = False
-                else:
-                    normalize_kwargs = {'norm_reward': False}
+            if 'NeckEnv' in env_id:
+                # Use the training env as eval env when using the neck
+                # because there is only one robot
+                # there will be an issue with the reset
+                eval_callback = EvalCallback(env, callback_on_new_best=None,
+                                             best_model_save_path=save_path,
+                                             log_path=os.path.join(save_path, "evaluations"), eval_freq=args.eval_freq)
+                callbacks.append(eval_callback)
+            else:
+                old_kwargs = None
+                if normalize:
+                    if len(normalize_kwargs) > 0:
+                        old_kwargs = normalize_kwargs.copy()
+                        normalize_kwargs['norm_reward'] = False
+                    else:
+                        normalize_kwargs = {'norm_reward': False}
 
-            if args.verbose > 0:
-                print("Creating test environment")
-            eval_env = create_env(1)
+                if args.verbose > 0:
+                    print("Creating test environment")
+                eval_env = create_env(1)
 
-            # Restore original kwargs
-            if old_kwargs is not None:
-                normalize_kwargs = old_kwargs.copy()
+                # Restore original kwargs
+                if old_kwargs is not None:
+                    normalize_kwargs = old_kwargs.copy()
 
         # TODO: check for hyperparameters optimization
         # TODO: check What happens with the eval env when using frame stack
@@ -333,20 +360,24 @@ if __name__ == '__main__':
         if args.log_interval > -1:
             kwargs = {'log_interval': args.log_interval}
 
-        model.learn(n_timesteps, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
+        if len(callbacks) > 0:
+            kwargs['callback'] = callbacks
 
-        # Save trained model
-        log_path = "{}/{}/".format(args.log_folder, args.algo)
-        save_path = os.path.join(log_path, "{}_{}".format(env_id, get_latest_run_id(log_path, env_id) + 1))
-        params_path = "{}/{}".format(save_path, env_id)
-        os.makedirs(params_path, exist_ok=True)
-
-        print("Saving to {}".format(save_path))
-
-        model.save("{}/{}".format(save_path, env_id))
         # Save hyperparams
         with open(os.path.join(params_path, 'config.yml'), 'w') as f:
             yaml.dump(saved_hyperparams, f)
+
+        print("Log path: {}".format(save_path))
+
+        try:
+            model.learn(n_timesteps, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
+        except KeyboardInterrupt:
+            pass
+
+        # Save trained model
+
+        print("Saving to {}".format(save_path))
+        model.save("{}/{}".format(save_path, env_id))
 
         if normalize:
             # Unwrap

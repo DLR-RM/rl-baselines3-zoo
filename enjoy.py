@@ -3,17 +3,22 @@ import os
 import importlib
 
 import gym
-
+import numpy as np
 try:
     import pybullet_envs
 except ImportError:
     pybullet_envs = None
-import numpy as np
 
 try:
     import highway_env
 except ImportError:
     highway_env = None
+
+try:
+    import neck_rl
+except ImportError:
+    raise
+
 from torchy_baselines.common.utils import set_random_seed
 from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv
 
