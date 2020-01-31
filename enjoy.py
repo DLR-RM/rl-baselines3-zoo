@@ -17,7 +17,7 @@ except ImportError:
 try:
     import neck_rl
 except ImportError:
-    raise
+    neck_rl = None
 
 from torchy_baselines.common.utils import set_random_seed
 from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv

@@ -25,7 +25,7 @@ except ImportError:
 try:
     import neck_rl
 except ImportError:
-    raise
+    neck_rl = None
 
 
 from torchy_baselines.common.utils import set_random_seed
@@ -315,6 +315,8 @@ if __name__ == '__main__':
             model = ALGOS[args.algo].load(args.trained_agent, env=env, seed=args.seed,
                                           tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams)
 
+            # Reset num timesteps
+            model.num_timesteps = 0
             exp_folder = args.trained_agent.split('.zip')[0]
             if normalize:
                 print("Loading saved running average")
