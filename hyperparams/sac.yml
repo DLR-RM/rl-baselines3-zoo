@@ -18,7 +18,9 @@ NeckEnv-v0:
   n_episodes_rollout: 1
   gradient_steps: -1
   train_freq: -1
-  learning_starts: 0
+  # 20 episodes of warm-up
+  learning_starts: 1000
+  use_sde_at_warmup: True
   use_sde: True
   # policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
   policy_kwargs: "dict(log_std_init=-3.3, net_arch=[64, 64])"
@@ -43,11 +45,13 @@ NeckEnvRelative-v0:
   # gradient_steps: 64
   n_episodes_rollout: 1
   gradient_steps: -1
-  learning_starts: 0
+  # 40 episodes of warm-up
+  learning_starts: 2000
+  use_sde_at_warmup: True
   use_sde: True
-  # sde_sample_freq: 64
-  # policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
-  policy_kwargs: "dict(log_std_init=-3.3, net_arch=[64, 64])"
+  # sde_sample_freq: 25
+  policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
+  # policy_kwargs: "dict(log_std_init=-3.3, net_arch=[64, 64])"
 
 # Tuned
 MountainCarContinuous-v0:
