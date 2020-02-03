@@ -252,7 +252,7 @@ if __name__ == '__main__':
                 # there will be an issue with the reset
                 eval_callback = EvalCallback(env, callback_on_new_best=None,
                                              best_model_save_path=save_path,
-                                             log_path=os.path.join(save_path, "evaluations"), eval_freq=args.eval_freq)
+                                             log_path=save_path, eval_freq=args.eval_freq)
                 callbacks.append(eval_callback)
             else:
                 old_kwargs = None
