@@ -111,7 +111,7 @@ def main():
     deterministic = args.deterministic or algo in ['dqn', 'ddpg', 'sac', 'her', 'td3'] and not args.stochastic
 
     episode_reward = 0.0
-    episode_rewards = []
+    episode_rewards, episode_lengths = [], []
     ep_len = 0
     # For HER, monitor success rate
     successes = []
@@ -144,17 +144,18 @@ def main():
                 print("Episode Reward: {:.2f}".format(episode_reward))
                 print("Episode Length", ep_len)
                 episode_rewards.append(episode_reward)
+                episode_lengths.append(ep_len)
                 episode_reward = 0.0
                 ep_len = 0
 
             # Reset also when the goal is achieved when using HER
-            if done or infos[0].get('is_success', False):
-                if args.algo == 'her' and args.verbose > 1:
+            if done and infos[0].get('is_success') is not None:
+                if args.verbose > 1:
                     print("Success?", infos[0].get('is_success', False))
                 # Alternatively, you can add a check to wait for the end of the episode
-                # if done:
-                obs = env.reset()
-                if args.algo == 'her':
+                if done:
+                    obs = env.reset()
+                if infos[0].get('is_success') is not None:
                     successes.append(infos[0].get('is_success', False))
                     episode_reward, ep_len = 0.0, 0
 
@@ -162,7 +163,11 @@ def main():
         print("Success rate: {:.2f}%".format(100 * np.mean(successes)))
 
     if args.verbose > 0 and len(episode_rewards) > 0:
-        print("Mean reward: {:.2f}".format(np.mean(episode_rewards)))
+        print("Mean reward: {:.2f} +/- {:.2f}".format(np.mean(episode_rewards), np.std(episode_rewards)))
+
+    if args.verbose > 0 and len(episode_lengths) > 0:
+        print("Mean episode length: {:.2f} +/- {:.2f}".format(np.mean(episode_lengths), np.std(episode_lengths)))
+
 
     # Workaround for https://github.com/openai/gym/issues/893
     if not args.no_render:
