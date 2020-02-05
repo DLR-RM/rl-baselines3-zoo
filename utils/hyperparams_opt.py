@@ -35,6 +35,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     if hyperparams is None:
         hyperparams = {}
 
+    n_startup_trials = 10
     # test during 5 episodes
     n_test_episodes = 5
     # evaluate every 20th of the maximum budget per iteration
@@ -45,7 +46,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     if sampler_method == 'random':
         sampler = RandomSampler(seed=seed)
     elif sampler_method == 'tpe':
-        sampler = TPESampler(n_startup_trials=5, seed=seed)
+        sampler = TPESampler(n_startup_trials=n_startup_trials, seed=seed)
     elif sampler_method == 'skopt':
         # cf https://scikit-optimize.github.io/#skopt.Optimizer
         # GP: gaussian process
@@ -57,7 +58,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     if pruner_method == 'halving':
         pruner = SuccessiveHalvingPruner(min_resource=1, reduction_factor=4, min_early_stopping_rate=0)
     elif pruner_method == 'median':
-        pruner = MedianPruner(n_startup_trials=5, n_warmup_steps=n_evaluations // 3)
+        pruner = MedianPruner(n_startup_trials=n_startup_trials, n_warmup_steps=n_evaluations // 3)
     elif pruner_method == 'none':
         # Do not prune
         pruner = MedianPruner(n_startup_trials=n_trials, n_warmup_steps=n_evaluations)
