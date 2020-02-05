@@ -55,6 +55,8 @@ if __name__ == '__main__':
                         default=10000, type=int)
     parser.add_argument('--save-freq', help='Save the model every n steps (if negative, no checkpoint)',
                         default=-1, type=int)
+    parser.add_argument('--save-replay-buffer', help='Save the replay buffer too (when applicable)',
+                        action='store_true', default=False)
     parser.add_argument('-f', '--log-folder', help='Log folder', type=str, default='logs')
     parser.add_argument('--seed', help='Random generator seed', type=int, default=-1)
     parser.add_argument('--n-trials', help='Number of trials for optimizing hyperparameters', type=int, default=10)
@@ -320,6 +322,11 @@ if __name__ == '__main__':
                 print("Loading saved running average")
                 env.load_running_average(exp_folder)
 
+            replay_buffer_path = os.path.join(os.path.dirname(args.trained_agent), 'replay_buffer.pkl')
+            if os.path.exists(replay_buffer_path):
+                print("Loading replay buffer")
+                model.load_replay_buffer(replay_buffer_path)
+
         elif args.optimize_hyperparameters:
 
             if args.verbose > 0:
@@ -378,6 +385,10 @@ if __name__ == '__main__':
 
         print("Saving to {}".format(save_path))
         model.save("{}/{}".format(save_path, env_id))
+
+        if hasattr(model, 'save_replay_buffer') and args.save_replay_buffer:
+            print("Saving replay buffer")
+            model.save_replay_buffer(save_path)
 
         if normalize:
             # Unwrap
