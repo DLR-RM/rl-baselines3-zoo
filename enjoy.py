@@ -48,6 +48,8 @@ def main():
                         help='Do not render the environment (useful for tests)')
     parser.add_argument('--deterministic', action='store_true', default=False,
                         help='Use deterministic actions')
+    parser.add_argument('--load-best', action='store_true', default=False,
+                        help='Load best model instead of last model if available')
     parser.add_argument('--stochastic', action='store_true', default=False,
                         help='Use stochastic actions (for DDPG/DQN/SAC)')
     parser.add_argument('--norm-reward', action='store_true', default=False,
@@ -84,6 +86,10 @@ def main():
         found = os.path.isfile(model_path)
         if found:
             break
+
+    if args.load_best:
+        model_path = os.path.join(log_path, "best_model.zip")
+        found = os.path.isfile(model_path)
 
     if not found:
         raise ValueError("No model found for {} on {}, path: {}".format(algo, env_id, model_path))
