@@ -176,7 +176,8 @@ def main():
 
     # Workaround for https://github.com/openai/gym/issues/893
     if not args.no_render:
-        if args.n_envs == 1 and 'Bullet' not in env_id and not is_atari and isinstance(env, VecEnv):
+        if (args.n_envs == 1 and 'Bullet' not in env_id
+            and 'Faster' not in env_id and not is_atari and isinstance(env, VecEnv)):
             # DummyVecEnv
             # Unwrap env
             while isinstance(env, VecEnvWrapper):

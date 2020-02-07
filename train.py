@@ -382,7 +382,7 @@ if __name__ == '__main__':
         print("Log path: {}".format(save_path))
 
         try:
-            model.learn(n_timesteps, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
+            model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
         except KeyboardInterrupt:
             pass
 
