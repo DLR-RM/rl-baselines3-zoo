@@ -10,6 +10,11 @@ except ImportError:
     pybullet_envs = None
 
 try:
+    import bullet_envs
+except ImportError:
+    bullet_envs = None
+
+try:
     import highway_env
 except ImportError:
     highway_env = None

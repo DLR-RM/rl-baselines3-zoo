@@ -163,6 +163,22 @@ HalfCheetahBulletEnv-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3.3, net_arch=[400, 300])"
 
+HalfCheetahFaster-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2, net_arch=[400, 300])"
+
 # Tuned
 AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
