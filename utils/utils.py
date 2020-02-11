@@ -168,7 +168,7 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
         # start_method = 'spawn' for thread safe
         env = SubprocVecEnv([make_env(env_id, i, seed, log_dir, wrapper_class=env_wrapper) for i in range(n_envs)])
     # Pybullet envs does not follow gym.render() interface
-    elif "Bullet" in env_id or "Faster" in env_id:
+    elif "Bullet" in env_id:
         spec = gym.envs.registry.env_specs[env_id]
         try:
             class_ = load(spec.entry_point)

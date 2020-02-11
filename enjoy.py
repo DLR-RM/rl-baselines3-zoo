@@ -10,11 +10,6 @@ except ImportError:
     pybullet_envs = None
 
 try:
-    import bullet_envs
-except ImportError:
-    bullet_envs = None
-
-try:
     import highway_env
 except ImportError:
     highway_env = None
@@ -25,7 +20,7 @@ except ImportError:
     neck_rl = None
 
 from torchy_baselines.common.utils import set_random_seed
-from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv
+from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
 
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
@@ -183,12 +178,15 @@ def main():
     # Workaround for https://github.com/openai/gym/issues/893
     if not args.no_render:
         if (args.n_envs == 1 and 'Bullet' not in env_id
-            and 'Faster' not in env_id and not is_atari and isinstance(env, VecEnv)):
+            and not is_atari and isinstance(env, VecEnv)):
             # DummyVecEnv
             # Unwrap env
             while isinstance(env, VecEnvWrapper):
                 env = env.venv
-            env.envs[0].env.close()
+            if isinstance(env, DummyVecEnv):
+                env.envs[0].env.close()
+            else:
+                env.close()
         else:
             # SubprocVecEnv
             env.close()
