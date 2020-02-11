@@ -200,13 +200,17 @@ if __name__ == '__main__':
                                                 save_path=save_path, name_prefix='rl_model', verbose=1))
 
 
-        def create_env(n_envs):
+        def create_env(n_envs, eval_env=False):
             """
             Create the environment and wrap it if necessary
             :param n_envs: (int)
-            :return: (gym.Env)
+            :param eval_env: (bool) Whether is it an environment used for evaluation or not
+            :return: (Union[gym.Env, VecEnv])
             """
             global hyperparams
+
+            # Do not log eval env (issue with writing the same file)
+            log_dir = None if eval_env else save_path
 
             if is_atari:
                 if args.verbose > 0:
@@ -214,20 +218,13 @@ if __name__ == '__main__':
                 env = make_atari_env(env_id, num_env=n_envs, seed=args.seed)
                 # Frame-stacking with 4 frames
                 env = VecFrameStack(env, n_stack=4)
-            elif algo_ in ['dqn', 'ddpg']:
-                if hyperparams.get('normalize', False):
-                    print("WARNING: normalization not supported yet for DDPG/DQN")
-                env = gym.make(env_id)
-                env.seed(args.seed)
-                if env_wrapper is not None:
-                    env = env_wrapper(env)
             else:
                 if n_envs == 1:
-                    env = DummyVecEnv([make_env(env_id, 0, args.seed, wrapper_class=env_wrapper, log_dir=save_path)])
+                    env = DummyVecEnv([make_env(env_id, 0, args.seed, wrapper_class=env_wrapper, log_dir=log_dir)])
                 else:
                     # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
                     # On most env, SubprocVecEnv does not help and is quite memory hungry
-                    env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=save_path,
+                    env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir,
                                                 wrapper_class=env_wrapper) for i in range(n_envs)])
                 if normalize:
                     if args.verbose > 0:
@@ -267,7 +264,7 @@ if __name__ == '__main__':
 
                 if args.verbose > 0:
                     print("Creating test environment")
-                eval_env = create_env(1)
+                eval_env = create_env(1, eval_env=True)
 
                 # Restore original kwargs
                 if old_kwargs is not None:
@@ -337,7 +334,7 @@ if __name__ == '__main__':
                 """
                 Helper to create a model with different hyperparameters
                 """
-                return ALGOS[args.algo](env=create_env(n_envs), tensorboard_log=tensorboard_log,
+                return ALGOS[args.algo](env=create_env(n_envs, eval_env=True), tensorboard_log=tensorboard_log,
                                         verbose=0, **kwargs)
 
 

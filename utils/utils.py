@@ -110,9 +110,8 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
     :param wrapper_class: (Type[gym.Wrapper]) a subclass of gym.Wrapper to wrap the original
                     env with
     """
-    if log_dir is None and log_dir != '':
-        log_dir = "/tmp/gym/{}/".format(int(time.time()))
-    os.makedirs(log_dir, exist_ok=True)
+    if log_dir is not None:
+        os.makedirs(log_dir, exist_ok=True)
 
     def _init():
         set_random_seed(seed + rank)
@@ -125,7 +124,8 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
             env = wrapper_class(env)
 
         env.seed(seed + rank)
-        env = Monitor(env, os.path.join(log_dir, str(rank)))
+        log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
+        env = Monitor(env, log_file)
         return env
 
     return _init

@@ -8,9 +8,39 @@ from optuna.samplers import RandomSampler, TPESampler
 from optuna.integration.skopt import SkoptSampler
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torchy_baselines.common.vec_env import VecNormalize
+from torchy_baselines.common.callbacks import EvalCallback
 # from torchy_baselines.her import HERGoalEnvWrapper
 
 from utils import linear_schedule
+
+
+class TrialEvalCallback(EvalCallback):
+    """
+    Callback used for evaluating and reporting a trial.
+    """
+    def __init__(self, eval_env, trial, n_eval_episodes=5,
+                 eval_freq=10000, deterministic=True, verbose=0):
+
+        super(TrialEvalCallback, self).__init__(eval_env=eval_env, n_eval_episodes=n_eval_episodes,
+                                                eval_freq=eval_freq,
+                                                deterministic=deterministic,
+                                                verbose=verbose)
+        self.trial = trial
+        self.eval_idx = 0
+        self.is_pruned = False
+
+    def _on_step(self):
+        if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
+            super(TrialEvalCallback, self)._on_step()
+            self.eval_idx += 1
+            # report best or report current ?
+            # report num_timesteps or elasped time ?
+            self.trial.report(-1 * self.last_mean_reward, self.eval_idx)
+            # Prune trial if need
+            if self.trial.should_prune(self.eval_idx):
+                self.is_pruned = True
+                return False
+        return True
 
 
 def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,
@@ -31,16 +61,15 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     :return: (pd.Dataframe) detailed result of the optimization
     """
     # TODO: eval each hyperparams several times to account for noisy evaluation
-    # TODO: take into account the normalization (also for the test env -> sync obs_rms)
     if hyperparams is None:
         hyperparams = {}
 
     n_startup_trials = 10
-    # test during 5 episodes
-    n_test_episodes = 5
-    # evaluate every 20th of the maximum budget per iteration
+    # Evaluate the model during 5 episodes
+    n_eval_episodes = 5
+    # Evaluate every 20th of the maximum budget per iteration
     n_evaluations = 20
-    evaluate_interval = int(n_timesteps / n_evaluations)
+    eval_freq = int(n_timesteps / n_evaluations)
 
     # n_warmup_steps: Disable pruner until the trial reaches the given number of step.
     if sampler_method == 'random':
@@ -84,94 +113,35 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
             trial.n_actions = env_fn(n_envs=1).action_space.shape[0]
         kwargs.update(algo_sampler(trial))
 
-        def callback(_locals, _globals):
-            """
-            Callback for monitoring learning progress.
-
-            :param _locals: (dict)
-            :param _globals: (dict)
-            :return: (bool) If False: stop training
-            """
-            self_ = _locals['self']
-            trial = self_.trial
-
-            # Initialize variables
-            if not hasattr(self_, 'is_pruned'):
-                self_.is_pruned = False
-                self_.last_mean_test_reward = -np.inf
-                self_.last_time_evaluated = 0
-                self_.eval_idx = 0
-
-            if (self_.num_timesteps - self_.last_time_evaluated) < evaluate_interval:
-                return True
-
-            self_.last_time_evaluated = self_.num_timesteps
-
-            # Evaluate the trained agent on the test env
-            rewards = []
-            n_episodes, reward_sum = 0, 0.0
-
-            # Sync the obs rms if using vecnormalize
-            # NOTE: this does not cover all the possible cases
-            if isinstance(self_.test_env, VecNormalize):
-                self_.test_env.obs_rms = deepcopy(self_.env.obs_rms)
-                # Do not normalize reward
-                self_.test_env.norm_reward = False
-
-            obs = self_.test_env.reset()
-            while n_episodes < n_test_episodes:
-                # Use default value for deterministic
-                action = self_.predict(obs)
-                obs, reward, done, _ = self_.test_env.step(action)
-                reward_sum += reward
-
-                if done:
-                    rewards.append(reward_sum)
-                    reward_sum = 0.0
-                    n_episodes += 1
-                    obs = self_.test_env.reset()
-
-            mean_reward = np.mean(rewards)
-            self_.last_mean_test_reward = mean_reward
-            self_.eval_idx += 1
-
-            # report best or report current ?
-            # report num_timesteps or elasped time ?
-            trial.report(-1 * mean_reward, self_.eval_idx)
-            # Prune trial if need
-            if trial.should_prune(self_.eval_idx):
-                self_.is_pruned = True
-                return False
-
-            return True
+        eval_env = env_fn(n_envs=1, eval_env=True)
+        # TODO: use non-deterministic eval for Atari?
+        eval_callback = TrialEvalCallback(eval_env, trial, n_eval_episodes=n_eval_episodes,
+                                          eval_freq=eval_freq, deterministic=True)
 
         model = model_fn(**kwargs)
-        model.test_env = env_fn(n_envs=1)
         model.trial = trial
 
         try:
-            model.learn(n_timesteps, callback=callback)
+            model.learn(n_timesteps, callback=eval_callback)
             # Free memory
             model.env.close()
-            model.test_env.close()
+            eval_env.close()
         except AssertionError as e:
             # Sometimes, random hyperparams can generate NaN
             # Free memory
             model.env.close()
-            model.test_env.close()
+            eval_env.close()
             # Prune hyperparams that generate NaNs
             print(e)
-            raise optuna.structs.TrialPruned()
-        is_pruned = False
-        cost = np.inf
-        if hasattr(model, 'is_pruned'):
-            is_pruned = model.is_pruned
-            cost = -1 * model.last_mean_test_reward
-        del model.env, model.test_env
+            raise optuna.exceptions.TrialPruned()
+        is_pruned = eval_callback.is_pruned
+        cost = -1 * eval_callback.last_mean_reward
+
+        del model.env, eval_env
         del model
 
         if is_pruned:
-            raise optuna.structs.TrialPruned()
+            raise optuna.exceptions.TrialPruned()
 
         return cost
 
