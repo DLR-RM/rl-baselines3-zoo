@@ -209,7 +209,15 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
             print("Loading running average")
             print("with params: {}".format(hyperparams['normalize_kwargs']))
             env = VecNormalize(env, training=False, **hyperparams['normalize_kwargs'])
-            env.load_running_average(stats_path)
+
+            if os.path.exists(os.path.join(stats_path, 'vecnormalize.pkl')):
+                env = VecNormalize.load(os.path.join(stats_path, 'vecnormalize.pkl'), env)
+                # Deactivate training and reward normalization
+                env.training = False
+                env.norm_reward = False
+            else:
+                # Legacy:
+                env.load_running_average(stats_path)
 
         n_stack = hyperparams.get('frame_stack', 0)
         if n_stack > 0:

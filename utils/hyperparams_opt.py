@@ -8,39 +8,10 @@ from optuna.samplers import RandomSampler, TPESampler
 from optuna.integration.skopt import SkoptSampler
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torchy_baselines.common.vec_env import VecNormalize
-from torchy_baselines.common.callbacks import EvalCallback
 # from torchy_baselines.her import HERGoalEnvWrapper
 
+from .callbacks import TrialEvalCallback
 from utils import linear_schedule
-
-
-class TrialEvalCallback(EvalCallback):
-    """
-    Callback used for evaluating and reporting a trial.
-    """
-    def __init__(self, eval_env, trial, n_eval_episodes=5,
-                 eval_freq=10000, deterministic=True, verbose=0):
-
-        super(TrialEvalCallback, self).__init__(eval_env=eval_env, n_eval_episodes=n_eval_episodes,
-                                                eval_freq=eval_freq,
-                                                deterministic=deterministic,
-                                                verbose=verbose)
-        self.trial = trial
-        self.eval_idx = 0
-        self.is_pruned = False
-
-    def _on_step(self):
-        if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
-            super(TrialEvalCallback, self)._on_step()
-            self.eval_idx += 1
-            # report best or report current ?
-            # report num_timesteps or elasped time ?
-            self.trial.report(-1 * self.last_mean_reward, self.eval_idx)
-            # Prune trial if need
-            if self.trial.should_prune(self.eval_idx):
-                self.is_pruned = True
-                return False
-        return True
 
 
 def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,
@@ -285,7 +256,8 @@ def sample_sac_params(trial):
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 128, 256, 512])
     buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(1e5), int(1e6)])
-    learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 10000, 20000])
+    # learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 10000, 20000])
+    learning_starts = 0
     # train_freq = trial.suggest_categorical('train_freq', [1, 10, 100, 300])
     train_freq = trial.suggest_categorical('train_freq', [8, 16, 32, 64, 128, 256, 512])
     # Polyak coeff
@@ -293,8 +265,8 @@ def sample_sac_params(trial):
     # gradient_steps takes too much time
     # gradient_steps = trial.suggest_categorical('gradient_steps', [1, 100, 300])
     gradient_steps = train_freq
-    # ent_coef = trial.suggest_categorical('ent_coef', ['auto', 0.5, 0.1, 0.05, 0.01, 0.0001])
-    ent_coef = 'auto'
+    ent_coef = trial.suggest_categorical('ent_coef', ['auto', 0.5, 0.1, 0.05, 0.01, 0.0001])
+    # ent_coef = 'auto'
     log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
     net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
@@ -306,8 +278,9 @@ def sample_sac_params(trial):
     }[net_arch]
 
     target_entropy = 'auto'
-    # if ent_coef == 'auto':
-    #     target_entropy = trial.suggest_categorical('target_entropy', ['auto', -1, -10, -20, -50, -100])
+    if ent_coef == 'auto':
+        # target_entropy = trial.suggest_categorical('target_entropy', ['auto', 5, 1, 0, -1, -5, -10, -20, -50])
+        target_entropy = trial.suggest_uniform('target_entropy', -10, 10)
 
     return {
         'gamma': gamma,

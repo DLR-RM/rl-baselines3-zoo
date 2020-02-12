@@ -37,6 +37,7 @@ from torchy_baselines.common.callbacks import CheckpointCallback, EvalCallback
 
 from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
+from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
 
 if __name__ == '__main__':
@@ -254,6 +255,7 @@ if __name__ == '__main__':
                                              log_path=save_path, eval_freq=args.eval_freq)
                 callbacks.append(eval_callback)
             else:
+                # Do not normalize the rewards of the eval env
                 old_kwargs = None
                 if normalize:
                     if len(normalize_kwargs) > 0:
@@ -264,7 +266,12 @@ if __name__ == '__main__':
 
                 if args.verbose > 0:
                     print("Creating test environment")
-                eval_env = create_env(1, eval_env=True)
+
+                save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
+                eval_callback = EvalCallback(create_env(1, eval_env=True), callback_on_new_best=save_vec_normalize,
+                                             best_model_save_path=save_path,
+                                             log_path=save_path, eval_freq=args.eval_freq)
+                callbacks.append(eval_callback)
 
                 # Restore original kwargs
                 if old_kwargs is not None:
@@ -317,7 +324,12 @@ if __name__ == '__main__':
             exp_folder = args.trained_agent.split('.zip')[0]
             if normalize:
                 print("Loading saved running average")
-                env.load_running_average(exp_folder)
+                stats_path = os.path.join(exp_folder, env_id)
+                if os.path.exits(os.path.join(stats_path, 'vecnormalize.pkl')):
+                    env = VecNormalize.load(os.path.join(stats_path, 'vecnormalize.pkl'), env)
+                else:
+                    # Legacy:
+                    env.load_running_average(exp_folder)
 
             replay_buffer_path = os.path.join(os.path.dirname(args.trained_agent), 'replay_buffer.pkl')
             if os.path.exists(replay_buffer_path):
@@ -388,8 +400,7 @@ if __name__ == '__main__':
             model.save_replay_buffer(save_path)
 
         if normalize:
-            # Unwrap
-            if isinstance(env, VecFrameStack):
-                env = env.venv
             # Important: save the running average, for testing the agent we need that normalization
-            env.save_running_average(params_path)
+            model.get_vec_normalize_env().save(os.path.join(params_path, 'vecnormalize.pkl'))
+            # Deprecated saving:
+            # env.save_running_average(params_path)
