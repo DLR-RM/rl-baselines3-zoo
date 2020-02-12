@@ -5,22 +5,22 @@ import importlib
 import gym
 import numpy as np
 try:
-    import pybullet_envs
+    import pybullet_envs  # pytype: disable=import-error
 except ImportError:
     pybullet_envs = None
 
 try:
-    import highway_env
+    import highway_env  # pytype: disable=import-error
 except ImportError:
     highway_env = None
 
 try:
-    import neck_rl
+    import neck_rl  # pytype: disable=import-error
 except ImportError:
     neck_rl = None
 
 try:
-    import mocca_envs
+    import mocca_envs  # pytype: disable=import-error
 except ImportError:
     mocca_envs = None
 

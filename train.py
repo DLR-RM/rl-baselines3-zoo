@@ -13,22 +13,22 @@ import gym
 import torch.nn as nn  # pylint: disable=unused-import
 
 try:
-    import pybullet_envs
+    import pybullet_envs  # pytype: disable=import-error
 except ImportError:
     pybullet_envs = None
 
 try:
-    import highway_env
+    import highway_env  # pytype: disable=import-error
 except ImportError:
     highway_env = None
 
 try:
-    import neck_rl
+    import neck_rl  # pytype: disable=import-error
 except ImportError:
     neck_rl = None
 
 try:
-    import mocca_envs
+    import mocca_envs  # pytype: disable=import-error
 except ImportError:
     mocca_envs = None
 
@@ -85,7 +85,7 @@ if __name__ == '__main__':
         importlib.import_module(env_module)
 
     env_ids = args.env
-    registered_envs = set(gym.envs.registry.env_specs.keys())
+    registered_envs = set(gym.envs.registry.env_specs.keys())  # pytype: disable=module-attr
 
     for env_id in env_ids:
         # If the environment is not found, suggest the closest match
@@ -220,11 +220,12 @@ if __name__ == '__main__':
             log_dir = None if eval_env else save_path
 
             if is_atari:
-                if args.verbose > 0:
-                    print("Using Atari wrapper")
-                env = make_atari_env(env_id, num_env=n_envs, seed=args.seed)
-                # Frame-stacking with 4 frames
-                env = VecFrameStack(env, n_stack=4)
+                raise NotImplementedError()
+                # if args.verbose > 0:
+                #     print("Using Atari wrapper")
+                # env = make_atari_env(env_id, num_env=n_envs, seed=args.seed)
+                # # Frame-stacking with 4 frames
+                # env = VecFrameStack(env, n_stack=4)
             else:
                 if n_envs == 1:
                     env = DummyVecEnv([make_env(env_id, 0, args.seed, wrapper_class=env_wrapper, log_dir=log_dir)])
@@ -331,7 +332,7 @@ if __name__ == '__main__':
             if normalize:
                 print("Loading saved running average")
                 stats_path = os.path.join(exp_folder, env_id)
-                if os.path.exits(os.path.join(stats_path, 'vecnormalize.pkl')):
+                if os.path.exists(os.path.join(stats_path, 'vecnormalize.pkl')):
                     env = VecNormalize.load(os.path.join(stats_path, 'vecnormalize.pkl'), env)
                 else:
                     # Legacy:

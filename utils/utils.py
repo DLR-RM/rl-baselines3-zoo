@@ -160,16 +160,17 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
         del hyperparams['env_wrapper']
 
     if is_atari:
-        print("Using Atari wrapper")
-        env = make_atari_env(env_id, num_env=n_envs, seed=seed)
+        raise NotImplementedError()
+        # print("Using Atari wrapper")
+        # env = make_atari_env(env_id, num_env=n_envs, seed=seed)
         # Frame-stacking with 4 frames
-        env = VecFrameStack(env, n_stack=4)
+        # env = VecFrameStack(env, n_stack=4)
     elif n_envs > 1:
         # start_method = 'spawn' for thread safe
         env = SubprocVecEnv([make_env(env_id, i, seed, log_dir, wrapper_class=env_wrapper) for i in range(n_envs)])
     # Pybullet envs does not follow gym.render() interface
     elif "Bullet" in env_id:
-        spec = gym.envs.registry.env_specs[env_id]
+        spec = gym.envs.registry.env_specs[env_id]  # pytype: disable=module-attr
         try:
             class_ = load(spec.entry_point)
         except AttributeError:
@@ -320,7 +321,7 @@ def get_saved_hyperparams(stats_path, norm_reward=False, test_mode=False):
         if os.path.isfile(config_file):
             # Load saved hyperparameters
             with open(os.path.join(stats_path, 'config.yml'), 'r') as f:
-                hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)
+                hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
             hyperparams['normalize'] = hyperparams.get('normalize', False)
         else:
             obs_rms_path = os.path.join(stats_path, 'obs_rms.pkl')
