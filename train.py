@@ -27,6 +27,11 @@ try:
 except ImportError:
     neck_rl = None
 
+try:
+    import mocca_envs
+except ImportError:
+    mocca_envs = None
+
 
 from torchy_baselines.common.utils import set_random_seed
 # from torchy_baselines.common.cmd_util import make_atari_env
@@ -39,6 +44,7 @@ from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_lat
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

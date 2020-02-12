@@ -19,6 +19,12 @@ try:
 except ImportError:
     neck_rl = None
 
+try:
+    import mocca_envs
+except ImportError:
+    mocca_envs = None
+
+
 from torchy_baselines.common.utils import set_random_seed
 from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
 
