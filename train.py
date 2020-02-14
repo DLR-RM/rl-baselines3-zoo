@@ -60,6 +60,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--eval-freq', help='Evaluate the agent every n steps (if negative, no evaluation)',
                         default=10000, type=int)
+    parser.add_argument('--eval-episodes', help='Number of episodes to use for evaluation',
+                        default=5, type=int)
     parser.add_argument('--save-freq', help='Save the model every n steps (if negative, no checkpoint)',
                         default=-1, type=int)
     parser.add_argument('--save-replay-buffer', help='Save the replay buffer too (when applicable)',
@@ -276,7 +278,7 @@ if __name__ == '__main__':
 
                 save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
                 eval_callback = EvalCallback(create_env(1, eval_env=True), callback_on_new_best=save_vec_normalize,
-                                             best_model_save_path=save_path,
+                                             best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
                                              log_path=save_path, eval_freq=args.eval_freq)
                 callbacks.append(eval_callback)
 

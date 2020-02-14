@@ -133,8 +133,8 @@ HalfCheetahBulletEnv-v0:
   use_rms_prop: True
   normalize_advantage: False
   # Both works
-  # learning_rate: lin_0.00096
-  learning_rate: !!float 3e-4
+  learning_rate: lin_0.00096
+  # learning_rate: !!float 3e-4
   use_sde: True
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False, full_std=True)"
 
