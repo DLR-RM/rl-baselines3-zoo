@@ -20,6 +20,8 @@ parser.add_argument('-f', '--exp_folder', help='Folders to include', nargs='+', 
 parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', default=['sde', 'gaussian'], type=str)
 parser.add_argument('-median', '--median', action='store_true', default=False,
                     help='Display median instead of mean in the table')
+parser.add_argument('--no-display', action='store_true', default=False,
+                    help='Do not show the plots')
 args = parser.parse_args()
 
 # Activate seaborn
@@ -58,6 +60,9 @@ for env in args.env:
                 # TODO: Compute standard error for all the runs
                 # std_ = np.squeeze(log['results'].std(axis=1)) / np.sqrt(log['results'].shape[1])
                 std_ = np.squeeze(log['results'].std(axis=1))
+
+                if mean_.shape == ():
+                    continue
 
                 merged_mean.append(mean_)
                 merged_std.append(std_)
@@ -128,5 +133,5 @@ for i, env in enumerate(args.env, start=1):
 writer.value_matrix = value_matrix
 writer.write_table()
 
-
-plt.show()
+if not args.no_display:
+    plt.show()
