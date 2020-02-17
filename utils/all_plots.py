@@ -31,7 +31,7 @@ args.algos = [algo.upper() for algo in args.algos]
 for env in args.env:
     plt.figure(f'Results {env}')
     plt.title(f'{env}BulletEnv-v0', fontsize=14)
-    plt.xlabel('Timesteps (in Millions)', fontsize=14)
+    plt.xlabel('Timesteps (in Million)', fontsize=14)
     plt.ylabel('Score', fontsize=14)
     results[env] = {}
     for algo in args.algos:
