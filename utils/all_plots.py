@@ -83,23 +83,41 @@ for env in args.env:
             merged_std = std_tmp
             last_eval = last_eval_tmp
 
+            # Post-process
             if len(merged_mean) > 0:
-                mean_ = np.mean(merged_mean, axis=0)
-                # TODO: fix standard error computation
-                std_ = np.mean(merged_std, axis=0) / np.sqrt(len(merged_mean))
+                # shape: (n_trials, n_eval * n_eval_episodes)
+                merged_mean = np.array(merged_mean)
+                n_trials = len(merged_mean)
+                n_eval = len(timesteps)
+                # reshape to (n_trials, n_eval, n_eval_episodes)
+                evaluations = merged_mean.reshape((n_trials, n_eval, -1))
+                # re-arrange to (n_eval, n_trials, n_eval_episodes)
+                evaluations = np.swapaxes(evaluations, 0, 1)
+                # (n_eval,)
+                mean_ = np.mean(evaluations, axis=(1, 2))
+                # (n_eval, n_trials)
+                mean_per_eval = np.mean(evaluations, axis=-1)
+                # (n_eval,)
+                std_ = np.std(mean_per_eval, axis=-1)
+                # std: error:
+                std_error = std_ / np.sqrt(n_trials)
                 # Take last evaluation
-                # Compute standard error: std / sqrt(n_runs)
-                std_error = np.std(last_eval) / np.sqrt(len(last_eval))
+                # shape: (n_trials, n_eval_episodes) to (n_trials,)
+                last_evals = np.array(last_eval).squeeze().mean(axis=-1)
+                # Standard deviation of the mean performance for the last eval
+                std_last_eval = np.std(last_evals)
+                # Compute standard error
+                std_error_last_eval = std_last_eval / np.sqrt(n_trials)
 
                 if args.median:
-                    results[env][f'{algo}-{args.labels[folder_idx]}'] = f'{np.median(last_eval):.0f}'
+                    results[env][f'{algo}-{args.labels[folder_idx]}'] = f'{np.median(last_evals):.0f}'
                 else:
-                    results[env][f'{algo}-{args.labels[folder_idx]}'] = f'{np.mean(last_eval):.0f} +/- {std_error:.0f}'
+                    results[env][f'{algo}-{args.labels[folder_idx]}'] = f'{np.mean(last_evals):.0f} +/- {std_error_last_eval:.0f}'
 
 
                 # x axis in Millions of timesteps
                 plt.plot(timesteps / 1e6, mean_, label=f'{algo}-{args.labels[folder_idx]}')
-                plt.fill_between(timesteps / 1e6, mean_ + std_, mean_ - std_, alpha=0.5)
+                plt.fill_between(timesteps / 1e6, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
     plt.legend()
 
