@@ -35,7 +35,7 @@ except ImportError:
 
 from torchy_baselines.common.utils import set_random_seed
 # from torchy_baselines.common.cmd_util import make_atari_env
-from torchy_baselines.common.vec_env import VecFrameStack, SubprocVecEnv, VecNormalize, DummyVecEnv
+from torchy_baselines.common.vec_env import VecFrameStack, VecNormalize, DummyVecEnv
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torchy_baselines.common.utils import constant_fn
 from torchy_baselines.common.callbacks import CheckpointCallback, EvalCallback
