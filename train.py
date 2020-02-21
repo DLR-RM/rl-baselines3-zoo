@@ -81,8 +81,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
                         help='Additional external Gym environment package modules to import (e.g. gym_minigrid)')
-    parser.add_argument('--hyperparams', type=str, nargs='+', action=StoreDict,
-                        help='Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq=10)')
+    parser.add_argument('-params', '--hyperparams', type=str, nargs='+', action=StoreDict,
+                        help='Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)')
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
