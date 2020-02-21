@@ -20,6 +20,8 @@ parser.add_argument('-f', '--exp_folder', help='Folders to include', nargs='+', 
 parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', default=['sde', 'gaussian'], type=str)
 parser.add_argument('-median', '--median', action='store_true', default=False,
                     help='Display median instead of mean in the table')
+parser.add_argument('--no-million', action='store_true', default=False,
+                    help='Do not convert x-axis to million')
 parser.add_argument('--no-display', action='store_true', default=False,
                     help='Do not show the plots')
 args = parser.parse_args()
@@ -33,7 +35,9 @@ args.algos = [algo.upper() for algo in args.algos]
 for env in args.env:
     plt.figure(f'Results {env}')
     plt.title(f'{env}BulletEnv-v0', fontsize=14)
-    plt.xlabel('Timesteps (in Million)', fontsize=14)
+
+    x_label_suffix = '' if args.no_million else '(in Million)'
+    plt.xlabel(f'Timesteps {x_label_suffix}', fontsize=14)
     plt.ylabel('Score', fontsize=14)
     results[env] = {}
     for algo in args.algos:
@@ -114,10 +118,13 @@ for env in args.env:
                 else:
                     results[env][f'{algo}-{args.labels[folder_idx]}'] = f'{np.mean(last_evals):.0f} +/- {std_error_last_eval:.0f}'
 
-
                 # x axis in Millions of timesteps
-                plt.plot(timesteps / 1e6, mean_, label=f'{algo}-{args.labels[folder_idx]}')
-                plt.fill_between(timesteps / 1e6, mean_ + std_error, mean_ - std_error, alpha=0.5)
+                divider = 1e6
+                if args.no_million:
+                    divider = 1.0
+
+                plt.plot(timesteps / divider, mean_, label=f'{algo}-{args.labels[folder_idx]}')
+                plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
     plt.legend()
 
