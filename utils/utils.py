@@ -3,6 +3,7 @@ import inspect
 import glob
 import yaml
 import importlib
+import argparse
 
 import gym
 try:
@@ -336,3 +337,22 @@ def get_saved_hyperparams(stats_path, norm_reward=False, test_mode=False):
                 normalize_kwargs = {'norm_obs': hyperparams['normalize'], 'norm_reward': norm_reward}
             hyperparams['normalize_kwargs'] = normalize_kwargs
     return hyperparams, stats_path
+
+
+class StoreDict(argparse.Action):
+    """
+    Custom action for storing dict.
+    In: args1:0.0 args2:"dict(a=1)"
+    Out: {'args1': 0.0, arg2: dict(a=1)}
+    """
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        self._nargs = nargs
+        super(StoreDict, self).__init__(option_strings, dest, nargs=nargs, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        arg_dict = {}
+        for arguments in values:
+            key = arguments.split(":")[0]
+            value = "".join(arguments.split(":")[1:])
+            arg_dict[key] = eval(value)
+        setattr(namespace, self.dest, arg_dict)

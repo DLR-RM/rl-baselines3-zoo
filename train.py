@@ -44,6 +44,7 @@ from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_lat
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
+from utils.utils import StoreDict
 
 
 if __name__ == '__main__':
@@ -80,6 +81,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
                         help='Additional external Gym environment package modules to import (e.g. gym_minigrid)')
+    parser.add_argument('--hyperparams', type=str, nargs='+', action=StoreDict,
+                        help='Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq=10)')
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -129,6 +132,9 @@ if __name__ == '__main__':
             else:
                 raise ValueError("Hyperparameters not found for {}-{}".format(args.algo, env_id))
 
+        if args.hyperparams is not None:
+            # Overwrite hyperparams if needed
+            hyperparams.update(args.hyperparams)
         # Sort hyperparams that will be saved
         saved_hyperparams = OrderedDict([(key, hyperparams[key]) for key in sorted(hyperparams.keys())])
 
