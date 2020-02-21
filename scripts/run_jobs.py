@@ -1,3 +1,6 @@
+"""
+Run multiple experiments on a single machine.
+"""
 import subprocess
 
 import numpy as np
