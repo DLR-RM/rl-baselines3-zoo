@@ -18,6 +18,8 @@ parser.add_argument('-a', '--algos', help='Algorithms to include', nargs='+', ty
 parser.add_argument('-e', '--env', help='Environments to include', nargs='+', type=str)
 parser.add_argument('-f', '--exp_folder', help='Folders to include', nargs='+', type=str)
 parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', default=['sde', 'gaussian'], type=str)
+parser.add_argument('-max', '--max-timesteps', help='Max number of timesteps to display', type=int, default=int(2e6))
+
 parser.add_argument('-median', '--median', action='store_true', default=False,
                     help='Display median instead of mean in the table')
 parser.add_argument('--no-million', action='store_true', default=False,
@@ -70,18 +72,27 @@ for env in args.env:
 
                 merged_mean.append(mean_)
                 merged_std.append(std_)
-                last_eval.append(log['results'][-1])
 
                 max_len = max(max_len, len(mean_))
-                if len(log['timesteps']) == max_len:
+                if len(log['timesteps']) >= max_len:
                     timesteps = log['timesteps']
+
+                # Truncate the plots
+                while timesteps[max_len - 1] > args.max_timesteps:
+                    max_len -= 1
+                timesteps = timesteps[:max_len]
+
+                if len(log['results']) >= max_len:
+                    last_eval.append(log['results'][max_len - 1])
+                else:
+                    last_eval.append(log['results'][-1])
 
             # Remove incomplete runs
             mean_tmp, std_tmp, last_eval_tmp = [], [], []
             for idx in range(len(merged_mean)):
-                if len(merged_mean[idx]) == max_len:
-                    mean_tmp.append(merged_mean[idx])
-                    std_tmp.append(merged_std[idx])
+                if len(merged_mean[idx]) >= max_len:
+                    mean_tmp.append(merged_mean[idx][:max_len])
+                    std_tmp.append(merged_std[idx][:max_len])
                     last_eval_tmp.append(last_eval[idx])
             merged_mean = mean_tmp
             merged_std = std_tmp
