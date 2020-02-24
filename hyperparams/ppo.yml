@@ -131,12 +131,6 @@ LunarLanderContinuous-v2:
   n_epochs: 4
   ent_coef: 0.01
 
-# 1 env
-# {'batch_size': 32, 'n_steps': 1024, 'gamma': 0.99, 'lr': 0.0002659028545828506,
-# 'ent_coef': 0.0005754162324307248, 'clip_range': 0.3, 'n_epochs': 5,
-# 'gae_lambda': 0.95, 'max_grad_norm': 1, 'vf_coef': 0.2794270668736367, 'net_arch': 'small',
-# 'log_std_init': -2.410510964165194, 'sde_sample_freq': 8, 'activation_fn': <class 'torch.nn.modules.activation.ReLU'>}
-
 # Tuned
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -150,7 +144,7 @@ HalfCheetahBulletEnv-v0:
   gae_lambda: 0.9
   n_epochs: 20
   ent_coef: 0.0
-  sde_sample_freq: 8
+  sde_sample_freq: 4
   max_grad_norm: 0.5
   vf_coef: 0.5
   learning_rate: !!float 3e-5
@@ -175,7 +169,7 @@ AntBulletEnv-v0:
   gae_lambda: 0.9
   n_epochs: 20
   ent_coef: 0.0
-  sde_sample_freq: 8
+  sde_sample_freq: 4
   max_grad_norm: 0.5
   vf_coef: 0.5
   learning_rate: !!float 3e-5
@@ -187,18 +181,7 @@ AntBulletEnv-v0:
                        net_arch=[dict(pi=[256, 256], vf=[256, 256])]
                        )"
 
-# {'batch_size': 16, 'n_steps': 512, 'gamma': 0.995, 'lr': 0.00019376799933963298,
-# 'ent_coef': 9.611850193084055e-08, 'clip_range': 0.4, 'n_epochs': 10,
-# 'gae_lambda': 0.95, 'max_grad_norm': 0.7, 'vf_coef': 0.2559390764271208,
-# 'net_arch': 'small', 'log_std_init': 0.03653422605739565, 'sde_sample_freq': 64,
-# 'activation_fn': <class 'torch.nn.modules.activation.Tanh'>}
-
-# {'batch_size': 32, 'n_steps': 256, 'gamma': 0.99, 'lr': 6.969770291674527e-05, 'ent_coef': 2.5518107226291473e-06,
-# 'clip_range': 0.2, 'n_epochs': 20, 'gae_lambda': 0.92, 'max_grad_norm': 0.9, 'vf_coef': 0.3283084861193418,
-# 'net_arch': 'medium', 'log_std_init': -0.15801221606055574, 'sde_sample_freq': 8,
-# 'activation_fn': <class 'torch.nn.modules.activation.ReLU'>}
-
-# Almost tuned
+# Tuned
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   normalize: true
@@ -211,7 +194,7 @@ Walker2DBulletEnv-v0:
   gae_lambda: 0.92
   n_epochs: 20
   ent_coef: 0.0
-  sde_sample_freq: 8
+  sde_sample_freq: 4
   max_grad_norm: 0.5
   vf_coef: 0.5
   learning_rate: !!float 3e-5
@@ -236,7 +219,7 @@ HopperBulletEnv-v0:
   gae_lambda: 0.92
   n_epochs: 20
   ent_coef: 0.0
-  sde_sample_freq: 8
+  sde_sample_freq: 4
   max_grad_norm: 0.5
   vf_coef: 0.5
   learning_rate: !!float 3e-5
@@ -261,7 +244,7 @@ ReacherBulletEnv-v0:
   gae_lambda: 0.9
   n_epochs: 20
   ent_coef: 0.0
-  sde_sample_freq: 8
+  sde_sample_freq: 4
   max_grad_norm: 0.5
   vf_coef: 0.5
   learning_rate: !!float 3e-5
