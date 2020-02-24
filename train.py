@@ -262,6 +262,9 @@ if __name__ == '__main__':
     # Create test env if needed, do not normalize reward
     eval_env = None
     if args.eval_freq > 0:
+        # Account for the number of parallel environments
+        args.eval_freq = max(args.eval_freq // n_envs, 1)
+
         if 'NeckEnv' in env_id:
             # Use the training env as eval env when using the neck
             # because there is only one robot
