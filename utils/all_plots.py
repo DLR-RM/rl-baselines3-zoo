@@ -9,6 +9,7 @@ import pytablewriter
 import numpy as np
 import seaborn
 import matplotlib.pyplot as plt
+from scipy.spatial import distance_matrix
 
 from torchy_baselines.common.results_plotter import *
 
@@ -19,6 +20,7 @@ parser.add_argument('-e', '--env', help='Environments to include', nargs='+', ty
 parser.add_argument('-f', '--exp_folder', help='Folders to include', nargs='+', type=str)
 parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', default=['sde', 'gaussian'], type=str)
 parser.add_argument('-max', '--max-timesteps', help='Max number of timesteps to display', type=int, default=int(2e6))
+parser.add_argument('-min', '--min-timesteps', help='Min number of timesteps to keep a trial', type=int, default=-1)
 
 parser.add_argument('-median', '--median', action='store_true', default=False,
                     help='Display median instead of mean in the table')
@@ -52,6 +54,7 @@ for env in args.env:
 
             max_len = 0
             merged_mean, merged_std = [], []
+            merged_timesteps, merged_results = [], []
             last_eval = []
             timesteps = None
             for idx, dir_ in enumerate(dirs):
@@ -77,6 +80,10 @@ for env in args.env:
                 if len(log['timesteps']) >= max_len:
                     timesteps = log['timesteps']
 
+                # For post-processing
+                merged_timesteps.append(log['timesteps'])
+                merged_results.append(log['results'])
+
                 # Truncate the plots
                 while timesteps[max_len - 1] > args.max_timesteps:
                     max_len -= 1
@@ -86,6 +93,44 @@ for env in args.env:
                     last_eval.append(log['results'][max_len - 1])
                 else:
                     last_eval.append(log['results'][-1])
+
+
+            # Merge runs with different eval freq:
+            # ex: (100,) eval vs (10,)
+            # in that case, downsample (100,) to match the (10,) samples
+            # Discard all jobs that are < min_timesteps
+            min_trials = []
+            if args.min_timesteps > 0:
+                min_ = np.inf
+                for n_timesteps in merged_timesteps:
+                    if n_timesteps[-1] >= args.min_timesteps:
+                        min_ = min(min_, len(n_timesteps))
+                        if len(n_timesteps) == min_:
+                            max_len = len(n_timesteps)
+                            # Truncate the plots
+                            while n_timesteps[max_len - 1] > args.max_timesteps:
+                                max_len -= 1
+                            timesteps = n_timesteps[:max_len]
+                # Downsample if needed
+                for trial_idx, n_timesteps in enumerate(merged_timesteps):
+                    # We assume they are the same, or they will be discarded in the next step
+                    if len(n_timesteps) == min_ or n_timesteps[-1] < args.min_timesteps:
+                        pass
+                    else:
+                        # Discard
+                        # merged_mean[trial_idx] = []
+
+                        new_merged_mean, new_merged_std = [], []
+                        # Nearest neighbour
+                        distance_mat = distance_matrix(n_timesteps.reshape(-1, 1), timesteps.reshape(-1, 1))
+                        closest_indices = distance_mat.argmin(axis=0)
+                        for closest_idx in closest_indices:
+                            new_merged_mean.append(merged_mean[trial_idx][closest_idx])
+                            new_merged_std.append(merged_std[trial_idx][closest_idx])
+                        merged_mean[trial_idx] = new_merged_mean
+                        merged_std[trial_idx] = new_merged_std
+                        last_eval[trial_idx] = merged_results[trial_idx][closest_indices[-1]]
+
 
             # Remove incomplete runs
             mean_tmp, std_tmp, last_eval_tmp = [], [], []
