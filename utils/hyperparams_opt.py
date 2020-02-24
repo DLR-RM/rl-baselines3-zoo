@@ -81,13 +81,15 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
             trial.n_actions = env_fn(n_envs=1).action_space.shape[0]
         kwargs.update(algo_sampler(trial))
 
-        eval_env = env_fn(n_envs=1, eval_env=True)
-        # TODO: use non-deterministic eval for Atari?
-        eval_callback = TrialEvalCallback(eval_env, trial, n_eval_episodes=n_eval_episodes,
-                                          eval_freq=eval_freq, deterministic=True)
-
         model = model_fn(**kwargs)
         model.trial = trial
+
+        eval_env = env_fn(n_envs=1, eval_env=True)
+        # Account for parallel envs
+        eval_freq_ = max(eval_freq // model.get_env().num_envs, 1)
+        # TODO: use non-deterministic eval for Atari?
+        eval_callback = TrialEvalCallback(eval_env, trial, n_eval_episodes=n_eval_episodes,
+                                          eval_freq=eval_freq_, deterministic=True)
 
         try:
             model.learn(n_timesteps, callback=eval_callback)
