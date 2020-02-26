@@ -1,18 +1,13 @@
 import os
 import warnings
 import argparse
-
-# For tensorflow imported with tensorboard
-warnings.filterwarnings("ignore", category=FutureWarning)
+import pickle
 
 import pytablewriter
 import numpy as np
 import seaborn
 import matplotlib.pyplot as plt
 from scipy.spatial import distance_matrix
-
-from torchy_baselines.common.results_plotter import *
-
 
 parser = argparse.ArgumentParser('Gather results, plot them and create table')
 parser.add_argument('-a', '--algos', help='Algorithms to include', nargs='+', type=str)
@@ -21,7 +16,7 @@ parser.add_argument('-f', '--exp_folders', help='Folders to include', nargs='+',
 parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', type=str)
 parser.add_argument('-max', '--max-timesteps', help='Max number of timesteps to display', type=int, default=int(2e6))
 parser.add_argument('-min', '--min-timesteps', help='Min number of timesteps to keep a trial', type=int, default=-1)
-parser.add_argument('-o', '--output', help='Output filename (numpy archive), where to save the post-processed data', type=str)
+parser.add_argument('-o', '--output', help='Output filename (pickle file), where to save the post-processed data', type=str)
 parser.add_argument('-median', '--median', action='store_true', default=False,
                     help='Display median instead of mean in the table')
 parser.add_argument('--no-million', action='store_true', default=False,
@@ -48,6 +43,8 @@ for env in args.env:
     plt.xlabel(f'Timesteps {x_label_suffix}', fontsize=14)
     plt.ylabel('Score', fontsize=14)
     results[env] = {}
+    post_processed_results[env] = {}
+
     for algo in args.algos:
         for folder_idx, exp_folder in enumerate(args.exp_folders):
 
@@ -183,7 +180,7 @@ for env in args.env:
                 if args.no_million:
                     divider = 1.0
 
-                post_processed_results[f'{algo}-{args.labels[folder_idx]}'] = {
+                post_processed_results[env][f'{algo}-{args.labels[folder_idx]}'] = {
                     'timesteps': timesteps,
                     'mean': mean_,
                     'std_error': std_error
@@ -224,11 +221,15 @@ for i, env in enumerate(args.env, start=1):
 writer.value_matrix = value_matrix
 writer.write_table()
 
-post_processed_results['results_table'] = value_matrix
+post_processed_results['results_table'] = {
+    'headers': headers,
+    'value_matrix': value_matrix
+}
 
 if args.output is not None:
-    print(f"Saving to {args.output}.npz")
-    np.savez(args.output, **post_processed_results)
+    print(f"Saving to {args.output}.pkl")
+    with open(f'{args.output}.pkl', 'wb') as file_handler:
+        pickle.dump(post_processed_results, file_handler)
 
 if not args.no_display:
     plt.show()
