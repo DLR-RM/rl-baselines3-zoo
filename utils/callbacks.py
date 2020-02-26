@@ -1,6 +1,10 @@
 import os
 import pickle
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+from torchy_baselines.common.vec_env import DummyVecEnv
 from torchy_baselines.common.callbacks import BaseCallback, EvalCallback
 
 
@@ -63,4 +67,57 @@ class SaveVecNormalizeCallback(BaseCallback):
                 self.model.get_vec_normalize_env().save(path)
                 if self.verbose > 1:
                     print(f"Saving VecNormalize to {path}")
+        return True
+
+
+class PlotNoiseRatioCallback(BaseCallback):
+    """
+    Callback for plotting noise contribution to the exploration.
+    Warning: it only works with 1D action space env for now (like MountainCarContinuous)
+
+    :param display_freq: (int) Display the plot every `display_freq` steps.
+    :param verbose: (int)
+    """
+    def __init__(self, display_freq=1000, verbose=0):
+        super(PlotNoiseRatioCallback, self).__init__(verbose)
+        self.display_freq = display_freq
+        # Action buffers
+        self.deterministic_actions = []
+        self.noisy_actions = []
+        self.noises = []
+
+    def _on_step(self) -> bool:
+        # We assume this is a DummyVecEnv
+        assert isinstance(self.training_env, DummyVecEnv)
+        # Retrieve last observation
+        obs = self.training_env._obs_from_buf()
+        # Retrieve stochastic and deterministic action
+        # we can extract the noise contribution from those two
+        noisy_action = self.model.predict(obs, deterministic=False).flatten()
+        deterministic_action = self.model.predict(obs, deterministic=True).flatten()
+        noise = noisy_action - deterministic_action
+
+        self.deterministic_actions.append(deterministic_action)
+        self.noisy_actions.append(noisy_action)
+        self.noises.append(noise)
+
+        if self.n_calls % self.display_freq == 0:
+            x = np.arange(len(self.noisy_actions))
+
+            self.deterministic_actions = np.array(self.deterministic_actions)
+            self.noises = np.array(self.noises)
+
+            plt.figure('Deterministic action and noise during exploration')
+            plt.title('Deterministic action and noise during exploration', fontsize=14)
+            plt.xlabel('Timesteps', fontsize=14)
+            plt.ylabel('Action', fontsize=14)
+            plt.plot(x, self.deterministic_actions, label='deterministic actions')
+            plt.plot(x, self.noises, label='exploration noise')
+            plt.plot(x, self.noisy_actions, label='noisy actions')
+            plt.legend(fontsize=14)
+            plt.show()
+            # Reset
+            self.noisy_actions = []
+            self.deterministic_actions = []
+            self.noises = []
         return True

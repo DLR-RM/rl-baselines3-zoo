@@ -9,6 +9,7 @@ from pprint import pprint
 import numpy as np
 import yaml
 import gym
+import seaborn
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
@@ -46,6 +47,7 @@ from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
 from utils.utils import StoreDict, get_callback_class
 
+seaborn.set()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -213,7 +215,7 @@ if __name__ == '__main__':
     callbacks = get_callback_class(hyperparams)
     if 'callback' in hyperparams.keys():
         del hyperparams['callback']
-        
+
     if args.save_freq > 0:
         callbacks.append(CheckpointCallback(save_freq=args.save_freq,
                                             save_path=save_path, name_prefix='rl_model', verbose=1))

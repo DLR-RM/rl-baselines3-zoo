@@ -235,7 +235,11 @@ class PlotActionWrapper(gym.Wrapper):
     def plot(self):
         actions = self.actions
         x = np.arange(sum([len(episode) for episode in actions]))
-        plt.figure("actions")
+        plt.figure("Actions")
+        plt.title('Actions during exploration', fontsize=14)
+        plt.xlabel('Timesteps', fontsize=14)
+        plt.ylabel('Action', fontsize=14)
+
         start = 0
         for i in range(len(self.actions)):
             end = start + len(self.actions[i])
