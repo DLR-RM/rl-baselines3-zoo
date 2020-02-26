@@ -76,7 +76,9 @@ def get_wrapper_class(hyperparams):
         for wrapper_name in wrapper_names:
             # Handle keyword arguments
             if isinstance(wrapper_name, dict):
-                assert len(wrapper_name) == 1
+                assert len(wrapper_name) == 1, ("You have an error in the formatting "
+                                                f"of your YAML file near {wrapper_name}. "
+                                                "You should check the indentation.")
                 wrapper_dict = wrapper_name
                 wrapper_name = list(wrapper_dict.keys())[0]
                 kwargs = wrapper_dict[wrapper_name]
@@ -98,6 +100,57 @@ def get_wrapper_class(hyperparams):
         return wrap_env
     else:
         return None
+
+
+def get_callback_class(hyperparams):
+    """
+    Get one or more Callback class specified as a hyper-parameter
+    "callback".
+    e.g.
+    callback: torchy_baselines.common.callbacks.CheckpointCallback
+
+    for multiple, specify a list:
+
+    callback:
+        - utils.callbacks.PlotActionWrapper
+        - torchy_baselines.common.callbacks.CheckpointCallback
+
+    :param hyperparams: (dict)
+    :return: (List[BaseCallback])
+    """
+
+    def get_module_name(callback_name):
+        return '.'.join(callback_name.split('.')[:-1])
+
+    def get_class_name(callback_name):
+        return callback_name.split('.')[-1]
+
+    callbacks = []
+
+    if 'callback' in hyperparams.keys():
+        callback_name = hyperparams.get('callback')
+        if not isinstance(callback_name, list):
+            callback_names = [callback_name]
+        else:
+            callback_names = callback_name
+
+        # Handle multiple wrappers
+        for callback_name in callback_names:
+            # Handle keyword arguments
+            if isinstance(callback_name, dict):
+                assert len(callback_name) == 1, ("You have an error in the formatting "
+                                                f"of your YAML file near {callback_name}. "
+                                                "You should check the indentation.")
+                callback_dict = callback_name
+                callback_name = list(callback_dict.keys())[0]
+                kwargs = callback_dict[callback_name]
+            else:
+                kwargs = {}
+            callback_module = importlib.import_module(get_module_name(callback_name))
+            callback_class = getattr(callback_module, get_class_name(callback_name))
+            callbacks.append(callback_class(**kwargs))
+
+    return callbacks
 
 
 def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):

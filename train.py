@@ -44,7 +44,7 @@ from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_lat
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
-from utils.utils import StoreDict
+from utils.utils import StoreDict, get_callback_class
 
 
 if __name__ == '__main__':
@@ -210,7 +210,10 @@ if __name__ == '__main__':
     params_path = "{}/{}".format(save_path, env_id)
     os.makedirs(params_path, exist_ok=True)
 
-    callbacks = []
+    callbacks = get_callback_class(hyperparams)
+    if 'callback' in hyperparams.keys():
+        del hyperparams['callback']
+        
     if args.save_freq > 0:
         callbacks.append(CheckpointCallback(save_freq=args.save_freq,
                                             save_path=save_path, name_prefix='rl_model', verbose=1))
