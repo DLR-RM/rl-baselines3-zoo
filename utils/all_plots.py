@@ -17,11 +17,11 @@ from torchy_baselines.common.results_plotter import *
 parser = argparse.ArgumentParser('Gather results, plot them and create table')
 parser.add_argument('-a', '--algos', help='Algorithms to include', nargs='+', type=str)
 parser.add_argument('-e', '--env', help='Environments to include', nargs='+', type=str)
-parser.add_argument('-f', '--exp_folder', help='Folders to include', nargs='+', type=str)
-parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', default=['sde', 'gaussian'], type=str)
+parser.add_argument('-f', '--exp_folders', help='Folders to include', nargs='+', type=str)
+parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', type=str)
 parser.add_argument('-max', '--max-timesteps', help='Max number of timesteps to display', type=int, default=int(2e6))
 parser.add_argument('-min', '--min-timesteps', help='Min number of timesteps to keep a trial', type=int, default=-1)
-
+parser.add_argument('-o', '--output', help='Output filename (numpy archive), where to save the post-processed data', type=str)
 parser.add_argument('-median', '--median', action='store_true', default=False,
                     help='Display median instead of mean in the table')
 parser.add_argument('--no-million', action='store_true', default=False,
@@ -33,8 +33,12 @@ args = parser.parse_args()
 # Activate seaborn
 seaborn.set()
 results = {}
+post_processed_results = {}
 
 args.algos = [algo.upper() for algo in args.algos]
+
+if args.labels is None:
+    args.labels = args.exp_folders
 
 for env in args.env:
     plt.figure(f'Results {env}')
@@ -45,7 +49,7 @@ for env in args.env:
     plt.ylabel('Score', fontsize=14)
     results[env] = {}
     for algo in args.algos:
-        for folder_idx, exp_folder in enumerate(args.exp_folder):
+        for folder_idx, exp_folder in enumerate(args.exp_folders):
 
             results[env][f'{args.labels[folder_idx]}-{algo}'] = 0.0
             log_path = os.path.join(exp_folder, algo.lower())
@@ -179,6 +183,12 @@ for env in args.env:
                 if args.no_million:
                     divider = 1.0
 
+                post_processed_results[f'{algo}-{args.labels[folder_idx]}'] = {
+                    'timesteps': timesteps,
+                    'mean': mean_,
+                    'std_error': std_error
+                }
+
                 plt.plot(timesteps / divider, mean_, label=f'{algo}-{args.labels[folder_idx]}')
                 plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
@@ -213,6 +223,12 @@ for i, env in enumerate(args.env, start=1):
 
 writer.value_matrix = value_matrix
 writer.write_table()
+
+post_processed_results['results_table'] = value_matrix
+
+if args.output is not None:
+    print(f"Saving to {args.output}.npz")
+    np.savez(args.output, **post_processed_results)
 
 if not args.no_display:
     plt.show()
