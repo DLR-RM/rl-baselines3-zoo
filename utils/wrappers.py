@@ -1,5 +1,6 @@
 import gym
 from gym.wrappers import TimeLimit
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -232,8 +233,6 @@ class PlotActionWrapper(gym.Wrapper):
         return obs, reward, done, info
 
     def plot(self):
-        # Avoid additional dependency
-        import matplotlib.pyplot as plt
         actions = self.actions
         x = np.arange(sum([len(episode) for episode in actions]))
         plt.figure("actions")

@@ -12,6 +12,8 @@ except ImportError:
     pybullet_envs = None
 
 from gym.envs.registration import load
+# For custom activation fn
+import torch.nn as nn  # pylint: disable=unused-import
 
 from torchy_baselines.common.monitor import Monitor
 # from torchy_baselines.common import logger
