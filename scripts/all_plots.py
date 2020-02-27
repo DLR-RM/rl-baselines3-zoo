@@ -183,7 +183,9 @@ for env in args.env:
                 post_processed_results[env][f'{algo}-{args.labels[folder_idx]}'] = {
                     'timesteps': timesteps,
                     'mean': mean_,
-                    'std_error': std_error
+                    'std_error': std_error,
+                    'last_evals': last_evals,
+                    'std_error_last_eval': std_error_last_eval
                 }
 
                 plt.plot(timesteps / divider, mean_, label=f'{algo}-{args.labels[folder_idx]}')
