@@ -57,7 +57,7 @@ for env in args.env:
             merged_mean, merged_std = [], []
             merged_timesteps, merged_results = [], []
             last_eval = []
-            timesteps = None
+            timesteps = np.empty()
             for idx, dir_ in enumerate(dirs):
                 try:
                     log = np.load(os.path.join(dir_, 'evaluations.npz'))

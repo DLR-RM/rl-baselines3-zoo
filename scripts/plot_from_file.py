@@ -82,3 +82,6 @@ for label in labels:
 
 plt.legend()
 plt.show()
+# TODO: export, we need to fix the figure size and axis first
+# we also may have to change backend
+# plt.savefig("exported.svg", format="svg")
