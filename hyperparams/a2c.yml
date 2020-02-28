@@ -186,7 +186,7 @@ AntBulletEnv-v0:
   gamma: 0.99
   use_rms_prop: True
   normalize_advantage: False
-  learning_rate: lin_0.0008
+  learning_rate: lin_0.00096
   use_sde: True
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
