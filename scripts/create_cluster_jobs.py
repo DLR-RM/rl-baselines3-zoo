@@ -22,7 +22,7 @@ for algo in ALGOS:
             for _ in range(N_SEEDS):
                 args = ['--algo', algo, '--env', env_id, '--hyperparams',
                         f'policy_kwargs:"dict(log_std_init={log_std_init}, net_arch=[400, 300])"',
-                        '--eval-episodes', N_EVAL_EPISODES, '-f', log_folder]
+                        '--eval-episodes', N_EVAL_EPISODES, '-f', log_folder, '-uuid']
                 args = list(map(str, args))
 
                 command = " ".join(['python', '-u', 'train.py'] + args)
