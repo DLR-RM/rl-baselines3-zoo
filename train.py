@@ -3,6 +3,7 @@ import difflib
 import os
 import importlib
 import time
+import uuid
 from collections import OrderedDict
 from pprint import pprint
 
@@ -86,6 +87,8 @@ if __name__ == '__main__':
                         help='Additional external Gym environment package modules to import (e.g. gym_minigrid)')
     parser.add_argument('-params', '--hyperparams', type=str, nargs='+', action=StoreDict,
                         help='Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)')
+    parser.add_argument('-uuid', '--uuid', action='store_true', default=False,
+                        help='Ensure that the run has a unique ID')
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -103,8 +106,11 @@ if __name__ == '__main__':
             closest_match = "'no close match found...'"
         raise ValueError('{} not found in gym registry, you maybe meant {}?'.format(env_id, closest_match))
 
+    # Unique id to ensure there is no race condition for the folder creation
+    uuid_str = f'_{uuid.uuid4()}' if args.uuid else ''
     if args.seed < 0:
-        args.seed = int(time.time() + 1000 * np.random.rand())
+        # Seed but with a random one
+        args.seed = np.random.randint(2**32 - 1)
 
     set_random_seed(args.seed)
 
@@ -208,7 +214,7 @@ if __name__ == '__main__':
         del hyperparams['env_wrapper']
 
     log_path = "{}/{}/".format(args.log_folder, args.algo)
-    save_path = os.path.join(log_path, "{}_{}".format(env_id, get_latest_run_id(log_path, env_id) + 1))
+    save_path = os.path.join(log_path, f"{env_id}_{get_latest_run_id(log_path, env_id) + 1}{uuid_str}")
     params_path = "{}/{}".format(save_path, env_id)
     os.makedirs(params_path, exist_ok=True)
 
