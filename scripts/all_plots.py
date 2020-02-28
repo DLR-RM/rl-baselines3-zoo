@@ -188,7 +188,7 @@ for env in args.env:
                     'std_error_last_eval': std_error_last_eval
                 }
 
-                plt.plot(timesteps / divider, mean_, label=f'{algo}-{args.labels[folder_idx]}')
+                plt.plot(timesteps / divider, mean_, label=f'{algo}-{args.labels[folder_idx]}', linewidth=3)
                 plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
     plt.legend()

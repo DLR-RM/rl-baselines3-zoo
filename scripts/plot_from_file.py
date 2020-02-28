@@ -16,6 +16,12 @@ parser.add_argument('--no-million', action='store_true', default=False,
                     help='Do not convert x-axis to million')
 parser.add_argument('--skip-timesteps', action='store_true', default=False,
                     help='Do not display learning curves')
+parser.add_argument('-o', '--output', help='Output filename (image)', type=str)
+parser.add_argument('--format', help='Output format', type=str, default='svg')
+parser.add_argument('-loc', '--legend-loc', help='The location of the legend.', type=str, default='best')
+parser.add_argument('--figsize', help='Figure size, width, height in inches.', nargs=2, type=int, default=[6.4, 4.8])
+parser.add_argument('-l', '--labels', help='Custom labels', type=str, nargs='+')
+
 args = parser.parse_args()
 
 # Activate seaborn
@@ -40,17 +46,25 @@ writer.write_table()
 
 del results['results_table']
 
-labels = [key for key in results[list(results.keys())[0]].keys()]
+keys = [key for key in results[list(results.keys())[0]].keys()]
 envs = [env for env in results.keys() if env not in args.skip_envs]
+labels = {key:key for key in keys}
+if args.labels is not None:
+    for key, label in zip(keys, args.labels):
+        labels[key] = label
 
 if not args.skip_timesteps:
     # Plot learning curves per env
     for env in envs:
 
         plt.figure(f'Results {env}')
-        plt.title(f'{env}BulletEnv-v0', fontsize=14)
+        title = f'{env}BulletEnv-v0'
+        if 'Mountain' in env:
+            title = 'MountainCarContinuous-v0'
 
-        x_label_suffix = '' if args.no_million else '(in Million)'
+        plt.title(title, fontsize=14)
+
+        x_label_suffix = '' if args.no_million else '(1e6)'
         plt.xlabel(f'Timesteps {x_label_suffix}', fontsize=14)
         plt.ylabel('Score', fontsize=14)
 
@@ -64,24 +78,28 @@ if not args.skip_timesteps:
             mean_ = results[env][key]['mean']
             std_error = results[env][key]['std_error']
 
-
-            plt.plot(timesteps / divider, mean_, label=key)
+            plt.xticks(fontsize=13)
+            plt.plot(timesteps / divider, mean_, label=labels[key], linewidth=3)
             plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
-        plt.legend()
+        plt.legend(fontsize=14)
+        plt.tight_layout()
 
 # Plot final results with env as x axis
-plt.figure('Sensitivity plot')
+plt.figure('Sensitivity plot', figsize=args.figsize)
 plt.title('Sensitivity plot', fontsize=14)
+plt.xticks(fontsize=13)
 plt.xlabel('Environment', fontsize=14)
 plt.ylabel('Score', fontsize=14)
 
-for label in labels:
-    values = [np.mean(results[env][label]['last_evals']) for env in envs]
-    plt.plot(envs, values, label=label)
+for key in keys:
+    values = [np.mean(results[env][key]['last_evals']) for env in envs]
+    plt.plot(envs, values, '-o', label=labels[key], linewidth=3)
 
-plt.legend()
-plt.show()
-# TODO: export, we need to fix the figure size and axis first
+plt.legend(fontsize=13, loc=args.legend_loc)
+plt.tight_layout()
+# export, we need to fix the figure size and axis first
 # we also may have to change backend
-# plt.savefig("exported.svg", format="svg")
+if args.output is not None:
+    plt.savefig(args.output, format=args.format)
+plt.show()
