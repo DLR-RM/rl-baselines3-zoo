@@ -12,7 +12,7 @@ try:
 except ImportError:
     matplotlib.use('agg')
 
-from torchy_baselines.results_plotter import load_results, ts2xy
+from torchy_baselines.common.results_plotter import load_results, ts2xy
 
 from utils import get_trained_models
 

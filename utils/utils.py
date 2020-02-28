@@ -1,9 +1,9 @@
-import time
 import os
 import inspect
 import glob
 import yaml
 import importlib
+import argparse
 
 import gym
 try:
@@ -12,6 +12,8 @@ except ImportError:
     pybullet_envs = None
 
 from gym.envs.registration import load
+# For custom activation fn
+import torch.nn as nn  # pylint: disable=unused-import
 
 from torchy_baselines.common.monitor import Monitor
 # from torchy_baselines.common import logger
@@ -69,23 +71,86 @@ def get_wrapper_class(hyperparams):
             wrapper_names = wrapper_name
 
         wrapper_classes = []
+        wrapper_kwargs = []
         # Handle multiple wrappers
         for wrapper_name in wrapper_names:
+            # Handle keyword arguments
+            if isinstance(wrapper_name, dict):
+                assert len(wrapper_name) == 1, ("You have an error in the formatting "
+                                                f"of your YAML file near {wrapper_name}. "
+                                                "You should check the indentation.")
+                wrapper_dict = wrapper_name
+                wrapper_name = list(wrapper_dict.keys())[0]
+                kwargs = wrapper_dict[wrapper_name]
+            else:
+                kwargs = {}
             wrapper_module = importlib.import_module(get_module_name(wrapper_name))
             wrapper_class = getattr(wrapper_module, get_class_name(wrapper_name))
             wrapper_classes.append(wrapper_class)
+            wrapper_kwargs.append(kwargs)
 
         def wrap_env(env):
             """
             :param env: (gym.Env)
             :return: (gym.Env)
             """
-            for wrapper_class in wrapper_classes:
-                env = wrapper_class(env)
+            for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs):
+                env = wrapper_class(env, **kwargs)
             return env
         return wrap_env
     else:
         return None
+
+
+def get_callback_class(hyperparams):
+    """
+    Get one or more Callback class specified as a hyper-parameter
+    "callback".
+    e.g.
+    callback: torchy_baselines.common.callbacks.CheckpointCallback
+
+    for multiple, specify a list:
+
+    callback:
+        - utils.callbacks.PlotActionWrapper
+        - torchy_baselines.common.callbacks.CheckpointCallback
+
+    :param hyperparams: (dict)
+    :return: (List[BaseCallback])
+    """
+
+    def get_module_name(callback_name):
+        return '.'.join(callback_name.split('.')[:-1])
+
+    def get_class_name(callback_name):
+        return callback_name.split('.')[-1]
+
+    callbacks = []
+
+    if 'callback' in hyperparams.keys():
+        callback_name = hyperparams.get('callback')
+        if not isinstance(callback_name, list):
+            callback_names = [callback_name]
+        else:
+            callback_names = callback_name
+
+        # Handle multiple wrappers
+        for callback_name in callback_names:
+            # Handle keyword arguments
+            if isinstance(callback_name, dict):
+                assert len(callback_name) == 1, ("You have an error in the formatting "
+                                                f"of your YAML file near {callback_name}. "
+                                                "You should check the indentation.")
+                callback_dict = callback_name
+                callback_name = list(callback_dict.keys())[0]
+                kwargs = callback_dict[callback_name]
+            else:
+                kwargs = {}
+            callback_module = importlib.import_module(get_module_name(callback_name))
+            callback_class = getattr(callback_module, get_class_name(callback_name))
+            callbacks.append(callback_class(**kwargs))
+
+    return callbacks
 
 
 def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
@@ -100,9 +165,8 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
     :param wrapper_class: (Type[gym.Wrapper]) a subclass of gym.Wrapper to wrap the original
                     env with
     """
-    if log_dir is None and log_dir != '':
-        log_dir = "/tmp/gym/{}/".format(int(time.time()))
-    os.makedirs(log_dir, exist_ok=True)
+    if log_dir is not None:
+        os.makedirs(log_dir, exist_ok=True)
 
     def _init():
         set_random_seed(seed + rank)
@@ -115,7 +179,8 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
             env = wrapper_class(env)
 
         env.seed(seed + rank)
-        env = Monitor(env, os.path.join(log_dir, str(rank)))
+        log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
+        env = Monitor(env, log_file)
         return env
 
     return _init
@@ -150,16 +215,17 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
         del hyperparams['env_wrapper']
 
     if is_atari:
-        print("Using Atari wrapper")
-        env = make_atari_env(env_id, num_env=n_envs, seed=seed)
+        raise NotImplementedError()
+        # print("Using Atari wrapper")
+        # env = make_atari_env(env_id, num_env=n_envs, seed=seed)
         # Frame-stacking with 4 frames
-        env = VecFrameStack(env, n_stack=4)
+        # env = VecFrameStack(env, n_stack=4)
     elif n_envs > 1:
         # start_method = 'spawn' for thread safe
         env = SubprocVecEnv([make_env(env_id, i, seed, log_dir, wrapper_class=env_wrapper) for i in range(n_envs)])
     # Pybullet envs does not follow gym.render() interface
     elif "Bullet" in env_id:
-        spec = gym.envs.registry.env_specs[env_id]
+        spec = gym.envs.registry.env_specs[env_id]  # pytype: disable=module-attr
         try:
             class_ = load(spec.entry_point)
         except AttributeError:
@@ -199,7 +265,15 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
             print("Loading running average")
             print("with params: {}".format(hyperparams['normalize_kwargs']))
             env = VecNormalize(env, training=False, **hyperparams['normalize_kwargs'])
-            env.load_running_average(stats_path)
+
+            if os.path.exists(os.path.join(stats_path, 'vecnormalize.pkl')):
+                env = VecNormalize.load(os.path.join(stats_path, 'vecnormalize.pkl'), env)
+                # Deactivate training and reward normalization
+                env.training = False
+                env.norm_reward = False
+            else:
+                # Legacy:
+                env.load_running_average(stats_path)
 
         n_stack = hyperparams.get('frame_stack', 0)
         if n_stack > 0:
@@ -302,7 +376,7 @@ def get_saved_hyperparams(stats_path, norm_reward=False, test_mode=False):
         if os.path.isfile(config_file):
             # Load saved hyperparameters
             with open(os.path.join(stats_path, 'config.yml'), 'r') as f:
-                hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)
+                hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
             hyperparams['normalize'] = hyperparams.get('normalize', False)
         else:
             obs_rms_path = os.path.join(stats_path, 'obs_rms.pkl')
@@ -318,3 +392,22 @@ def get_saved_hyperparams(stats_path, norm_reward=False, test_mode=False):
                 normalize_kwargs = {'norm_obs': hyperparams['normalize'], 'norm_reward': norm_reward}
             hyperparams['normalize_kwargs'] = normalize_kwargs
     return hyperparams, stats_path
+
+
+class StoreDict(argparse.Action):
+    """
+    Custom action for storing dict.
+    In: args1:0.0 args2:"dict(a=1)"
+    Out: {'args1': 0.0, arg2: dict(a=1)}
+    """
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        self._nargs = nargs
+        super(StoreDict, self).__init__(option_strings, dest, nargs=nargs, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        arg_dict = {}
+        for arguments in values:
+            key = arguments.split(":")[0]
+            value = "".join(arguments.split(":")[1:])
+            arg_dict[key] = eval(value)
+        setattr(namespace, self.dest, arg_dict)
