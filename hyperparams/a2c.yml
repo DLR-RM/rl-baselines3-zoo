@@ -207,7 +207,7 @@ HopperBulletEnv-v0:
   normalize_advantage: False
   learning_rate: lin_0.00096
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-2, ortho_init=False, net_arch=[dict(pi=[64, 64], vf=[64, 64])])"
+  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
 # Tuned but unstable
 # Not working without SDE?
