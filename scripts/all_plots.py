@@ -23,6 +23,8 @@ parser.add_argument('--no-million', action='store_true', default=False,
                     help='Do not convert x-axis to million')
 parser.add_argument('--no-display', action='store_true', default=False,
                     help='Do not show the plots')
+parser.add_argument('-print', '--print-n-trials', action='store_true', default=False,
+                    help='Print the number of trial for each result')
 args = parser.parse_args()
 
 # Activate seaborn
@@ -150,6 +152,10 @@ for env in args.env:
                 merged_mean = np.array(merged_mean)
                 n_trials = len(merged_mean)
                 n_eval = len(timesteps)
+
+                if args.print_n_trials:
+                    print(f'{env}-{algo}-{args.labels[folder_idx]}: {n_trials}')
+
                 # reshape to (n_trials, n_eval, n_eval_episodes)
                 evaluations = merged_mean.reshape((n_trials, n_eval, -1))
                 # re-arrange to (n_eval, n_trials, n_eval_episodes)

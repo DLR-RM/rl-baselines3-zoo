@@ -21,6 +21,7 @@ parser.add_argument('--format', help='Output format', type=str, default='svg')
 parser.add_argument('-loc', '--legend-loc', help='The location of the legend.', type=str, default='best')
 parser.add_argument('--figsize', help='Figure size, width, height in inches.', nargs=2, type=int, default=[6.4, 4.8])
 parser.add_argument('-l', '--labels', help='Custom labels', type=str, nargs='+')
+parser.add_argument('-b', '--boxplot', help='Enable boxplot', action='store_true', default=False)
 
 args = parser.parse_args()
 
@@ -68,7 +69,7 @@ if not args.skip_timesteps:
         plt.xlabel(f'Timesteps {x_label_suffix}', fontsize=14)
         plt.ylabel('Score', fontsize=14)
 
-        for key in results[env].keys():
+        for key in keys:
             # x axis in Millions of timesteps
             divider = 1e6
             if args.no_million:
@@ -98,8 +99,25 @@ for key in keys:
 
 plt.legend(fontsize=13, loc=args.legend_loc)
 plt.tight_layout()
-# export, we need to fix the figure size and axis first
-# we also may have to change backend
 if args.output is not None:
     plt.savefig(args.output, format=args.format)
+
+if args.boxplot is not None:
+    # Box plot
+    plt.figure('Sensitivity box plot', figsize=args.figsize)
+    plt.title('Sensitivity box plot', fontsize=14)
+    plt.xticks(fontsize=13)
+    plt.xlabel('Method', fontsize=14)
+    plt.ylabel('Score', fontsize=14)
+
+    data, labels_ = [], []
+    for env in envs:
+        for key in keys:
+            data.append(results[env][key]['last_evals'])
+            labels_.append(f'{env}-{labels[key]}')
+
+    plt.boxplot(data)
+    print(labels, args.labels)
+    plt.xticks(np.arange(1, len(data) + 1), labels_)
+
 plt.show()
