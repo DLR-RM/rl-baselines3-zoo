@@ -27,6 +27,8 @@ args = parser.parse_args()
 
 # Activate seaborn
 seaborn.set()
+# Enable LaTeX support
+# plt.rc('text', usetex=True)
 
 filename = args.input
 
@@ -105,19 +107,25 @@ if args.output is not None:
 if args.boxplot is not None:
     # Box plot
     plt.figure('Sensitivity box plot', figsize=args.figsize)
-    plt.title('Sensitivity box plot', fontsize=14)
+    plt.title('Sensitivity plot', fontsize=14)
+    # plt.title('Influence of the exploration variance $log \sigma$ on Hopper', fontsize=14)
+    # plt.title('Influence of the sample frequency on Walker2D', fontsize=14)
+    # plt.title('Influence of the exploration function input on Hopper', fontsize=14)
     plt.xticks(fontsize=13)
-    plt.xlabel('Method', fontsize=14)
+    # plt.xlabel('Exploration variance $log \sigma$', fontsize=14)
+    # plt.xlabel('Sample frequency', fontsize=14)
+    # plt.xlabel('Method', fontsize=14)
     plt.ylabel('Score', fontsize=14)
 
     data, labels_ = [], []
     for env in envs:
         for key in keys:
             data.append(results[env][key]['last_evals'])
-            labels_.append(f'{env}-{labels[key]}')
+            text = f'{env}-{labels[key]}' if len(envs) > 1 else labels[key]
+            labels_.append(text)
 
     plt.boxplot(data)
-    print(labels, args.labels)
-    plt.xticks(np.arange(1, len(data) + 1), labels_)
+    plt.xticks(np.arange(1, len(data) + 1), labels_, rotation=0)
+    plt.tight_layout()
 
 plt.show()
