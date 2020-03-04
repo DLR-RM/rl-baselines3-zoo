@@ -1,5 +1,4 @@
 import os
-import inspect
 import glob
 import yaml
 import importlib
@@ -11,7 +10,6 @@ try:
 except ImportError:
     pybullet_envs = None
 
-from gym.envs.registration import load
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
@@ -225,36 +223,8 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
         env = SubprocVecEnv([make_env(env_id, i, seed, log_dir, wrapper_class=env_wrapper) for i in range(n_envs)])
     # Pybullet envs does not follow gym.render() interface
     elif "Bullet" in env_id:
-        spec = gym.envs.registry.env_specs[env_id]  # pytype: disable=module-attr
-        try:
-            class_ = load(spec.entry_point)
-        except AttributeError:
-            # Backward compatibility with gym
-            class_ = load(spec._entry_point)
-        # HACK: force SubprocVecEnv for Bullet env that does not
-        # have a render argument
-        render_name = None
-        use_subproc = 'renders' not in inspect.getfullargspec(class_.__init__).args
-        if not use_subproc:
-            render_name = 'renders'
-        # Dev branch of pybullet
-        # use_subproc = use_subproc and 'render' not in inspect.getfullargspec(class_.__init__).args
-        # if not use_subproc and render_name is None:
-        #     render_name = 'render'
-
-        # Create the env, with the original kwargs, and the new ones overriding them if needed
-        def _init():
-            # TODO: fix for pybullet locomotion envs
-            env = class_(**{**spec._kwargs}, **{render_name: should_render})
-            env.seed(0)
-            if log_dir is not None:
-                env = Monitor(env, os.path.join(log_dir, "0"))
-            return env
-
-        if use_subproc:
-            env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper)])
-        else:
-            env = DummyVecEnv([_init])
+        # HACK: force SubprocVecEnv for Bullet env
+        env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper)])
     else:
         env = DummyVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper)])
 
