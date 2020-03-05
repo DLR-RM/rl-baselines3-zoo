@@ -91,29 +91,35 @@ if not args.skip_timesteps:
 # Plot final results with env as x axis
 plt.figure('Sensitivity plot', figsize=args.figsize)
 plt.title('Sensitivity plot', fontsize=14)
+# plt.title('Influence of the exploration variance $log \sigma$', fontsize=14)
+# plt.title('Influence of the sampling frequency', fontsize=14)
+# plt.title('Parallel vs No Parallel Sampling', fontsize=14)
 plt.xticks(fontsize=13)
 plt.xlabel('Environment', fontsize=14)
 plt.ylabel('Score', fontsize=14)
 
 for key in keys:
     values = [np.mean(results[env][key]['last_evals']) for env in envs]
-    plt.plot(envs, values, '-o', label=labels[key], linewidth=3)
+    # Overwrite the labels
+    # labels = {key:i for i, key in enumerate(keys, start=-6)}
+    plt.errorbar(envs, values, yerr=results[env][key]['std_error'][-1],
+                 linewidth=3, fmt='-o', label=labels[key], capsize=5, capthick=2, elinewidth=2)
 
 plt.legend(fontsize=13, loc=args.legend_loc)
 plt.tight_layout()
 if args.output is not None:
     plt.savefig(args.output, format=args.format)
 
-if args.boxplot is not None:
+if args.boxplot:
     # Box plot
     plt.figure('Sensitivity box plot', figsize=args.figsize)
-    plt.title('Sensitivity plot', fontsize=14)
+    plt.title('Sensitivity box plot', fontsize=14)
     # plt.title('Influence of the exploration variance $log \sigma$ on Hopper', fontsize=14)
-    # plt.title('Influence of the sample frequency on Walker2D', fontsize=14)
+    # plt.title('Influence of the sampling frequency on Walker2D', fontsize=14)
     # plt.title('Influence of the exploration function input on Hopper', fontsize=14)
     plt.xticks(fontsize=13)
     # plt.xlabel('Exploration variance $log \sigma$', fontsize=14)
-    # plt.xlabel('Sample frequency', fontsize=14)
+    # plt.xlabel('Sampling frequency', fontsize=14)
     # plt.xlabel('Method', fontsize=14)
     plt.ylabel('Score', fontsize=14)
 
