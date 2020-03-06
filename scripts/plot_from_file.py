@@ -22,13 +22,15 @@ parser.add_argument('-loc', '--legend-loc', help='The location of the legend.', 
 parser.add_argument('--figsize', help='Figure size, width, height in inches.', nargs=2, type=int, default=[6.4, 4.8])
 parser.add_argument('-l', '--labels', help='Custom labels', type=str, nargs='+')
 parser.add_argument('-b', '--boxplot', help='Enable boxplot', action='store_true', default=False)
+parser.add_argument('-latex', '--latex', help='Enable latex support', action='store_true', default=False)
 
 args = parser.parse_args()
 
 # Activate seaborn
 seaborn.set()
 # Enable LaTeX support
-# plt.rc('text', usetex=True)
+if args.latex:
+    plt.rc('text', usetex=True)
 
 filename = args.input
 
@@ -94,6 +96,7 @@ plt.title('Sensitivity plot', fontsize=14)
 # plt.title('Influence of the exploration variance $log \sigma$', fontsize=14)
 # plt.title('Influence of the sampling frequency', fontsize=14)
 # plt.title('Parallel vs No Parallel Sampling', fontsize=14)
+# plt.title('Influence of the exploration function input', fontsize=14)
 plt.xticks(fontsize=13)
 plt.xlabel('Environment', fontsize=14)
 plt.ylabel('Score', fontsize=14)
@@ -119,7 +122,7 @@ if args.boxplot:
     # plt.title('Influence of the exploration function input on Hopper', fontsize=14)
     plt.xticks(fontsize=13)
     # plt.xlabel('Exploration variance $log \sigma$', fontsize=14)
-    # plt.xlabel('Sampling frequency', fontsize=14)
+    plt.xlabel('Sampling frequency', fontsize=14)
     # plt.xlabel('Method', fontsize=14)
     plt.ylabel('Score', fontsize=14)
 

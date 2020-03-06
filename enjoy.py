@@ -4,30 +4,11 @@ import importlib
 
 import gym
 import numpy as np
-try:
-    import pybullet_envs  # pytype: disable=import-error
-except ImportError:
-    pybullet_envs = None
-
-try:
-    import highway_env  # pytype: disable=import-error
-except ImportError:
-    highway_env = None
-
-try:
-    import neck_rl  # pytype: disable=import-error
-except ImportError:
-    neck_rl = None
-
-try:
-    import mocca_envs  # pytype: disable=import-error
-except ImportError:
-    mocca_envs = None
-
 
 from torchy_baselines.common.utils import set_random_seed
 from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
 
+import utils.import_envs  # pytype: disable=import-error
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
 

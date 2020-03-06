@@ -1,3 +1,5 @@
+# === Real Robot envs
+
 NeckEnv-v0:
   env_wrapper:
     - utils.wrappers.TimeFeatureWrapper
@@ -160,57 +162,6 @@ BipedalWalkerHardcore-v2:
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], use_expln=True)"
-
-# ===  Mocca envs ===
-
-CassieEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 3e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
-
-Walker3DCustomEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 3e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 500000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
-
-Walker3DStepperEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
-
 
 # === Bullet envs ===
 
@@ -376,3 +327,73 @@ MinitaurBulletDuckEnv-v0:
   train_freq: 1
   gradient_steps: 1
   learning_starts: 1000
+
+
+# ==== Custom Envs ===
+
+SquareEnvironment50Hz-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+
+
+# ===  Mocca envs ===
+
+CassieEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 3e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+
+Walker3DCustomEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 3e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 500000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+
+Walker3DStepperEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
