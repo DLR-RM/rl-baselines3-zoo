@@ -63,6 +63,10 @@ def get_wrapper_class(hyperparams):
 
     if 'env_wrapper' in hyperparams.keys():
         wrapper_name = hyperparams.get('env_wrapper')
+
+        if wrapper_name is None:
+            return None
+
         if not isinstance(wrapper_name, list):
             wrapper_names = [wrapper_name]
         else:
@@ -127,6 +131,10 @@ def get_callback_class(hyperparams):
 
     if 'callback' in hyperparams.keys():
         callback_name = hyperparams.get('callback')
+
+        if callback_name is None:
+            return None
+
         if not isinstance(callback_name, list):
             callback_names = [callback_name]
         else:
