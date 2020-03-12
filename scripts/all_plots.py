@@ -50,8 +50,12 @@ for env in args.env:
     for algo in args.algos:
         for folder_idx, exp_folder in enumerate(args.exp_folders):
 
-            results[env][f'{args.labels[folder_idx]}-{algo}'] = 0.0
             log_path = os.path.join(exp_folder, algo.lower())
+
+            if not os.path.isdir(log_path):
+                continue
+
+            results[env][f'{args.labels[folder_idx]}-{algo}'] = 0.0
 
             dirs = [os.path.join(log_path, d) for d in os.listdir(log_path) if env in d]
 
