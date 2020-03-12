@@ -133,7 +133,7 @@ def get_callback_class(hyperparams):
         callback_name = hyperparams.get('callback')
 
         if callback_name is None:
-            return None
+            return callbacks
 
         if not isinstance(callback_name, list):
             callback_names = [callback_name]
@@ -186,7 +186,9 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
 
         env.seed(seed + rank)
         log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
-        env = Monitor(env, log_file)
+        # Monitor success rate too for the real robot
+        info_keywords = ('is_success',) if 'NeckEnv' in env_id else ()
+        env = Monitor(env, log_file, info_keywords=info_keywords)
         return env
 
     return _init
