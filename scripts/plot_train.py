@@ -25,12 +25,11 @@ algo = args.algo
 env = args.env
 log_path = os.path.join(args.exp_folder, algo)
 
-dirs = [os.path.join(log_path, folder) for folder in os.listdir(log_path) if env in folder]
+dirs = [os.path.join(log_path, folder) for folder in os.listdir(log_path) if env in folder and os.path.isdir(os.path.join(log_path, folder))]
 
 try:
     plot_results(dirs, 2e6, X_TIMESTEPS, env)
 except Exception as e:
     print(e)
 
-plt.legend()
 plt.show()

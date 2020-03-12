@@ -57,7 +57,8 @@ for env in args.env:
 
             results[env][f'{args.labels[folder_idx]}-{algo}'] = 0.0
 
-            dirs = [os.path.join(log_path, d) for d in os.listdir(log_path) if env in d]
+            dirs = [os.path.join(log_path, d) for d in os.listdir(log_path) if (env in d
+                                                                                and os.path.isdir(os.path.join(log_path, d)))]
 
             max_len = 0
             merged_mean, merged_std = [], []
