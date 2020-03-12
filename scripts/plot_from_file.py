@@ -4,8 +4,8 @@ import argparse
 import pickle
 
 import pytablewriter
-import numpy as np
 import seaborn
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -93,6 +93,8 @@ if not args.skip_timesteps:
 # Plot final results with env as x axis
 plt.figure('Sensitivity plot', figsize=args.figsize)
 plt.title('Sensitivity plot', fontsize=14)
+# plt.title('Influence of the time feature', fontsize=14)
+# plt.title('Influence of the network architecture', fontsize=14)
 # plt.title('Influence of the exploration variance $log \sigma$', fontsize=14)
 # plt.title('Influence of the sampling frequency', fontsize=14)
 # plt.title('Parallel vs No Parallel Sampling', fontsize=14)
@@ -113,6 +115,23 @@ plt.tight_layout()
 if args.output is not None:
     plt.savefig(args.output, format=args.format)
 
+# Plot final results with env as labels and method as x axis
+# plt.figure('Sensitivity plot inverted', figsize=args.figsize)
+# plt.title('Sensitivity plot', fontsize=14)
+# plt.xticks(fontsize=13)
+# # plt.xlabel('Method', fontsize=14)
+# plt.ylabel('Score', fontsize=14)
+#
+# for env in envs:
+#     values = [np.mean(results[env][key]['last_evals']) for key in keys]
+#     # Overwrite the labels
+#     # labels = {key:i for i, key in enumerate(keys, start=-6)}
+#     plt.errorbar(labels.values(), values, yerr=results[env][key]['std_error'][-1],
+#                  linewidth=3, fmt='-o', label=env, capsize=5, capthick=2, elinewidth=2)
+#
+# plt.legend(fontsize=13, loc=args.legend_loc)
+# plt.tight_layout()
+
 if args.boxplot:
     # Box plot
     plt.figure('Sensitivity box plot', figsize=args.figsize)
@@ -132,7 +151,6 @@ if args.boxplot:
             data.append(results[env][key]['last_evals'])
             text = f'{env}-{labels[key]}' if len(envs) > 1 else labels[key]
             labels_.append(text)
-
     plt.boxplot(data)
     plt.xticks(np.arange(1, len(data) + 1), labels_, rotation=0)
     plt.tight_layout()
