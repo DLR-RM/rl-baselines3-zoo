@@ -20,6 +20,7 @@ parser.add_argument('-o', '--output', help='Output filename (image)', type=str)
 parser.add_argument('--format', help='Output format', type=str, default='svg')
 parser.add_argument('-loc', '--legend-loc', help='The location of the legend.', type=str, default='best')
 parser.add_argument('--figsize', help='Figure size, width, height in inches.', nargs=2, type=int, default=[6.4, 4.8])
+parser.add_argument('--fontsize', help='Font size', type=int, default=14)
 parser.add_argument('-l', '--labels', help='Custom labels', type=str, nargs='+')
 parser.add_argument('-b', '--boxplot', help='Enable boxplot', action='store_true', default=False)
 parser.add_argument('-latex', '--latex', help='Enable latex support', action='store_true', default=False)
@@ -37,10 +38,8 @@ filename = args.input
 if not filename.endswith('.pkl'):
     filename += '.pkl'
 
-
 with open(filename, 'rb') as file_handler:
     results = pickle.load(file_handler)
-
 
 # Plot table
 writer = pytablewriter.MarkdownTableWriter()
@@ -67,11 +66,11 @@ if not args.skip_timesteps:
         if 'Mountain' in env:
             title = 'MountainCarContinuous-v0'
 
-        plt.title(title, fontsize=14)
+        plt.title(title, fontsize=args.fontsize)
 
         x_label_suffix = '' if args.no_million else '(1e6)'
-        plt.xlabel(f'Timesteps {x_label_suffix}', fontsize=14)
-        plt.ylabel('Score', fontsize=14)
+        plt.xlabel(f'Timesteps {x_label_suffix}', fontsize=args.fontsize)
+        plt.ylabel('Score', fontsize=args.fontsize)
 
         for key in keys:
             # x axis in Millions of timesteps
@@ -87,21 +86,21 @@ if not args.skip_timesteps:
             plt.plot(timesteps / divider, mean_, label=labels[key], linewidth=3)
             plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
-        plt.legend(fontsize=14)
+        plt.legend(fontsize=args.fontsize)
         plt.tight_layout()
 
 # Plot final results with env as x axis
 plt.figure('Sensitivity plot', figsize=args.figsize)
-plt.title('Sensitivity plot', fontsize=14)
-# plt.title('Influence of the time feature', fontsize=14)
-# plt.title('Influence of the network architecture', fontsize=14)
-# plt.title('Influence of the exploration variance $log \sigma$', fontsize=14)
-# plt.title('Influence of the sampling frequency', fontsize=14)
-# plt.title('Parallel vs No Parallel Sampling', fontsize=14)
-# plt.title('Influence of the exploration function input', fontsize=14)
+plt.title('Sensitivity plot', fontsize=args.fontsize)
+# plt.title('Influence of the time feature', fontsize=args.fontsize)
+# plt.title('Influence of the network architecture', fontsize=args.fontsize)
+# plt.title('Influence of the exploration variance $log \sigma$', fontsize=args.fontsize)
+# plt.title('Influence of the sampling frequency', fontsize=args.fontsize)
+# plt.title('Parallel vs No Parallel Sampling', fontsize=args.fontsize)
+# plt.title('Influence of the exploration function input', fontsize=args.fontsize)
 plt.xticks(fontsize=13)
-plt.xlabel('Environment', fontsize=14)
-plt.ylabel('Score', fontsize=14)
+plt.xlabel('Environment', fontsize=args.fontsize)
+plt.ylabel('Score', fontsize=args.fontsize)
 
 for key in keys:
     values = [np.mean(results[env][key]['last_evals']) for env in envs]
@@ -117,10 +116,10 @@ if args.output is not None:
 
 # Plot final results with env as labels and method as x axis
 # plt.figure('Sensitivity plot inverted', figsize=args.figsize)
-# plt.title('Sensitivity plot', fontsize=14)
+# plt.title('Sensitivity plot', fontsize=args.fontsize)
 # plt.xticks(fontsize=13)
-# # plt.xlabel('Method', fontsize=14)
-# plt.ylabel('Score', fontsize=14)
+# # plt.xlabel('Method', fontsize=args.fontsize)
+# plt.ylabel('Score', fontsize=args.fontsize)
 #
 # for env in envs:
 #     values = [np.mean(results[env][key]['last_evals']) for key in keys]
@@ -135,15 +134,15 @@ if args.output is not None:
 if args.boxplot:
     # Box plot
     plt.figure('Sensitivity box plot', figsize=args.figsize)
-    plt.title('Sensitivity box plot', fontsize=14)
-    # plt.title('Influence of the exploration variance $log \sigma$ on Hopper', fontsize=14)
-    # plt.title('Influence of the sampling frequency on Walker2D', fontsize=14)
-    # plt.title('Influence of the exploration function input on Hopper', fontsize=14)
+    plt.title('Sensitivity box plot', fontsize=args.fontsize)
+    # plt.title('Influence of the exploration variance $log \sigma$ on Hopper', fontsize=args.fontsize)
+    # plt.title('Influence of the sampling frequency on Walker2D', fontsize=args.fontsize)
+    # plt.title('Influence of the exploration function input on Hopper', fontsize=args.fontsize)
     plt.xticks(fontsize=13)
-    # plt.xlabel('Exploration variance $log \sigma$', fontsize=14)
-    plt.xlabel('Sampling frequency', fontsize=14)
-    # plt.xlabel('Method', fontsize=14)
-    plt.ylabel('Score', fontsize=14)
+    # plt.xlabel('Exploration variance $log \sigma$', fontsize=args.fontsize)
+    plt.xlabel('Sampling frequency', fontsize=args.fontsize)
+    # plt.xlabel('Method', fontsize=args.fontsize)
+    plt.ylabel('Score', fontsize=args.fontsize)
 
     data, labels_ = [], []
     for env in envs:

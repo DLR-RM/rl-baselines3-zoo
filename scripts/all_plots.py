@@ -9,10 +9,11 @@ import seaborn
 import matplotlib.pyplot as plt
 from scipy.spatial import distance_matrix
 
+
 parser = argparse.ArgumentParser('Gather results, plot them and create table')
 parser.add_argument('-a', '--algos', help='Algorithms to include', nargs='+', type=str)
 parser.add_argument('-e', '--env', help='Environments to include', nargs='+', type=str)
-parser.add_argument('-f', '--exp_folders', help='Folders to include', nargs='+', type=str)
+parser.add_argument('-f', '--exp-folders', help='Folders to include', nargs='+', type=str)
 parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', type=str)
 parser.add_argument('-max', '--max-timesteps', help='Max number of timesteps to display', type=int, default=int(2e6))
 parser.add_argument('-min', '--min-timesteps', help='Min number of timesteps to keep a trial', type=int, default=-1)
