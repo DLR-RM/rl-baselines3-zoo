@@ -39,11 +39,11 @@ class TrialEvalCallback(EvalCallback):
 
 class SaveVecNormalizeCallback(BaseCallback):
     """
-    Callback for saving a VecNormalize wrapper every `save_freq` steps
+    Callback for saving a VecNormalize wrapper every ``save_freq`` steps
 
     :param save_freq: (int)
-    :param save_path: (str) Path to the folder where `VecNormalize` will be saved, as `vecnormalize.pkl`
-    :param name_prefix: (str) Common prefix to the saved `VecNormalize`, if None (default)
+    :param save_path: (str) Path to the folder where ``VecNormalize`` will be saved, as ``vecnormalize.pkl``
+    :param name_prefix: (str) Common prefix to the saved ``VecNormalize``, if None (default)
         only one file will be kept.
     """
     def __init__(self, save_freq: int, save_path: str, name_prefix=None, verbose=0):
@@ -75,7 +75,7 @@ class PlotNoiseRatioCallback(BaseCallback):
     Callback for plotting noise contribution to the exploration.
     Warning: it only works with 1D action space env for now (like MountainCarContinuous)
 
-    :param display_freq: (int) Display the plot every `display_freq` steps.
+    :param display_freq: (int) Display the plot every ``display_freq`` steps.
     :param verbose: (int)
     """
     def __init__(self, display_freq=1000, verbose=0):
@@ -93,8 +93,8 @@ class PlotNoiseRatioCallback(BaseCallback):
         obs = self.training_env._obs_from_buf()
         # Retrieve stochastic and deterministic action
         # we can extract the noise contribution from those two
-        noisy_action = self.model.predict(obs, deterministic=False).flatten()
-        deterministic_action = self.model.predict(obs, deterministic=True).flatten()
+        noisy_action, _ = self.model.predict(obs, deterministic=False).flatten()
+        deterministic_action, _ = self.model.predict(obs, deterministic=True).flatten()
         noise = noisy_action - deterministic_action
 
         self.deterministic_actions.append(deterministic_action)

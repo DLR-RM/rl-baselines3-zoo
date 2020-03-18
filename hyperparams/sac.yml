@@ -104,7 +104,7 @@ LunarLanderContinuous-v2:
   learning_starts: 1000
 
 # Tuned
-BipedalWalker-v2:
+BipedalWalker-v3:
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -120,7 +120,7 @@ BipedalWalker-v2:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 # Almost tuned
-BipedalWalkerHardcore-v2:
+BipedalWalkerHardcore-v3:
   n_timesteps: !!float 3e7
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4

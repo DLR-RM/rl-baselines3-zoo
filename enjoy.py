@@ -103,13 +103,14 @@ def main():
     # Force deterministic for DQN, DDPG, SAC and HER (that is a wrapper around)
     deterministic = args.deterministic or algo in ['dqn', 'ddpg', 'sac', 'her', 'td3'] and not args.stochastic
 
+    state = None
     episode_reward = 0.0
     episode_rewards, episode_lengths = [], []
     ep_len = 0
     # For HER, monitor success rate
     successes = []
     for _ in range(args.n_timesteps):
-        action = model.predict(obs, deterministic=deterministic)
+        action, state = model.predict(obs, state=state, deterministic=deterministic)
         # Random Agent
         # action = [env.action_space.sample()]
         # Clip Action to avoid out of bound errors
@@ -128,18 +129,19 @@ def main():
             if is_atari and infos is not None and args.verbose >= 1:
                 episode_infos = infos[0].get('episode')
                 if episode_infos is not None:
-                    print("Atari Episode Score: {:.2f}".format(episode_infos['r']))
+                    print(f"Atari Episode Score: {episode_infos['r']:.2f}")
                     print("Atari Episode Length", episode_infos['l'])
 
             if done and not is_atari and args.verbose > 0:
                 # NOTE: for env using VecNormalize, the mean reward
                 # is a normalized reward when `--norm_reward` flag is passed
-                print("Episode Reward: {:.2f}".format(episode_reward))
+                print(f"Episode Reward: {episode_reward:.2f}")
                 print("Episode Length", ep_len)
                 episode_rewards.append(episode_reward)
                 episode_lengths.append(ep_len)
                 episode_reward = 0.0
                 ep_len = 0
+                state = None
 
             # Reset also when the goal is achieved when using HER
             if done and infos[0].get('is_success') is not None:

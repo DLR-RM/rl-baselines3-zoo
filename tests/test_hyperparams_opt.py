@@ -13,7 +13,7 @@ N_STEPS = 100
 N_TRIALS = 2
 N_JOBS = 1
 
-ALGOS = ('ppo')
+ALGOS = ('ppo', 'a2c')
 ENV_IDS = ('CartPole-v1',)
 LOG_FOLDER = 'logs/tests_optimize/'
 
