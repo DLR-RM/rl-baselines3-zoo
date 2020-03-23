@@ -15,15 +15,14 @@ import torch.nn as nn  # pylint: disable=unused-import
 
 from torchy_baselines.common.monitor import Monitor
 # from torchy_baselines.common import logger
-from torchy_baselines import A2C, PPO, SAC, TD3, CEMRL
-from torchy_baselines.common.vec_env import DummyVecEnv, VecNormalize, \
-    VecFrameStack, SubprocVecEnv
+from torchy_baselines import A2C, PPO, SAC, TD3
+from torchy_baselines.common.vec_env import (DummyVecEnv, VecNormalize,
+                                             VecFrameStack, SubprocVecEnv)
 # from torchy_baselines.common.cmd_util import make_atari_env
 from torchy_baselines.common.utils import set_random_seed
 
 ALGOS = {
     'a2c': A2C,
-    'cemrl': CEMRL,
     'ppo': PPO,
     'sac': SAC,
     'td3': TD3
