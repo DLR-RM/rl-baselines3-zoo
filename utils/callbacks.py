@@ -93,8 +93,8 @@ class PlotNoiseRatioCallback(BaseCallback):
         obs = self.training_env._obs_from_buf()
         # Retrieve stochastic and deterministic action
         # we can extract the noise contribution from those two
-        noisy_action, _ = self.model.predict(obs, deterministic=False).flatten()
-        deterministic_action, _ = self.model.predict(obs, deterministic=True).flatten()
+        noisy_action = self.model.predict(obs, deterministic=False)[0].flatten()
+        deterministic_action = self.model.predict(obs, deterministic=True)[0].flatten()
         noise = noisy_action - deterministic_action
 
         self.deterministic_actions.append(deterministic_action)
