@@ -1,5 +1,4 @@
 import os
-import inspect
 import glob
 import yaml
 import importlib
@@ -11,21 +10,19 @@ try:
 except ImportError:
     pybullet_envs = None
 
-from gym.envs.registration import load
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
 from torchy_baselines.common.monitor import Monitor
 # from torchy_baselines.common import logger
-from torchy_baselines import A2C, PPO, SAC, TD3, CEMRL
-from torchy_baselines.common.vec_env import DummyVecEnv, VecNormalize, \
-    VecFrameStack, SubprocVecEnv
+from torchy_baselines import A2C, PPO, SAC, TD3
+from torchy_baselines.common.vec_env import (DummyVecEnv, VecNormalize,
+                                             VecFrameStack, SubprocVecEnv)
 # from torchy_baselines.common.cmd_util import make_atari_env
 from torchy_baselines.common.utils import set_random_seed
 
 ALGOS = {
     'a2c': A2C,
-    'cemrl': CEMRL,
     'ppo': PPO,
     'sac': SAC,
     'td3': TD3
@@ -65,6 +62,10 @@ def get_wrapper_class(hyperparams):
 
     if 'env_wrapper' in hyperparams.keys():
         wrapper_name = hyperparams.get('env_wrapper')
+
+        if wrapper_name is None:
+            return None
+
         if not isinstance(wrapper_name, list):
             wrapper_names = [wrapper_name]
         else:
@@ -129,6 +130,10 @@ def get_callback_class(hyperparams):
 
     if 'callback' in hyperparams.keys():
         callback_name = hyperparams.get('callback')
+
+        if callback_name is None:
+            return callbacks
+
         if not isinstance(callback_name, list):
             callback_names = [callback_name]
         else:
@@ -180,7 +185,9 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
 
         env.seed(seed + rank)
         log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
-        env = Monitor(env, log_file)
+        # Monitor success rate too for the real robot
+        info_keywords = ('is_success',) if 'NeckEnv' in env_id else ()
+        env = Monitor(env, log_file, info_keywords=info_keywords)
         return env
 
     return _init
@@ -225,36 +232,8 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
         env = SubprocVecEnv([make_env(env_id, i, seed, log_dir, wrapper_class=env_wrapper) for i in range(n_envs)])
     # Pybullet envs does not follow gym.render() interface
     elif "Bullet" in env_id:
-        spec = gym.envs.registry.env_specs[env_id]  # pytype: disable=module-attr
-        try:
-            class_ = load(spec.entry_point)
-        except AttributeError:
-            # Backward compatibility with gym
-            class_ = load(spec._entry_point)
-        # HACK: force SubprocVecEnv for Bullet env that does not
-        # have a render argument
-        render_name = None
-        use_subproc = 'renders' not in inspect.getfullargspec(class_.__init__).args
-        if not use_subproc:
-            render_name = 'renders'
-        # Dev branch of pybullet
-        # use_subproc = use_subproc and 'render' not in inspect.getfullargspec(class_.__init__).args
-        # if not use_subproc and render_name is None:
-        #     render_name = 'render'
-
-        # Create the env, with the original kwargs, and the new ones overriding them if needed
-        def _init():
-            # TODO: fix for pybullet locomotion envs
-            env = class_(**{**spec._kwargs}, **{render_name: should_render})
-            env.seed(0)
-            if log_dir is not None:
-                env = Monitor(env, os.path.join(log_dir, "0"))
-            return env
-
-        if use_subproc:
-            env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper)])
-        else:
-            env = DummyVecEnv([_init])
+        # HACK: force SubprocVecEnv for Bullet env
+        env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper)])
     else:
         env = DummyVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper)])
 

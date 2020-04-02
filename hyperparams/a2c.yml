@@ -82,7 +82,7 @@ MountainCarContinuous-v0:
   policy_kwargs: "dict(log_std_init=0.0, ortho_init=False)"
 
 # Tuned
-BipedalWalker-v2:
+BipedalWalker-v3:
   normalize: true
   n_envs: 16
   n_timesteps: !!float 5e6
@@ -100,7 +100,7 @@ BipedalWalker-v2:
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
 # Tuned
-BipedalWalkerHardcore-v2:
+BipedalWalkerHardcore-v3:
   normalize: true
   n_envs: 32
   n_timesteps: !!float 20e7

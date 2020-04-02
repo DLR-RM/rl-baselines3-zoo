@@ -37,7 +37,7 @@ LunarLanderContinuous-v2:
   policy_kwargs: "dict(net_arch=[400, 300], log_std_init=-3.62, lr_sde=1.5e-3)"
   use_sde: True
 
-BipedalWalker-v2:
+BipedalWalker-v3:
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -51,7 +51,7 @@ BipedalWalker-v2:
   use_sde: True
 
 # To be tuned
-BipedalWalkerHardcore-v2:
+BipedalWalkerHardcore-v3:
   n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
   gamma: 0.98

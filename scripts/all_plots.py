@@ -9,10 +9,11 @@ import seaborn
 import matplotlib.pyplot as plt
 from scipy.spatial import distance_matrix
 
+
 parser = argparse.ArgumentParser('Gather results, plot them and create table')
 parser.add_argument('-a', '--algos', help='Algorithms to include', nargs='+', type=str)
 parser.add_argument('-e', '--env', help='Environments to include', nargs='+', type=str)
-parser.add_argument('-f', '--exp_folders', help='Folders to include', nargs='+', type=str)
+parser.add_argument('-f', '--exp-folders', help='Folders to include', nargs='+', type=str)
 parser.add_argument('-l', '--labels', help='Label for each folder', nargs='+', type=str)
 parser.add_argument('-max', '--max-timesteps', help='Max number of timesteps to display', type=int, default=int(2e6))
 parser.add_argument('-min', '--min-timesteps', help='Min number of timesteps to keep a trial', type=int, default=-1)
@@ -23,6 +24,8 @@ parser.add_argument('--no-million', action='store_true', default=False,
                     help='Do not convert x-axis to million')
 parser.add_argument('--no-display', action='store_true', default=False,
                     help='Do not show the plots')
+parser.add_argument('-print', '--print-n-trials', action='store_true', default=False,
+                    help='Print the number of trial for each result')
 args = parser.parse_args()
 
 # Activate seaborn
@@ -48,10 +51,15 @@ for env in args.env:
     for algo in args.algos:
         for folder_idx, exp_folder in enumerate(args.exp_folders):
 
-            results[env][f'{args.labels[folder_idx]}-{algo}'] = 0.0
             log_path = os.path.join(exp_folder, algo.lower())
 
-            dirs = [os.path.join(log_path, d) for d in os.listdir(log_path) if env in d]
+            if not os.path.isdir(log_path):
+                continue
+
+            results[env][f'{args.labels[folder_idx]}-{algo}'] = 0.0
+
+            dirs = [os.path.join(log_path, d) for d in os.listdir(log_path) if (env in d
+                                                                                and os.path.isdir(os.path.join(log_path, d)))]
 
             max_len = 0
             merged_mean, merged_std = [], []
@@ -150,6 +158,10 @@ for env in args.env:
                 merged_mean = np.array(merged_mean)
                 n_trials = len(merged_mean)
                 n_eval = len(timesteps)
+
+                if args.print_n_trials:
+                    print(f'{env}-{algo}-{args.labels[folder_idx]}: {n_trials}')
+
                 # reshape to (n_trials, n_eval, n_eval_episodes)
                 evaluations = merged_mean.reshape((n_trials, n_eval, -1))
                 # re-arrange to (n_eval, n_trials, n_eval_episodes)
@@ -188,7 +200,7 @@ for env in args.env:
                     'std_error_last_eval': std_error_last_eval
                 }
 
-                plt.plot(timesteps / divider, mean_, label=f'{algo}-{args.labels[folder_idx]}')
+                plt.plot(timesteps / divider, mean_, label=f'{algo}-{args.labels[folder_idx]}', linewidth=3)
                 plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
     plt.legend()
