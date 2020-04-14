@@ -7,10 +7,11 @@ import uuid
 from collections import OrderedDict
 from pprint import pprint
 
-import numpy as np
 import yaml
 import gym
 import seaborn
+import numpy as np
+import torch as th
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
@@ -21,6 +22,7 @@ from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckAc
 from torchy_baselines.common.utils import constant_fn
 from torchy_baselines.common.callbacks import CheckpointCallback, EvalCallback
 
+# Register custom envs
 import utils.import_envs  # pytype: disable=import-error
 from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
@@ -38,8 +40,9 @@ if __name__ == '__main__':
     parser.add_argument('-tb', '--tensorboard-log', help='Tensorboard log dir', default='', type=str)
     parser.add_argument('-i', '--trained-agent', help='Path to a pretrained agent to continue training',
                         default='', type=str)
-
     parser.add_argument('-n', '--n-timesteps', help='Overwrite the number of timesteps', default=-1,
+                        type=int)
+    parser.add_argument('--num-threads', help='Number of threads for PyTorch (-1 to use default)', default=1,
                         type=int)
     parser.add_argument('--log-interval', help='Override log interval (default: -1, no change)', default=-1,
                         type=int)
@@ -65,6 +68,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
                         help='Additional external Gym environment package modules to import (e.g. gym_minigrid)')
+    parser.add_argument('--env-kwargs', type=str, nargs='+', action=StoreDict,
+                        help='Optional keyword argument to pass to the env constructor')
     parser.add_argument('-params', '--hyperparams', type=str, nargs='+', action=StoreDict,
                         help='Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)')
     parser.add_argument('-uuid', '--uuid', action='store_true', default=False,
@@ -94,11 +99,15 @@ if __name__ == '__main__':
 
     set_random_seed(args.seed)
 
+    # Setting num threads to 1 by default, it makes everything run faster
+    if args.num_threads > 0:
+        if args.verbose > 1:
+            print(f"Setting torch.num_threads to {args.num_threads}")
+        th.set_num_threads(args.num_threads)
+
     if args.trained_agent != "":
         assert args.trained_agent.endswith('.zip') and os.path.isfile(args.trained_agent), \
             "The trained_agent must be a valid path to a .zip file"
-
-    rank = 0
 
     tensorboard_log = None if args.tensorboard_log == '' else os.path.join(args.tensorboard_log, env_id)
 
@@ -124,6 +133,7 @@ if __name__ == '__main__':
         hyperparams.update(args.hyperparams)
     # Sort hyperparams that will be saved
     saved_hyperparams = OrderedDict([(key, hyperparams[key]) for key in sorted(hyperparams.keys())])
+    env_kwargs = {} if args.env_kwargs is None else args.env_kwargs
 
     algo_ = args.algo
     # HER is only a wrapper around an algo
@@ -215,6 +225,7 @@ if __name__ == '__main__':
         :return: (Union[gym.Env, VecEnv])
         """
         global hyperparams
+        global env_kwargs
 
         # Do not log eval env (issue with writing the same file)
         log_dir = None if eval_env else save_path
@@ -228,11 +239,13 @@ if __name__ == '__main__':
             # env = VecFrameStack(env, n_stack=4)
         else:
             if n_envs == 1:
-                env = DummyVecEnv([make_env(env_id, 0, args.seed, wrapper_class=env_wrapper, log_dir=log_dir)])
+                env = DummyVecEnv([make_env(env_id, 0, args.seed,
+                                   wrapper_class=env_wrapper, log_dir=log_dir,
+                                   env_kwargs=env_kwargs)])
             else:
                 # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
                 # On most env, SubprocVecEnv does not help and is quite memory hungry
-                env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir,
+                env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir, env_kwargs=env_kwargs,
                                             wrapper_class=env_wrapper) for i in range(n_envs)])
             if normalize:
                 if args.verbose > 0:

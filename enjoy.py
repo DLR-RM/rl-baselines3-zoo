@@ -9,8 +9,8 @@ from torchy_baselines.common.utils import set_random_seed
 from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
 
 import utils.import_envs  # pytype: disable=import-error
+from utils.utils import StoreDict
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -40,6 +40,8 @@ def main():
     parser.add_argument('--reward-log', help='Where to log reward', default='', type=str)
     parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
                         help='Additional external Gym environemnt package modules to import (e.g. gym_minigrid)')
+    parser.add_argument('--env-kwargs', type=str, nargs='+', action=StoreDict,
+                        help='Optional keyword argument to pass to the env constructor')
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -85,13 +87,15 @@ def main():
 
     stats_path = os.path.join(log_path, env_id)
     hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
+    env_kwargs = {} if args.env_kwargs is None else args.env_kwargs
 
     log_dir = args.reward_log if args.reward_log != '' else None
 
     env = create_test_env(env_id, n_envs=args.n_envs, is_atari=is_atari,
                           stats_path=stats_path, seed=args.seed, log_dir=log_dir,
                           should_render=not args.no_render,
-                          hyperparams=hyperparams)
+                          hyperparams=hyperparams,
+                          env_kwargs=env_kwargs)
 
     # ACER raises errors because the environment passed must have
     # the same number of environments as the model was trained on.
