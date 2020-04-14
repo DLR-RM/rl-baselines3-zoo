@@ -68,6 +68,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
                         help='Additional external Gym environment package modules to import (e.g. gym_minigrid)')
+    parser.add_argument('--env-kwargs', type=str, nargs='+', action=StoreDict,
+                        help='Optional keyword argument to pass to the env constructor')
     parser.add_argument('-params', '--hyperparams', type=str, nargs='+', action=StoreDict,
                         help='Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)')
     parser.add_argument('-uuid', '--uuid', action='store_true', default=False,
@@ -131,6 +133,7 @@ if __name__ == '__main__':
         hyperparams.update(args.hyperparams)
     # Sort hyperparams that will be saved
     saved_hyperparams = OrderedDict([(key, hyperparams[key]) for key in sorted(hyperparams.keys())])
+    env_kwargs = {} if args.env_kwargs is None else args.env_kwargs
 
     algo_ = args.algo
     # HER is only a wrapper around an algo
@@ -222,6 +225,7 @@ if __name__ == '__main__':
         :return: (Union[gym.Env, VecEnv])
         """
         global hyperparams
+        global env_kwargs
 
         # Do not log eval env (issue with writing the same file)
         log_dir = None if eval_env else save_path
@@ -235,11 +239,13 @@ if __name__ == '__main__':
             # env = VecFrameStack(env, n_stack=4)
         else:
             if n_envs == 1:
-                env = DummyVecEnv([make_env(env_id, 0, args.seed, wrapper_class=env_wrapper, log_dir=log_dir)])
+                env = DummyVecEnv([make_env(env_id, 0, args.seed,
+                                   wrapper_class=env_wrapper, log_dir=log_dir,
+                                   env_kwargs=env_kwargs)])
             else:
                 # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
                 # On most env, SubprocVecEnv does not help and is quite memory hungry
-                env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir,
+                env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir, env_kwargs=env_kwargs,
                                             wrapper_class=env_wrapper) for i in range(n_envs)])
             if normalize:
                 if args.verbose > 0:

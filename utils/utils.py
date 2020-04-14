@@ -158,7 +158,8 @@ def get_callback_class(hyperparams):
     return callbacks
 
 
-def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
+def make_env(env_id, rank=0, seed=0, log_dir=None,
+             wrapper_class=None, env_kwargs=None):
     """
     Helper function to multiprocess training
     and log the progress.
@@ -167,15 +168,19 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
     :param rank: (int)
     :param seed: (int)
     :param log_dir: (str)
-    :param wrapper_class: (Type[gym.Wrapper]) a subclass of gym.Wrapper to wrap the original
-                    env with
+    :param wrapper_class: (Type[gym.Wrapper]) a subclass of gym.Wrapper
+        to wrap the original env with
+    :param env_kwargs: (Dict[str, Any]) Optional keyword argument to pass to the env constructor
     """
     if log_dir is not None:
         os.makedirs(log_dir, exist_ok=True)
 
+    if env_kwargs is None:
+        env_kwargs = {}
+
     def _init():
         set_random_seed(seed + rank)
-        env = gym.make(env_id)
+        env = gym.make(env_id, **env_kwargs)
 
         # Dict observation space is currently not supported.
         # https://github.com/hill-a/stable-baselines/issues/321
@@ -195,7 +200,8 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None):
 
 def create_test_env(env_id, n_envs=1, is_atari=False,
                     stats_path=None, seed=0,
-                    log_dir='', should_render=True, hyperparams=None):
+                    log_dir='', should_render=True,
+                    hyperparams=None, env_kwargs=None):
     """
     Create environment for testing a trained agent
 
@@ -207,6 +213,7 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
     :param log_dir: (str) Where to log rewards
     :param should_render: (bool) For Pybullet env, display the GUI
     :param hyperparams: (dict) Additional hyperparams (ex: n_stack)
+    :param env_kwargs: (Dict[str, Any]) Optional keyword argument to pass to the env constructor
     :return: (gym.Env)
     """
     # HACK to save logs
@@ -229,13 +236,16 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
         # env = VecFrameStack(env, n_stack=4)
     elif n_envs > 1:
         # start_method = 'spawn' for thread safe
-        env = SubprocVecEnv([make_env(env_id, i, seed, log_dir, wrapper_class=env_wrapper) for i in range(n_envs)])
+        env = SubprocVecEnv([make_env(env_id, i, seed, log_dir,
+                                      wrapper_class=env_wrapper, env_kwargs=env_kwargs) for i in range(n_envs)])
     # Pybullet envs does not follow gym.render() interface
     elif "Bullet" in env_id:
         # HACK: force SubprocVecEnv for Bullet env
-        env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper)])
+        env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir,
+                                      wrapper_class=env_wrapper, env_kwargs=env_kwargs)])
     else:
-        env = DummyVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper)])
+        env = DummyVecEnv([make_env(env_id, 0, seed, log_dir,
+                                    wrapper_class=env_wrapper, env_kwargs=env_kwargs)])
 
     # Load saved stats for normalizing input and rewards
     # And optionally stack frames
