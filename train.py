@@ -7,10 +7,11 @@ import uuid
 from collections import OrderedDict
 from pprint import pprint
 
-import numpy as np
 import yaml
 import gym
 import seaborn
+import numpy as np
+import torch as th
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
@@ -21,6 +22,7 @@ from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckAc
 from torchy_baselines.common.utils import constant_fn
 from torchy_baselines.common.callbacks import CheckpointCallback, EvalCallback
 
+# Register custom envs
 import utils.import_envs  # pytype: disable=import-error
 from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
@@ -38,8 +40,9 @@ if __name__ == '__main__':
     parser.add_argument('-tb', '--tensorboard-log', help='Tensorboard log dir', default='', type=str)
     parser.add_argument('-i', '--trained-agent', help='Path to a pretrained agent to continue training',
                         default='', type=str)
-
     parser.add_argument('-n', '--n-timesteps', help='Overwrite the number of timesteps', default=-1,
+                        type=int)
+    parser.add_argument('--num-threads', help='Number of threads for PyTorch (-1 to use default)', default=1,
                         type=int)
     parser.add_argument('--log-interval', help='Override log interval (default: -1, no change)', default=-1,
                         type=int)
@@ -94,11 +97,15 @@ if __name__ == '__main__':
 
     set_random_seed(args.seed)
 
+    # Setting num threads to 1 by default, it makes everything run faster
+    if args.num_threads > 0:
+        if args.verbose > 1:
+            print(f"Setting torch.num_threads to {args.num_threads}")
+        th.set_num_threads(args.num_threads)
+
     if args.trained_agent != "":
         assert args.trained_agent.endswith('.zip') and os.path.isfile(args.trained_agent), \
             "The trained_agent must be a valid path to a .zip file"
-
-    rank = 0
 
     tensorboard_log = None if args.tensorboard_log == '' else os.path.join(args.tensorboard_log, env_id)
 
