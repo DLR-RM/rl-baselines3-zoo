@@ -42,7 +42,7 @@ if __name__ == '__main__':
                         default='', type=str)
     parser.add_argument('-n', '--n-timesteps', help='Overwrite the number of timesteps', default=-1,
                         type=int)
-    parser.add_argument('--num-threads', help='Number of threads for PyTorch (-1 to use default)', default=1,
+    parser.add_argument('--num-threads', help='Number of threads for PyTorch (-1 to use default)', default=-1,
                         type=int)
     parser.add_argument('--log-interval', help='Override log interval (default: -1, no change)', default=-1,
                         type=int)

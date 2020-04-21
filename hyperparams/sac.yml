@@ -324,9 +324,9 @@ PixelMountainCarContinuous-v0:
   #   - utils.callbacks.PlotNoiseRatioCallback:
   #       display_freq: 500
   n_timesteps: !!float 100000
-  policy: 'MlpPolicy'
+  policy: 'CnnPolicy'
   learning_rate: !!float 3e-4
-  buffer_size: 50000
+  buffer_size: 2000
   batch_size: 512
   ent_coef: 0.1
   train_freq: 32
@@ -335,7 +335,7 @@ PixelMountainCarContinuous-v0:
   tau: 0.01
   learning_starts: 0
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64])"
+  policy_kwargs: "dict(log_std_init=-3.67, features_extractor_kwargs=dict(features_dim=64))"
 
 
 # ===  Mocca envs ===
