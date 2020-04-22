@@ -254,7 +254,8 @@ if __name__ == '__main__':
             n_stack = hyperparams['frame_stack']
             env = VecFrameStack(env, n_stack)
             print(f"Stacking {n_stack} frames")
-        if is_image_space(env):
+
+        if is_image_space(env.observation_space):
             if args.verbose > 0:
                 print("Wrapping into a VecTransposeImage")
             env = VecTransposeImage(env)
