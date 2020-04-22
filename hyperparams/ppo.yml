@@ -359,3 +359,24 @@ MiniGrid-FourRooms-v0:
   ent_coef: 0.0
   learning_rate: 2.5e-4
   clip_range: 0.2
+
+CarRacing-v0:
+  frame_stack: 4
+  n_envs: 8
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  batch_size: 128
+  n_steps: 512
+  gamma: 0.99
+  gae_lambda: 0.9
+  n_epochs: 20
+  ent_coef: 0.0
+  sde_sample_freq: 4
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  learning_rate: !!float 3e-5
+  use_sde: True
+  clip_range: 0.4
+  policy_kwargs: "dict(log_std_init=-2,
+                       ortho_init=False,
+                       )"
