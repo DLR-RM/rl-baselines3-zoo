@@ -1,9 +1,12 @@
 atari:
+  env_wrapper:
+    - utils.wrappers.AtariWrapper
+  frame_stack: 4
   policy: 'CnnPolicy'
   n_envs: 8
   n_steps: 128
   n_epochs: 4
-  nminibatches: 4
+  batch_size: 256
   n_timesteps: !!float 1e7
   learning_rate: lin_2.5e-4
   clip_range: lin_0.1

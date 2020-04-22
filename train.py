@@ -18,7 +18,8 @@ import torch.nn as nn  # pylint: disable=unused-import
 
 from torchy_baselines.common.utils import set_random_seed
 # from torchy_baselines.common.cmd_util import make_atari_env
-from torchy_baselines.common.vec_env import VecFrameStack, VecNormalize, DummyVecEnv
+from torchy_baselines.common.vec_env import VecFrameStack, VecNormalize, DummyVecEnv, VecTransposeImage
+from torchy_baselines.common.preprocessing import is_image_space
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torchy_baselines.common.utils import constant_fn
 from torchy_baselines.common.callbacks import CheckpointCallback, EvalCallback
@@ -253,6 +254,10 @@ if __name__ == '__main__':
             n_stack = hyperparams['frame_stack']
             env = VecFrameStack(env, n_stack)
             print(f"Stacking {n_stack} frames")
+        if is_image_space(env):
+            if args.verbose > 0:
+                print("Wrapping into a VecTransposeImage")
+            env = VecTransposeImage(env)
         return env
 
 
