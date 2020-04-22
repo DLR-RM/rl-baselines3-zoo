@@ -12,7 +12,6 @@ atari:
   clip_range: lin_0.1
   vf_coef: 0.5
   ent_coef: 0.01
-  clip_range_vf: -1
 
 Pendulum-v0:
   n_envs: 8
