@@ -91,7 +91,7 @@ def main():
 
     log_dir = args.reward_log if args.reward_log != '' else None
 
-    env = create_test_env(env_id, n_envs=args.n_envs, is_atari=is_atari,
+    env = create_test_env(env_id, n_envs=args.n_envs,
                           stats_path=stats_path, seed=args.seed, log_dir=log_dir,
                           should_render=not args.no_render,
                           hyperparams=hyperparams,

@@ -9,6 +9,7 @@ from pprint import pprint
 
 import yaml
 import gym
+from gym.wrappers import AtariPreprocessing
 import seaborn
 import numpy as np
 import torch as th
@@ -230,39 +231,33 @@ if __name__ == '__main__':
         # Do not log eval env (issue with writing the same file)
         log_dir = None if eval_env else save_path
 
-        if is_atari:
-            raise NotImplementedError()
-            # if args.verbose > 0:
-            #     print("Using Atari wrapper")
-            # env = make_atari_env(env_id, num_env=n_envs, seed=args.seed)
-            # # Frame-stacking with 4 frames
-            # env = VecFrameStack(env, n_stack=4)
+        if n_envs == 1:
+            env = DummyVecEnv([make_env(env_id, 0, args.seed,
+                               wrapper_class=env_wrapper, log_dir=log_dir,
+                               env_kwargs=env_kwargs)])
         else:
-            if n_envs == 1:
-                env = DummyVecEnv([make_env(env_id, 0, args.seed,
-                                   wrapper_class=env_wrapper, log_dir=log_dir,
-                                   env_kwargs=env_kwargs)])
-            else:
-                # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
-                # On most env, SubprocVecEnv does not help and is quite memory hungry
-                env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir, env_kwargs=env_kwargs,
-                                            wrapper_class=env_wrapper) for i in range(n_envs)])
-            if normalize:
-                if args.verbose > 0:
-                    if len(normalize_kwargs) > 0:
-                        print("Normalization activated: {}".format(normalize_kwargs))
-                    else:
-                        print("Normalizing input and reward")
-                env = VecNormalize(env, **normalize_kwargs)
+            # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
+            # On most env, SubprocVecEnv does not help and is quite memory hungry
+            env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir, env_kwargs=env_kwargs,
+                                        wrapper_class=env_wrapper) for i in range(n_envs)])
+        if normalize:
+            if args.verbose > 0:
+                if len(normalize_kwargs) > 0:
+                    print("Normalization activated: {}".format(normalize_kwargs))
+                else:
+                    print("Normalizing input and reward")
+            env = VecNormalize(env, **normalize_kwargs)
+
         # Optional Frame-stacking
         if hyperparams.get('frame_stack', False):
             n_stack = hyperparams['frame_stack']
             env = VecFrameStack(env, n_stack)
-            print("Stacking {} frames".format(n_stack))
+            print(f"Stacking {n_stack} frames")
         return env
 
 
     env = create_env(n_envs)
+
     # Create test env if needed, do not normalize reward
     eval_env = None
     if args.eval_freq > 0:

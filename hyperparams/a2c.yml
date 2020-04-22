@@ -1,7 +1,12 @@
 atari:
+  env_wrapper:
+    - utils.wrappers.AtariWrapper
+  frame_stack: 4
   policy: 'CnnPolicy'
   n_envs: 16
   n_timesteps: !!float 1e7
+  ent_coef: 0.01
+  vf_coef: 0.25
 
 CartPole-v1:
   n_envs: 8

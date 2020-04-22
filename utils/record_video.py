@@ -52,7 +52,7 @@ hyperparams, stats_path = get_saved_hyperparams(stats_path)
 
 is_atari = 'NoFrameskip' in env_id
 
-env = create_test_env(env_id, n_envs=n_envs, is_atari=is_atari,
+env = create_test_env(env_id, n_envs=n_envs,
                       stats_path=stats_path, seed=seed, log_dir=None,
                       should_render=not args.no_render, hyperparams=hyperparams)
 
