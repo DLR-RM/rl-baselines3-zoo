@@ -91,7 +91,7 @@ if __name__ == '__main__':
             closest_match = difflib.get_close_matches(env_id, registered_envs, n=1)[0]
         except IndexError:
             closest_match = "'no close match found...'"
-        raise ValueError('{} not found in gym registry, you maybe meant {}?'.format(env_id, closest_match))
+        raise ValueError(f'{env_id} not found in gym registry, you maybe meant {closest_match}?')
 
     # Unique id to ensure there is no race condition for the folder creation
     uuid_str = f'_{uuid.uuid4()}' if args.uuid else ''
@@ -118,17 +118,17 @@ if __name__ == '__main__':
         is_atari = True
 
     print("=" * 10, env_id, "=" * 10)
-    print("Seed: {}".format(args.seed))
+    print(f"Seed: {args.seed}")
 
     # Load hyperparameters from yaml file
-    with open('hyperparams/{}.yml'.format(args.algo), 'r') as f:
+    with open(f'hyperparams/{args.algo}.yml', 'r') as f:
         hyperparams_dict = yaml.safe_load(f)
         if env_id in list(hyperparams_dict.keys()):
             hyperparams = hyperparams_dict[env_id]
         elif is_atari:
             hyperparams = hyperparams_dict['atari']
         else:
-            raise ValueError("Hyperparameters not found for {}-{}".format(args.algo, env_id))
+            raise ValueError(f"Hyperparameters not found for {args.algo}-{env_id}")
 
     if args.hyperparams is not None:
         # Overwrite hyperparams if needed
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     n_envs = hyperparams.get('n_envs', 1)
 
     if args.verbose > 0:
-        print("Using {} environments".format(n_envs))
+        print(f"Using {n_envs} environments")
 
     # Create schedules
     for key in ['learning_rate', 'clip_range', 'clip_range_vf', 'sde_log_std_scheduler']:
@@ -170,12 +170,12 @@ if __name__ == '__main__':
                 continue
             hyperparams[key] = constant_fn(float(hyperparams[key]))
         else:
-            raise ValueError('Invalid value for {}: {}'.format(key, hyperparams[key]))
+            raise ValueError(f'Invalid value for {key}: {hyperparams[key]}')
 
     # Should we overwrite the number of timesteps?
     if args.n_timesteps > 0:
         if args.verbose:
-            print("Overwriting n_timesteps with n={}".format(args.n_timesteps))
+            print(f"Overwriting n_timesteps with n={args.n_timesteps}")
         n_timesteps = args.n_timesteps
     else:
         n_timesteps = int(hyperparams['n_timesteps'])
@@ -205,9 +205,9 @@ if __name__ == '__main__':
     if 'env_wrapper' in hyperparams.keys():
         del hyperparams['env_wrapper']
 
-    log_path = "{}/{}/".format(args.log_folder, args.algo)
+    log_path = f"{args.log_folder}/{args.algo}/"
     save_path = os.path.join(log_path, f"{env_id}_{get_latest_run_id(log_path, env_id) + 1}{uuid_str}")
-    params_path = "{}/{}".format(save_path, env_id)
+    params_path = f"{save_path}/{env_id}"
     os.makedirs(params_path, exist_ok=True)
 
     callbacks = get_callback_class(hyperparams)
@@ -244,7 +244,7 @@ if __name__ == '__main__':
         if normalize:
             if args.verbose > 0:
                 if len(normalize_kwargs) > 0:
-                    print("Normalization activated: {}".format(normalize_kwargs))
+                    print(f"Normalization activated: {normalize_kwargs}")
                 else:
                     print("Normalizing input and reward")
             env = VecNormalize(env, **normalize_kwargs)
@@ -294,7 +294,8 @@ if __name__ == '__main__':
             save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
             eval_callback = EvalCallback(create_env(1, eval_env=True), callback_on_new_best=save_vec_normalize,
                                          best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
-                                         log_path=save_path, eval_freq=args.eval_freq)
+                                         log_path=save_path, eval_freq=args.eval_freq,
+                                         deterministic=not is_atari)
             callbacks.append(eval_callback)
 
             # Restore original kwargs
@@ -329,8 +330,8 @@ if __name__ == '__main__':
             hyperparams['action_noise'] = OrnsteinUhlenbeckActionNoise(mean=np.zeros(n_actions),
                                                                        sigma=noise_std * np.ones(n_actions))
         else:
-            raise RuntimeError('Unknown noise type "{}"'.format(noise_type))
-        print("Applying {} noise with std {}".format(noise_type, noise_std))
+            raise RuntimeError(f'Unknown noise type "{noise_type}"')
+        print(f"Applying {noise_type} noise with std {noise_std}")
         del hyperparams['noise_type']
         del hyperparams['noise_std']
         if 'noise_std_final' in hyperparams:
@@ -386,7 +387,7 @@ if __name__ == '__main__':
         log_path = os.path.join(args.log_folder, args.algo, report_name)
 
         if args.verbose:
-            print("Writing report to {}".format(log_path))
+            print(f"Writing report to {log_path}")
 
         os.makedirs(os.path.dirname(log_path), exist_ok=True)
         data_frame.to_csv(log_path)
@@ -407,7 +408,7 @@ if __name__ == '__main__':
     with open(os.path.join(params_path, 'config.yml'), 'w') as f:
         yaml.dump(saved_hyperparams, f)
 
-    print("Log path: {}".format(save_path))
+    print(f"Log path: {save_path}")
 
     try:
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
@@ -416,8 +417,8 @@ if __name__ == '__main__':
 
     # Save trained model
 
-    print("Saving to {}".format(save_path))
-    model.save("{}/{}".format(save_path, env_id))
+    print(f"Saving to {save_path}")
+    model.save(f"{save_path}/{env_id}")
 
     if hasattr(model, 'save_replay_buffer') and args.save_replay_buffer:
         print("Saving replay buffer")
