@@ -22,3 +22,8 @@ try:
     import custom_envs  # pytype: disable=import-error
 except ImportError:
     custom_envs = None
+
+try:
+    import gym_donkeycar
+except ImportError:
+    gym_donkeycar = None

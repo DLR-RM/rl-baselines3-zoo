@@ -361,10 +361,15 @@ MiniGrid-FourRooms-v0:
   clip_range: 0.2
 
 CarRacing-v0:
+  env_wrapper:
+    - gym.wrappers.resize_observation.ResizeObservation:
+        shape: 64
+    - gym.wrappers.gray_scale_observation.GrayScaleObservation:
+        keep_dim: true
   frame_stack: 4
   n_envs: 8
   n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
+  policy: 'CnnPolicy'
   batch_size: 128
   n_steps: 512
   gamma: 0.99
