@@ -342,6 +342,7 @@ if __name__ == '__main__':
         print("Loading pretrained agent")
         # Policy should not be changed
         del hyperparams['policy']
+        del hyperparams['policy_kwargs']
 
         model = ALGOS[args.algo].load(args.trained_agent, env=env, seed=args.seed,
                                       tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams)
