@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 import numpy as np
 import matplotlib.pyplot as plt
 
-from torchy_baselines.common.results_plotter import X_TIMESTEPS, plot_results
+from stable_baselines3.common.results_plotter import X_TIMESTEPS, plot_results
 
 
 parser = argparse.ArgumentParser()

@@ -12,8 +12,8 @@ import seaborn
 import numpy as np
 import matplotlib.pyplot as plt
 
-from torchy_baselines.common.monitor import load_results
-from torchy_baselines.common.results_plotter import X_TIMESTEPS, X_WALLTIME, X_EPISODES, ts2xy, window_func
+from stable_baselines3.common.monitor import load_results
+from stable_baselines3.common.results_plotter import X_TIMESTEPS, X_WALLTIME, X_EPISODES, ts2xy, window_func
 
 
 # Activate seaborn

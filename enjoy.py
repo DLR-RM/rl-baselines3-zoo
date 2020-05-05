@@ -5,8 +5,8 @@ import importlib
 import gym
 import numpy as np
 
-from torchy_baselines.common.utils import set_random_seed
-from torchy_baselines.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
+from stable_baselines3.common.utils import set_random_seed
+from stable_baselines3.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
 
 import utils.import_envs  # pytype: disable=import-error
 from utils.utils import StoreDict

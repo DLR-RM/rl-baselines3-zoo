@@ -16,13 +16,13 @@ import torch as th
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
-from torchy_baselines.common.utils import set_random_seed
-# from torchy_baselines.common.cmd_util import make_atari_env
-from torchy_baselines.common.vec_env import VecFrameStack, VecNormalize, DummyVecEnv, VecTransposeImage
-from torchy_baselines.common.preprocessing import is_image_space
-from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-from torchy_baselines.common.utils import constant_fn
-from torchy_baselines.common.callbacks import CheckpointCallback, EvalCallback
+from stable_baselines3.common.utils import set_random_seed
+# from stable_baselines3.common.cmd_util import make_atari_env
+from stable_baselines3.common.vec_env import VecFrameStack, VecNormalize, DummyVecEnv, VecTransposeImage
+from stable_baselines3.common.preprocessing import is_image_space
+from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
+from stable_baselines3.common.utils import constant_fn
+from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 
 # Register custom envs
 import utils.import_envs  # pytype: disable=import-error

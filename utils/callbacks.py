@@ -4,8 +4,8 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
-from torchy_baselines.common.vec_env import DummyVecEnv
-from torchy_baselines.common.callbacks import BaseCallback, EvalCallback
+from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
 
 
 class TrialEvalCallback(EvalCallback):

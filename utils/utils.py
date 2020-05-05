@@ -8,13 +8,13 @@ import gym
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
-from torchy_baselines.common.monitor import Monitor
-# from torchy_baselines.common import logger
-from torchy_baselines import A2C, PPO, SAC, TD3
-from torchy_baselines.common.vec_env import (DummyVecEnv, VecNormalize,
+from stable_baselines3.common.monitor import Monitor
+# from stable_baselines3.common import logger
+from stable_baselines3 import A2C, PPO, SAC, TD3
+from stable_baselines3.common.vec_env import (DummyVecEnv, VecNormalize,
                                              VecFrameStack, SubprocVecEnv)
-# from torchy_baselines.common.cmd_util import make_atari_env
-from torchy_baselines.common.utils import set_random_seed
+# from stable_baselines3.common.cmd_util import make_atari_env
+from stable_baselines3.common.utils import set_random_seed
 
 ALGOS = {
     'a2c': A2C,
@@ -103,13 +103,13 @@ def get_callback_class(hyperparams):
     Get one or more Callback class specified as a hyper-parameter
     "callback".
     e.g.
-    callback: torchy_baselines.common.callbacks.CheckpointCallback
+    callback: stable_baselines3.common.callbacks.CheckpointCallback
 
     for multiple, specify a list:
 
     callback:
         - utils.callbacks.PlotActionWrapper
-        - torchy_baselines.common.callbacks.CheckpointCallback
+        - stable_baselines3.common.callbacks.CheckpointCallback
 
     :param hyperparams: (dict)
     :return: (List[BaseCallback])

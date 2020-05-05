@@ -3,7 +3,7 @@ import argparse
 
 import gym
 import numpy as np
-from torchy_baselines.common.vec_env import VecVideoRecorder, VecFrameStack, VecNormalize
+from stable_baselines3.common.vec_env import VecVideoRecorder, VecFrameStack, VecNormalize
 
 from .utils import ALGOS, create_test_env, get_saved_hyperparams, get_latest_run_id
 
