@@ -320,13 +320,19 @@ SquareEnvironment50Hz-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 PixelMountainCarContinuous-v0:
+  env_wrapper:
+    - gym.wrappers.resize_observation.ResizeObservation:
+        shape: 64
+    - gym.wrappers.gray_scale_observation.GrayScaleObservation:
+        keep_dim: true
+  frame_stack: 2
   # callback:
   #   - utils.callbacks.PlotNoiseRatioCallback:
   #       display_freq: 500
   n_timesteps: !!float 100000
   policy: 'CnnPolicy'
   learning_rate: !!float 3e-4
-  buffer_size: 2000
+  buffer_size: 10000
   batch_size: 512
   ent_coef: 0.1
   train_freq: 32
