@@ -3,6 +3,7 @@ import glob
 import yaml
 import importlib
 import argparse
+from typing import Dict, Tuple
 
 import gym
 # For custom activation fn
@@ -304,19 +305,19 @@ def linear_schedule_std(initial_value, final_value=-5.5):
     return func
 
 
-def get_trained_models(log_folder):
+def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
     """
     :param log_folder: (str) Root log folder
-    :return: (dict) Dict representing the trained agent
+    :return: (Dict[str, Tuple[str, str]]) Dict representing the trained agent
     """
-    algos = os.listdir(log_folder)
     trained_models = {}
-    for algo in algos:
-        for ext in ['zip', 'pkl']:
-            for env_id in glob.glob('{}/{}/*.{}'.format(log_folder, algo, ext)):
-                # Retrieve env name
-                env_id = env_id.split('/')[-1].split('.{}'.format(ext))[0]
-                trained_models['{}-{}'.format(algo, env_id)] = (algo, env_id)
+    for algo in os.listdir(log_folder):
+        if not os.path.isdir(os.path.join(log_folder, algo)):
+            continue
+        for env_id in os.listdir(os.path.join(log_folder, algo)):
+            # Retrieve env name
+            env_id = env_id.split('_')[0]
+            trained_models['{}-{}'.format(algo, env_id)] = (algo, env_id)
     return trained_models
 
 

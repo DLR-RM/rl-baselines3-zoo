@@ -16,8 +16,9 @@ from stable_baselines3.common.results_plotter import load_results, ts2xy
 
 from utils import get_trained_models
 
+
 parser = argparse.ArgumentParser()
-parser.add_argument('--log-dir', help='Root log folder', default='trained_agents/', type=str)
+parser.add_argument('--log-dir', help='Root log folder', default='rl-trained-agents/', type=str)
 parser.add_argument('--benchmark-dir', help='Benchmark log folder', default='logs/benchmark/', type=str)
 parser.add_argument('-n', '--n-timesteps', help='number of timesteps', default=150000,
                     type=int)

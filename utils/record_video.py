@@ -9,9 +9,9 @@ from .utils import ALGOS, create_test_env, get_saved_hyperparams, get_latest_run
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--env', help='environment ID', type=str, default='CartPole-v1')
-parser.add_argument('-f', '--folder', help='Log folder', type=str, default='trained_agents')
+parser.add_argument('-f', '--folder', help='Log folder', type=str, default='rl-trained-agents')
 parser.add_argument('-o', '--output-folder', help='Output folder', type=str, default='logs/videos/')
-parser.add_argument('--algo', help='RL Algorithm', default='ppo2',
+parser.add_argument('--algo', help='RL Algorithm', default='ppo',
                     type=str, required=False, choices=list(ALGOS.keys()))
 parser.add_argument('-n', '--n-timesteps', help='number of timesteps', default=1000,
                     type=int)
@@ -22,7 +22,7 @@ parser.add_argument('--deterministic', action='store_true', default=False,
 parser.add_argument('--seed', help='Random generator seed', type=int, default=0)
 parser.add_argument('--no-render', action='store_true', default=False,
                     help='Do not render the environment (useful for tests)')
-parser.add_argument('--exp-id', help='Experiment ID (default: -1, no exp folder, 0: latest)', default=-1,
+parser.add_argument('--exp-id', help='Experiment ID (default: 0: latest, -1: no exp folder)', default=0,
                     type=int)
 args = parser.parse_args()
 
@@ -44,7 +44,7 @@ if args.exp_id > 0:
 else:
     log_path = os.path.join(folder, algo)
 
-model_path = "{}/{}.pkl".format(log_path, env_id)
+model_path = os.path.join(log_path, f'{env_id}.zip')
 
 stats_path = os.path.join(log_path, env_id)
 hyperparams, stats_path = get_saved_hyperparams(stats_path)

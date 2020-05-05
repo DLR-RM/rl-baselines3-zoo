@@ -1,0 +1,3 @@
+[submodule "rl-trained-agents"]
+	path = rl-trained-agents
+	url = https://github.com/DLR-RM/rl-trained-agents

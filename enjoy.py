@@ -15,14 +15,14 @@ from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperpara
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env', help='environment ID', type=str, default='CartPole-v1')
-    parser.add_argument('-f', '--folder', help='Log folder', type=str, default='trained_agents')
-    parser.add_argument('--algo', help='RL Algorithm', default='ppo2',
+    parser.add_argument('-f', '--folder', help='Log folder', type=str, default='rl-trained-agents')
+    parser.add_argument('--algo', help='RL Algorithm', default='ppo',
                         type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument('-n', '--n-timesteps', help='number of timesteps', default=1000,
                         type=int)
     parser.add_argument('--n-envs', help='number of environments', default=1,
                         type=int)
-    parser.add_argument('--exp-id', help='Experiment ID (default: -1, no exp folder, 0: latest)', default=-1,
+    parser.add_argument('--exp-id', help='Experiment ID (default: 0: latest, -1: no exp folder)', default=0,
                         type=int)
     parser.add_argument('--verbose', help='Verbose mode (0: no output, 1: INFO)', default=1,
                         type=int)
@@ -62,11 +62,11 @@ def main():
     else:
         log_path = os.path.join(folder, algo)
 
-    assert os.path.isdir(log_path), "The {} folder was not found".format(log_path)
+    assert os.path.isdir(log_path), f"The {log_path} folder was not found"
 
     found = False
     for ext in ['zip']:
-        model_path = "{}/{}.{}".format(log_path, env_id, ext)
+        model_path = os.path.join(log_path, f'{env_id}.{ext}')
         found = os.path.isfile(model_path)
         if found:
             break
@@ -76,7 +76,7 @@ def main():
         found = os.path.isfile(model_path)
 
     if not found:
-        raise ValueError("No model found for {} on {}, path: {}".format(algo, env_id, model_path))
+        raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
 
     if algo in ['dqn', 'ddpg', 'sac', 'td3']:
         args.n_envs = 1
@@ -97,10 +97,7 @@ def main():
                           hyperparams=hyperparams,
                           env_kwargs=env_kwargs)
 
-    # ACER raises errors because the environment passed must have
-    # the same number of environments as the model was trained on.
-    load_env = None if algo == 'acer' else env
-    model = ALGOS[algo].load(model_path, env=load_env)
+    model = ALGOS[algo].load(model_path, env=env)
 
     obs = env.reset()
 
