@@ -1,5 +1,5 @@
 import numpy as np
-from torchy_baselines.common.noise import ActionNoise
+from stable_baselines3.common.noise import ActionNoise
 
 
 class LinearNormalActionNoise(ActionNoise):

@@ -3,18 +3,19 @@ import glob
 import yaml
 import importlib
 import argparse
+from typing import Dict, Tuple
 
 import gym
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
-from torchy_baselines.common.monitor import Monitor
-# from torchy_baselines.common import logger
-from torchy_baselines import A2C, PPO, SAC, TD3
-from torchy_baselines.common.vec_env import (DummyVecEnv, VecNormalize,
+from stable_baselines3.common.monitor import Monitor
+# from stable_baselines3.common import logger
+from stable_baselines3 import A2C, PPO, SAC, TD3
+from stable_baselines3.common.vec_env import (DummyVecEnv, VecNormalize,
                                              VecFrameStack, SubprocVecEnv)
-# from torchy_baselines.common.cmd_util import make_atari_env
-from torchy_baselines.common.utils import set_random_seed
+# from stable_baselines3.common.cmd_util import make_atari_env
+from stable_baselines3.common.utils import set_random_seed
 
 ALGOS = {
     'a2c': A2C,
@@ -103,13 +104,13 @@ def get_callback_class(hyperparams):
     Get one or more Callback class specified as a hyper-parameter
     "callback".
     e.g.
-    callback: torchy_baselines.common.callbacks.CheckpointCallback
+    callback: stable_baselines3.common.callbacks.CheckpointCallback
 
     for multiple, specify a list:
 
     callback:
         - utils.callbacks.PlotActionWrapper
-        - torchy_baselines.common.callbacks.CheckpointCallback
+        - stable_baselines3.common.callbacks.CheckpointCallback
 
     :param hyperparams: (dict)
     :return: (List[BaseCallback])
@@ -304,19 +305,19 @@ def linear_schedule_std(initial_value, final_value=-5.5):
     return func
 
 
-def get_trained_models(log_folder):
+def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
     """
     :param log_folder: (str) Root log folder
-    :return: (dict) Dict representing the trained agent
+    :return: (Dict[str, Tuple[str, str]]) Dict representing the trained agent
     """
-    algos = os.listdir(log_folder)
     trained_models = {}
-    for algo in algos:
-        for ext in ['zip', 'pkl']:
-            for env_id in glob.glob('{}/{}/*.{}'.format(log_folder, algo, ext)):
-                # Retrieve env name
-                env_id = env_id.split('/')[-1].split('.{}'.format(ext))[0]
-                trained_models['{}-{}'.format(algo, env_id)] = (algo, env_id)
+    for algo in os.listdir(log_folder):
+        if not os.path.isdir(os.path.join(log_folder, algo)):
+            continue
+        for env_id in os.listdir(os.path.join(log_folder, algo)):
+            # Retrieve env name
+            env_id = env_id.split('_')[0]
+            trained_models['{}-{}'.format(algo, env_id)] = (algo, env_id)
     return trained_models
 
 

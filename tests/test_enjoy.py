@@ -7,10 +7,10 @@ from utils import get_trained_models
 
 
 def _assert_eq(left, right):
-    assert left == right, '{} != {}'.format(left, right)
+    assert left == right, f'{left} != {right}'
 
 
-FOLDER = 'trained_agents/'
+FOLDER = 'rl-trained-agents/'
 N_STEPS = 100
 
 
@@ -26,7 +26,7 @@ def test_enjoy(trained_model):
         '--env', env_id,
         '--no-render'
     ]
-    
+
     # Skip mujoco envs
     if 'Fetch' in trained_model:
         return
@@ -52,13 +52,13 @@ def test_benchmark():
 def test_record_video():
     args = [
         '-n', '100',
-        '--algo', 'ppo2',
-        '--env', 'BipedalWalkerHardcore-v3',
+        '--algo', 'sac',
+        '--env', 'Pendulum-v0',
         '-o', 'logs/tests/videos/'
     ]
 
     return_code = subprocess.call(['python', '-m', 'utils.record_video'] + args)
     _assert_eq(return_code, 0)
-    video_path = 'logs/tests/videos/ppo2-BipedalWalkerHardcore-v3-step-0-to-step-100.mp4'
+    video_path = 'logs/tests/videos/sac-Pendulum-v0-step-0-to-step-100.mp4'
     # File is not empty
     assert os.stat(video_path).st_size != 0, "Recorded video is empty"

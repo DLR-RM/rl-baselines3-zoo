@@ -4,8 +4,8 @@ import optuna
 from optuna.pruners import SuccessiveHalvingPruner, MedianPruner
 from optuna.samplers import RandomSampler, TPESampler
 from optuna.integration.skopt import SkoptSampler
-from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-# from torchy_baselines.her import HERGoalEnvWrapper
+from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
+# from stable_baselines3.her import HERGoalEnvWrapper
 
 from .callbacks import TrialEvalCallback
 from utils import linear_schedule
