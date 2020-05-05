@@ -5,11 +5,6 @@ import importlib
 import argparse
 
 import gym
-try:
-    import pybullet_envs
-except ImportError:
-    pybullet_envs = None
-
 # For custom activation fn
 import torch.nn as nn  # pylint: disable=unused-import
 
@@ -198,7 +193,7 @@ def make_env(env_id, rank=0, seed=0, log_dir=None,
     return _init
 
 
-def create_test_env(env_id, n_envs=1, is_atari=False,
+def create_test_env(env_id, n_envs=1,
                     stats_path=None, seed=0,
                     log_dir='', should_render=True,
                     hyperparams=None, env_kwargs=None):
@@ -207,7 +202,6 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
 
     :param env_id: (str)
     :param n_envs: (int) number of processes
-    :param is_atari: (bool)
     :param stats_path: (str) path to folder containing saved running averaged
     :param seed: (int) Seed for random number generator
     :param log_dir: (str) Where to log rewards
@@ -228,13 +222,7 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
     if 'env_wrapper' in hyperparams.keys():
         del hyperparams['env_wrapper']
 
-    if is_atari:
-        raise NotImplementedError()
-        # print("Using Atari wrapper")
-        # env = make_atari_env(env_id, num_env=n_envs, seed=seed)
-        # Frame-stacking with 4 frames
-        # env = VecFrameStack(env, n_stack=4)
-    elif n_envs > 1:
+    if n_envs > 1:
         # start_method = 'spawn' for thread safe
         env = SubprocVecEnv([make_env(env_id, i, seed, log_dir,
                                       wrapper_class=env_wrapper, env_kwargs=env_kwargs) for i in range(n_envs)])

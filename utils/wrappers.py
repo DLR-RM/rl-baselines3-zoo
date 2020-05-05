@@ -1,5 +1,5 @@
 import gym
-from gym.wrappers import TimeLimit
+from gym.wrappers import TimeLimit, AtariPreprocessing
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -263,3 +263,35 @@ class PlotActionWrapper(gym.Wrapper):
             plt.plot(freq[:n_samples // 2], np.abs(signal_fft[:n_samples // 2]))
 
         plt.show()
+
+
+# TODO: compare with Stable-Baselines Preprocessing
+# there is no reward clipping
+class AtariWrapper(gym.Wrapper):
+
+    def __init__(self, env: gym.Env, noop_max=30, frame_skip=4, screen_size=84,
+                 terminal_on_life_loss=False, grayscale_obs=True,
+                 scale_obs=False):
+        env = AtariPreprocessing(env, noop_max=noop_max, frame_skip=frame_skip, screen_size=screen_size,
+                                 terminal_on_life_loss=terminal_on_life_loss, grayscale_obs=grayscale_obs,
+                                 scale_obs=scale_obs)
+        # Add channel dimension
+        if grayscale_obs:
+            obs_space = env.observation_space
+            _low, _high, _obs_dtype = (0, 255, np.uint8) if not scale_obs else (0, 1, np.float32)
+            env.observation_space = gym.spaces.Box(low=_low, high=_high, shape=obs_space.shape + (1,),
+                                                   dtype=_obs_dtype)
+
+        super(AtariWrapper, self).__init__(env)
+
+    def _add_axis(self, obs):
+        if self.env.grayscale_obs:
+            return obs[..., np.newaxis]
+        return obs
+
+    def reset(self):
+        return self._add_axis(self.env.reset())
+
+    def step(self, action):
+        obs, reward, done, info = self.env.step(action)
+        return self._add_axis(obs), reward, done, info

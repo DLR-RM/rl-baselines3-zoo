@@ -9,6 +9,7 @@ from pprint import pprint
 
 import yaml
 import gym
+from gym.wrappers import AtariPreprocessing
 import seaborn
 import numpy as np
 import torch as th
@@ -17,7 +18,8 @@ import torch.nn as nn  # pylint: disable=unused-import
 
 from torchy_baselines.common.utils import set_random_seed
 # from torchy_baselines.common.cmd_util import make_atari_env
-from torchy_baselines.common.vec_env import VecFrameStack, VecNormalize, DummyVecEnv
+from torchy_baselines.common.vec_env import VecFrameStack, VecNormalize, DummyVecEnv, VecTransposeImage
+from torchy_baselines.common.preprocessing import is_image_space
 from torchy_baselines.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torchy_baselines.common.utils import constant_fn
 from torchy_baselines.common.callbacks import CheckpointCallback, EvalCallback
@@ -42,7 +44,7 @@ if __name__ == '__main__':
                         default='', type=str)
     parser.add_argument('-n', '--n-timesteps', help='Overwrite the number of timesteps', default=-1,
                         type=int)
-    parser.add_argument('--num-threads', help='Number of threads for PyTorch (-1 to use default)', default=1,
+    parser.add_argument('--num-threads', help='Number of threads for PyTorch (-1 to use default)', default=-1,
                         type=int)
     parser.add_argument('--log-interval', help='Override log interval (default: -1, no change)', default=-1,
                         type=int)
@@ -89,7 +91,7 @@ if __name__ == '__main__':
             closest_match = difflib.get_close_matches(env_id, registered_envs, n=1)[0]
         except IndexError:
             closest_match = "'no close match found...'"
-        raise ValueError('{} not found in gym registry, you maybe meant {}?'.format(env_id, closest_match))
+        raise ValueError(f'{env_id} not found in gym registry, you maybe meant {closest_match}?')
 
     # Unique id to ensure there is no race condition for the folder creation
     uuid_str = f'_{uuid.uuid4()}' if args.uuid else ''
@@ -116,17 +118,17 @@ if __name__ == '__main__':
         is_atari = True
 
     print("=" * 10, env_id, "=" * 10)
-    print("Seed: {}".format(args.seed))
+    print(f"Seed: {args.seed}")
 
     # Load hyperparameters from yaml file
-    with open('hyperparams/{}.yml'.format(args.algo), 'r') as f:
+    with open(f'hyperparams/{args.algo}.yml', 'r') as f:
         hyperparams_dict = yaml.safe_load(f)
         if env_id in list(hyperparams_dict.keys()):
             hyperparams = hyperparams_dict[env_id]
         elif is_atari:
             hyperparams = hyperparams_dict['atari']
         else:
-            raise ValueError("Hyperparameters not found for {}-{}".format(args.algo, env_id))
+            raise ValueError(f"Hyperparameters not found for {args.algo}-{env_id}")
 
     if args.hyperparams is not None:
         # Overwrite hyperparams if needed
@@ -149,7 +151,7 @@ if __name__ == '__main__':
     n_envs = hyperparams.get('n_envs', 1)
 
     if args.verbose > 0:
-        print("Using {} environments".format(n_envs))
+        print(f"Using {n_envs} environments")
 
     # Create schedules
     for key in ['learning_rate', 'clip_range', 'clip_range_vf', 'sde_log_std_scheduler']:
@@ -168,12 +170,12 @@ if __name__ == '__main__':
                 continue
             hyperparams[key] = constant_fn(float(hyperparams[key]))
         else:
-            raise ValueError('Invalid value for {}: {}'.format(key, hyperparams[key]))
+            raise ValueError(f'Invalid value for {key}: {hyperparams[key]}')
 
     # Should we overwrite the number of timesteps?
     if args.n_timesteps > 0:
         if args.verbose:
-            print("Overwriting n_timesteps with n={}".format(args.n_timesteps))
+            print(f"Overwriting n_timesteps with n={args.n_timesteps}")
         n_timesteps = args.n_timesteps
     else:
         n_timesteps = int(hyperparams['n_timesteps'])
@@ -203,9 +205,9 @@ if __name__ == '__main__':
     if 'env_wrapper' in hyperparams.keys():
         del hyperparams['env_wrapper']
 
-    log_path = "{}/{}/".format(args.log_folder, args.algo)
+    log_path = f"{args.log_folder}/{args.algo}/"
     save_path = os.path.join(log_path, f"{env_id}_{get_latest_run_id(log_path, env_id) + 1}{uuid_str}")
-    params_path = "{}/{}".format(save_path, env_id)
+    params_path = f"{save_path}/{env_id}"
     os.makedirs(params_path, exist_ok=True)
 
     callbacks = get_callback_class(hyperparams)
@@ -230,39 +232,38 @@ if __name__ == '__main__':
         # Do not log eval env (issue with writing the same file)
         log_dir = None if eval_env else save_path
 
-        if is_atari:
-            raise NotImplementedError()
-            # if args.verbose > 0:
-            #     print("Using Atari wrapper")
-            # env = make_atari_env(env_id, num_env=n_envs, seed=args.seed)
-            # # Frame-stacking with 4 frames
-            # env = VecFrameStack(env, n_stack=4)
+        if n_envs == 1:
+            env = DummyVecEnv([make_env(env_id, 0, args.seed,
+                               wrapper_class=env_wrapper, log_dir=log_dir,
+                               env_kwargs=env_kwargs)])
         else:
-            if n_envs == 1:
-                env = DummyVecEnv([make_env(env_id, 0, args.seed,
-                                   wrapper_class=env_wrapper, log_dir=log_dir,
-                                   env_kwargs=env_kwargs)])
-            else:
-                # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
-                # On most env, SubprocVecEnv does not help and is quite memory hungry
-                env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir, env_kwargs=env_kwargs,
-                                            wrapper_class=env_wrapper) for i in range(n_envs)])
-            if normalize:
-                if args.verbose > 0:
-                    if len(normalize_kwargs) > 0:
-                        print("Normalization activated: {}".format(normalize_kwargs))
-                    else:
-                        print("Normalizing input and reward")
-                env = VecNormalize(env, **normalize_kwargs)
+            # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
+            # On most env, SubprocVecEnv does not help and is quite memory hungry
+            env = DummyVecEnv([make_env(env_id, i, args.seed, log_dir=log_dir, env_kwargs=env_kwargs,
+                                        wrapper_class=env_wrapper) for i in range(n_envs)])
+        if normalize:
+            if args.verbose > 0:
+                if len(normalize_kwargs) > 0:
+                    print(f"Normalization activated: {normalize_kwargs}")
+                else:
+                    print("Normalizing input and reward")
+            env = VecNormalize(env, **normalize_kwargs)
+
         # Optional Frame-stacking
         if hyperparams.get('frame_stack', False):
             n_stack = hyperparams['frame_stack']
             env = VecFrameStack(env, n_stack)
-            print("Stacking {} frames".format(n_stack))
+            print(f"Stacking {n_stack} frames")
+
+        if is_image_space(env.observation_space):
+            if args.verbose > 0:
+                print("Wrapping into a VecTransposeImage")
+            env = VecTransposeImage(env)
         return env
 
 
     env = create_env(n_envs)
+
     # Create test env if needed, do not normalize reward
     eval_env = None
     if args.eval_freq > 0:
@@ -293,7 +294,8 @@ if __name__ == '__main__':
             save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
             eval_callback = EvalCallback(create_env(1, eval_env=True), callback_on_new_best=save_vec_normalize,
                                          best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
-                                         log_path=save_path, eval_freq=args.eval_freq)
+                                         log_path=save_path, eval_freq=args.eval_freq,
+                                         deterministic=not is_atari)
             callbacks.append(eval_callback)
 
             # Restore original kwargs
@@ -328,8 +330,8 @@ if __name__ == '__main__':
             hyperparams['action_noise'] = OrnsteinUhlenbeckActionNoise(mean=np.zeros(n_actions),
                                                                        sigma=noise_std * np.ones(n_actions))
         else:
-            raise RuntimeError('Unknown noise type "{}"'.format(noise_type))
-        print("Applying {} noise with std {}".format(noise_type, noise_std))
+            raise RuntimeError(f'Unknown noise type "{noise_type}"')
+        print(f"Applying {noise_type} noise with std {noise_std}")
         del hyperparams['noise_type']
         del hyperparams['noise_std']
         if 'noise_std_final' in hyperparams:
@@ -340,6 +342,7 @@ if __name__ == '__main__':
         print("Loading pretrained agent")
         # Policy should not be changed
         del hyperparams['policy']
+        del hyperparams['policy_kwargs']
 
         model = ALGOS[args.algo].load(args.trained_agent, env=env, seed=args.seed,
                                       tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams)
@@ -385,7 +388,7 @@ if __name__ == '__main__':
         log_path = os.path.join(args.log_folder, args.algo, report_name)
 
         if args.verbose:
-            print("Writing report to {}".format(log_path))
+            print(f"Writing report to {log_path}")
 
         os.makedirs(os.path.dirname(log_path), exist_ok=True)
         data_frame.to_csv(log_path)
@@ -406,7 +409,7 @@ if __name__ == '__main__':
     with open(os.path.join(params_path, 'config.yml'), 'w') as f:
         yaml.dump(saved_hyperparams, f)
 
-    print("Log path: {}".format(save_path))
+    print(f"Log path: {save_path}")
 
     try:
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
@@ -415,8 +418,8 @@ if __name__ == '__main__':
 
     # Save trained model
 
-    print("Saving to {}".format(save_path))
-    model.save("{}/{}".format(save_path, env_id))
+    print(f"Saving to {save_path}")
+    model.save(f"{save_path}/{env_id}")
 
     if hasattr(model, 'save_replay_buffer') and args.save_replay_buffer:
         print("Saving replay buffer")
