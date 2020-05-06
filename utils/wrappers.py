@@ -265,13 +265,11 @@ class PlotActionWrapper(gym.Wrapper):
         plt.show()
 
 
-# TODO: compare with Stable-Baselines Preprocessing
-# there is no reward clipping
 class AtariWrapper(gym.Wrapper):
 
     def __init__(self, env: gym.Env, noop_max=30, frame_skip=4, screen_size=84,
                  terminal_on_life_loss=False, grayscale_obs=True,
-                 scale_obs=False):
+                 scale_obs=False, clip_reward=True):
         env = AtariPreprocessing(env, noop_max=noop_max, frame_skip=frame_skip, screen_size=screen_size,
                                  terminal_on_life_loss=terminal_on_life_loss, grayscale_obs=grayscale_obs,
                                  scale_obs=scale_obs)
@@ -283,6 +281,7 @@ class AtariWrapper(gym.Wrapper):
                                                    dtype=_obs_dtype)
 
         super(AtariWrapper, self).__init__(env)
+        self.clip_reward = clip_reward
 
     def _add_axis(self, obs):
         if self.env.grayscale_obs:
@@ -294,4 +293,7 @@ class AtariWrapper(gym.Wrapper):
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
+        # Bin reward to {+1, 0, -1} by its sign.
+        if self.clip_reward:
+            reward = np.sign(reward)
         return self._add_axis(obs), reward, done, info

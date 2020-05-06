@@ -178,6 +178,12 @@ def make_env(env_id, rank=0, seed=0, log_dir=None,
         set_random_seed(seed + rank)
         env = gym.make(env_id, **env_kwargs)
 
+        # Wrap first with a monitor (e.g. for Atari env where reward clipping is used)
+        log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
+        # Monitor success rate too for the real robot
+        info_keywords = ('is_success',) if 'NeckEnv' in env_id else ()
+        env = Monitor(env, log_file, info_keywords=info_keywords)
+
         # Dict observation space is currently not supported.
         # https://github.com/hill-a/stable-baselines/issues/321
         # We allow a Gym env wrapper (a subclass of gym.Wrapper)
@@ -185,10 +191,6 @@ def make_env(env_id, rank=0, seed=0, log_dir=None,
             env = wrapper_class(env)
 
         env.seed(seed + rank)
-        log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
-        # Monitor success rate too for the real robot
-        info_keywords = ('is_success',) if 'NeckEnv' in env_id else ()
-        env = Monitor(env, log_file, info_keywords=info_keywords)
         return env
 
     return _init
