@@ -6,6 +6,8 @@ logs/
 .idea/
 cluster_sbatch.sh
 cluster_sbatch_mpi.sh
+cluster_torchy.sh
 logs
 .pytype/
 htmlcov/
+git_rewrite_commit_history.sh
