@@ -97,7 +97,7 @@ if __name__ == '__main__':
     uuid_str = f'_{uuid.uuid4()}' if args.uuid else ''
     if args.seed < 0:
         # Seed but with a random one
-        args.seed = np.random.randint(2**32 - 1)
+        args.seed = np.random.randint(2**32 - 1, dtype='int64').item()
 
     set_random_seed(args.seed)
 
@@ -374,7 +374,6 @@ if __name__ == '__main__':
             """
             return ALGOS[args.algo](env=create_env(n_envs, eval_env=True), tensorboard_log=tensorboard_log,
                                     verbose=0, **kwargs)
-
 
         data_frame = hyperparam_optimization(args.algo, create_model, create_env, n_trials=args.n_trials,
                                              n_timesteps=n_timesteps, hyperparams=hyperparams,
