@@ -16,11 +16,11 @@ Please try to provide a minimal example to reproduce the bug. Error messages and
 
 **System Info**
 Describe the characteristic of your environment:
- * Describe how torchy baselines was installed (pip, docker, source, ...)
+ * Describe how Stable Baselines3 was installed (pip, docker, source, ...)
  * GPU models and configuration
  * Python version
  * PyTorch version
- * Versions of any other relevant libraries
+ * Versions of any other relevant libraries (Pybullet, ...)
 
 **Additional context**
 Add any other context about the problem here.

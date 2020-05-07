@@ -46,42 +46,42 @@ NeckEnv3Tendons-v1:
   policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
 
 # Tuned
-# MountainCarContinuous-v0:
-#   # env_wrapper: utils.wrappers.PlotActionWrapper
-#   n_timesteps: !!float 50000
-#   policy: 'MlpPolicy'
-#   learning_rate: !!float 3e-4
-#   buffer_size: 50000
-#   batch_size: 512
-#   ent_coef: 0.1
-#   train_freq: 32
-#   gradient_steps: 32
-#   gamma: 0.9999
-#   tau: 0.01
-#   learning_starts: 0
-#   use_sde: True
-#   policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64])"
-# Note: the hyperparams for HalfCheetah also work:
 MountainCarContinuous-v0:
-  # env_wrapper:
-  #   - utils.wrappers.PlotActionWrapper:
-  #       plot_freq: 1 # Every 1 episode
-  callback:
-    - utils.callbacks.PlotNoiseRatioCallback:
-        display_freq: 500
+  # env_wrapper: utils.wrappers.PlotActionWrapper
   n_timesteps: !!float 50000
   policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
+  learning_rate: !!float 3e-4
+  buffer_size: 50000
+  batch_size: 512
+  ent_coef: 0.1
+  train_freq: 32
+  gradient_steps: 32
+  gamma: 0.9999
+  tau: 0.01
   learning_starts: 0
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64])"
+# Note: the hyperparams for HalfCheetah also work:
+# MountainCarContinuous-v0:
+#   # env_wrapper:
+#   #   - utils.wrappers.PlotActionWrapper:
+#   #       plot_freq: 1 # Every 1 episode
+#   callback:
+#     - utils.callbacks.PlotNoiseRatioCallback:
+#         display_freq: 500
+#   n_timesteps: !!float 50000
+#   policy: 'MlpPolicy'
+#   learning_rate: !!float 7.3e-4
+#   buffer_size: 300000
+#   batch_size: 256
+#   ent_coef: 'auto'
+#   gamma: 0.98
+#   tau: 0.02
+#   train_freq: 64
+#   gradient_steps: 64
+#   learning_starts: 0
+#   use_sde: True
+#   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 Pendulum-v0:
   # env_wrapper:
