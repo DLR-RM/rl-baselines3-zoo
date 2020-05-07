@@ -1,4 +1,4 @@
-stable-baselines3[extra]
+stable-baselines3[extra,tests,docs]
 box2d-py==2.3.5
 pybullet
 gym-minigrid
