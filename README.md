@@ -254,7 +254,7 @@ Min version: stable-baselines3[extra] >= 0.6.0
 
 ```
 apt-get install swig cmake ffmpeg
-pip install stable-baselines3[extra] box2d box2d-kengz pyyaml pybullet optuna pytablewriter scikit-optimize
+pip install -r requirements.txt
 ```
 
 Please see [Stable Baselines3 README](https://github.com/DLR-RM/stable-baselines3) for alternatives.

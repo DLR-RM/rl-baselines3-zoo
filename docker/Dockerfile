@@ -13,22 +13,19 @@ RUN apt-get -y update \
 
 ENV CODE_DIR /root/code
 ENV VENV /root/venv
+COPY requirements.txt /tmp/
+
 
 RUN \
     mkdir -p ${CODE_DIR}/rl_zoo && \
     pip uninstall -y stable-baselines3 && \
-    pip install stable-baselines3[extra] && \
-    pip install box2d-py==2.3.5 && \
-    pip install pybullet && \
-    pip install gym-minigrid && \
-    pip install scikit-optimize && \
-    pip install optuna && \
-    pip install pytablewriter && \
+    pip install -r /tmp/requirements.txt && \
     rm -rf $HOME/.cache/pip
 
 ENV PATH=$VENV/bin:$PATH
 
 COPY docker/entrypoint.sh /tmp/
+RUN chmod +x /tmp/entrypoint.sh
 ENTRYPOINT ["/tmp/entrypoint.sh"]
 
 CMD /bin/bash
