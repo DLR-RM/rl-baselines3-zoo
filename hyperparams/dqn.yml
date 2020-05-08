@@ -3,9 +3,9 @@ atari:
     - utils.wrappers.AtariWrapper
   policy: 'CnnPolicy'
   n_timesteps: !!float 1e7
-  buffer_size: 100000
+  buffer_size: 1e5
   learning_rate: !!float 1e-4
-  learning_starts: 10000
+  learning_starts: 1e4
   target_update_interval: 1000
   train_freq: 4
   exploration_final_eps: 0.01
