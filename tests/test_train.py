@@ -26,6 +26,8 @@ for algo in ALGOS:
 experiments['ppo-BipedalWalkerHardcore-v3'] = ('ppo', 'BipedalWalkerHardcore-v3')
 # Test for SAC
 experiments['sac-Pendulum-v0'] = ('sac', 'Pendulum-v0')
+# for TD3
+experiments['td3-Pendulum-v0'] = ('td3', 'Pendulum-v0')
 
 # Clean up
 if os.path.isdir(LOG_FOLDER):
@@ -46,15 +48,15 @@ def test_train(experiment):
     _assert_eq(return_code, 0)
 
 
-# def test_continue_training():
-#     algo, env_id = 'a2c', 'MountainCar-v0'
-#     args = [
-#         '-n', str(N_STEPS),
-#         '--algo', algo,
-#         '--env', env_id,
-#         '--log-folder', LOG_FOLDER,
-#         '-i', 'trained_agents/a2c/MountainCar-v0.zip'
-#     ]
-#
-#     return_code = subprocess.call(['python', 'train.py'] + args)
-#     _assert_eq(return_code, 0)
+def test_continue_training():
+    algo, env_id = 'a2c', 'CartPole-v1'
+    args = [
+        '-n', str(N_STEPS),
+        '--algo', algo,
+        '--env', env_id,
+        '--log-folder', LOG_FOLDER,
+        '-i', 'rl-trained-agents/a2c/CartPole-v1_1/CartPole-v1.zip'
+    ]
+
+    return_code = subprocess.call(['python', 'train.py'] + args)
+    _assert_eq(return_code, 0)
