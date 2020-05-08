@@ -26,7 +26,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 
 # Register custom envs
 import utils.import_envs  # pytype: disable=import-error
-from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_latest_run_id, get_wrapper_class
+from utils import make_env, ALGOS, linear_schedule, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
@@ -154,19 +154,16 @@ if __name__ == '__main__':
         print(f"Using {n_envs} environments")
 
     # Create schedules
-    for key in ['learning_rate', 'clip_range', 'clip_range_vf', 'sde_log_std_scheduler']:
+    for key in ['learning_rate', 'clip_range', 'clip_range_vf']:
         if key not in hyperparams:
             continue
         if isinstance(hyperparams[key], str):
             schedule, initial_value = hyperparams[key].split('_')
             initial_value = float(initial_value)
-            if key == 'sde_log_std_scheduler':
-                hyperparams[key] = linear_schedule_std(initial_value)
-            else:
-                hyperparams[key] = linear_schedule(initial_value)
+            hyperparams[key] = linear_schedule(initial_value)
         elif isinstance(hyperparams[key], (float, int)):
             # Negative value: ignore (ex: for clipping)
-            if hyperparams[key] < 0 and key != 'sde_log_std_scheduler':
+            if hyperparams[key] < 0:
                 continue
             hyperparams[key] = constant_fn(float(hyperparams[key]))
         else:

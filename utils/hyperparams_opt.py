@@ -294,6 +294,7 @@ def sample_sac_params(trial):
         'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch)
     }
 
+
 def sample_td3_params(trial):
     """
     Sampler for TD3 hyperparams.
@@ -317,14 +318,9 @@ def sample_td3_params(trial):
         gradient_steps = train_freq
         n_episodes_rollout = -1
 
-    # TODO: reintroduce noise when sde is tuned
-    # noise_type = trial.suggest_categorical('noise_type', ['ornstein-uhlenbeck', 'normal', None])
-    # noise_std = trial.suggest_uniform('noise_std', 0, 1)
-    noise_type = 'sde'
+    noise_type = trial.suggest_categorical('noise_type', ['ornstein-uhlenbeck', 'normal', None])
+    noise_std = trial.suggest_uniform('noise_std', 0, 1)
 
-    use_sde = True
-    log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
-    lr_sde = trial.suggest_loguniform('lr_sde', 1e-5, 1)
     net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
@@ -343,10 +339,7 @@ def sample_td3_params(trial):
         'train_freq': train_freq,
         'gradient_steps': gradient_steps,
         'n_episodes_rollout': n_episodes_rollout,
-        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch,
-                              lr_sde=lr_sde),
-        'use_sde': use_sde,
-        'sde_max_grad_norm': sde_max_grad_norm
+        'policy_kwargs': dict(net_arch=net_arch),
     }
 
     if noise_type == 'normal':
