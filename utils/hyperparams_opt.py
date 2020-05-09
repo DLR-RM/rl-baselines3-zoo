@@ -13,7 +13,7 @@ from utils import linear_schedule
 
 def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,
                             n_jobs=1, sampler_method='random', pruner_method='halving',
-                            seed=0, verbose=1):
+                            n_startup_trials=10, n_evaluations=20, n_eval_episodes=5, seed=0, verbose=1):
     """
     :param algo: (str)
     :param model_fn: (func) function that is used to instantiate the model
@@ -24,6 +24,9 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     :param n_jobs: (int) number of parallel jobs
     :param sampler_method: (str)
     :param pruner_method: (str)
+    :param n_startup_trials: (int)
+    :param n_evaluations: (int) Evaluate every 20th of the maximum budget per iteration
+    :param n_eval_episodes: (int) Evaluate the model during 5 episodes
     :param seed: (int)
     :param verbose: (int)
     :return: (pd.Dataframe) detailed result of the optimization
@@ -32,11 +35,6 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     if hyperparams is None:
         hyperparams = {}
 
-    n_startup_trials = 10
-    # Evaluate the model during 5 episodes
-    n_eval_episodes = 5
-    # Evaluate every 20th of the maximum budget per iteration
-    n_evaluations = 20
     eval_freq = int(n_timesteps / n_evaluations)
 
     # n_warmup_steps: Disable pruner until the trial reaches the given number of step.
