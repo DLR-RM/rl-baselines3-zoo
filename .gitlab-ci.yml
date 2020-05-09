@@ -1,5 +1,9 @@
 image: stablebaselines/rl-baselines3-zoo-cpu:latest
 
+# Recursive clone
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 type-check:
   script:
   - make type
