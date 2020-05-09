@@ -66,6 +66,10 @@ if __name__ == '__main__':
                         default='tpe', choices=['random', 'tpe', 'skopt'])
     parser.add_argument('--pruner', help='Pruner to use when optimizing hyperparameters', type=str,
                         default='median', choices=['halving', 'median', 'none'])
+    parser.add_argument('--n-startup-trials', help='Number of trials before using optuna sampler',
+                        type=int, default=10)
+    parser.add_argument('--n-evaluations', help='Number of evaluations for hyperparameter optimization',
+                        type=int, default=20)
     parser.add_argument('--verbose', help='Verbose mode (0: no output, 1: INFO)', default=1,
                         type=int)
     parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
@@ -379,6 +383,7 @@ if __name__ == '__main__':
                                              n_timesteps=n_timesteps, hyperparams=hyperparams,
                                              n_jobs=args.n_jobs, seed=args.seed,
                                              sampler_method=args.sampler, pruner_method=args.pruner,
+                                             n_startup_trials=args.n_startup_trials, n_evaluations=args.n_evaluations,
                                              verbose=args.verbose)
 
         report_name = "report_{}_{}-trials-{}-{}-{}_{}.csv".format(env_id, args.n_trials, n_timesteps,

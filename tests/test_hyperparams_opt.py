@@ -10,7 +10,7 @@ def _assert_eq(left, right):
 
 
 N_STEPS = 100
-N_TRIALS = 2
+N_TRIALS = 3
 N_JOBS = 1
 
 ALGOS = ('ppo', 'a2c')
@@ -38,15 +38,20 @@ if os.path.isdir(LOG_FOLDER):
 @pytest.mark.parametrize("experiment", experiments.keys())
 def test_optimize(sampler, pruner, experiment):
     algo, env_id = experiments[experiment]
+    custom_params = ['n_steps:10'] if algo == 'ppo' else []
     args = [
         '-n', str(N_STEPS),
         '--algo', algo,
         '--env', env_id,
-        '--log-folder', LOG_FOLDER,
+        '-params', 'policy_kwargs:"dict(net_arch=[32])"', 'n_envs:1']\
+        + custom_params +\
+        ['--log-folder', LOG_FOLDER,
         '--n-trials', str(N_TRIALS),
         '--n-jobs', str(N_JOBS),
         '--sampler', sampler,
         '--pruner', pruner,
+        '--n-evaluations', str(2),
+        '--n-startup-trials', str(1),
         '-optimize'
     ]
 
