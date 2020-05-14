@@ -57,6 +57,9 @@ def test_record_video():
         '-o', 'logs/tests/videos/'
     ]
 
+    # Skip if no X-Server
+    pytest.importorskip("pyglet.gl")
+
     return_code = subprocess.call(['python', '-m', 'utils.record_video'] + args)
     _assert_eq(return_code, 0)
     video_path = 'logs/tests/videos/sac-Pendulum-v0-step-0-to-step-100.mp4'

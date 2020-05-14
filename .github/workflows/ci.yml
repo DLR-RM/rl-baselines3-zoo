@@ -31,6 +31,8 @@ jobs:
         python -m pip install --upgrade pip
         # cpu version of pytorch - faster to download
         pip install torch==1.4.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        # faster to install because pre-built wheel
+        pip install pybullet==2.6.6
         pip install -r requirements.txt
         # TODO: remove when new version of SB3 is out
         pip install flake8
