@@ -53,10 +53,10 @@ for idx, trained_model in enumerate(trained_models.keys()):
     # Comment out to becnhmark HER robotics env
     # this requires a mujoco licence
     if 'Fetch' in env_id:
-        print("Skipping mujoco env: {}".format(env_id))
+        print(f"Skipping mujoco env: {env_id}")
         continue
 
-    reward_log = '{}/{}/'.format(args.benchmark_dir, trained_model)
+    reward_log = f"{args.benchmark_dir}/{trained_model}/"
     arguments = [
         '-n', str(n_timesteps),
         '--n-envs', str(n_envs),
@@ -69,8 +69,8 @@ for idx, trained_model in enumerate(trained_models.keys()):
         '--reward-log', reward_log
     ]
     if args.verbose >= 1:
-        print('{}/{}'.format(idx + 1, n_experiments))
-        print("Evaluating {} on {}...".format(algo, env_id))
+        print(f"{idx + 1}/{n_experiments}")
+        print(f"Evaluating {algo} on {env_id}...")
 
     skip_eval = False
     if os.path.isdir(reward_log):
@@ -96,9 +96,9 @@ for idx, trained_model in enumerate(trained_models.keys()):
         results['n_timesteps'].append(x[-1])
         results['n_episodes'].append(len(y))
         if args.verbose >= 1:
-            print(x[-1], 'timesteps')
+            print(x[-1], "timesteps")
             print(len(y), "Episodes")
-            print("Mean reward: {:.2f} +- {:.2f}".format(mean_reward, std_reward))
+            print(f"Mean reward: {mean_reward:.2f} +- {std_reward:.2f}")
             print()
     else:
         print("Not enough timesteps")
@@ -114,10 +114,10 @@ results_df = results_df.sort_values(by=['algo', 'env_id'])
 writer = pytablewriter.MarkdownTableWriter()
 writer.from_dataframe(results_df)
 # change the output stream to a file
-with open("{}/benchmark.md".format(args.benchmark_dir), "w") as f:
+with open(f"{args.benchmark_dir}/benchmark.md", "w") as f:
     writer.stream = f
     writer.write_table()
-print("Results written to:", "{}/benchmark.md".format(args.benchmark_dir))
+print(f"Results written to:", "{args.benchmark_dir}/benchmark.md")
 
 # Update root benchmark file
 with open("benchmark.md", "w") as f:
