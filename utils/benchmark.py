@@ -102,6 +102,7 @@ for idx, trained_model in enumerate(trained_models.keys()):
         try:
             x, y = ts2xy(load_results(reward_log), 'timesteps')
             skip_eval = len(x) > 0
+        # TODO: fix this bare except
         except:
             pass
 
