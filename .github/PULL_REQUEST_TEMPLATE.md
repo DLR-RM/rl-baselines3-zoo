@@ -19,8 +19,8 @@
 ## Checklist:
 <!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
 <!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
-- [ ] I've read the [CONTRIBUTION](https://github.com/hill-a/stable-baselines/blob/master/CONTRIBUTING.md) guide (**required**)
-<!-- - [ ] I have updated the changelog accordingly (**required**). -->
+- [ ] I've read the [CONTRIBUTION](https://github.com/DLR-RM/stable-baselines3/blob/master/CONTRIBUTING.md) guide (**required**)
+- [ ] I have updated the changelog accordingly (**required**).
 - [ ] My change requires a change to the documentation.
 - [ ] I have updated the tests accordingly (*required for a bug fix or a new feature*).
 - [ ] I have updated the documentation accordingly.
