@@ -3,16 +3,9 @@ import argparse
 
 import gym
 import numpy as np
-from stable_baselines3.common.vec_env import (
-    VecVideoRecorder,
-    VecFrameStack,
-    VecNormalize)
+from stable_baselines3.common.vec_env import VecVideoRecorder, VecFrameStack, VecNormalize
 
-from .utils import (
-    ALGOS,
-    create_test_env,
-    get_saved_hyperparams,
-    get_latest_run_id)
+from .utils import ALGOS, create_test_env, get_saved_hyperparams, get_latest_run_id
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -96,26 +89,24 @@ hyperparams, stats_path = get_saved_hyperparams(stats_path)
 
 is_atari = 'NoFrameskip' in env_id
 
-env = create_test_env(
-    env_id,
-    n_envs=n_envs,
-    stats_path=stats_path,
-    seed=seed,
-    log_dir=None,
-    should_render=not args.no_render,
-    hyperparams=hyperparams)
+env = create_test_env(env_id,
+                      n_envs=n_envs,
+                      stats_path=stats_path,
+                      seed=seed,
+                      log_dir=None,
+                      should_render=not args.no_render,
+                      hyperparams=hyperparams)
 
 model = ALGOS[algo].load(model_path)
 
 obs = env.reset()
 
 # Note: apparently it renders by default
-env = VecVideoRecorder(
-    env,
-    video_folder,
-    record_video_trigger=lambda x: x == 0,
-    video_length=video_length,
-    name_prefix=f"{algo}-{env_id}")
+env = VecVideoRecorder(env,
+                       video_folder,
+                       record_video_trigger=lambda x: x == 0,
+                       video_length=video_length,
+                       name_prefix=f"{algo}-{env_id}")
 
 env.reset()
 for _ in range(video_length + 1):
