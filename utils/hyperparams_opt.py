@@ -48,7 +48,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         # Gradient boosted regression: GBRT
         sampler = SkoptSampler(skopt_kwargs={'base_estimator': "GP", 'acq_func': 'gp_hedge'})
     else:
-        raise ValueError('Unknown sampler: {}'.format(sampler_method))
+        raise ValueError(f'Unknown sampler: {sampler_method}')
 
     if pruner_method == 'halving':
         pruner = SuccessiveHalvingPruner(min_resource=1, reduction_factor=4, min_early_stopping_rate=0)
@@ -58,10 +58,10 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         # Do not prune
         pruner = MedianPruner(n_startup_trials=n_trials, n_warmup_steps=n_evaluations)
     else:
-        raise ValueError('Unknown pruner: {}'.format(pruner_method))
+        raise ValueError(f'Unknown pruner: {pruner_method}')
 
     if verbose > 0:
-        print("Sampler: {} - Pruner: {}".format(sampler_method, pruner_method))
+        print(f"Sampler: {sampler_method} - Pruner: {pruner_method}")
 
     study = optuna.create_study(sampler=sampler, pruner=pruner)
     algo_sampler = HYPERPARAMS_SAMPLER[algo]
@@ -127,7 +127,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
 
     print('Params: ')
     for key, value in trial.params.items():
-        print('    {}: {}'.format(key, value))
+        print(f'    {key}: {value}')
 
     return study.trials_dataframe()
 
@@ -334,7 +334,6 @@ def sample_td3_params(trial):
 
     net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
-
 
     net_arch = {
         'small': [64, 64],

@@ -237,7 +237,7 @@ class PlotActionWrapper(gym.Wrapper):
     def plot(self):
         actions = self.actions
         x = np.arange(sum([len(episode) for episode in actions]))
-        plt.figure("Actions")
+        plt.figure('Actions')
         plt.title('Actions during exploration', fontsize=14)
         plt.xlabel('Timesteps', fontsize=14)
         plt.ylabel('Action', fontsize=14)
@@ -261,7 +261,7 @@ class PlotActionWrapper(gym.Wrapper):
             # signal = np.sin(10 * 2 * np.pi * np.arange(n_samples) * time_delta)
             signal_fft = np.fft.fft(signal)
             freq = np.fft.fftfreq(n_samples, time_delta)
-            plt.figure("FFT")
+            plt.figure('FFT')
             plt.plot(freq[:n_samples // 2], np.abs(signal_fft[:n_samples // 2]))
 
         plt.show()

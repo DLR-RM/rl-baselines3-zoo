@@ -16,6 +16,7 @@ N_STEPS = 100
 
 trained_models = get_trained_models(FOLDER)
 
+
 @pytest.mark.parametrize("trained_model", trained_models.keys())
 def test_enjoy(trained_model):
     algo, env_id = trained_models[trained_model]
