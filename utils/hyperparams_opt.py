@@ -317,7 +317,6 @@ def sample_td3_params(trial):
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 100, 128, 256, 512])
     buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(1e5), int(1e6)])
-    sde_max_grad_norm = trial.suggest_categorical('sde_max_grad_norm', [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5, 1000])
 
     episodic = trial.suggest_categorical('episodic', [True, False])
 
