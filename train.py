@@ -9,7 +9,6 @@ from pprint import pprint
 
 import yaml
 import gym
-from gym.wrappers import AtariPreprocessing
 import seaborn
 import numpy as np
 import torch as th
