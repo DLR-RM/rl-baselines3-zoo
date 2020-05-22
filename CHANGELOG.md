@@ -3,9 +3,11 @@
 ### Breaking Changes
 
 ### New Features
+- Added ``--load-checkpoints`` to load particular checkpoints
 
 ### Bug fixes
-- Fix optuna warning (@SammyRamone)
+- Fixed optuna warning (@SammyRamone)
+- Fixed `--save-freq` which was not taking parallel env into account
 
 ### Documentation
 
