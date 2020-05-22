@@ -32,6 +32,9 @@ def main():
                         help='Use deterministic actions')
     parser.add_argument('--load-best', action='store_true', default=False,
                         help='Load best model instead of last model if available')
+    parser.add_argument('--load-checkpoint', type=int,
+                        help='Load checkpoint instead of last model if available, '
+                             'you must pass the number of timesteps corresponding to it')
     parser.add_argument('--stochastic', action='store_true', default=False,
                         help='Use stochastic actions (for DDPG/DQN/SAC)')
     parser.add_argument('--norm-reward', action='store_true', default=False,
@@ -73,6 +76,10 @@ def main():
 
     if args.load_best:
         model_path = os.path.join(log_path, "best_model.zip")
+        found = os.path.isfile(model_path)
+
+    if args.load_checkpoint is not None:
+        model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
         found = os.path.isfile(model_path)
 
     if not found:

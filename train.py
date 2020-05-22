@@ -216,6 +216,8 @@ if __name__ == '__main__':
         del hyperparams['callback']
 
     if args.save_freq > 0:
+        # Account for the number of parallel environments
+        args.save_freq = max(args.save_freq // n_envs, 1)
         callbacks.append(CheckpointCallback(save_freq=args.save_freq,
                                             save_path=save_path, name_prefix='rl_model', verbose=1))
 
