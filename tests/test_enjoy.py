@@ -12,9 +12,11 @@ def _assert_eq(left, right):
 
 FOLDER = 'rl-trained-agents/'
 N_STEPS = 100
+LOG_FOLDER = 'logs/tests/'
 
 
 trained_models = get_trained_models(FOLDER)
+
 
 @pytest.mark.parametrize("trained_model", trained_models.keys())
 def test_enjoy(trained_model):
@@ -46,6 +48,38 @@ def test_benchmark():
     ]
 
     return_code = subprocess.call(['python', '-m', 'utils.benchmark'] + args)
+    _assert_eq(return_code, 0)
+
+
+def test_load(tmp_path):
+    algo, env_id = 'a2c', 'CartPole-v1'
+    args = [
+        '-n', str(1000),
+        '--algo', algo,
+        '--env', env_id,
+        '-params', 'n_envs:1',
+        '--log-folder', tmp_path,
+        '--eval-freq', str(500),
+        '--save-freq', str(500),
+    ]
+    # Train and save checkpoints and best model
+    return_code = subprocess.call(['python', 'train.py'] + args)
+    _assert_eq(return_code, 0)
+
+    # Load best model
+    args = [
+        '-n', str(N_STEPS),
+        '-f', tmp_path,
+        '--algo', algo,
+        '--env', env_id,
+        '--no-render'
+    ]
+    return_code = subprocess.call(['python', 'enjoy.py'] + args + ['--load-best'])
+    _assert_eq(return_code, 0)
+
+    # Load checkpoint
+    return_code = subprocess.call(['python', 'enjoy.py'] + args
+                                  + ['--load-checkpoint', str(500)])
     _assert_eq(return_code, 0)
 
 
