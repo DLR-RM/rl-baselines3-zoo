@@ -130,6 +130,8 @@ if args.output is not None:
 # plt.tight_layout()
 
 if args.boxplot:
+    # Change background style
+    seaborn.set(style="whitegrid")
     # Box plot
     plt.figure('Sensitivity box plot', figsize=args.figsize)
     plt.title('Sensitivity box plot', fontsize=args.fontsize)
