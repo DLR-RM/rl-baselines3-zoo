@@ -7,7 +7,7 @@ from typing import Dict, Tuple
 
 import gym
 # For custom activation fn
-import torch.nn as nn  # pylint: disable=unused-import
+import torch.nn as nn  # noqa: F401 pylint: disable=unused-import
 
 from stable_baselines3.common.monitor import Monitor
 # from stable_baselines3.common import logger
@@ -140,8 +140,8 @@ def get_callback_class(hyperparams):
             # Handle keyword arguments
             if isinstance(callback_name, dict):
                 assert len(callback_name) == 1, ("You have an error in the formatting "
-                                                f"of your YAML file near {callback_name}. "
-                                                "You should check the indentation.")
+                                                 f"of your YAML file near {callback_name}. "
+                                                 "You should check the indentation.")
                 callback_dict = callback_name
                 callback_name = list(callback_dict.keys())[0]
                 kwargs = callback_dict[callback_name]

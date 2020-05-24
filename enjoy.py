@@ -9,12 +9,12 @@ import torch as th
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
 
-import utils.import_envs  # pytype: disable=import-error
+import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils.utils import StoreDict
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
 
-def main():
+def main():  # noqa: C901
     parser = argparse.ArgumentParser()
     parser.add_argument('--env', help='environment ID', type=str, default='CartPole-v1')
     parser.add_argument('-f', '--folder', help='Log folder', type=str, default='rl-trained-agents')

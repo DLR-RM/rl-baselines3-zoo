@@ -190,7 +190,8 @@ def sample_ppo_params(trial):
         'max_grad_norm': max_grad_norm,
         'vf_coef': vf_coef,
         'sde_sample_freq': sde_sample_freq,
-        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, activation_fn=activation_fn)
+        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch,
+                              activation_fn=activation_fn, ortho_init=ortho_init)
     }
 
 
@@ -251,7 +252,8 @@ def sample_a2c_params(trial):
         'use_rms_prop': use_rms_prop,
         'vf_coef': vf_coef,
         'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, full_std=full_std,
-                              activation_fn=activation_fn, sde_net_arch=sde_net_arch)
+                              activation_fn=activation_fn, sde_net_arch=sde_net_arch,
+                              ortho_init=ortho_init)
     }
 
 
