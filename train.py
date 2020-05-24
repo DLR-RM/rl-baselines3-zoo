@@ -9,7 +9,6 @@ from pprint import pprint
 
 import yaml
 import gym
-from gym.wrappers import AtariPreprocessing
 import seaborn
 import numpy as np
 import torch as th
@@ -221,7 +220,6 @@ if __name__ == '__main__':
         callbacks.append(CheckpointCallback(save_freq=args.save_freq,
                                             save_path=save_path, name_prefix='rl_model', verbose=1))
 
-
     def create_env(n_envs, eval_env=False):
         """
         Create the environment and wrap it if necessary
@@ -263,7 +261,6 @@ if __name__ == '__main__':
                 print("Wrapping into a VecTransposeImage")
             env = VecTransposeImage(env)
         return env
-
 
     env = create_env(n_envs)
 
@@ -372,14 +369,12 @@ if __name__ == '__main__':
         if args.verbose > 0:
             print("Optimizing hyperparameters")
 
-
         def create_model(*_args, **kwargs):
             """
             Helper to create a model with different hyperparameters
             """
             return ALGOS[args.algo](env=create_env(n_envs, eval_env=True), tensorboard_log=tensorboard_log,
                                     verbose=0, **kwargs)
-
 
         data_frame = hyperparam_optimization(args.algo, create_model, create_env, n_trials=args.n_trials,
                                              n_timesteps=n_timesteps, hyperparams=hyperparams,

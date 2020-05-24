@@ -13,6 +13,7 @@ import utils.import_envs  # pytype: disable=import-error
 from utils.utils import StoreDict
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env', help='environment ID', type=str, default='CartPole-v1')
@@ -179,11 +180,10 @@ def main():
     if args.verbose > 0 and len(episode_lengths) > 0:
         print("Mean episode length: {:.2f} +/- {:.2f}".format(np.mean(episode_lengths), np.std(episode_lengths)))
 
-
     # Workaround for https://github.com/openai/gym/issues/893
     if not args.no_render:
         if (args.n_envs == 1 and 'Bullet' not in env_id
-            and not is_atari and isinstance(env, VecEnv)):
+                and not is_atari and isinstance(env, VecEnv)):
             # DummyVecEnv
             # Unwrap env
             while isinstance(env, VecEnvWrapper):
