@@ -4,6 +4,7 @@ import importlib
 
 import gym
 import numpy as np
+import torch as th
 
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
@@ -19,6 +20,8 @@ def main():
     parser.add_argument('--algo', help='RL Algorithm', default='ppo',
                         type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument('-n', '--n-timesteps', help='number of timesteps', default=1000,
+                        type=int)
+    parser.add_argument('--num-threads', help='Number of threads for PyTorch (-1 to use default)', default=-1,
                         type=int)
     parser.add_argument('--n-envs', help='number of environments', default=1,
                         type=int)
@@ -89,6 +92,11 @@ def main():
         args.n_envs = 1
 
     set_random_seed(args.seed)
+
+    if args.num_threads > 0:
+        if args.verbose > 1:
+            print(f"Setting torch.num_threads to {args.num_threads}")
+        th.set_num_threads(args.num_threads)
 
     is_atari = 'NoFrameskip' in env_id
 

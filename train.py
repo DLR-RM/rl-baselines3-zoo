@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     set_random_seed(args.seed)
 
-    # Setting num threads to 1 by default, it makes everything run faster
+    # Setting num threads to 1 makes things run faster on cpu
     if args.num_threads > 0:
         if args.verbose > 1:
             print(f"Setting torch.num_threads to {args.num_threads}")
