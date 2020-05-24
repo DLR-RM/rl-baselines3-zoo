@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib
 # Fix when running tests
 try:
-    import tkinter as Tk
+    import tkinter  # noqa: F401 pylint: disable=unused-import
 except ImportError:
     matplotlib.use('agg')
 
@@ -143,7 +143,7 @@ writer.from_dataframe(results_df)
 with open(f"{args.benchmark_dir}/benchmark.md", "w") as f:
     writer.stream = f
     writer.write_table()
-print(f"Results written to:", "{args.benchmark_dir}/benchmark.md")
+print(f"Results written to: {args.benchmark_dir}/benchmark.md")
 
 # Update root benchmark file
 with open("benchmark.md", "w") as f:

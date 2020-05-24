@@ -13,7 +13,7 @@ import seaborn
 import numpy as np
 import torch as th
 # For custom activation fn
-import torch.nn as nn  # pylint: disable=unused-import
+import torch.nn as nn  # noqa: F401 pytype: disable=unused-import
 
 from stable_baselines3.common.utils import set_random_seed
 # from stable_baselines3.common.cmd_util import make_atari_env
@@ -24,7 +24,7 @@ from stable_baselines3.common.utils import constant_fn
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 
 # Register custom envs
-import utils.import_envs  # pytype: disable=import-error
+import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils import make_env, ALGOS, linear_schedule, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.callbacks import SaveVecNormalizeCallback
@@ -33,7 +33,7 @@ from utils.utils import StoreDict, get_callback_class
 
 seaborn.set()
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # noqa: C901
     parser = argparse.ArgumentParser()
     parser.add_argument('--algo', help='RL Algorithm', default='ppo',
                         type=str, required=False, choices=list(ALGOS.keys()))

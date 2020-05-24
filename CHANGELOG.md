@@ -18,3 +18,4 @@
 - Added codestyle check `make lint` using flake8
 - Reformat `benchmark.py` (@salmannotkhan)
 - Added github ci
+- Fixes most linter warnings
