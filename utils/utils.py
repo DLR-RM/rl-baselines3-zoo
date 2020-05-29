@@ -7,13 +7,13 @@ from typing import Dict, Tuple
 
 import gym
 # For custom activation fn
-import torch.nn as nn  # pylint: disable=unused-import
+import torch.nn as nn  # noqa: F401 pylint: disable=unused-import
 
 from stable_baselines3.common.monitor import Monitor
 # from stable_baselines3.common import logger
 from stable_baselines3 import A2C, PPO, SAC, TD3
 from stable_baselines3.common.vec_env import (DummyVecEnv, VecNormalize,
-                                             VecFrameStack, SubprocVecEnv)
+                                              VecFrameStack, SubprocVecEnv)
 # from stable_baselines3.common.cmd_util import make_atari_env
 from stable_baselines3.common.utils import set_random_seed
 
@@ -140,8 +140,8 @@ def get_callback_class(hyperparams):
             # Handle keyword arguments
             if isinstance(callback_name, dict):
                 assert len(callback_name) == 1, ("You have an error in the formatting "
-                                                f"of your YAML file near {callback_name}. "
-                                                "You should check the indentation.")
+                                                 f"of your YAML file near {callback_name}. "
+                                                 "You should check the indentation.")
                 callback_dict = callback_name
                 callback_name = list(callback_dict.keys())[0]
                 kwargs = callback_dict[callback_name]
@@ -279,30 +279,6 @@ def linear_schedule(initial_value):
         :return: (float)
         """
         return progress * initial_value
-
-    return func
-
-
-def linear_schedule_std(initial_value, final_value=-5.5):
-    """
-    Linear learning rate schedule for log std.
-    It will decrease linearly from initial_value to final_value
-    (by default exp(-5.5) = 0.004 will be the final value of the std)
-
-    :param initial_value: (float or str)
-    :param final_value: (float)
-    :return: (function)
-    """
-    if isinstance(initial_value, str):
-        initial_value = float(initial_value)
-
-    def func(progress):
-        """
-        Progress will decrease from 1 (beginning) to 0
-        :param progress: (float)
-        :return: (float)
-        """
-        return progress * initial_value + (1 - progress) * final_value
 
     return func
 

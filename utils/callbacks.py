@@ -1,5 +1,4 @@
 import os
-import pickle
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -60,7 +59,7 @@ class SaveVecNormalizeCallback(BaseCallback):
     def _on_step(self) -> bool:
         if self.n_calls % self.save_freq == 0:
             if self.name_prefix is not None:
-                path = os.path.join(self.save_path, f'{self.name_prefix}_{self.num_timesteps}_steps.pkl')
+                path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps.pkl")
             else:
                 path = os.path.join(self.save_path, 'vecnormalize.pkl')
             if self.model.get_vec_normalize_env() is not None:
