@@ -3,7 +3,7 @@ from gym.wrappers import TimeLimit
 import matplotlib.pyplot as plt
 import numpy as np
 
-from stable_baselines3.common.atari_wrappers import AtariWrapper  # pytype: disable=import-error
+from stable_baselines3.common.atari_wrappers import AtariWrapper  # noqa: F401 pylint: disable=unused-import
 
 
 class DoneOnSuccessWrapper(gym.Wrapper):
@@ -237,7 +237,7 @@ class PlotActionWrapper(gym.Wrapper):
     def plot(self):
         actions = self.actions
         x = np.arange(sum([len(episode) for episode in actions]))
-        plt.figure("Actions")
+        plt.figure('Actions')
         plt.title('Actions during exploration', fontsize=14)
         plt.xlabel('Timesteps', fontsize=14)
         plt.ylabel('Action', fontsize=14)
@@ -261,7 +261,7 @@ class PlotActionWrapper(gym.Wrapper):
             # signal = np.sin(10 * 2 * np.pi * np.arange(n_samples) * time_delta)
             signal_fft = np.fft.fft(signal)
             freq = np.fft.fftfreq(n_samples, time_delta)
-            plt.figure("FFT")
+            plt.figure('FFT')
             plt.plot(freq[:n_samples // 2], np.abs(signal_fft[:n_samples // 2]))
 
         plt.show()

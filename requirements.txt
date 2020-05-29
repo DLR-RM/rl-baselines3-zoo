@@ -6,3 +6,4 @@ scikit-optimize
 optuna
 pytablewriter
 seaborn
+pyyaml>=5.1

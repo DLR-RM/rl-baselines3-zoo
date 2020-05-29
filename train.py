@@ -9,12 +9,11 @@ from pprint import pprint
 
 import yaml
 import gym
-from gym.wrappers import AtariPreprocessing
 import seaborn
 import numpy as np
 import torch as th
 # For custom activation fn
-import torch.nn as nn  # pylint: disable=unused-import
+import torch.nn as nn  # noqa: F401 pytype: disable=unused-import
 
 from stable_baselines3.common.utils import set_random_seed
 # from stable_baselines3.common.cmd_util import make_atari_env
@@ -25,8 +24,8 @@ from stable_baselines3.common.utils import constant_fn
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 
 # Register custom envs
-import utils.import_envs  # pytype: disable=import-error
-from utils import make_env, ALGOS, linear_schedule, linear_schedule_std, get_latest_run_id, get_wrapper_class
+import utils.import_envs  # noqa: F401 pytype: disable=import-error
+from utils import make_env, ALGOS, linear_schedule, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
@@ -34,7 +33,7 @@ from utils.utils import StoreDict, get_callback_class
 
 seaborn.set()
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # noqa: C901
     parser = argparse.ArgumentParser()
     parser.add_argument('--algo', help='RL Algorithm', default='ppo',
                         type=str, required=False, choices=list(ALGOS.keys()))
@@ -66,6 +65,10 @@ if __name__ == '__main__':
                         default='tpe', choices=['random', 'tpe', 'skopt'])
     parser.add_argument('--pruner', help='Pruner to use when optimizing hyperparameters', type=str,
                         default='median', choices=['halving', 'median', 'none'])
+    parser.add_argument('--n-startup-trials', help='Number of trials before using optuna sampler',
+                        type=int, default=10)
+    parser.add_argument('--n-evaluations', help='Number of evaluations for hyperparameter optimization',
+                        type=int, default=20)
     parser.add_argument('--verbose', help='Verbose mode (0: no output, 1: INFO)', default=1,
                         type=int)
     parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
@@ -101,7 +104,7 @@ if __name__ == '__main__':
 
     set_random_seed(args.seed)
 
-    # Setting num threads to 1 by default, it makes everything run faster
+    # Setting num threads to 1 makes things run faster on cpu
     if args.num_threads > 0:
         if args.verbose > 1:
             print(f"Setting torch.num_threads to {args.num_threads}")
@@ -154,19 +157,16 @@ if __name__ == '__main__':
         print(f"Using {n_envs} environments")
 
     # Create schedules
-    for key in ['learning_rate', 'clip_range', 'clip_range_vf', 'sde_log_std_scheduler']:
+    for key in ['learning_rate', 'clip_range', 'clip_range_vf']:
         if key not in hyperparams:
             continue
         if isinstance(hyperparams[key], str):
             schedule, initial_value = hyperparams[key].split('_')
             initial_value = float(initial_value)
-            if key == 'sde_log_std_scheduler':
-                hyperparams[key] = linear_schedule_std(initial_value)
-            else:
-                hyperparams[key] = linear_schedule(initial_value)
+            hyperparams[key] = linear_schedule(initial_value)
         elif isinstance(hyperparams[key], (float, int)):
             # Negative value: ignore (ex: for clipping)
-            if hyperparams[key] < 0 and key != 'sde_log_std_scheduler':
+            if hyperparams[key] < 0:
                 continue
             hyperparams[key] = constant_fn(float(hyperparams[key]))
         else:
@@ -215,9 +215,10 @@ if __name__ == '__main__':
         del hyperparams['callback']
 
     if args.save_freq > 0:
+        # Account for the number of parallel environments
+        args.save_freq = max(args.save_freq // n_envs, 1)
         callbacks.append(CheckpointCallback(save_freq=args.save_freq,
                                             save_path=save_path, name_prefix='rl_model', verbose=1))
-
 
     def create_env(n_envs, eval_env=False):
         """
@@ -260,7 +261,6 @@ if __name__ == '__main__':
                 print("Wrapping into a VecTransposeImage")
             env = VecTransposeImage(env)
         return env
-
 
     env = create_env(n_envs)
 
@@ -342,7 +342,9 @@ if __name__ == '__main__':
         print("Loading pretrained agent")
         # Policy should not be changed
         del hyperparams['policy']
-        del hyperparams['policy_kwargs']
+
+        if 'policy_kwargs' in hyperparams.keys():
+            del hyperparams['policy_kwargs']
 
         model = ALGOS[args.algo].load(args.trained_agent, env=env, seed=args.seed,
                                       tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams)
@@ -367,7 +369,6 @@ if __name__ == '__main__':
         if args.verbose > 0:
             print("Optimizing hyperparameters")
 
-
         def create_model(*_args, **kwargs):
             """
             Helper to create a model with different hyperparameters
@@ -379,6 +380,7 @@ if __name__ == '__main__':
                                              n_timesteps=n_timesteps, hyperparams=hyperparams,
                                              n_jobs=args.n_jobs, seed=args.seed,
                                              sampler_method=args.sampler, pruner_method=args.pruner,
+                                             n_startup_trials=args.n_startup_trials, n_evaluations=args.n_evaluations,
                                              verbose=args.verbose)
 
         report_name = "report_{}_{}-trials-{}-{}-{}_{}.csv".format(env_id, args.n_trials, n_timesteps,

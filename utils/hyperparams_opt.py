@@ -13,7 +13,7 @@ from utils import linear_schedule
 
 def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,
                             n_jobs=1, sampler_method='random', pruner_method='halving',
-                            seed=0, verbose=1):
+                            n_startup_trials=10, n_evaluations=20, n_eval_episodes=5, seed=0, verbose=1):
     """
     :param algo: (str)
     :param model_fn: (func) function that is used to instantiate the model
@@ -24,6 +24,9 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     :param n_jobs: (int) number of parallel jobs
     :param sampler_method: (str)
     :param pruner_method: (str)
+    :param n_startup_trials: (int)
+    :param n_evaluations: (int) Evaluate every 20th of the maximum budget per iteration
+    :param n_eval_episodes: (int) Evaluate the model during 5 episodes
     :param seed: (int)
     :param verbose: (int)
     :return: (pd.Dataframe) detailed result of the optimization
@@ -32,11 +35,6 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     if hyperparams is None:
         hyperparams = {}
 
-    n_startup_trials = 10
-    # Evaluate the model during 5 episodes
-    n_eval_episodes = 5
-    # Evaluate every 20th of the maximum budget per iteration
-    n_evaluations = 20
     eval_freq = int(n_timesteps / n_evaluations)
 
     # n_warmup_steps: Disable pruner until the trial reaches the given number of step.
@@ -50,7 +48,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         # Gradient boosted regression: GBRT
         sampler = SkoptSampler(skopt_kwargs={'base_estimator': "GP", 'acq_func': 'gp_hedge'})
     else:
-        raise ValueError('Unknown sampler: {}'.format(sampler_method))
+        raise ValueError(f'Unknown sampler: {sampler_method}')
 
     if pruner_method == 'halving':
         pruner = SuccessiveHalvingPruner(min_resource=1, reduction_factor=4, min_early_stopping_rate=0)
@@ -60,10 +58,10 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         # Do not prune
         pruner = MedianPruner(n_startup_trials=n_trials, n_warmup_steps=n_evaluations)
     else:
-        raise ValueError('Unknown pruner: {}'.format(pruner_method))
+        raise ValueError(f'Unknown pruner: {pruner_method}')
 
     if verbose > 0:
-        print("Sampler: {} - Pruner: {}".format(sampler_method, pruner_method))
+        print(f"Sampler: {sampler_method} - Pruner: {pruner_method}")
 
     study = optuna.create_study(sampler=sampler, pruner=pruner)
     algo_sampler = HYPERPARAMS_SAMPLER[algo]
@@ -129,7 +127,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
 
     print('Params: ')
     for key, value in trial.params.items():
-        print('    {}: {}'.format(key, value))
+        print(f'    {key}: {value}')
 
     return study.trials_dataframe()
 
@@ -158,8 +156,8 @@ def sample_ppo_params(trial):
     sde_sample_freq = trial.suggest_categorical('sde_sample_freq', [-1, 8, 16, 32, 64, 128, 256])
     ortho_init = False
     # ortho_init = trial.suggest_categorical('ortho_init', [False, True])
-    # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
-    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU])
+    # activation_fn = trial.suggest_categorical('activation_fn', ['tanh', 'relu', 'elu', 'leaky_relu'])
+    activation_fn = trial.suggest_categorical('activation_fn', ['tanh', 'relu'])
 
     # TODO: account when using multiple envs
     if batch_size > n_steps:
@@ -173,6 +171,12 @@ def sample_ppo_params(trial):
         'medium': [dict(pi=[256, 256], vf=[256, 256])],
     }[net_arch]
 
+    activation_fn = {
+        'tanh': nn.Tanh,
+        'relu': nn.ReLU,
+        'elu': nn.ELU,
+        'leaky_relu': nn.LeakyReLU
+    }[activation_fn]
 
     return {
         'n_steps': n_steps,
@@ -186,7 +190,8 @@ def sample_ppo_params(trial):
         'max_grad_norm': max_grad_norm,
         'vf_coef': vf_coef,
         'sde_sample_freq': sde_sample_freq,
-        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, activation_fn=activation_fn)
+        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch,
+                              activation_fn=activation_fn, ortho_init=ortho_init)
     }
 
 
@@ -212,8 +217,8 @@ def sample_a2c_params(trial):
     net_arch = trial.suggest_categorical('net_arch', ['small', 'medium'])
     sde_net_arch = trial.suggest_categorical('sde_net_arch', [None, 'tiny', 'small'])
     full_std = trial.suggest_categorical('full_std', [False, True])
-    # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
-    activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU])
+    # activation_fn = trial.suggest_categorical('activation_fn', ['tanh', 'relu', 'elu', 'leaky_relu'])
+    activation_fn = trial.suggest_categorical('activation_fn', ['tanh', 'relu'])
 
     if lr_schedule == 'linear':
         learning_rate = linear_schedule(learning_rate)
@@ -229,6 +234,13 @@ def sample_a2c_params(trial):
         'small': [64, 64],
     }[sde_net_arch]
 
+    activation_fn = {
+        'tanh': nn.Tanh,
+        'relu': nn.ReLU,
+        'elu': nn.ELU,
+        'leaky_relu': nn.LeakyReLU
+    }[activation_fn]
+
     return {
         'n_steps': n_steps,
         'gamma': gamma,
@@ -240,7 +252,8 @@ def sample_a2c_params(trial):
         'use_rms_prop': use_rms_prop,
         'vf_coef': vf_coef,
         'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, full_std=full_std,
-                              activation_fn=activation_fn, sde_net_arch=sde_net_arch)
+                              activation_fn=activation_fn, sde_net_arch=sde_net_arch,
+                              ortho_init=ortho_init)
     }
 
 
@@ -294,6 +307,7 @@ def sample_sac_params(trial):
         'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch)
     }
 
+
 def sample_td3_params(trial):
     """
     Sampler for TD3 hyperparams.
@@ -305,7 +319,6 @@ def sample_td3_params(trial):
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 100, 128, 256, 512])
     buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(1e5), int(1e6)])
-    sde_max_grad_norm = trial.suggest_categorical('sde_max_grad_norm', [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5, 1000])
 
     episodic = trial.suggest_categorical('episodic', [True, False])
 
@@ -317,17 +330,11 @@ def sample_td3_params(trial):
         gradient_steps = train_freq
         n_episodes_rollout = -1
 
-    # TODO: reintroduce noise when sde is tuned
-    # noise_type = trial.suggest_categorical('noise_type', ['ornstein-uhlenbeck', 'normal', None])
-    # noise_std = trial.suggest_uniform('noise_std', 0, 1)
-    noise_type = 'sde'
+    noise_type = trial.suggest_categorical('noise_type', ['ornstein-uhlenbeck', 'normal', None])
+    noise_std = trial.suggest_uniform('noise_std', 0, 1)
 
-    use_sde = True
-    log_std_init = trial.suggest_uniform('log_std_init', -4, 1)
-    lr_sde = trial.suggest_loguniform('lr_sde', 1e-5, 1)
     net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
-
 
     net_arch = {
         'small': [64, 64],
@@ -343,10 +350,7 @@ def sample_td3_params(trial):
         'train_freq': train_freq,
         'gradient_steps': gradient_steps,
         'n_episodes_rollout': n_episodes_rollout,
-        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch,
-                              lr_sde=lr_sde),
-        'use_sde': use_sde,
-        'sde_max_grad_norm': sde_max_grad_norm
+        'policy_kwargs': dict(net_arch=net_arch),
     }
 
     if noise_type == 'normal':
