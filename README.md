@@ -130,6 +130,19 @@ You can easily overwrite hyperparameters in the command line, using ``--hyperpar
 python train.py --algo a2c --env MountainCarContinuous-v0 --hyperparams learning_rate:0.001 policy_kwargs:"dict(net_arch=[64, 64])"
 ```
 
+## Pretraining with Behavior Cloning
+
+Record expert data:
+```
+python enjoy.py --algo sac --env Pendulum-v0 -n 5000 -o logs/expert_pendulum --no-render
+```
+
+Pretrain during 200 epochs and then continue training:
+```
+python train.py --algo ppo --env Pendulum-v0 --expert-data logs/expert_pendulum.npz --pretrain-params n_epochs:200
+```
+
+
 ## Record a Video of a Trained Agent
 
 Record 1000 steps:

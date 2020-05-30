@@ -30,6 +30,8 @@ from utils.hyperparams_opt import hyperparam_optimization
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
 from utils.utils import StoreDict, get_callback_class
+from utils.pretrain import pretrain_agent
+
 
 seaborn.set()
 
@@ -56,6 +58,10 @@ if __name__ == '__main__':  # noqa: C901
     parser.add_argument('--save-replay-buffer', help='Save the replay buffer too (when applicable)',
                         action='store_true', default=False)
     parser.add_argument('-f', '--log-folder', help='Log folder', type=str, default='logs')
+    parser.add_argument('--expert-data', help='Path to expert data to pretrain with behavior cloning',
+                        type=str)
+    parser.add_argument('--pretrain-params', type=str, nargs='+', action=StoreDict,
+                        help='Pretrain hyperparameters (e.g. learning_rate:0.01 n_epochs:10)')
     parser.add_argument('--seed', help='Random generator seed', type=int, default=-1)
     parser.add_argument('--n-trials', help='Number of trials for optimizing hyperparameters', type=int, default=10)
     parser.add_argument('-optimize', '--optimize-hyperparameters', action='store_true', default=False,
@@ -411,6 +417,19 @@ if __name__ == '__main__':  # noqa: C901
         yaml.dump(saved_hyperparams, f)
 
     print(f"Log path: {save_path}")
+
+    if args.expert_data is not None:
+        pretrain_params = {}
+        print(f"Pretraining agent using data from {args.expert_data}")
+        if args.pretrain_params is not None:
+            # Overwrite hyperparams if needed
+            pretrain_params.update(args.pretrain_params)
+            print("with parameters:")
+            pprint(pretrain_params)
+        try:
+            model = pretrain_agent(args.expert_data, model, model.get_env(), **pretrain_params)
+        except KeyboardInterrupt:
+            pass
 
     try:
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)

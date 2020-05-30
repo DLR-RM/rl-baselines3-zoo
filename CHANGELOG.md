@@ -5,6 +5,7 @@
 ### New Features
 - Added ``--load-checkpoints`` to load particular checkpoints
 - Added ``--num-threads`` to enjoy script
+- Added pretraining with behavior cloning
 
 ### Bug fixes
 - Fixed optuna warning (@SammyRamone)

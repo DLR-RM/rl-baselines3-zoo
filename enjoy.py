@@ -8,6 +8,7 @@ import torch as th
 
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
+from stable_baselines3.common.preprocessing import get_action_dim, get_obs_shape
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils.utils import StoreDict
@@ -49,6 +50,8 @@ def main():  # noqa: C901
                         help='Additional external Gym environemnt package modules to import (e.g. gym_minigrid)')
     parser.add_argument('--env-kwargs', type=str, nargs='+', action=StoreDict,
                         help='Optional keyword argument to pass to the env constructor')
+    parser.add_argument('-o', '--expert-data-path',
+                        help='Path to the file where expert data will be saved', type=str)
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -126,13 +129,23 @@ def main():  # noqa: C901
     ep_len = 0
     # For HER, monitor success rate
     successes = []
-    for _ in range(args.n_timesteps):
+    if args.expert_data_path is not None:
+        print(f"Recording expert data to {args.expert_data_path}")
+        expert_observations = np.empty((args.n_timesteps,) + get_obs_shape(env.observation_space))
+        expert_actions = np.empty((args.n_timesteps, get_action_dim(env.action_space)))
+
+    for idx in range(args.n_timesteps):
         action, state = model.predict(obs, state=state, deterministic=deterministic)
         # Random Agent
         # action = [env.action_space.sample()]
         # Clip Action to avoid out of bound errors
         if isinstance(env.action_space, gym.spaces.Box):
             action = np.clip(action, env.action_space.low, env.action_space.high)
+
+        if args.expert_data_path is not None:
+            expert_observations[idx] = obs
+            expert_actions[idx] = action
+
         obs, reward, done, infos = env.step(action)
         if not args.no_render:
             env.render('human')
@@ -179,6 +192,13 @@ def main():  # noqa: C901
 
     if args.verbose > 0 and len(episode_lengths) > 0:
         print("Mean episode length: {:.2f} +/- {:.2f}".format(np.mean(episode_lengths), np.std(episode_lengths)))
+
+    if args.expert_data_path is not None:
+        np.savez_compressed(
+            args.expert_data_path,
+            expert_actions=expert_actions,
+            expert_observations=expert_observations
+        )
 
     # Workaround for https://github.com/openai/gym/issues/893
     if not args.no_render:
