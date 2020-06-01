@@ -6,9 +6,12 @@ variables:
 
 type-check:
   script:
+  # Install gSDE branch
+  - pip install git+https://github.com/DLR-RM/stable-baselines3@sde
   - make type
 
 pytest:
   script:
+  - pip install git+https://github.com/DLR-RM/stable-baselines3@sde
   # MKL_THREADING_LAYER=GNU to avoid MKL_THREADING_LAYER=INTEL incompatibility error
   - MKL_THREADING_LAYER=GNU make pytest
