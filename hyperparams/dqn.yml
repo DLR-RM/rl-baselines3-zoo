@@ -1,15 +1,18 @@
 atari:
   env_wrapper:
-    - utils.wrappers.AtariWrapper
+    - stable_baselines3.common.atari_wrappers.AtariWrapper
+  frame_stack: 4
   policy: 'CnnPolicy'
   n_timesteps: !!float 1e7
   buffer_size: 1000000
+  exploration_fraction: 0.1
   learning_rate: !!float 1e-4
-  learning_starts: !!float 1e5
-  target_update_interval: 1000
+  policy_kwargs: "dict(optimizer_class=th.optim.Adam)"
+  learning_starts: 50000
+  target_update_interval: 10000
+  tau: 0.01
   train_freq: 4
-  exploration_final_eps: 0.01
-
+  exploration_final_eps: 0.05
 
 CartPole-v1:
   #normalize: True
