@@ -380,7 +380,7 @@ def sample_dqn_params(trial):
     # learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 10000, 20000])
     learning_starts = 0
 
-    train_freq = trial.suggest_categorical('train_freq', [1, 16, 128, 256, 1000])
+    train_freq = trial.suggest_categorical('train_freq', [1, 4, 8, 16, 128, 256, 1000])
     gradient_steps = train_freq
     n_episodes_rollout = -1
 
