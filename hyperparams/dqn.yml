@@ -14,19 +14,16 @@ atari:
   exploration_final_eps: 0.05
 
 CartPole-v1:
-  #normalize: True
-  n_timesteps: !!float 2e4
+  n_timesteps: !!float 3e4
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-4
-  batch_size: 256
-  buffer_size: 20000
-  exploration_final_eps: 0.02
+  learning_starts: 10000
 
 MountainCar-v0:
-  normalize: True
   n_timesteps: 100000
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-4
+  learning_starts: 5000
   buffer_size: 30000
   exploration_final_eps: 0.1
 
@@ -34,13 +31,14 @@ LunarLander-v2:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-4
+  learning_starts: 5000
   buffer_size: 50000
   exploration_final_eps: 0.05
 
 Acrobot-v1:
-  normalize: True
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-4
+  learning_starts: 5000
   buffer_size: 50000
   exploration_final_eps: 0.02
