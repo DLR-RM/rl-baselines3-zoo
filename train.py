@@ -27,7 +27,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils import make_env, ALGOS, linear_schedule, get_latest_run_id, get_wrapper_class
 from utils.hyperparams_opt import hyperparam_optimization
-from utils.callbacks import SaveVecNormalizeCallback
+from utils.callbacks import SaveVecNormalizeCallback, DQNEvalCallback
 from utils.noise import LinearNormalActionNoise
 from utils.utils import StoreDict, get_callback_class
 
@@ -292,10 +292,17 @@ if __name__ == '__main__':  # noqa: C901
                 print("Creating test environment")
 
             save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
-            eval_callback = EvalCallback(create_env(1, eval_env=True), callback_on_new_best=save_vec_normalize,
-                                         best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
-                                         log_path=save_path, eval_freq=args.eval_freq,
-                                         deterministic=not is_atari)
+            if algo_ == 'dqn':
+                eval_callback = DQNEvalCallback(create_env(1, eval_env=True), eval_epsilon=0.05, callback_on_new_best=save_vec_normalize,
+                                             best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
+                                             log_path=save_path, eval_freq=args.eval_freq,
+                                             deterministic=not is_atari)
+            else:
+                eval_callback = EvalCallback(create_env(1, eval_env=True), callback_on_new_best=save_vec_normalize,
+                                             best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
+                                             log_path=save_path, eval_freq=args.eval_freq,
+                                             deterministic=not is_atari)
+
             callbacks.append(eval_callback)
 
             # Restore original kwargs
