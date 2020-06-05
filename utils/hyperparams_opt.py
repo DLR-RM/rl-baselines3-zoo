@@ -380,8 +380,8 @@ def sample_dqn_params(trial):
     learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 5000, 10000, 20000])
 
     train_freq = trial.suggest_categorical('train_freq', [1, 4, 8, 16, 128, 256, 1000])
-    gradient_steps_candidates = list(set(max(train_freq // subsample, 1) for subsample in [1, 2, 4, 8]))
-    gradient_steps = trial.suggest_categorical('gradient_steps', gradient_steps_candidates)
+    subsample_steps = trial.suggest_categorical('subsample_steps', [1, 2, 4, 8])
+    gradient_steps = max(train_freq // subsample_steps, 1)
     n_episodes_rollout = -1
 
     net_arch = trial.suggest_categorical('net_arch', ["tiny", "small", "medium"])
