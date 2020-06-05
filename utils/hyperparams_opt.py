@@ -377,11 +377,11 @@ def sample_dqn_params(trial):
     exploration_final_eps = trial.suggest_uniform('exploration_final_eps', 0, 0.2)
     exploration_fraction = trial.suggest_uniform('exploration_fraction', 0, 0.5)
     target_update_interval = trial.suggest_categorical('target_update_interval', [1, 1000, 5000, 10000, 15000, 20000])
-    # learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 10000, 20000])
-    learning_starts = 0
+    learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 5000, 10000, 20000])
 
     train_freq = trial.suggest_categorical('train_freq', [1, 4, 8, 16, 128, 256, 1000])
-    gradient_steps = train_freq
+    gradient_steps_candidates = list(set(max(train_freq // subsample, 1) for subsample in [1, 2, 4, 8]))
+    gradient_steps = trial.suggest_categorical('gradient_steps', gradient_steps_candidates)
     n_episodes_rollout = -1
 
     hyperparams = {
