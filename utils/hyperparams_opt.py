@@ -373,16 +373,24 @@ def sample_dqn_params(trial):
     gamma = trial.suggest_categorical('gamma', [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 100, 128, 256, 512])
-    buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(1e5), int(1e6)])
+    buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(5e4), int(1e5), int(1e6)])
     exploration_final_eps = trial.suggest_uniform('exploration_final_eps', 0, 0.2)
     exploration_fraction = trial.suggest_uniform('exploration_fraction', 0, 0.5)
     target_update_interval = trial.suggest_categorical('target_update_interval', [1, 1000, 5000, 10000, 15000, 20000])
-    # learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 10000, 20000])
-    learning_starts = 0
+    learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 5000, 10000, 20000])
 
-    train_freq = trial.suggest_categorical('train_freq', [1, 16, 128, 256, 1000])
-    gradient_steps = train_freq
+    train_freq = trial.suggest_categorical('train_freq', [1, 4, 8, 16, 128, 256, 1000])
+    subsample_steps = trial.suggest_categorical('subsample_steps', [1, 2, 4, 8])
+    gradient_steps = max(train_freq // subsample_steps, 1)
     n_episodes_rollout = -1
+
+    net_arch = trial.suggest_categorical('net_arch', ["tiny", "small", "medium"])
+
+    net_arch = {
+        'tiny': [64],
+        'small': [64, 64],
+        'medium': [256, 256]
+    }[net_arch]
 
     hyperparams = {
         'gamma': gamma,
@@ -395,7 +403,8 @@ def sample_dqn_params(trial):
         'exploration_fraction': exploration_fraction,
         'exploration_final_eps': exploration_final_eps,
         'target_update_interval': target_update_interval,
-        'learning_starts': learning_starts
+        'learning_starts': learning_starts,
+        'policy_kwargs': dict(net_arch=net_arch)
     }
 
     return hyperparams
