@@ -294,9 +294,9 @@ if __name__ == '__main__':  # noqa: C901
             save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
             if algo_ == 'dqn':
                 eval_callback = DQNEvalCallback(create_env(1, eval_env=True), eval_epsilon=0.05, callback_on_new_best=save_vec_normalize,
-                                             best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
-                                             log_path=save_path, eval_freq=args.eval_freq,
-                                             deterministic=not is_atari)
+                                                best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
+                                                log_path=save_path, eval_freq=args.eval_freq,
+                                                deterministic=not is_atari)
             else:
                 eval_callback = EvalCallback(create_env(1, eval_env=True), callback_on_new_best=save_vec_normalize,
                                              best_model_save_path=save_path, n_eval_episodes=args.eval_episodes,
