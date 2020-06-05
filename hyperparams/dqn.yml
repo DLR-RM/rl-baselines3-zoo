@@ -30,26 +30,25 @@ CartPole-v1:
 
 
 MountainCar-v0:
-  normalize: True
   n_timesteps: 100000
   policy: 'MlpPolicy'
-  learning_rate: !!float 1e-4
-  learning_starts: 5000
-  buffer_size: 30000
-  exploration_final_eps: 0.1
+  # learning_rate: !!float 1e-4
+  # learning_starts: 5000
+  # buffer_size: 30000
+  # exploration_final_eps: 0.1
 
 LunarLander-v2:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
-  learning_rate: !!float 1e-4
-  learning_starts: 5000
-  buffer_size: 50000
-  exploration_final_eps: 0.05
+  # learning_rate: !!float 1e-4
+  # learning_starts: 5000
+  # buffer_size: 50000
+  # exploration_final_eps: 0.05
 
 Acrobot-v1:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
-  learning_rate: !!float 1e-4
-  learning_starts: 5000
-  buffer_size: 50000
-  exploration_final_eps: 0.02
+  # learning_rate: !!float 1e-4
+  # learning_starts: 5000
+  # buffer_size: 50000
+  # exploration_final_eps: 0.02
