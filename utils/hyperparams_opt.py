@@ -5,13 +5,12 @@ from optuna.pruners import SuccessiveHalvingPruner, MedianPruner
 from optuna.samplers import RandomSampler, TPESampler
 from optuna.integration.skopt import SkoptSampler
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-# from stable_baselines3.her import HERGoalEnvWrapper
 
 from .callbacks import TrialEvalCallback
 from utils import linear_schedule
 
 
-def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,
+def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,  # noqa: C901
                             n_jobs=1, sampler_method='random', pruner_method='halving',
                             n_startup_trials=10, n_evaluations=20, n_eval_episodes=5, seed=0, verbose=1):
     """
