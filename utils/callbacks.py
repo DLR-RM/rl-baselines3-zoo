@@ -165,8 +165,8 @@ class DQNEvalCallback(EvalCallback):
             # Sync training and eval env if there is VecNormalize
             # sync_envs_normalization(self.training_env, self.eval_env)
 
-            old_epsilon = self.model.policy.epsilon
-            self.model.policy.update_exploration_rate(self.eval_epsilon)
+            old_epsilon = self.model.epsilon
+            self.model.epsilon = self.eval_epsilon
 
             episode_rewards, episode_lengths = evaluate_policy(self.model, self.eval_env,
                                                                n_eval_episodes=self.n_eval_episodes,
@@ -174,7 +174,7 @@ class DQNEvalCallback(EvalCallback):
                                                                deterministic=self.deterministic,
                                                                return_episode_rewards=True)
 
-            self.model.policy.update_exploration_rate(old_epsilon)
+            self.model.epsilon = old_epsilon
 
             if self.log_path is not None:
                 self.evaluations_timesteps.append(self.num_timesteps)
