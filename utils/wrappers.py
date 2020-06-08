@@ -581,6 +581,8 @@ def wrap_deepmind(env, episode_life=True, clip_rewards=True, frame_stack=False, 
 
 class DeepMindAtariWrapper(gym.Wrapper):
     def __init__(self, env, episode_life=True, clip_rewards=True, frame_stack=False, scale=False):
+        env = NoopResetEnv(env, noop_max=30)
+        env = MaxAndSkipEnv(env, skip=4)
         if episode_life:
             env = EpisodicLifeEnv(env)
         if 'FIRE' in env.unwrapped.get_action_meanings():
