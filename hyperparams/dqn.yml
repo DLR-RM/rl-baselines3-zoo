@@ -1,12 +1,10 @@
 atari:
   env_wrapper:
-    # - stable_baselines3.common.atari_wrappers.AtariWrapper
-    - utils.wrappers.DeepMindAtariWrapper
+    - stable_baselines3.common.atari_wrappers.AtariWrapper
   frame_stack: 4
   policy: 'CnnPolicy'
   n_timesteps: !!float 1e7
-  # buffer_size: 1000000
-  buffer_size: 500000
+  buffer_size: 1000000
   learning_rate: !!float 1e-4
   batch_size: 32
   learning_starts: 100000
@@ -14,9 +12,7 @@ atari:
   train_freq: 4
   gradient_steps: 1
   exploration_fraction: 0.1
-  exploration_final_eps: 0.05
-  # exploration_final_eps: 0.1
-  # policy_kwargs: "dict(optimizer_class=th.optim.Adam)"
+  exploration_final_eps: 0.1
 
 # Almost Tuned
 CartPole-v1:
