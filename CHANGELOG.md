@@ -3,14 +3,15 @@
 ### Breaking Changes
 
 ### New Features
-- Added ``--load-checkpoints`` to load particular checkpoints
-- Added ``--num-threads`` to enjoy script
+- Added `--load-checkpoints` to load particular checkpoints
+- Added `--num-threads` to enjoy script
 - Added DQN support
 
 ### Bug fixes
 - Fixed optuna warning (@SammyRamone)
 - Fixed `--save-freq` which was not taking parallel env into account
-- Set ``buffer_size`` to 1 when testing an Off-Policy model (e.g. SAC/DQN) to avoid memory allocation issue
+- Set `buffer_size` to 1 when testing an Off-Policy model (e.g. SAC/DQN) to avoid memory allocation issue
+- Fixed seed at load time for enjoy.py`
 
 ### Documentation
 

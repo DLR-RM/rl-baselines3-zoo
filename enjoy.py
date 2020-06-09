@@ -113,10 +113,10 @@ def main():  # noqa: C901
                           hyperparams=hyperparams,
                           env_kwargs=env_kwargs)
 
-    kwargs = {}
+    kwargs = dict(seed=args.seed)
     if algo in ['dqn', 'ddpg', 'sac', 'her', 'td3']:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
-        kwargs = dict(buffer_size=1)
+        kwargs.update(dict(buffer_size=1))
 
     model = ALGOS[algo].load(model_path, env=env, **kwargs)
 
