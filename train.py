@@ -382,10 +382,10 @@ if __name__ == '__main__':  # noqa: C901
                                              n_jobs=args.n_jobs, seed=args.seed,
                                              sampler_method=args.sampler, pruner_method=args.pruner,
                                              n_startup_trials=args.n_startup_trials, n_evaluations=args.n_evaluations,
-                                             verbose=args.verbose)
+                                             verbose=args.verbose, deterministic_eval=not is_atari)
 
-        report_name = "report_{}_{}-trials-{}-{}-{}_{}.csv".format(env_id, args.n_trials, n_timesteps,
-                                                                   args.sampler, args.pruner, int(time.time()))
+        report_name = (f"report_{env_id}_{args.n_trials}-trials-{n_timesteps}"
+                       f"-{args.sampler}-{args.pruner}_{int(time.time())}.csv")
 
         log_path = os.path.join(args.log_folder, args.algo, report_name)
 

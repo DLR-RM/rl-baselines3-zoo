@@ -11,7 +11,8 @@
 - Fixed optuna warning (@SammyRamone)
 - Fixed `--save-freq` which was not taking parallel env into account
 - Set `buffer_size` to 1 when testing an Off-Policy model (e.g. SAC/DQN) to avoid memory allocation issue
-- Fixed seed at load time for enjoy.py`
+- Fixed seed at load time for `enjoy.py`
+- Non-deterministic eval when doing hyperparameter optimization on atari games
 
 ### Documentation
 

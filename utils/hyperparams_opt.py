@@ -11,8 +11,9 @@ from utils import linear_schedule
 
 
 def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,  # noqa: C901
-                            n_jobs=1, sampler_method='random', pruner_method='halving',
-                            n_startup_trials=10, n_evaluations=20, n_eval_episodes=5, seed=0, verbose=1):
+                            n_jobs=1, sampler_method='tpe', pruner_method='median',
+                            n_startup_trials=10, n_evaluations=20,
+                            n_eval_episodes=5, seed=0, verbose=1, deterministic_eval=True):
     """
     :param algo: (str)
     :param model_fn: (func) function that is used to instantiate the model
@@ -28,6 +29,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     :param n_eval_episodes: (int) Evaluate the model during 5 episodes
     :param seed: (int)
     :param verbose: (int)
+    :param deterministic_eval: (bool)
     :return: (pd.Dataframe) detailed result of the optimization
     """
     # TODO: eval each hyperparams several times to account for noisy evaluation
@@ -84,9 +86,10 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         eval_env = env_fn(n_envs=1, eval_env=True)
         # Account for parallel envs
         eval_freq_ = max(eval_freq // model.get_env().num_envs, 1)
-        # TODO: use non-deterministic eval for Atari?
+        # TODO: Use non-deterministic eval for Atari
+        # or use maximum number of steps to avoid infinite loop
         eval_callback = TrialEvalCallback(eval_env, trial, n_eval_episodes=n_eval_episodes,
-                                          eval_freq=eval_freq_, deterministic=True)
+                                          eval_freq=eval_freq_, deterministic=deterministic_eval)
 
         try:
             model.learn(n_timesteps, callback=eval_callback)
