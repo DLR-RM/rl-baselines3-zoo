@@ -9,6 +9,7 @@
 ### Bug fixes
 - Fixed optuna warning (@SammyRamone)
 - Fixed `--save-freq` which was not taking parallel env into account
+- Fixed a bug where reward where not normalized when doing hyperparameter optimization (@caburu)
 
 ### Documentation
 
