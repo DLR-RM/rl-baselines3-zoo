@@ -6,6 +6,7 @@
 
 ### Bug fixes
 - Fix optuna warning (@SammyRamone)
+- Use 'maximize' for hyperparameter optimization (@SammyRamone)
 
 ### Documentation
 
