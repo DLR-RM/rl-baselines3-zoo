@@ -70,6 +70,10 @@ if __name__ == '__main__':
                         type=int, default=10)
     parser.add_argument('--n-evaluations', help='Number of evaluations for hyperparameter optimization',
                         type=int, default=20)
+    parser.add_argument('--storage', help='Database storage path if distributed optimization should be used', type=str,
+                        default=None)
+    parser.add_argument('--study-name', help='Study name for distributed optimization', type=str,
+                        default=None)
     parser.add_argument('--verbose', help='Verbose mode (0: no output, 1: INFO)', default=1,
                         type=int)
     parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
@@ -384,7 +388,7 @@ if __name__ == '__main__':
                                              n_jobs=args.n_jobs, seed=args.seed,
                                              sampler_method=args.sampler, pruner_method=args.pruner,
                                              n_startup_trials=args.n_startup_trials, n_evaluations=args.n_evaluations,
-                                             verbose=args.verbose)
+                                             storage=args.storage, study_name=args.study_name, verbose=args.verbose)
 
         report_name = "report_{}_{}-trials-{}-{}-{}_{}.csv".format(env_id, args.n_trials, n_timesteps,
                                                                    args.sampler, args.pruner, int(time.time()))
