@@ -3,6 +3,7 @@
 ### Breaking Changes
 
 ### New Features
+- Distributed optimization (@SammyRamone)
 
 ### Bug fixes
 - Fix optuna warning (@SammyRamone)
