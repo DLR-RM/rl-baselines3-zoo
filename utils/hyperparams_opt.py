@@ -63,7 +63,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     if verbose > 0:
         print(f"Sampler: {sampler_method} - Pruner: {pruner_method}")
 
-    study = optuna.create_study(sampler=sampler, pruner=pruner)
+    study = optuna.create_study(sampler=sampler, pruner=pruner, direction="maximize")
     algo_sampler = HYPERPARAMS_SAMPLER[algo]
 
     def objective(trial):
@@ -103,7 +103,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
             print(e)
             raise optuna.exceptions.TrialPruned()
         is_pruned = eval_callback.is_pruned
-        cost = -1 * eval_callback.last_mean_reward
+        reward = eval_callback.last_mean_reward
 
         del model.env, eval_env
         del model
@@ -111,7 +111,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         if is_pruned:
             raise optuna.exceptions.TrialPruned()
 
-        return cost
+        return reward
 
     try:
         study.optimize(objective, n_trials=n_trials, n_jobs=n_jobs)
