@@ -220,18 +220,20 @@ if __name__ == '__main__':  # noqa: C901
         callbacks.append(CheckpointCallback(save_freq=args.save_freq,
                                             save_path=save_path, name_prefix='rl_model', verbose=1))
 
-    def create_env(n_envs, eval_env=False):
+    def create_env(n_envs, eval_env=False, no_log=False):
         """
         Create the environment and wrap it if necessary
         :param n_envs: (int)
         :param eval_env: (bool) Whether is it an environment used for evaluation or not
+        :param no_log: (bool) Do not log training when doing hyperparameter optim
+            (issue with writing the same file)
         :return: (Union[gym.Env, VecEnv])
         """
         global hyperparams
         global env_kwargs
 
         # Do not log eval env (issue with writing the same file)
-        log_dir = None if eval_env else save_path
+        log_dir = None if eval_env or no_log else save_path
 
         if n_envs == 1:
             env = DummyVecEnv([make_env(env_id, 0, args.seed,
@@ -369,7 +371,7 @@ if __name__ == '__main__':  # noqa: C901
             """
             Helper to create a model with different hyperparameters
             """
-            return ALGOS[args.algo](env=create_env(n_envs, eval_env=True), tensorboard_log=tensorboard_log,
+            return ALGOS[args.algo](env=create_env(n_envs, no_log=True), tensorboard_log=tensorboard_log,
                                     verbose=0, **kwargs)
 
         data_frame = hyperparam_optimization(args.algo, create_model, create_env, n_trials=args.n_trials,
