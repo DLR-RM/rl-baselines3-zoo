@@ -49,7 +49,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         # Gradient boosted regression: GBRT
         sampler = SkoptSampler(skopt_kwargs={'base_estimator': "GP", 'acq_func': 'gp_hedge'})
     else:
-        raise ValueError('Unknown sampler: {}'.format(sampler_method))
+        raise ValueError(f'Unknown sampler: {sampler_method}')
 
     if pruner_method == 'halving':
         pruner = SuccessiveHalvingPruner(min_resource=1, reduction_factor=4, min_early_stopping_rate=0)
@@ -59,13 +59,13 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         # Do not prune
         pruner = MedianPruner(n_startup_trials=n_trials, n_warmup_steps=n_evaluations)
     else:
-        raise ValueError('Unknown pruner: {}'.format(pruner_method))
+        raise ValueError(f'Unknown pruner: {pruner_method}')
 
     if verbose > 0:
-        print("Sampler: {} - Pruner: {}".format(sampler_method, pruner_method))
+        print(f"Sampler: {sampler_method} - Pruner: {pruner_method}")
 
     study = optuna.create_study(sampler=sampler, pruner=pruner, storage=storage, study_name=study_name,
-                                load_if_exists=True)
+                                load_if_exists=True, direction="maximize")
     algo_sampler = HYPERPARAMS_SAMPLER[algo]
 
     def objective(trial):
@@ -105,7 +105,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
             print(e)
             raise optuna.exceptions.TrialPruned()
         is_pruned = eval_callback.is_pruned
-        cost = -1 * eval_callback.last_mean_reward
+        reward = eval_callback.last_mean_reward
 
         del model.env, eval_env
         del model
@@ -113,7 +113,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         if is_pruned:
             raise optuna.exceptions.TrialPruned()
 
-        return cost
+        return reward
 
     try:
         study.optimize(objective, n_trials=n_trials, n_jobs=n_jobs)
@@ -129,7 +129,7 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
 
     print('Params: ')
     for key, value in trial.params.items():
-        print('    {}: {}'.format(key, value))
+        print(f'    {key}: {value}')
 
     return study.trials_dataframe()
 
@@ -192,7 +192,8 @@ def sample_ppo_params(trial):
         'max_grad_norm': max_grad_norm,
         'vf_coef': vf_coef,
         'sde_sample_freq': sde_sample_freq,
-        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, activation_fn=activation_fn)
+        'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch,
+                              activation_fn=activation_fn, ortho_init=ortho_init)
     }
 
 
@@ -253,7 +254,8 @@ def sample_a2c_params(trial):
         'use_rms_prop': use_rms_prop,
         'vf_coef': vf_coef,
         'policy_kwargs': dict(log_std_init=log_std_init, net_arch=net_arch, full_std=full_std,
-                              activation_fn=activation_fn, sde_net_arch=sde_net_arch)
+                              activation_fn=activation_fn, sde_net_arch=sde_net_arch,
+                              ortho_init=ortho_init)
     }
 
 
@@ -319,7 +321,6 @@ def sample_td3_params(trial):
     learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 100, 128, 256, 512])
     buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(1e5), int(1e6)])
-    sde_max_grad_norm = trial.suggest_categorical('sde_max_grad_norm', [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5, 1000])
 
     episodic = trial.suggest_categorical('episodic', [True, False])
 
@@ -336,7 +337,6 @@ def sample_td3_params(trial):
 
     net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
-
 
     net_arch = {
         'small': [64, 64],

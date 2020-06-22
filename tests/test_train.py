@@ -6,7 +6,7 @@ import pytest
 
 
 def _assert_eq(left, right):
-    assert left == right, '{} != {}'.format(left, right)
+    assert left == right, f'{left} != {right}'
 
 
 N_STEPS = 100
@@ -20,7 +20,7 @@ experiments = {}
 
 for algo in ALGOS:
     for env_id in ENV_IDS:
-        experiments['{}-{}'.format(algo, env_id)] = (algo, env_id)
+        experiments[f'{algo}-{env_id}'] = (algo, env_id)
 
 # Test for vecnormalize and frame-stack
 experiments['ppo-BipedalWalkerHardcore-v3'] = ('ppo', 'BipedalWalkerHardcore-v3')

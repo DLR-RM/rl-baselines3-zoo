@@ -2,11 +2,11 @@
 Plot training reward
 """
 import os
-import warnings
 import argparse
 
 # For tensorflow imported with tensorboard
-warnings.filterwarnings("ignore", category=FutureWarning)
+# import warnings
+# warnings.filterwarnings("ignore", category=FutureWarning)
 
 import seaborn
 import numpy as np
@@ -48,7 +48,8 @@ x_label = {
     'time': 'Walltime (in hours)'
 }[args.x_axis]
 
-dirs = [os.path.join(log_path, folder) for folder in os.listdir(log_path) if env in folder and os.path.isdir(os.path.join(log_path, folder))]
+dirs = [os.path.join(log_path, folder) for folder in os.listdir(log_path) if (env in folder
+                                                                              and os.path.isdir(os.path.join(log_path, folder)))]
 
 plt.figure('Training Success Rate', figsize=args.figsize)
 plt.title('Training Success Rate', fontsize=args.fontsize)

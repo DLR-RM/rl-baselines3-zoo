@@ -43,6 +43,11 @@ To load the best model (when using evaluation environment):
 python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-best
 ```
 
+To load a checkpoint (here the checkpoint name is `rl_model_10000_steps.zip`):
+```
+python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-checkpoint 10000
+```
+
 ## Train an Agent
 
 The hyperparameters for each environment are defined in `hyperparameters/algo_name.yml`.

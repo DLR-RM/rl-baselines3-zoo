@@ -1,5 +1,3 @@
-import os
-import warnings
 import argparse
 import pickle
 
@@ -52,7 +50,7 @@ del results['results_table']
 
 keys = [key for key in results[list(results.keys())[0]].keys()]
 envs = [env for env in results.keys() if env not in args.skip_envs]
-labels = {key:key for key in keys}
+labels = {key: key for key in keys}
 if args.labels is not None:
     for key, label in zip(keys, args.labels):
         labels[key] = label
@@ -132,6 +130,8 @@ if args.output is not None:
 # plt.tight_layout()
 
 if args.boxplot:
+    # Change background style
+    seaborn.set(style="whitegrid")
     # Box plot
     plt.figure('Sensitivity box plot', figsize=args.figsize)
     plt.title('Sensitivity box plot', fontsize=args.fontsize)

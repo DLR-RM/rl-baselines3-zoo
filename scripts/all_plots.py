@@ -1,5 +1,4 @@
 import os
-import warnings
 import argparse
 import pickle
 
@@ -38,7 +37,7 @@ args.algos = [algo.upper() for algo in args.algos]
 if args.labels is None:
     args.labels = args.exp_folders
 
-for env in args.env:
+for env in args.env:  # noqa: C901
     plt.figure(f'Results {env}')
     plt.title(f'{env}BulletEnv-v0', fontsize=14)
 
@@ -103,7 +102,6 @@ for env in args.env:
                 else:
                     last_eval.append(log['results'][-1])
 
-
             # Merge runs with different eval freq:
             # ex: (100,) eval vs (10,)
             # in that case, downsample (100,) to match the (10,) samples
@@ -139,7 +137,6 @@ for env in args.env:
                         merged_mean[trial_idx] = new_merged_mean
                         merged_std[trial_idx] = new_merged_std
                         last_eval[trial_idx] = merged_results[trial_idx][closest_indices[-1]]
-
 
             # Remove incomplete runs
             mean_tmp, std_tmp, last_eval_tmp = [], [], []
@@ -223,7 +220,6 @@ for algo in args.algos:
         headers.append(algo)
 
 writer.headers = headers
-
 
 for i, env in enumerate(args.env, start=1):
     value_matrix[i].append(env)
