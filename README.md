@@ -93,6 +93,10 @@ python train.py --algo ppo --env MountainCar-v0 -n 50000 -optimize --n-trials 10
   --sampler tpe --pruner median
 ```
 
+Distributed optimization using a shared database is also possible (see the corresponding [Optuna documentation](https://optuna.readthedocs.io/en/latest/tutorial/distributed.html)):
+```
+python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage sqlite:///example.db 
+```
 
 ## Env Wrappers
 
