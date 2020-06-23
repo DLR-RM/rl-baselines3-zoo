@@ -10,10 +10,10 @@ from .callbacks import TrialEvalCallback
 from utils import linear_schedule
 
 
-def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,  # noqa: C901
+def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None, # noqa: C901
                             n_jobs=1, sampler_method='tpe', pruner_method='median',
-                            n_startup_trials=10, n_evaluations=20,
-                            n_eval_episodes=5, seed=0, verbose=1, deterministic_eval=True):
+                            n_startup_trials=10, n_evaluations=20, n_eval_episodes=5, storage=None, study_name=None,
+                            seed=0, verbose=1, deterministic_eval=True):
     """
     :param algo: (str)
     :param model_fn: (func) function that is used to instantiate the model
@@ -27,6 +27,8 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     :param n_startup_trials: (int)
     :param n_evaluations: (int) Evaluate every 20th of the maximum budget per iteration
     :param n_eval_episodes: (int) Evaluate the model during 5 episodes
+    :param storage: (Optional[str])
+    :param study_name: (Optional[str])
     :param seed: (int)
     :param verbose: (int)
     :param deterministic_eval: (bool)
@@ -64,7 +66,8 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     if verbose > 0:
         print(f"Sampler: {sampler_method} - Pruner: {pruner_method}")
 
-    study = optuna.create_study(sampler=sampler, pruner=pruner, direction="maximize")
+    study = optuna.create_study(sampler=sampler, pruner=pruner, storage=storage, study_name=study_name,
+                                load_if_exists=True, direction="maximize")
     algo_sampler = HYPERPARAMS_SAMPLER[algo]
 
     def objective(trial):

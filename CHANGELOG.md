@@ -3,8 +3,9 @@
 ### Breaking Changes
 
 ### New Features
-- Added `--load-checkpoints` to load particular checkpoints
-- Added `--num-threads` to enjoy script
+- Distributed optimization (@SammyRamone)
+- Added ``--load-checkpoints`` to load particular checkpoints
+- Added ``--num-threads`` to enjoy script
 - Added DQN support
 
 ### Bug fixes
