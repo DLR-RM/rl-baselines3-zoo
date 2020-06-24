@@ -15,6 +15,8 @@
 
 ### Documentation
 
+- Fixed a typo in the section of Enjoy a Trained Agent
+
 ### Other
 - Reformat `enjoy.py`, `test_enjoy.py`, `test_hyperparams_opt.py`, `test_train.py`, `train.py`, `callbacks.py`, `hyperparams_opt.py`, `utils.py`, `wrappers.py` (@salmannotkhan)
 - Reformat `record_video.py` (@salmannotkhan)
