@@ -12,6 +12,7 @@
 - Fixed `--save-freq` which was not taking parallel env into account
 - Use 'maximize' for hyperparameter optimization (@SammyRamone)
 - Fixed a bug where reward where not normalized when doing hyperparameter optimization (@caburu)
+- Removed `nminibatches` from `ppo.yml` for `MountainCar-v0` and `Acrobot-v1`. (@blurLake)
 
 ### Documentation
 
