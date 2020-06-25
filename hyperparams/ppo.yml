@@ -47,7 +47,6 @@ MountainCar-v0:
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   n_steps: 16
-  nminibatches: 1
   gae_lambda: 0.98
   gamma: 0.99
   n_epochs: 4
@@ -78,7 +77,6 @@ Acrobot-v1:
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   n_steps: 256
-  nminibatches: 8
   gae_lambda: 0.94
   gamma: 0.99
   n_epochs: 4
