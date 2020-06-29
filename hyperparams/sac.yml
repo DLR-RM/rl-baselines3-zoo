@@ -1,5 +1,4 @@
 # === Real Robot envs
-
 NeckEnvRelative-v1:
   env_wrapper:
     - utils.wrappers.TimeFeatureWrapper
@@ -15,13 +14,13 @@ NeckEnvRelative-v1:
   tau: 0.02
   n_episodes_rollout: 1
   gradient_steps: -1
+  train_freq: -1
   # 20 episodes of warm-up
   learning_starts: 4000
   use_sde_at_warmup: True
   use_sde: True
   # sde_sample_freq: 25
   policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
-
 
 NeckEnv3Tendons-v1:
   env_wrapper:
@@ -38,6 +37,7 @@ NeckEnv3Tendons-v1:
   tau: 0.02
   n_episodes_rollout: 1
   gradient_steps: -1
+  train_freq: -1
   # 20 episodes of warm-up
   learning_starts: 4000
   use_sde_at_warmup: True
@@ -84,11 +84,6 @@ MountainCarContinuous-v0:
 #   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 Pendulum-v0:
-  # env_wrapper:
-  #   - utils.wrappers.DelayedRewardWrapper:
-  #       delay: 5
-  #   - utils.wrappers.HistoryWrapper:
-  #       horizon: 5
   n_timesteps: 20000
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-3
