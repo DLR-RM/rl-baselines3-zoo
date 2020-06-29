@@ -10,7 +10,7 @@ from .callbacks import TrialEvalCallback
 from utils import linear_schedule
 
 
-def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None, # noqa: C901
+def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,  # noqa: C901
                             n_jobs=1, sampler_method='tpe', pruner_method='median',
                             n_startup_trials=10, n_evaluations=20, n_eval_episodes=5, storage=None, study_name=None,
                             seed=0, verbose=1, deterministic_eval=True):
