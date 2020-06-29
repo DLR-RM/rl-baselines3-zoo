@@ -5,16 +5,15 @@ from optuna.pruners import SuccessiveHalvingPruner, MedianPruner
 from optuna.samplers import RandomSampler, TPESampler
 from optuna.integration.skopt import SkoptSampler
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-# from stable_baselines3.her import HERGoalEnvWrapper
 
 from .callbacks import TrialEvalCallback
 from utils import linear_schedule
 
 
-def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,
-                            n_jobs=1, sampler_method='random', pruner_method='halving',
+def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=5000, hyperparams=None,  # noqa: C901
+                            n_jobs=1, sampler_method='tpe', pruner_method='median',
                             n_startup_trials=10, n_evaluations=20, n_eval_episodes=5, storage=None, study_name=None,
-                            seed=0, verbose=1):
+                            seed=0, verbose=1, deterministic_eval=True):
     """
     :param algo: (str)
     :param model_fn: (func) function that is used to instantiate the model
@@ -28,8 +27,11 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
     :param n_startup_trials: (int)
     :param n_evaluations: (int) Evaluate every 20th of the maximum budget per iteration
     :param n_eval_episodes: (int) Evaluate the model during 5 episodes
+    :param storage: (Optional[str])
+    :param study_name: (Optional[str])
     :param seed: (int)
     :param verbose: (int)
+    :param deterministic_eval: (bool)
     :return: (pd.Dataframe) detailed result of the optimization
     """
     # TODO: eval each hyperparams several times to account for noisy evaluation
@@ -87,9 +89,10 @@ def hyperparam_optimization(algo, model_fn, env_fn, n_trials=10, n_timesteps=500
         eval_env = env_fn(n_envs=1, eval_env=True)
         # Account for parallel envs
         eval_freq_ = max(eval_freq // model.get_env().num_envs, 1)
-        # TODO: use non-deterministic eval for Atari?
+        # TODO: Use non-deterministic eval for Atari
+        # or use maximum number of steps to avoid infinite loop
         eval_callback = TrialEvalCallback(eval_env, trial, n_eval_episodes=n_eval_episodes,
-                                          eval_freq=eval_freq_, deterministic=True)
+                                          eval_freq=eval_freq_, deterministic=deterministic_eval)
 
         try:
             model.learn(n_timesteps, callback=eval_callback)
@@ -365,9 +368,57 @@ def sample_td3_params(trial):
     return hyperparams
 
 
+def sample_dqn_params(trial):
+    """
+    Sampler for DQN hyperparams.
+
+    :param trial: (optuna.trial)
+    :return: (dict)
+    """
+    gamma = trial.suggest_categorical('gamma', [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
+    learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
+    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 100, 128, 256, 512])
+    buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(5e4), int(1e5), int(1e6)])
+    exploration_final_eps = trial.suggest_uniform('exploration_final_eps', 0, 0.2)
+    exploration_fraction = trial.suggest_uniform('exploration_fraction', 0, 0.5)
+    target_update_interval = trial.suggest_categorical('target_update_interval', [1, 1000, 5000, 10000, 15000, 20000])
+    learning_starts = trial.suggest_categorical('learning_starts', [0, 1000, 5000, 10000, 20000])
+
+    train_freq = trial.suggest_categorical('train_freq', [1, 4, 8, 16, 128, 256, 1000])
+    subsample_steps = trial.suggest_categorical('subsample_steps', [1, 2, 4, 8])
+    gradient_steps = max(train_freq // subsample_steps, 1)
+    n_episodes_rollout = -1
+
+    net_arch = trial.suggest_categorical('net_arch', ["tiny", "small", "medium"])
+
+    net_arch = {
+        'tiny': [64],
+        'small': [64, 64],
+        'medium': [256, 256]
+    }[net_arch]
+
+    hyperparams = {
+        'gamma': gamma,
+        'learning_rate': learning_rate,
+        'batch_size': batch_size,
+        'buffer_size': buffer_size,
+        'train_freq': train_freq,
+        'gradient_steps': gradient_steps,
+        'n_episodes_rollout': n_episodes_rollout,
+        'exploration_fraction': exploration_fraction,
+        'exploration_final_eps': exploration_final_eps,
+        'target_update_interval': target_update_interval,
+        'learning_starts': learning_starts,
+        'policy_kwargs': dict(net_arch=net_arch)
+    }
+
+    return hyperparams
+
+
 HYPERPARAMS_SAMPLER = {
     'ppo': sample_ppo_params,
     'sac': sample_sac_params,
     'a2c': sample_a2c_params,
-    'td3': sample_td3_params
+    'td3': sample_td3_params,
+    'dqn': sample_dqn_params
 }
