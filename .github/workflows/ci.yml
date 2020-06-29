@@ -34,8 +34,6 @@ jobs:
         # faster to install because pre-built wheel
         pip install pybullet==2.6.6
         pip install -r requirements.txt
-        # TODO: remove when new version of SB3 is out
-        pip install flake8
         # Use headless version
         pip install opencv-python-headless
     - name: Type check
