@@ -155,6 +155,7 @@ HalfCheetahBulletEnv-v0:
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  top_quantiles_to_drop_per_net: 0
 
 # Tuned
 AntBulletEnv-v0:
@@ -172,6 +173,7 @@ AntBulletEnv-v0:
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  top_quantiles_to_drop_per_net: 0
 
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -188,7 +190,7 @@ HopperBulletEnv-v0:
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
-  top_quantiles_to_drop_per_net: 5
+  top_quantiles_to_drop_per_net: 0
 
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -205,6 +207,7 @@ Walker2DBulletEnv-v0:
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  top_quantiles_to_drop_per_net: 0
 
 
 # Tuned
