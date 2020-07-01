@@ -67,7 +67,7 @@ results = {
     'n_episodes': []
 }
 
-for idx, trained_model in enumerate(trained_models.keys()):
+for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
     algo, env_id = trained_models[trained_model]
     n_envs = args.n_envs
     n_timesteps = args.n_timesteps

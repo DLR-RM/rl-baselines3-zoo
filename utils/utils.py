@@ -11,7 +11,7 @@ import torch.nn as nn  # noqa: F401 pylint: disable=unused-import
 
 from stable_baselines3.common.monitor import Monitor
 # from stable_baselines3.common import logger
-from stable_baselines3 import A2C, PPO, SAC, TD3
+from stable_baselines3 import A2C, DQN, PPO, SAC, TD3
 from stable_baselines3.common.vec_env import (DummyVecEnv, VecNormalize,
                                               VecFrameStack, SubprocVecEnv)
 # from stable_baselines3.common.cmd_util import make_atari_env
@@ -19,6 +19,7 @@ from stable_baselines3.common.utils import set_random_seed
 
 ALGOS = {
     'a2c': A2C,
+    'dqn': DQN,
     'ppo': PPO,
     'sac': SAC,
     'td3': TD3

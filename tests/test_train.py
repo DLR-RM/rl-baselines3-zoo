@@ -11,7 +11,7 @@ def _assert_eq(left, right):
 
 N_STEPS = 100
 
-ALGOS = ('ppo', 'a2c')
+ALGOS = ('ppo', 'a2c', 'dqn')
 # 'BreakoutNoFrameskip-v4'
 ENV_IDS = ('CartPole-v1',)
 LOG_FOLDER = 'logs/tests/'

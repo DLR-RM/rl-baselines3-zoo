@@ -3,8 +3,6 @@ from gym.wrappers import TimeLimit
 import matplotlib.pyplot as plt
 import numpy as np
 
-from stable_baselines3.common.atari_wrappers import AtariWrapper  # noqa: F401 pylint: disable=unused-import
-
 
 class DoneOnSuccessWrapper(gym.Wrapper):
     """
