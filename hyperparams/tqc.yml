@@ -117,6 +117,10 @@ BipedalWalker-v3:
 
 # Almost tuned
 BipedalWalkerHardcore-v3:
+  env_wrapper:
+    - utils.wrappers.HistoryWrapper:
+        horizon: 4
+    - utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e7
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
