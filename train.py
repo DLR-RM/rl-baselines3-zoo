@@ -420,6 +420,11 @@ if __name__ == '__main__':  # noqa: C901
     with open(os.path.join(params_path, 'config.yml'), 'w') as f:
         yaml.dump(saved_hyperparams, f)
 
+    # save command line arguments
+    with open(os.path.join(params_path, 'args.yml'), 'w') as f:
+        ordered_args = OrderedDict([(key, vars(args)[key]) for key in sorted(vars(args).keys())])
+        yaml.dump(ordered_args, f)
+
     print(f"Log path: {save_path}")
 
     try:
