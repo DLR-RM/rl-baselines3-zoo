@@ -1,6 +1,7 @@
 import argparse
 import os
 import importlib
+import yaml
 
 import gym
 import numpy as np
@@ -103,7 +104,18 @@ def main():  # noqa: C901
 
     stats_path = os.path.join(log_path, env_id)
     hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
-    env_kwargs = {} if args.env_kwargs is None else args.env_kwargs
+
+    # load env_kwargs if existing
+    env_kwargs = {}
+    args_path = os.path.join(log_path, env_id, "args.yml")
+    if os.path.isfile(args_path):
+        with open(args_path, 'r') as f:
+            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+            if loaded_args['env_kwargs'] is not None:
+                env_kwargs = loaded_args['env_kwargs']
+    # overwrite with command line arguments
+    if args.env_kwargs is not None:
+        env_kwargs.update(args.env_kwargs)
 
     log_dir = args.reward_log if args.reward_log != '' else None
 
