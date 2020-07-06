@@ -18,6 +18,7 @@
 - Use 'maximize' for hyperparameter optimization (@SammyRamone)
 - Fixed a bug where reward where not normalized when doing hyperparameter optimization (@caburu)
 - Removed `nminibatches` from `ppo.yml` for `MountainCar-v0` and `Acrobot-v1`. (@blurLake)
+- Fixed `--save-replay-buffer` to be compatible with latest SB3 version
 
 ### Documentation
 

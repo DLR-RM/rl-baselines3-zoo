@@ -439,7 +439,7 @@ if __name__ == '__main__':  # noqa: C901
 
     if hasattr(model, 'save_replay_buffer') and args.save_replay_buffer:
         print("Saving replay buffer")
-        model.save_replay_buffer(save_path)
+        model.save_replay_buffer(os.path.join(save_path, 'replay_buffer.pkl'))
 
     if normalize:
         # Important: save the running average, for testing the agent we need that normalization
