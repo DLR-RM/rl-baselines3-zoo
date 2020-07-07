@@ -23,6 +23,7 @@ from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.utils import constant_fn
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
+from stable_baselines3.common.evaluation import evaluate_policy
 
 # Register custom envs
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
@@ -82,6 +83,10 @@ if __name__ == '__main__':  # noqa: C901
                         help='Optional keyword argument to pass to the env constructor')
     parser.add_argument('-params', '--hyperparams', type=str, nargs='+', action=StoreDict,
                         help='Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)')
+    parser.add_argument('-b', '--pretrain-buffer', help='Path to a saved replay buffer for pretraining',
+                        type=str)
+    parser.add_argument('--pretrain-params', type=str, nargs='+', action=StoreDict,
+                        help='Optional arguments for pretraining with replay buffer')
     parser.add_argument('-uuid', '--uuid', action='store_true', default=False,
                         help='Ensure that the run has a unique ID')
     args = parser.parse_args()
@@ -426,6 +431,28 @@ if __name__ == '__main__':  # noqa: C901
         yaml.dump(ordered_args, f)
 
     print(f"Log path: {save_path}")
+
+    if args.pretrain_buffer is not None:
+        model.load_replay_buffer(args.pretrain_buffer)
+        mean_reward, std_reward = evaluate_policy(model, model.get_env())
+        print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+        n_iterations = args.pretrain_params.get('n_iterations', 10)
+        n_steps = args.pretrain_params.get('n_steps', 1000)
+        batch_size = args.pretrain_params.get('batch_size', 512)
+        strategy = args.pretrain_params.get('strategy', 'exp')
+        n_action_samples = args.pretrain_params.get('n_action_samples', 1)
+        reduce = args.pretrain_params.get('reduce', 'mean')
+        for i in range(n_iterations):
+            # Pretrain with Critic Regularized Regression
+            if strategy == 'normal':
+                # Normal off-policy training
+                model.train(gradient_steps=n_steps, batch_size=batch_size)
+            else:
+                model.pretrain(gradient_steps=n_steps, batch_size=batch_size,
+                               n_action_samples=n_action_samples,
+                               strategy=strategy, reduce=reduce)
+            mean_reward, std_reward = evaluate_policy(model, model.get_env())
+            print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
 
     try:
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
