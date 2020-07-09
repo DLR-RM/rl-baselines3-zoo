@@ -367,6 +367,63 @@ def sample_td3_params(trial):
 
     return hyperparams
 
+def sample_ddpg_params(trial):
+    """
+    Sampler for DDPG hyperparams.
+
+    :param trial: (optuna.trial)
+    :return: (dict)
+    """
+    gamma = trial.suggest_categorical('gamma', [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
+    learning_rate = trial.suggest_loguniform('lr', 1e-5, 1)
+    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 100, 128, 256, 512])
+    buffer_size = trial.suggest_categorical('buffer_size', [int(1e4), int(1e5), int(1e6)])
+    # Polyak coeff
+    tau = trial.suggest_categorical('tau', [0.001, 0.005, 0.01, 0.02])
+
+    episodic = trial.suggest_categorical('episodic', [True, False])
+
+    if episodic:
+        n_episodes_rollout = 1
+        train_freq, gradient_steps = -1, -1
+    else:
+        train_freq = trial.suggest_categorical('train_freq', [1, 16, 128, 256, 1000, 2000])
+        gradient_steps = train_freq
+        n_episodes_rollout = -1
+
+    noise_type = trial.suggest_categorical('noise_type', ['ornstein-uhlenbeck', 'normal', None])
+    noise_std = trial.suggest_uniform('noise_std', 0, 1)
+
+    net_arch = trial.suggest_categorical('net_arch', ["small", "medium", "big"])
+    # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+
+    net_arch = {
+        'small': [64, 64],
+        'medium': [256, 256],
+        'big': [400, 300],
+    }[net_arch]
+
+    hyperparams = {
+        'gamma': gamma,
+        'tau': tau,
+        'learning_rate': learning_rate,
+        'batch_size': batch_size,
+        'buffer_size': buffer_size,
+        'train_freq': train_freq,
+        'gradient_steps': gradient_steps,
+        'n_episodes_rollout': n_episodes_rollout,
+        'policy_kwargs': dict(net_arch=net_arch),
+    }
+
+    if noise_type == 'normal':
+        hyperparams['action_noise'] = NormalActionNoise(mean=np.zeros(trial.n_actions),
+                                                        sigma=noise_std * np.ones(trial.n_actions))
+    elif noise_type == 'ornstein-uhlenbeck':
+        hyperparams['action_noise'] = OrnsteinUhlenbeckActionNoise(mean=np.zeros(trial.n_actions),
+                                                                   sigma=noise_std * np.ones(trial.n_actions))
+
+    return hyperparams
+
 
 def sample_dqn_params(trial):
     """
@@ -416,9 +473,10 @@ def sample_dqn_params(trial):
 
 
 HYPERPARAMS_SAMPLER = {
-    'ppo': sample_ppo_params,
-    'sac': sample_sac_params,
     'a2c': sample_a2c_params,
+    'ddpg': sample_ddpg_params,
+    'dqn': sample_dqn_params,
+    'sac': sample_sac_params,
+    'ppo': sample_ppo_params,
     'td3': sample_td3_params,
-    'dqn': sample_dqn_params
 }
