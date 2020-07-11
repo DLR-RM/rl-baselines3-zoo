@@ -17,6 +17,8 @@ from stable_baselines3.common.vec_env import (DummyVecEnv, VecNormalize,
 # from stable_baselines3.common.cmd_util import make_atari_env
 from stable_baselines3.common.utils import set_random_seed
 
+from utils.teleop import HumanTeleop
+
 ALGOS = {
     'a2c': A2C,
     'dqn': DQN,
@@ -24,6 +26,7 @@ ALGOS = {
     'sac': SAC,
     'td3': TD3,
     'tqc': TQC,
+    'human': HumanTeleop
 }
 
 
