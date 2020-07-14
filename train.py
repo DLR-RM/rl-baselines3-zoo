@@ -434,14 +434,15 @@ if __name__ == '__main__':  # noqa: C901
 
     if args.pretrain_buffer is not None:
         model.load_replay_buffer(args.pretrain_buffer)
-        mean_reward, std_reward = evaluate_policy(model, model.get_env())
-        print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         n_iterations = args.pretrain_params.get('n_iterations', 10)
         n_steps = args.pretrain_params.get('n_steps', 1000)
         batch_size = args.pretrain_params.get('batch_size', 512)
         strategy = args.pretrain_params.get('strategy', 'exp')
         n_action_samples = args.pretrain_params.get('n_action_samples', 1)
         reduce = args.pretrain_params.get('reduce', 'mean')
+        n_eval_episodes = args.pretrain_params.get('n_eval_episodes', 5)
+        mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
+        print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         for i in range(n_iterations):
             # Pretrain with Critic Regularized Regression
             if strategy == 'normal':
@@ -451,7 +452,7 @@ if __name__ == '__main__':  # noqa: C901
                 model.pretrain(gradient_steps=n_steps, batch_size=batch_size,
                                n_action_samples=n_action_samples,
                                strategy=strategy, reduce=reduce)
-            mean_reward, std_reward = evaluate_policy(model, model.get_env())
+            mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
             print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
 
     try:
