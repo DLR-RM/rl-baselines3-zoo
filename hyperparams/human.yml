@@ -7,3 +7,4 @@ donkey-generated-track-v0:
     - utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
+  buffer_size: 50000

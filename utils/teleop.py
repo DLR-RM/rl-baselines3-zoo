@@ -3,6 +3,8 @@ from typing import Optional, Tuple, List
 
 import numpy as np
 from stable_baselines3.common.base_class import BaseAlgorithm
+from stable_baselines3.common.buffers import ReplayBuffer
+from stable_baselines3.common.save_util import save_to_pkl, load_from_pkl
 import pygame
 from pygame.locals import *  # noqa: F403
 
@@ -66,7 +68,7 @@ def control(x, theta, control_throttle, control_steering):
 
 
 class HumanTeleop(BaseAlgorithm):
-    def __init__(self, policy, env, tensorboard_log=None, verbose=0, seed=None):
+    def __init__(self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None):
         super(HumanTeleop, self).__init__(policy=None, env=env, policy_base=None,
                                           learning_rate=0.0, verbose=verbose, seed=seed)
 
@@ -82,6 +84,10 @@ class HumanTeleop(BaseAlgorithm):
         self.exit_thread = False
         self.process = None
         self.window = None
+        self.buffer_size = buffer_size
+        self.replay_buffer = ReplayBuffer(buffer_size, self.observation_space,
+                                          self.action_space, self.device,
+                                          optimize_memory_usage=False)
         # self.start_process()
 
     def excluded_save_params(self) -> List[str]:
@@ -175,8 +181,12 @@ class HumanTeleop(BaseAlgorithm):
             control_throttle, control_steering = control(x, theta, control_throttle, control_steering)
 
             self.action = np.array([- control_steering, control_throttle])
+            buffer_action = np.array([self.action])
 
-            self.env.step(np.array([self.action]))
+            new_obs, reward, done, _ = self.env.step(buffer_action)
+
+            self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
+            self._last_obs = new_obs
 
             self.update_screen(self.action)
 
@@ -238,10 +248,11 @@ class HumanTeleop(BaseAlgorithm):
         eval_log_path=None,
         reset_num_timesteps=True,
     ) -> "HumanTeleop":
-        self.env.reset()
+        self._last_obs = self.env.reset()
         # Wait for teleop process
         # time.sleep(3)
         self.main_loop()
+        # with threading:
         # for _ in range(total_timesteps):
         #     print(np.array([self.action]))
         #     self.env.step(np.array([self.action]))
@@ -267,3 +278,22 @@ class HumanTeleop(BaseAlgorithm):
             (used in recurrent policies)
         """
         return self.action, None
+
+    def save_replay_buffer(self, path) -> None:
+        """
+        Save the replay buffer as a pickle file.
+
+        :param path: (Union[str,pathlib.Path, io.BufferedIOBase]) Path to the file where the replay buffer should be saved.
+            if path is a str or pathlib.Path, the path is automatically created if necessary.
+        """
+        assert self.replay_buffer is not None, "The replay buffer is not defined"
+        save_to_pkl(path, self.replay_buffer, self.verbose)
+
+    def load_replay_buffer(self, path) -> None:
+        """
+        Load a replay buffer from a pickle file.
+
+        :param path: (Union[str, pathlib.Path, io.BufferedIOBase]) Path to the pickled replay buffer.
+        """
+        self.replay_buffer = load_from_pkl(path, self.verbose)
+        assert isinstance(self.replay_buffer, ReplayBuffer), 'The replay buffer must inherit from ReplayBuffer class'
