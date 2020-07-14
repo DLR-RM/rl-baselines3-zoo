@@ -179,10 +179,8 @@ class HumanTeleop(BaseAlgorithm):
 
             # Smooth control for teleoperation
             control_throttle, control_steering = control(x, theta, control_throttle, control_steering)
-
-            self.action = np.array([- control_steering, control_throttle])
+            self.action = np.array([- control_steering, control_throttle]).astype(np.float32)
             buffer_action = np.array([self.action])
-
             new_obs, reward, done, _ = self.env.step(buffer_action)
 
             self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
