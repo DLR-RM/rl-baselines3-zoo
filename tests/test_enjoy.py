@@ -40,10 +40,10 @@ def test_enjoy(trained_model):
     _assert_eq(return_code, 0)
 
 
-def test_benchmark():
+def test_benchmark(tmp_path):
     args = [
         '-n', str(N_STEPS),
-        '--benchmark-dir', 'logs/tests/benchmark/',
+        '--benchmark-dir', tmp_path,
         '--test-mode'
     ]
 

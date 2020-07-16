@@ -8,6 +8,7 @@
 - Added ``--num-threads`` to enjoy script
 - Added DQN support
 - Added saving of command line args (@SammyRamone)
+- Added DDPG support
 
 ### Bug fixes
 - Fixed optuna warning (@SammyRamone)
