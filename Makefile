@@ -1,4 +1,4 @@
-LINT_PATHS = .
+LINT_PATHS = *.py tests/ scripts/ utils/
 
 # Run pytest and coverage report
 pytest:
