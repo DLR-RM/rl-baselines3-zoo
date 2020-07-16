@@ -152,7 +152,7 @@ class HumanTeleop(BaseAlgorithm):
         # if self.check_key(keys, self.button_switch_mode) or self.check_key(keys, self.button_pause):
         #     self.is_manual = not self.is_manual
 
-    def main_loop(self):
+    def main_loop(self, total_timesteps=-1):
         """
         Pygame loop that listens to keyboard events.
         """
@@ -164,6 +164,7 @@ class HumanTeleop(BaseAlgorithm):
         control_throttle, control_steering = 0, 0
         action = [control_steering, control_throttle]
         self.update_screen(action)
+        n_steps = 0
 
         while not self.exit_thread:
             x, theta = 0, 0
@@ -187,6 +188,13 @@ class HumanTeleop(BaseAlgorithm):
             self._last_obs = new_obs
 
             self.update_screen(self.action)
+
+            n_steps += 1
+            if total_timesteps > 0:
+                self.exit_thread = n_steps >= total_timesteps
+
+            if done:
+                print(f"{n_steps} steps")
 
             for event in pygame.event.get():
                 if (event.type == QUIT or event.type == KEYDOWN) and event.key in [  # pytype: disable=name-error
@@ -249,7 +257,7 @@ class HumanTeleop(BaseAlgorithm):
         self._last_obs = self.env.reset()
         # Wait for teleop process
         # time.sleep(3)
-        self.main_loop()
+        self.main_loop(total_timesteps)
         # with threading:
         # for _ in range(total_timesteps):
         #     print(np.array([self.action]))
