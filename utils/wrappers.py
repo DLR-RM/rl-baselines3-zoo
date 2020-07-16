@@ -1,7 +1,7 @@
 import gym
-from gym.wrappers import TimeLimit
-import matplotlib.pyplot as plt
 import numpy as np
+from gym.wrappers import TimeLimit
+from matplotlib import pyplot as plt
 
 
 class DoneOnSuccessWrapper(gym.Wrapper):
@@ -16,7 +16,7 @@ class DoneOnSuccessWrapper(gym.Wrapper):
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
-        done = done or info.get('is_success', False)
+        done = done or info.get("is_success", False)
         reward += self.reward_offset
         return obs, reward, done, info
 
@@ -42,7 +42,7 @@ class TimeFeatureWrapper(gym.Wrapper):
         assert isinstance(env.observation_space, gym.spaces.Box)
         # Add a time feature to the observation
         low, high = env.observation_space.low, env.observation_space.high
-        low, high = np.concatenate((low, [0])), np.concatenate((high, [1.]))
+        low, high = np.concatenate((low, [0])), np.concatenate((high, [1.0]))
         env.observation_space = gym.spaces.Box(low=low, high=high, dtype=np.float32)
 
         super(TimeFeatureWrapper, self).__init__(env)
@@ -176,7 +176,7 @@ class HistoryWrapper(gym.Wrapper):
         self.obs_history[...] = 0
         self.action_history[...] = 0
         obs = self.env.reset()
-        self.obs_history[..., -obs.shape[-1]:] = obs
+        self.obs_history[..., -obs.shape[-1] :] = obs
         return self._create_obs_from_history()
 
     def step(self, action):
@@ -184,10 +184,10 @@ class HistoryWrapper(gym.Wrapper):
         last_ax_size = obs.shape[-1]
 
         self.obs_history = np.roll(self.obs_history, shift=-last_ax_size, axis=-1)
-        self.obs_history[..., -obs.shape[-1]:] = obs
+        self.obs_history[..., -obs.shape[-1] :] = obs
 
         self.action_history = np.roll(self.action_history, shift=-action.shape[-1], axis=-1)
-        self.action_history[..., -action.shape[-1]:] = action
+        self.action_history[..., -action.shape[-1] :] = action
         return self._create_obs_from_history(), reward, done, info
 
 
@@ -235,10 +235,10 @@ class PlotActionWrapper(gym.Wrapper):
     def plot(self):
         actions = self.actions
         x = np.arange(sum([len(episode) for episode in actions]))
-        plt.figure('Actions')
-        plt.title('Actions during exploration', fontsize=14)
-        plt.xlabel('Timesteps', fontsize=14)
-        plt.ylabel('Action', fontsize=14)
+        plt.figure("Actions")
+        plt.title("Actions during exploration", fontsize=14)
+        plt.xlabel("Timesteps", fontsize=14)
+        plt.ylabel("Action", fontsize=14)
 
         start = 0
         for i in range(len(self.actions)):
@@ -259,7 +259,7 @@ class PlotActionWrapper(gym.Wrapper):
             # signal = np.sin(10 * 2 * np.pi * np.arange(n_samples) * time_delta)
             signal_fft = np.fft.fft(signal)
             freq = np.fft.fftfreq(n_samples, time_delta)
-            plt.figure('FFT')
-            plt.plot(freq[:n_samples // 2], np.abs(signal_fft[:n_samples // 2]))
+            plt.figure("FFT")
+            plt.plot(freq[: n_samples // 2], np.abs(signal_fft[: n_samples // 2]))
 
         plt.show()

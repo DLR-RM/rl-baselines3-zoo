@@ -1,55 +1,57 @@
 import argparse
-import os
 import importlib
-import yaml
+import os
 
 import gym
 import numpy as np
 import torch as th
-
-from stable_baselines3.common.utils import set_random_seed
-from stable_baselines3.common.vec_env import VecEnvWrapper, VecEnv, DummyVecEnv
-
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
-from utils.utils import StoreDict
+import yaml
+from stable_baselines3.common.utils import set_random_seed
+from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv, VecEnvWrapper
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
+from utils.utils import StoreDict
 
 
 def main():  # noqa: C901
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env', help='environment ID', type=str, default='CartPole-v1')
-    parser.add_argument('-f', '--folder', help='Log folder', type=str, default='rl-trained-agents')
-    parser.add_argument('--algo', help='RL Algorithm', default='ppo',
-                        type=str, required=False, choices=list(ALGOS.keys()))
-    parser.add_argument('-n', '--n-timesteps', help='number of timesteps', default=1000,
-                        type=int)
-    parser.add_argument('--num-threads', help='Number of threads for PyTorch (-1 to use default)', default=-1,
-                        type=int)
-    parser.add_argument('--n-envs', help='number of environments', default=1,
-                        type=int)
-    parser.add_argument('--exp-id', help='Experiment ID (default: 0: latest, -1: no exp folder)', default=0,
-                        type=int)
-    parser.add_argument('--verbose', help='Verbose mode (0: no output, 1: INFO)', default=1,
-                        type=int)
-    parser.add_argument('--no-render', action='store_true', default=False,
-                        help='Do not render the environment (useful for tests)')
-    parser.add_argument('--deterministic', action='store_true', default=False,
-                        help='Use deterministic actions')
-    parser.add_argument('--load-best', action='store_true', default=False,
-                        help='Load best model instead of last model if available')
-    parser.add_argument('--load-checkpoint', type=int,
-                        help='Load checkpoint instead of last model if available, '
-                             'you must pass the number of timesteps corresponding to it')
-    parser.add_argument('--stochastic', action='store_true', default=False,
-                        help='Use stochastic actions (for DDPG/DQN/SAC)')
-    parser.add_argument('--norm-reward', action='store_true', default=False,
-                        help='Normalize reward if applicable (trained with VecNormalize)')
-    parser.add_argument('--seed', help='Random generator seed', type=int, default=0)
-    parser.add_argument('--reward-log', help='Where to log reward', default='', type=str)
-    parser.add_argument('--gym-packages', type=str, nargs='+', default=[],
-                        help='Additional external Gym environemnt package modules to import (e.g. gym_minigrid)')
-    parser.add_argument('--env-kwargs', type=str, nargs='+', action=StoreDict,
-                        help='Optional keyword argument to pass to the env constructor')
+    parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
+    parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
+    parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
+    parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
+    parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
+    parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
+    parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
+    parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
+    parser.add_argument(
+        "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
+    )
+    parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
+    parser.add_argument(
+        "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
+    )
+    parser.add_argument(
+        "--load-checkpoint",
+        type=int,
+        help="Load checkpoint instead of last model if available, "
+        "you must pass the number of timesteps corresponding to it",
+    )
+    parser.add_argument("--stochastic", action="store_true", default=False, help="Use stochastic actions (for DDPG/DQN/SAC)")
+    parser.add_argument(
+        "--norm-reward", action="store_true", default=False, help="Normalize reward if applicable (trained with VecNormalize)"
+    )
+    parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
+    parser.add_argument("--reward-log", help="Where to log reward", default="", type=str)
+    parser.add_argument(
+        "--gym-packages",
+        type=str,
+        nargs="+",
+        default=[],
+        help="Additional external Gym environemnt package modules to import (e.g. gym_minigrid)",
+    )
+    parser.add_argument(
+        "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
+    )
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -62,19 +64,19 @@ def main():  # noqa: C901
 
     if args.exp_id == 0:
         args.exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
-        print('Loading latest experiment, id={}'.format(args.exp_id))
+        print("Loading latest experiment, id={}".format(args.exp_id))
 
     # Sanity checks
     if args.exp_id > 0:
-        log_path = os.path.join(folder, algo, '{}_{}'.format(env_id, args.exp_id))
+        log_path = os.path.join(folder, algo, "{}_{}".format(env_id, args.exp_id))
     else:
         log_path = os.path.join(folder, algo)
 
     assert os.path.isdir(log_path), f"The {log_path} folder was not found"
 
     found = False
-    for ext in ['zip']:
-        model_path = os.path.join(log_path, f'{env_id}.{ext}')
+    for ext in ["zip"]:
+        model_path = os.path.join(log_path, f"{env_id}.{ext}")
         found = os.path.isfile(model_path)
         if found:
             break
@@ -90,7 +92,7 @@ def main():  # noqa: C901
     if not found:
         raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
 
-    if algo in ['dqn', 'ddpg', 'sac', 'td3']:
+    if algo in ["dqn", "ddpg", "sac", "td3"]:
         args.n_envs = 1
 
     set_random_seed(args.seed)
@@ -100,7 +102,7 @@ def main():  # noqa: C901
             print(f"Setting torch.num_threads to {args.num_threads}")
         th.set_num_threads(args.num_threads)
 
-    is_atari = 'NoFrameskip' in env_id
+    is_atari = "NoFrameskip" in env_id
 
     stats_path = os.path.join(log_path, env_id)
     hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
@@ -109,24 +111,29 @@ def main():  # noqa: C901
     env_kwargs = {}
     args_path = os.path.join(log_path, env_id, "args.yml")
     if os.path.isfile(args_path):
-        with open(args_path, 'r') as f:
+        with open(args_path, "r") as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
-            if loaded_args['env_kwargs'] is not None:
-                env_kwargs = loaded_args['env_kwargs']
+            if loaded_args["env_kwargs"] is not None:
+                env_kwargs = loaded_args["env_kwargs"]
     # overwrite with command line arguments
     if args.env_kwargs is not None:
         env_kwargs.update(args.env_kwargs)
 
-    log_dir = args.reward_log if args.reward_log != '' else None
+    log_dir = args.reward_log if args.reward_log != "" else None
 
-    env = create_test_env(env_id, n_envs=args.n_envs,
-                          stats_path=stats_path, seed=args.seed, log_dir=log_dir,
-                          should_render=not args.no_render,
-                          hyperparams=hyperparams,
-                          env_kwargs=env_kwargs)
+    env = create_test_env(
+        env_id,
+        n_envs=args.n_envs,
+        stats_path=stats_path,
+        seed=args.seed,
+        log_dir=log_dir,
+        should_render=not args.no_render,
+        hyperparams=hyperparams,
+        env_kwargs=env_kwargs,
+    )
 
     kwargs = dict(seed=args.seed)
-    if algo in ['dqn', 'ddpg', 'sac', 'her', 'td3']:
+    if algo in ["dqn", "ddpg", "sac", "her", "td3"]:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
 
@@ -135,7 +142,7 @@ def main():  # noqa: C901
     obs = env.reset()
 
     # Force deterministic for DQN, DDPG, SAC and HER (that is a wrapper around)
-    deterministic = args.deterministic or algo in ['dqn', 'ddpg', 'sac', 'her', 'td3'] and not args.stochastic
+    deterministic = args.deterministic or algo in ["dqn", "ddpg", "sac", "her", "td3"] and not args.stochastic
 
     state = None
     episode_reward = 0.0
@@ -152,7 +159,7 @@ def main():  # noqa: C901
             action = np.clip(action, env.action_space.low, env.action_space.high)
         obs, reward, done, infos = env.step(action)
         if not args.no_render:
-            env.render('human')
+            env.render("human")
 
         episode_reward += reward[0]
         ep_len += 1
@@ -161,10 +168,10 @@ def main():  # noqa: C901
             # For atari the return reward is not the atari score
             # so we have to get it from the infos dict
             if is_atari and infos is not None and args.verbose >= 1:
-                episode_infos = infos[0].get('episode')
+                episode_infos = infos[0].get("episode")
                 if episode_infos is not None:
                     print(f"Atari Episode Score: {episode_infos['r']:.2f}")
-                    print("Atari Episode Length", episode_infos['l'])
+                    print("Atari Episode Length", episode_infos["l"])
 
             if done and not is_atari and args.verbose > 0:
                 # NOTE: for env using VecNormalize, the mean reward
@@ -178,14 +185,14 @@ def main():  # noqa: C901
                 state = None
 
             # Reset also when the goal is achieved when using HER
-            if done and infos[0].get('is_success') is not None:
+            if done and infos[0].get("is_success") is not None:
                 if args.verbose > 1:
-                    print("Success?", infos[0].get('is_success', False))
+                    print("Success?", infos[0].get("is_success", False))
                 # Alternatively, you can add a check to wait for the end of the episode
                 if done:
                     obs = env.reset()
-                if infos[0].get('is_success') is not None:
-                    successes.append(infos[0].get('is_success', False))
+                if infos[0].get("is_success") is not None:
+                    successes.append(infos[0].get("is_success", False))
                     episode_reward, ep_len = 0.0, 0
 
     if args.verbose > 0 and len(successes) > 0:
@@ -199,8 +206,7 @@ def main():  # noqa: C901
 
     # Workaround for https://github.com/openai/gym/issues/893
     if not args.no_render:
-        if (args.n_envs == 1 and 'Bullet' not in env_id
-                and not is_atari and isinstance(env, VecEnv)):
+        if args.n_envs == 1 and "Bullet" not in env_id and not is_atari and isinstance(env, VecEnv):
             # DummyVecEnv
             # Unwrap env
             while isinstance(env, VecEnvWrapper):
@@ -214,5 +220,5 @@ def main():  # noqa: C901
             env.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

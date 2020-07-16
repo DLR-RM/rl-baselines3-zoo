@@ -11,6 +11,7 @@ class LinearNormalActionNoise(ActionNoise):
     :param max_steps: (int)
     :param final_sigma: (np.ndarray)
     """
+
     def __init__(self, mean, sigma, max_steps, final_sigma=None):
         self._mu = mean
         self._sigma = sigma

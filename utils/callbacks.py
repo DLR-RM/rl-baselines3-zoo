@@ -1,23 +1,25 @@
 import os
 
 import numpy as np
-import matplotlib.pyplot as plt
-
-from stable_baselines3.common.vec_env import DummyVecEnv
+from matplotlib import pyplot as plt
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
+from stable_baselines3.common.vec_env import DummyVecEnv
 
 
 class TrialEvalCallback(EvalCallback):
     """
     Callback used for evaluating and reporting a trial.
     """
-    def __init__(self, eval_env, trial, n_eval_episodes=5,
-                 eval_freq=10000, deterministic=True, verbose=0):
 
-        super(TrialEvalCallback, self).__init__(eval_env=eval_env, n_eval_episodes=n_eval_episodes,
-                                                eval_freq=eval_freq,
-                                                deterministic=deterministic,
-                                                verbose=verbose)
+    def __init__(self, eval_env, trial, n_eval_episodes=5, eval_freq=10000, deterministic=True, verbose=0):
+
+        super(TrialEvalCallback, self).__init__(
+            eval_env=eval_env,
+            n_eval_episodes=n_eval_episodes,
+            eval_freq=eval_freq,
+            deterministic=deterministic,
+            verbose=verbose,
+        )
         self.trial = trial
         self.eval_idx = 0
         self.is_pruned = False
@@ -45,6 +47,7 @@ class SaveVecNormalizeCallback(BaseCallback):
     :param name_prefix: (str) Common prefix to the saved ``VecNormalize``, if None (default)
         only one file will be kept.
     """
+
     def __init__(self, save_freq: int, save_path: str, name_prefix=None, verbose=0):
         super(SaveVecNormalizeCallback, self).__init__(verbose)
         self.save_freq = save_freq
@@ -61,7 +64,7 @@ class SaveVecNormalizeCallback(BaseCallback):
             if self.name_prefix is not None:
                 path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps.pkl")
             else:
-                path = os.path.join(self.save_path, 'vecnormalize.pkl')
+                path = os.path.join(self.save_path, "vecnormalize.pkl")
             if self.model.get_vec_normalize_env() is not None:
                 self.model.get_vec_normalize_env().save(path)
                 if self.verbose > 1:
@@ -77,6 +80,7 @@ class PlotNoiseRatioCallback(BaseCallback):
     :param display_freq: (int) Display the plot every ``display_freq`` steps.
     :param verbose: (int)
     """
+
     def __init__(self, display_freq=1000, verbose=0):
         super(PlotNoiseRatioCallback, self).__init__(verbose)
         self.display_freq = display_freq
@@ -106,14 +110,14 @@ class PlotNoiseRatioCallback(BaseCallback):
             self.deterministic_actions = np.array(self.deterministic_actions)
             self.noises = np.array(self.noises)
 
-            plt.figure('Deterministic action and noise during exploration', figsize=(6.4, 4.8))
+            plt.figure("Deterministic action and noise during exploration", figsize=(6.4, 4.8))
             # plt.title('Deterministic action and noise during exploration', fontsize=14)
-            plt.xlabel('Timesteps', fontsize=14)
+            plt.xlabel("Timesteps", fontsize=14)
             plt.xticks(fontsize=13)
-            plt.ylabel('Action', fontsize=14)
-            plt.plot(x, self.deterministic_actions, label='deterministic action', linewidth=2)
-            plt.plot(x, self.noises, label='exploration noise', linewidth=2)
-            plt.plot(x, self.noisy_actions, label='noisy action', linewidth=2)
+            plt.ylabel("Action", fontsize=14)
+            plt.plot(x, self.deterministic_actions, label="deterministic action", linewidth=2)
+            plt.plot(x, self.noises, label="exploration noise", linewidth=2)
+            plt.plot(x, self.noisy_actions, label="noisy action", linewidth=2)
             plt.legend(fontsize=13)
             plt.show()
             # Reset
