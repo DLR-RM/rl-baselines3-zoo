@@ -32,7 +32,7 @@ jobs:
         # cpu version of pytorch - faster to download
         pip install torch==1.4.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
         # faster to install because pre-built wheel
-        pip install pybullet==2.6.6
+        pip install pybullet==2.8.4
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless

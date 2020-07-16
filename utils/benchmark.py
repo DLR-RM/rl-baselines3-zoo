@@ -6,11 +6,6 @@ import pytablewriter
 import numpy as np
 import pandas as pd
 import matplotlib
-# Fix when running tests
-try:
-    import tkinter  # noqa: F401 pylint: disable=unused-import
-except ImportError:
-    matplotlib.use('agg')
 
 from stable_baselines3.common.results_plotter import load_results, ts2xy
 
@@ -53,7 +48,7 @@ parser.add_argument(
     '--test-mode',
     action='store_true',
     default=False,
-    help='Do only one experiments (useful for testing)')
+    help='Do only one experiment (useful for testing)')
 args = parser.parse_args()
 
 trained_models = get_trained_models(args.log_dir)
