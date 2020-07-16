@@ -58,9 +58,8 @@ BipedalWalkerHardcore-v3:
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
-# To be tuned
+# Tuned
 HalfCheetahBulletEnv-v0:
-  normalize: True
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
@@ -74,7 +73,7 @@ HalfCheetahBulletEnv-v0:
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
-# To be tuned
+# Tuned
 AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
@@ -86,37 +85,40 @@ AntBulletEnv-v0:
   noise_std: 0.1
   gradient_steps: -1
   n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
+  learning_rate: !!float 7e-4
   policy_kwargs: "dict(net_arch=[400, 300])"
 
-# To be tuned
+# Tuned
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
-  buffer_size: 200000
+  buffer_size: 1000000
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
+  train_freq: 64
+  gradient_steps: 64
+  n_episodes_rollout: -1
+  batch_size: 256
+  learning_rate: !!float 7e-4
   policy_kwargs: "dict(net_arch=[400, 300])"
 
-# To be tuned
+# Tuned
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
-  buffer_size: 200000
+  buffer_size: 1000000
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
   n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
+  batch_size: 256
+  learning_rate: !!float 7e-4
   policy_kwargs: "dict(net_arch=[400, 300])"
 
 
