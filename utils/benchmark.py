@@ -1,8 +1,8 @@
 import argparse
+import json
 import os
 import subprocess
 
-import matplotlib
 import numpy as np
 import pandas as pd
 import pytablewriter
@@ -66,8 +66,7 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
         try:
             x, y = ts2xy(load_results(reward_log), "timesteps")
             skip_eval = len(x) > 0
-        # TODO: fix this bare except
-        except:
+        except (json.JSONDecodeError, pd.errors.EmptyDataError, TypeError):
             pass
 
     if skip_eval:
