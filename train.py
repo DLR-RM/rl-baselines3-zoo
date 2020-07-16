@@ -23,7 +23,6 @@ from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.utils import constant_fn
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
-from stable_baselines3.common.evaluation import evaluate_policy
 
 # Register custom envs
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
@@ -31,7 +30,7 @@ from utils import make_env, ALGOS, linear_schedule, get_latest_run_id, get_wrapp
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
-from utils.utils import StoreDict, get_callback_class
+from utils.utils import StoreDict, get_callback_class, evaluate_policy_add_to_buffer
 
 seaborn.set()
 
@@ -441,7 +440,7 @@ if __name__ == '__main__':  # noqa: C901
         n_action_samples = args.pretrain_params.get('n_action_samples', 1)
         reduce = args.pretrain_params.get('reduce', 'mean')
         n_eval_episodes = args.pretrain_params.get('n_eval_episodes', 5)
-        mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
+        mean_reward, std_reward = evaluate_policy_add_to_buffer(model, model.get_env(), n_eval_episodes=n_eval_episodes)
         print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         for i in range(n_iterations):
             # Pretrain with Critic Regularized Regression
@@ -452,7 +451,7 @@ if __name__ == '__main__':  # noqa: C901
                 model.pretrain(gradient_steps=n_steps, batch_size=batch_size,
                                n_action_samples=n_action_samples,
                                strategy=strategy, reduce=reduce)
-            mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
+            mean_reward, std_reward = evaluate_policy_add_to_buffer(model, model.get_env(), n_eval_episodes=n_eval_episodes)
             print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
 
     try:
