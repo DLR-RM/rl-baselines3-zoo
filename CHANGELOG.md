@@ -30,3 +30,4 @@
 - Reformat `benchmark.py` (@salmannotkhan)
 - Added github ci
 - Fixes most linter warnings
+- Now using black and isort for auto-formatting
