@@ -8,6 +8,7 @@ RUN apt-get -y update \
     freeglut3-dev \
     swig \
     xvfb \
+    libxrandr2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
