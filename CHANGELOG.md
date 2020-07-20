@@ -8,6 +8,7 @@
 - Added ``--num-threads`` to enjoy script
 - Added DQN support
 - Added saving of command line args (@SammyRamone)
+- Added DDPG support
 
 ### Bug fixes
 - Fixed optuna warning (@SammyRamone)
@@ -29,3 +30,4 @@
 - Reformat `benchmark.py` (@salmannotkhan)
 - Added github ci
 - Fixes most linter warnings
+- Now using black and isort for auto-formatting

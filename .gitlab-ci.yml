@@ -15,3 +15,8 @@ pytest:
   - pip install git+https://github.com/DLR-RM/stable-baselines3@sde
   # MKL_THREADING_LAYER=GNU to avoid MKL_THREADING_LAYER=INTEL incompatibility error
   - MKL_THREADING_LAYER=GNU make pytest
+
+lint:
+  script:
+    - make check-codestyle
+    - make lint
