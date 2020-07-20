@@ -1,12 +1,12 @@
 import time
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 import numpy as np
-from stable_baselines3.common.base_class import BaseAlgorithm
-from stable_baselines3.common.buffers import ReplayBuffer
-from stable_baselines3.common.save_util import save_to_pkl, load_from_pkl
 import pygame
 from pygame.locals import *  # noqa: F403
+from stable_baselines3.common.base_class import BaseAlgorithm
+from stable_baselines3.common.buffers import ReplayBuffer
+from stable_baselines3.common.save_util import load_from_pkl, save_to_pkl
 
 TELEOP_RATE = 1 / 60
 
@@ -69,8 +69,9 @@ def control(x, theta, control_throttle, control_steering):
 
 class HumanTeleop(BaseAlgorithm):
     def __init__(self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None):
-        super(HumanTeleop, self).__init__(policy=None, env=env, policy_base=None,
-                                          learning_rate=0.0, verbose=verbose, seed=seed)
+        super(HumanTeleop, self).__init__(
+            policy=None, env=env, policy_base=None, learning_rate=0.0, verbose=verbose, seed=seed
+        )
 
         # pytype: disable=name-error
         # self.button_switch_mode = K_m
@@ -85,9 +86,9 @@ class HumanTeleop(BaseAlgorithm):
         self.process = None
         self.window = None
         self.buffer_size = buffer_size
-        self.replay_buffer = ReplayBuffer(buffer_size, self.observation_space,
-                                          self.action_space, self.device,
-                                          optimize_memory_usage=False)
+        self.replay_buffer = ReplayBuffer(
+            buffer_size, self.observation_space, self.action_space, self.device, optimize_memory_usage=False
+        )
         # self.start_process()
 
     def excluded_save_params(self) -> List[str]:
@@ -99,7 +100,6 @@ class HumanTeleop(BaseAlgorithm):
         """
         # Exclude aliases
         return super().excluded_save_params() + ["process", "window"]
-
 
     def _setup_model(self):
         pass
@@ -180,7 +180,7 @@ class HumanTeleop(BaseAlgorithm):
 
             # Smooth control for teleoperation
             control_throttle, control_steering = control(x, theta, control_throttle, control_steering)
-            self.action = np.array([- control_steering, control_throttle]).astype(np.float32)
+            self.action = np.array([-control_steering, control_throttle]).astype(np.float32)
             buffer_action = np.array([self.action])
             new_obs, reward, done, _ = self.env.step(buffer_action)
 
@@ -302,4 +302,4 @@ class HumanTeleop(BaseAlgorithm):
         :param path: (Union[str, pathlib.Path, io.BufferedIOBase]) Path to the pickled replay buffer.
         """
         self.replay_buffer = load_from_pkl(path, self.verbose)
-        assert isinstance(self.replay_buffer, ReplayBuffer), 'The replay buffer must inherit from ReplayBuffer class'
+        assert isinstance(self.replay_buffer, ReplayBuffer), "The replay buffer must inherit from ReplayBuffer class"

@@ -1,34 +1,26 @@
-import os
-import glob
-import yaml
-import importlib
 import argparse
+import glob
+import importlib
+import os
 from typing import Dict, Tuple
 
 import gym
 import numpy as np
-# For custom activation fn
-import torch.nn as nn  # noqa: F401 pylint: disable=unused-import
+import yaml
 
-from stable_baselines3.common.monitor import Monitor
 # from stable_baselines3.common import logger
-from stable_baselines3 import A2C, DQN, PPO, SAC, TD3, TQC
-from stable_baselines3.common.vec_env import (DummyVecEnv, VecNormalize, VecEnv,
-                                              VecFrameStack, SubprocVecEnv)
+from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3, TQC
+from stable_baselines3.common.monitor import Monitor
+
 # from stable_baselines3.common.cmd_util import make_atari_env
 from stable_baselines3.common.utils import set_random_seed
+from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize
 
+# For custom activation fn
+from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
 from utils.teleop import HumanTeleop
 
-ALGOS = {
-    'a2c': A2C,
-    'dqn': DQN,
-    'ppo': PPO,
-    'sac': SAC,
-    'td3': TD3,
-    'tqc': TQC,
-    'human': HumanTeleop
-}
+ALGOS = {"a2c": A2C, "dqn": DQN, "ppo": PPO, "sac": SAC, "td3": TD3, "tqc": TQC, "human": HumanTeleop}
 
 
 def flatten_dict_observations(env):
@@ -57,13 +49,13 @@ def get_wrapper_class(hyperparams):
     """
 
     def get_module_name(wrapper_name):
-        return '.'.join(wrapper_name.split('.')[:-1])
+        return ".".join(wrapper_name.split(".")[:-1])
 
     def get_class_name(wrapper_name):
-        return wrapper_name.split('.')[-1]
+        return wrapper_name.split(".")[-1]
 
-    if 'env_wrapper' in hyperparams.keys():
-        wrapper_name = hyperparams.get('env_wrapper')
+    if "env_wrapper" in hyperparams.keys():
+        wrapper_name = hyperparams.get("env_wrapper")
 
         if wrapper_name is None:
             return None
@@ -79,9 +71,11 @@ def get_wrapper_class(hyperparams):
         for wrapper_name in wrapper_names:
             # Handle keyword arguments
             if isinstance(wrapper_name, dict):
-                assert len(wrapper_name) == 1, ("You have an error in the formatting "
-                                                f"of your YAML file near {wrapper_name}. "
-                                                "You should check the indentation.")
+                assert len(wrapper_name) == 1, (
+                    "You have an error in the formatting "
+                    f"of your YAML file near {wrapper_name}. "
+                    "You should check the indentation."
+                )
                 wrapper_dict = wrapper_name
                 wrapper_name = list(wrapper_dict.keys())[0]
                 kwargs = wrapper_dict[wrapper_name]
@@ -100,6 +94,7 @@ def get_wrapper_class(hyperparams):
             for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs):
                 env = wrapper_class(env, **kwargs)
             return env
+
         return wrap_env
     else:
         return None
@@ -123,15 +118,15 @@ def get_callback_class(hyperparams):
     """
 
     def get_module_name(callback_name):
-        return '.'.join(callback_name.split('.')[:-1])
+        return ".".join(callback_name.split(".")[:-1])
 
     def get_class_name(callback_name):
-        return callback_name.split('.')[-1]
+        return callback_name.split(".")[-1]
 
     callbacks = []
 
-    if 'callback' in hyperparams.keys():
-        callback_name = hyperparams.get('callback')
+    if "callback" in hyperparams.keys():
+        callback_name = hyperparams.get("callback")
 
         if callback_name is None:
             return callbacks
@@ -145,9 +140,11 @@ def get_callback_class(hyperparams):
         for callback_name in callback_names:
             # Handle keyword arguments
             if isinstance(callback_name, dict):
-                assert len(callback_name) == 1, ("You have an error in the formatting "
-                                                 f"of your YAML file near {callback_name}. "
-                                                 "You should check the indentation.")
+                assert len(callback_name) == 1, (
+                    "You have an error in the formatting "
+                    f"of your YAML file near {callback_name}. "
+                    "You should check the indentation."
+                )
                 callback_dict = callback_name
                 callback_name = list(callback_dict.keys())[0]
                 kwargs = callback_dict[callback_name]
@@ -160,8 +157,7 @@ def get_callback_class(hyperparams):
     return callbacks
 
 
-def make_env(env_id, rank=0, seed=0, log_dir=None,
-             wrapper_class=None, env_kwargs=None):
+def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None, env_kwargs=None):
     """
     Helper function to multiprocess training
     and log the progress.
@@ -187,7 +183,7 @@ def make_env(env_id, rank=0, seed=0, log_dir=None,
         # Wrap first with a monitor (e.g. for Atari env where reward clipping is used)
         log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
         # Monitor success rate too for the real robot
-        info_keywords = ('is_success',) if 'NeckEnv' in env_id else ()
+        info_keywords = ("is_success",) if "NeckEnv" in env_id else ()
         env = Monitor(env, log_file, info_keywords=info_keywords)
 
         # Dict observation space is currently not supported.
@@ -202,10 +198,9 @@ def make_env(env_id, rank=0, seed=0, log_dir=None,
     return _init
 
 
-def create_test_env(env_id, n_envs=1,
-                    stats_path=None, seed=0,
-                    log_dir='', should_render=True,
-                    hyperparams=None, env_kwargs=None):
+def create_test_env(
+    env_id, n_envs=1, stats_path=None, seed=0, log_dir="", should_render=True, hyperparams=None, env_kwargs=None
+):
     """
     Create environment for testing a trained agent
 
@@ -228,32 +223,31 @@ def create_test_env(env_id, n_envs=1,
 
     # Create the environment and wrap it if necessary
     env_wrapper = get_wrapper_class(hyperparams)
-    if 'env_wrapper' in hyperparams.keys():
-        del hyperparams['env_wrapper']
+    if "env_wrapper" in hyperparams.keys():
+        del hyperparams["env_wrapper"]
 
     if n_envs > 1:
         # start_method = 'spawn' for thread safe
-        env = SubprocVecEnv([make_env(env_id, i, seed, log_dir,
-                                      wrapper_class=env_wrapper, env_kwargs=env_kwargs) for i in range(n_envs)])
+        env = SubprocVecEnv(
+            [make_env(env_id, i, seed, log_dir, wrapper_class=env_wrapper, env_kwargs=env_kwargs) for i in range(n_envs)]
+        )
     # Pybullet envs does not follow gym.render() interface
     elif "Bullet" in env_id:
         # HACK: force SubprocVecEnv for Bullet env
-        env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir,
-                                      wrapper_class=env_wrapper, env_kwargs=env_kwargs)])
+        env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper, env_kwargs=env_kwargs)])
     else:
-        env = DummyVecEnv([make_env(env_id, 0, seed, log_dir,
-                                    wrapper_class=env_wrapper, env_kwargs=env_kwargs)])
+        env = DummyVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper, env_kwargs=env_kwargs)])
 
     # Load saved stats for normalizing input and rewards
     # And optionally stack frames
     if stats_path is not None:
-        if hyperparams['normalize']:
+        if hyperparams["normalize"]:
             print("Loading running average")
-            print("with params: {}".format(hyperparams['normalize_kwargs']))
-            env = VecNormalize(env, training=False, **hyperparams['normalize_kwargs'])
+            print("with params: {}".format(hyperparams["normalize_kwargs"]))
+            env = VecNormalize(env, training=False, **hyperparams["normalize_kwargs"])
 
-            if os.path.exists(os.path.join(stats_path, 'vecnormalize.pkl')):
-                env = VecNormalize.load(os.path.join(stats_path, 'vecnormalize.pkl'), env)
+            if os.path.exists(os.path.join(stats_path, "vecnormalize.pkl")):
+                env = VecNormalize.load(os.path.join(stats_path, "vecnormalize.pkl"), env)
                 # Deactivate training and reward normalization
                 env.training = False
                 env.norm_reward = False
@@ -261,7 +255,7 @@ def create_test_env(env_id, n_envs=1,
                 # Legacy:
                 env.load_running_average(stats_path)
 
-        n_stack = hyperparams.get('frame_stack', 0)
+        n_stack = hyperparams.get("frame_stack", 0)
         if n_stack > 0:
             print("Stacking {} frames".format(n_stack))
             env = VecFrameStack(env, n_stack)
@@ -300,8 +294,8 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
             continue
         for env_id in os.listdir(os.path.join(log_folder, algo)):
             # Retrieve env name
-            env_id = env_id.split('_')[0]
-            trained_models['{}-{}'.format(algo, env_id)] = (algo, env_id)
+            env_id = env_id.split("_")[0]
+            trained_models["{}-{}".format(algo, env_id)] = (algo, env_id)
     return trained_models
 
 
@@ -334,25 +328,25 @@ def get_saved_hyperparams(stats_path, norm_reward=False, test_mode=False):
     if not os.path.isdir(stats_path):
         stats_path = None
     else:
-        config_file = os.path.join(stats_path, 'config.yml')
+        config_file = os.path.join(stats_path, "config.yml")
         if os.path.isfile(config_file):
             # Load saved hyperparameters
-            with open(os.path.join(stats_path, 'config.yml'), 'r') as f:
+            with open(os.path.join(stats_path, "config.yml"), "r") as f:
                 hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
-            hyperparams['normalize'] = hyperparams.get('normalize', False)
+            hyperparams["normalize"] = hyperparams.get("normalize", False)
         else:
-            obs_rms_path = os.path.join(stats_path, 'obs_rms.pkl')
-            hyperparams['normalize'] = os.path.isfile(obs_rms_path)
+            obs_rms_path = os.path.join(stats_path, "obs_rms.pkl")
+            hyperparams["normalize"] = os.path.isfile(obs_rms_path)
 
         # Load normalization params
-        if hyperparams['normalize']:
-            if isinstance(hyperparams['normalize'], str):
-                normalize_kwargs = eval(hyperparams['normalize'])
+        if hyperparams["normalize"]:
+            if isinstance(hyperparams["normalize"], str):
+                normalize_kwargs = eval(hyperparams["normalize"])
                 if test_mode:
-                    normalize_kwargs['norm_reward'] = norm_reward
+                    normalize_kwargs["norm_reward"] = norm_reward
             else:
-                normalize_kwargs = {'norm_obs': hyperparams['normalize'], 'norm_reward': norm_reward}
-            hyperparams['normalize_kwargs'] = normalize_kwargs
+                normalize_kwargs = {"norm_obs": hyperparams["normalize"], "norm_reward": norm_reward}
+            hyperparams["normalize_kwargs"] = normalize_kwargs
     return hyperparams, stats_path
 
 
@@ -363,6 +357,7 @@ class StoreDict(argparse.Action):
     In: args1:0.0 args2:"dict(a=1)"
     Out: {'args1': 0.0, arg2: dict(a=1)}
     """
+
     def __init__(self, option_strings, dest, nargs=None, **kwargs):
         self._nargs = nargs
         super(StoreDict, self).__init__(option_strings, dest, nargs=nargs, **kwargs)
@@ -377,10 +372,16 @@ class StoreDict(argparse.Action):
         setattr(namespace, self.dest, arg_dict)
 
 
-
-def evaluate_policy_add_to_buffer(model, env, n_eval_episodes=10, deterministic=True,
-                    render=False, callback=None, reward_threshold=None,
-                    return_episode_rewards=False):
+def evaluate_policy_add_to_buffer(
+    model,
+    env,
+    n_eval_episodes=10,
+    deterministic=True,
+    render=False,
+    callback=None,
+    reward_threshold=None,
+    return_episode_rewards=False,
+):
     """
     Runs policy for ``n_eval_episodes`` episodes and returns average reward.
     This is made to work only with one env.
@@ -416,7 +417,7 @@ def evaluate_policy_add_to_buffer(model, env, n_eval_episodes=10, deterministic=
             if callback is not None:
                 callback(locals(), globals())
             episode_length += 1
-            if hasattr(model, 'replay_buffer'):
+            if hasattr(model, "replay_buffer"):
                 # We assume actions are normalized but not observation/reward
                 buffer_action = action
                 model.replay_buffer.add(obs, new_obs, buffer_action, reward, done)
@@ -428,8 +429,7 @@ def evaluate_policy_add_to_buffer(model, env, n_eval_episodes=10, deterministic=
     mean_reward = np.mean(episode_rewards)
     std_reward = np.std(episode_rewards)
     if reward_threshold is not None:
-        assert mean_reward > reward_threshold, ('Mean reward below threshold: '
-                                                f'{mean_reward:.2f} < {reward_threshold:.2f}')
+        assert mean_reward > reward_threshold, "Mean reward below threshold: " f"{mean_reward:.2f} < {reward_threshold:.2f}"
     if return_episode_rewards:
         return episode_rewards, episode_lengths
     return mean_reward, std_reward
