@@ -19,8 +19,8 @@ KEY_CODE_SPACE = 32
 
 MAX_TURN = 1
 # Smoothing constants
-STEP_THROTTLE = 0.3
-STEP_TURN = 0.4
+STEP_THROTTLE = 0.1
+STEP_TURN = 0.15
 
 GREEN = (72, 205, 40)
 RED = (205, 39, 46)
