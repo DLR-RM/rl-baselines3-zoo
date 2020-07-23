@@ -482,23 +482,33 @@ if __name__ == "__main__":  # noqa: C901
         n_action_samples = args.pretrain_params.get("n_action_samples", 1)
         reduce = args.pretrain_params.get("reduce", "mean")
         n_eval_episodes = args.pretrain_params.get("n_eval_episodes", 5)
-        mean_reward, std_reward = evaluate_policy_add_to_buffer(model, model.get_env(), n_eval_episodes=n_eval_episodes)
-        print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
-        for i in range(n_iterations):
-            # Pretrain with Critic Regularized Regression
-            if strategy == "normal":
-                # Normal off-policy training
-                model.train(gradient_steps=n_steps, batch_size=batch_size)
-            else:
-                model.pretrain(
-                    gradient_steps=n_steps,
-                    batch_size=batch_size,
-                    n_action_samples=n_action_samples,
-                    strategy=strategy,
-                    reduce=reduce,
-                )
-            mean_reward, std_reward = evaluate_policy_add_to_buffer(model, model.get_env(), n_eval_episodes=n_eval_episodes)
-            print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+        add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
+        exp_temperature = args.pretrain_params.get("exp_temperature", 1.0)
+        try:
+            mean_reward, std_reward = evaluate_policy_add_to_buffer(
+                model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
+            )
+            print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+            for i in range(n_iterations):
+                # Pretrain with Critic Regularized Regression
+                if strategy == "normal":
+                    # Normal off-policy training
+                    model.train(gradient_steps=n_steps, batch_size=batch_size)
+                else:
+                    model.pretrain(
+                        gradient_steps=n_steps,
+                        batch_size=batch_size,
+                        n_action_samples=n_action_samples,
+                        strategy=strategy,
+                        reduce=reduce,
+                        exp_temperature=exp_temperature,
+                    )
+                    mean_reward, std_reward = evaluate_policy_add_to_buffer(
+                        model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
+                    )
+                    print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+        except KeyboardInterrupt:
+            pass
 
     try:
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
