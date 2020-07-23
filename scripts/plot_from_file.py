@@ -112,8 +112,12 @@ if not args.skip_timesteps:
 labels_df, envs_df, scores = [], [], []
 for key in keys:
     for env in envs:
+        if isinstance(results[env][key]["last_evals"], np.float32):
+            continue
         for score in results[env][key]["last_evals"]:
             labels_df.append(labels[key])
+            # convert to int if needed
+            # labels_df.append(int(labels[key]))
             envs_df.append(env)
             scores.append(score)
 
@@ -133,7 +137,12 @@ plt.xlabel("Environment", fontsize=args.fontsize)
 plt.ylabel("Score", fontsize=args.fontsize)
 
 
-seaborn.barplot(x="Environment", y="Score", hue="Method", data=data_frame)
+ax = seaborn.barplot(x="Environment", y="Score", hue="Method", data=data_frame)
+# Custom legend title
+handles, labels_legend = ax.get_legend_handles_labels()
+# ax.legend(handles=handles, labels=labels_legend, title=r"$log \sigma$", loc=args.legend_loc)
+# ax.legend(handles=handles, labels=labels_legend, title="Network Architecture", loc=args.legend_loc)
+# ax.legend(handles=handles, labels=labels_legend, title="Interval", loc=args.legend_loc)
 # Old error plot
 # for key in keys:
 #     values = [np.mean(results[env][key]["last_evals"]) for env in envs]
