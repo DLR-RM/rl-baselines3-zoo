@@ -381,6 +381,7 @@ def evaluate_policy_add_to_buffer(
     callback=None,
     reward_threshold=None,
     return_episode_rewards=False,
+    add_to_buffer=False,
 ):
     """
     Runs policy for ``n_eval_episodes`` episodes and returns average reward.
@@ -417,7 +418,7 @@ def evaluate_policy_add_to_buffer(
             if callback is not None:
                 callback(locals(), globals())
             episode_length += 1
-            if hasattr(model, "replay_buffer"):
+            if hasattr(model, "replay_buffer") and add_to_buffer:
                 # We assume actions are normalized but not observation/reward
                 buffer_action = action
                 model.replay_buffer.add(obs, new_obs, buffer_action, reward, done)
