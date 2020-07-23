@@ -2,6 +2,7 @@ import argparse
 import pickle
 
 import numpy as np
+import pandas as pd
 import pytablewriter
 import seaborn
 from matplotlib import pyplot as plt
@@ -107,36 +108,49 @@ if not args.skip_timesteps:
         plt.legend(fontsize=args.fontsize)
         plt.tight_layout()
 
+# Convert to pandas dataframe, in order to use seaborn
+labels_df, envs_df, scores = [], [], []
+for key in keys:
+    for env in envs:
+        for score in results[env][key]["last_evals"]:
+            labels_df.append(labels[key])
+            envs_df.append(env)
+            scores.append(score)
+
+data_frame = pd.DataFrame(data=dict(Method=labels_df, Environment=envs_df, Score=scores))
+
 # Plot final results with env as x axis
 plt.figure("Sensitivity plot", figsize=args.figsize)
 plt.title("Sensitivity plot", fontsize=args.fontsize)
 # plt.title('Influence of the time feature', fontsize=args.fontsize)
 # plt.title('Influence of the network architecture', fontsize=args.fontsize)
 # plt.title('Influence of the exploration variance $log \sigma$', fontsize=args.fontsize)
-# plt.title('Influence of the sampling frequency', fontsize=args.fontsize)
+plt.title("Influence of the sampling frequency", fontsize=args.fontsize)
 # plt.title('Parallel vs No Parallel Sampling', fontsize=args.fontsize)
 # plt.title('Influence of the exploration function input', fontsize=args.fontsize)
 plt.xticks(fontsize=13)
 plt.xlabel("Environment", fontsize=args.fontsize)
 plt.ylabel("Score", fontsize=args.fontsize)
 
-for key in keys:
-    values = [np.mean(results[env][key]["last_evals"]) for env in envs]
-    # Overwrite the labels
-    # labels = {key:i for i, key in enumerate(keys, start=-6)}
-    plt.errorbar(
-        envs,
-        values,
-        yerr=results[env][key]["std_error"][-1],
-        linewidth=3,
-        fmt="-o",
-        label=labels[key],
-        capsize=5,
-        capthick=2,
-        elinewidth=2,
-    )
 
-plt.legend(fontsize=13, loc=args.legend_loc)
+seaborn.barplot(x="Environment", y="Score", hue="Method", data=data_frame)
+# Old error plot
+# for key in keys:
+#     values = [np.mean(results[env][key]["last_evals"]) for env in envs]
+#     # Overwrite the labels
+#     # labels = {key:i for i, key in enumerate(keys, start=-6)}
+#     plt.errorbar(
+#         envs,
+#         values,
+#         yerr=results[env][key]["std_error"][-1],
+#         linewidth=3,
+#         fmt="-o",
+#         label=labels[key],
+#         capsize=5,
+#         capthick=2,
+#         elinewidth=2,
+#     )
+# plt.legend(fontsize=13, loc=args.legend_loc)
 plt.tight_layout()
 if args.output is not None:
     plt.savefig(args.output, format=args.format)
@@ -159,8 +173,6 @@ if args.output is not None:
 # plt.tight_layout()
 
 if args.boxplot:
-    # Change background style
-    seaborn.set(style="whitegrid")
     # Box plot
     plt.figure("Sensitivity box plot", figsize=args.figsize)
     plt.title("Sensitivity box plot", fontsize=args.fontsize)
