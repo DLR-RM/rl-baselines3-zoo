@@ -6,6 +6,26 @@ import pytablewriter
 import seaborn
 from matplotlib import pyplot as plt
 
+
+# From https://github.com/mwaskom/seaborn/blob/master/seaborn/categorical.py
+def restyle_boxplot(artist_dict, color, gray="#222222", linewidth=1, fliersize=5):
+    """Take a drawn matplotlib boxplot and make it look nice."""
+    for box in artist_dict["boxes"]:
+        box.update(dict(facecolor=color, zorder=0.9, edgecolor=gray, linewidth=linewidth))
+
+    for whisk in artist_dict["whiskers"]:
+        whisk.update(dict(color=gray, linewidth=linewidth, linestyle="-"))
+
+    for cap in artist_dict["caps"]:
+        cap.update(dict(color=gray, linewidth=linewidth))
+
+    for med in artist_dict["medians"]:
+        med.update(dict(color=gray, linewidth=linewidth))
+
+    for fly in artist_dict["fliers"]:
+        fly.update(dict(markerfacecolor=gray, marker="d", markeredgecolor=gray, markersize=fliersize))
+
+
 parser = argparse.ArgumentParser("Gather results, plot them and create table")
 parser.add_argument("-i", "--input", help="Input filename (numpy archive)", type=str)
 parser.add_argument("-skip", "--skip-envs", help="Environments to skip", nargs="+", default=[], type=str)
@@ -24,6 +44,9 @@ args = parser.parse_args()
 
 # Activate seaborn
 seaborn.set()
+# Seaborn style
+seaborn.set(style="whitegrid")
+
 # Enable LaTeX support
 if args.latex:
     plt.rc("text", usetex=True)
@@ -146,7 +169,7 @@ if args.boxplot:
     # plt.title('Influence of the exploration function input on Hopper', fontsize=args.fontsize)
     plt.xticks(fontsize=13)
     # plt.xlabel('Exploration variance $log \sigma$', fontsize=args.fontsize)
-    plt.xlabel("Sampling frequency", fontsize=args.fontsize)
+    # plt.xlabel("Sampling frequency", fontsize=args.fontsize)
     # plt.xlabel('Method', fontsize=args.fontsize)
     plt.ylabel("Score", fontsize=args.fontsize)
 
@@ -156,7 +179,13 @@ if args.boxplot:
             data.append(results[env][key]["last_evals"])
             text = f"{env}-{labels[key]}" if len(envs) > 1 else labels[key]
             labels_.append(text)
-    plt.boxplot(data)
+    artist_dict = plt.boxplot(data, patch_artist=True)
+    # Make the boxplot looks nice
+    # see https://github.com/mwaskom/seaborn/blob/master/seaborn/categorical.py
+    color_palette = seaborn.color_palette()
+    # orange
+    boxplot_color = color_palette[1]
+    restyle_boxplot(artist_dict, color=boxplot_color)
     plt.xticks(np.arange(1, len(data) + 1), labels_, rotation=0)
     plt.tight_layout()
 
