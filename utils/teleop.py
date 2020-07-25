@@ -69,7 +69,7 @@ def control(x, theta, control_throttle, control_steering):
 
 
 class HumanTeleop(BaseAlgorithm):
-    def __init__(self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None, delay=0):
+    def __init__(self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None):
         super(HumanTeleop, self).__init__(
             policy=None, env=env, policy_base=None, learning_rate=0.0, verbose=verbose, seed=seed
         )
@@ -90,22 +90,9 @@ class HumanTeleop(BaseAlgorithm):
         self.replay_buffer = ReplayBuffer(
             buffer_size, self.observation_space, self.action_space, self.device, optimize_memory_usage=False
         )
-        self.delay = delay
-        # self._reset_buffer()
-        self.episode_steps = 0
         # self.start_process()
         # self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
         self.model = None
-
-    # def _reset_buffer(self):
-    #     if self.delay > 0:
-    #         obs_space_shape = (self.delay + 1,) + self.observation_space.shape
-    #         self.obs_history = np.zeros(obs_space_shape)
-    #         self.new_obs_history = np.zeros(obs_space_shape)
-    #         self.action_history = np.zeros((self.delay + 1, 2))
-    #         self.reward_history = np.zeros((self.delay + 1, 1))
-    #         self.done_history = np.zeros((self.delay + 1, 1))
-    #         self.episode_steps = 0
 
     def excluded_save_params(self) -> List[str]:
         """
@@ -206,30 +193,6 @@ class HumanTeleop(BaseAlgorithm):
                 buffer_action, _ = self.model.predict(new_obs)
                 self.action = buffer_action[0]
 
-            self.episode_steps += 1
-
-            # if self.delay > 0:
-            #     self.action_history = np.roll(self.action_history, shift=-1, axis=0)
-            #     self.action_history[-1, :] = buffer_action
-            #     self.obs_history = np.roll(self.obs_history, shift=-1, axis=0)
-            #     self.obs_history[-1, :] = self._last_obs
-            #     self.new_obs_history = np.roll(self.new_obs_history, shift=-1, axis=0)
-            #     self.new_obs_history[-1, :] = new_obs
-            #     self.reward_history = np.roll(self.reward_history, shift=-1, axis=0)
-            #     self.reward_history[-1, :] = reward
-            #     self.done_history = np.roll(self.done_history, shift=-1, axis=0)
-            #     self.done_history[-1, :] = done
-            #
-            #     if self.episode_steps > self.delay:
-            #         obs_ = self.obs_history[0, :]
-            #         next_obs_ = self.new_obs_history[0, :]
-            #         action_ = buffer_action
-            #         reward_ = self.reward_history[0, :]
-            #         done_ = self.done_history[0, :]
-            #
-            #         self.replay_buffer.add(obs_, next_obs_, action_, reward_, done_)
-            # else:
-            #     self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
             self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
 
             self._last_obs = new_obs
@@ -242,7 +205,6 @@ class HumanTeleop(BaseAlgorithm):
 
             if done:
                 print(f"{n_steps} steps")
-                # self._reset_buffer()
 
             for event in pygame.event.get():
                 if (event.type == QUIT or event.type == KEYDOWN) and event.key in [  # pytype: disable=name-error
