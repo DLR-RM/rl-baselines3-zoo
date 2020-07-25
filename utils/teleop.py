@@ -1,14 +1,9 @@
-import curses
 import time
 from typing import List, Optional, Tuple
 
 import numpy as np
 import pygame
-
-try:
-    from pygame.locals import *  # noqa: F403
-except ImportError:
-    pygame = None
+from pygame.locals import *  # noqa: F403
 from stable_baselines3 import SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.buffers import ReplayBuffer
@@ -36,13 +31,12 @@ WHITE = (230, 230, 230)
 ORANGE = (200, 110, 0)
 
 # pytype: disable=name-error
-if pygame is not None:
-    moveBindingsGame = {K_UP: UP, K_LEFT: LEFT, K_RIGHT: RIGHT, K_DOWN: DOWN}
-    # pytype: enable=name-error
-    pygame.font.init()
-    FONT = pygame.font.SysFont("Open Sans", 25)
-    SMALL_FONT = pygame.font.SysFont("Open Sans", 20)
-    KEY_MIN_DELAY = 0.4
+moveBindingsGame = {K_UP: UP, K_LEFT: LEFT, K_RIGHT: RIGHT, K_DOWN: DOWN}
+# pytype: enable=name-error
+pygame.font.init()
+FONT = pygame.font.SysFont("Open Sans", 25)
+SMALL_FONT = pygame.font.SysFont("Open Sans", 20)
+KEY_MIN_DELAY = 0.4
 
 
 def control(x, theta, control_throttle, control_steering):
@@ -74,7 +68,7 @@ def control(x, theta, control_throttle, control_steering):
 
 
 class HumanTeleop(BaseAlgorithm):
-    def __init__(self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None, use_curses=False):
+    def __init__(self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None):
         super(HumanTeleop, self).__init__(
             policy=None, env=env, policy_base=None, learning_rate=0.0, verbose=verbose, seed=seed
         )
@@ -98,7 +92,6 @@ class HumanTeleop(BaseAlgorithm):
         # self.start_process()
         # self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
         self.model = None
-        self.use_curses = use_curses or pygame is None
 
     def excluded_save_params(self) -> List[str]:
         """
@@ -165,16 +158,9 @@ class HumanTeleop(BaseAlgorithm):
         """
         Pygame loop that listens to keyboard events.
         """
-        if self.use_curses:
-            stdscr = curses.initscr()
-            curses.noecho()
-            stdscr.keypad(True)
-            curses.cbreak()
-            stdscr.nodelay(True)
-        else:
-            pygame.init()
-            # Create a pygame window
-            self.window = pygame.display.set_mode((800, 500), RESIZABLE)  # pytype: disable=name-error
+        pygame.init()
+        # Create a pygame window
+        self.window = pygame.display.set_mode((800, 500), RESIZABLE)  # pytype: disable=name-error
 
         # Init values and fill the screen
         control_throttle, control_steering = 0, 0
@@ -188,22 +174,14 @@ class HumanTeleop(BaseAlgorithm):
         while not self.exit_thread:
             x, theta = 0, 0
             # Record pressed keys
+            keys = pygame.key.get_pressed()
+            for keycode in moveBindingsGame.keys():
+                if keys[keycode]:
+                    x_tmp, th_tmp = moveBindingsGame[keycode]
+                    x += x_tmp
+                    theta += th_tmp
 
-            if self.use_curses:
-                key_pressed = stdscr.getch()
-                if key_pressed == curses.KEY_LEFT:
-                    theta += 1
-                elif key_pressed == curses.KEY_RIGHT:
-                    theta -= 1
-            else:
-                keys = pygame.key.get_pressed()
-                for keycode in moveBindingsGame.keys():
-                    if keys[keycode]:
-                        x_tmp, th_tmp = moveBindingsGame[keycode]
-                        x += x_tmp
-                        theta += th_tmp
-
-                self.handle_keys_event(keys)
+            self.handle_keys_event(keys)
 
             # Smooth control for teleoperation
             control_throttle, control_steering = control(x, theta, control_throttle, control_steering)
@@ -229,13 +207,6 @@ class HumanTeleop(BaseAlgorithm):
             if done:
                 print(f"{n_steps} steps")
 
-        if self.use_curses and key_pressed == ord("q"):
-            self.exit_thread = True
-            curses.nocbreak()
-            stdscr.keypad(False)
-            curses.echo()
-            curses.endwin()
-        else:
             for event in pygame.event.get():
                 if (event.type == QUIT or event.type == KEYDOWN) and event.key in [  # pytype: disable=name-error
                     K_ESCAPE,  # pytype: disable=name-error
@@ -267,8 +238,6 @@ class HumanTeleop(BaseAlgorithm):
 
         :param action: ([float])
         """
-        if self.use_curses:
-            return
         self.clear()
         steering, throttle = action
         self.write_text("Throttle: {:.2f}, Steering: {:.2f}".format(throttle, steering), 20, 0, FONT, WHITE)
