@@ -20,7 +20,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv,
 from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
 from utils.teleop import HumanTeleop
 
-ALGOS = {"a2c": A2C, "dqn": DQN, "ppo": PPO, "sac": SAC, "td3": TD3, "tqc": TQC, "human": HumanTeleop}
+ALGOS = {"a2c": A2C, "ddpg": DDPG, "dqn": DQN, "ppo": PPO, "sac": SAC, "td3": TD3, "tqc": TQC, "human": HumanTeleop}
 
 
 def flatten_dict_observations(env):

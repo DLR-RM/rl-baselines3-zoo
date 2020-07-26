@@ -90,8 +90,9 @@ class HumanTeleop(BaseAlgorithm):
             buffer_size, self.observation_space, self.action_space, self.device, optimize_memory_usage=False
         )
         # self.start_process()
-        # self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
         self.model = None
+        # Pretrained model
+        self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
 
     def excluded_save_params(self) -> List[str]:
         """
@@ -153,6 +154,53 @@ class HumanTeleop(BaseAlgorithm):
         # Switch from "MANUAL" to "AUTONOMOUS" mode
         # if self.check_key(keys, self.button_switch_mode) or self.check_key(keys, self.button_pause):
         #     self.is_manual = not self.is_manual
+
+    def _sample_action(self) -> Tuple[np.ndarray, np.ndarray]:
+        # Note: when using continuous actions,
+        # we assume that the policy uses tanh to scale the action
+        # We use non-deterministic action in the case of SAC, for TD3, it does not matter
+        unscaled_action, _ = self.model.predict(self._last_obs, deterministic=False)
+
+        # Rescale the action from [low, high] to [-1, 1]
+        scaled_action = self.model.policy.scale_action(unscaled_action)
+        # We store the scaled action in the buffer
+        buffer_action = scaled_action
+        action = self.model.policy.unscale_action(scaled_action)
+        return action, buffer_action
+
+    def model_loop(self, total_timesteps):
+        total_steps = 0
+
+        if self.model.use_sde:
+            self.model.actor.reset_noise()
+
+        while total_steps < total_timesteps:
+            done = False
+
+            while not done:
+
+                if self.model.use_sde and self.model.sde_sample_freq > 0 and total_steps % self.model.sde_sample_freq == 0:
+                    # Sample a new noise matrix
+                    self.model.actor.reset_noise()
+
+                # Select action randomly or according to policy
+                action, buffer_action = self._sample_action()
+
+                # Rescale and perform action
+                new_obs, reward, done, infos = self.env.step(action)
+
+                # Store data in replay buffer
+                # Avoid changing the original ones
+                self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
+
+                self._last_obs = new_obs
+
+                if done:
+                    print(f"{total_steps} steps")
+
+                total_steps += 1
+                if 0 < total_timesteps <= total_steps:
+                    break
 
     def main_loop(self, total_timesteps=-1):
         """
@@ -268,7 +316,10 @@ class HumanTeleop(BaseAlgorithm):
         self._last_obs = self.env.reset()
         # Wait for teleop process
         # time.sleep(3)
-        self.main_loop(total_timesteps)
+        if self.model is not None:
+            self.model_loop(total_timesteps)
+        else:
+            self.main_loop(total_timesteps)
         # with threading:
         # for _ in range(total_timesteps):
         #     print(np.array([self.action]))
