@@ -190,7 +190,6 @@ class HumanTeleop(BaseAlgorithm):
                 new_obs, reward, done, infos = self.env.step(action)
 
                 # Store data in replay buffer
-                # Avoid changing the original ones
                 self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
 
                 self._last_obs = new_obs
@@ -234,13 +233,18 @@ class HumanTeleop(BaseAlgorithm):
             # Smooth control for teleoperation
             control_throttle, control_steering = control(x, theta, control_throttle, control_steering)
             self.action = np.array([-control_steering, control_throttle]).astype(np.float32)
-            buffer_action = np.array([self.action])
+            buffer_action = action = np.array([self.action])
 
             if self.model is not None:
-                buffer_action, _ = self.model.predict(self._last_obs)
-                self.action = buffer_action[0]
+                if self.model.use_sde and self.model.sde_sample_freq > 0 and n_steps % self.model.sde_sample_freq == 0:
+                    # Sample a new noise matrix
+                    self.model.actor.reset_noise()
 
-            new_obs, reward, done, _ = self.env.step(buffer_action)
+                # Select action randomly or according to policy
+                action, buffer_action = self._sample_action()
+                self.action = action.copy()[0]
+
+            new_obs, reward, done, infos = self.env.step(action)
 
             self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
 
@@ -316,10 +320,12 @@ class HumanTeleop(BaseAlgorithm):
         self._last_obs = self.env.reset()
         # Wait for teleop process
         # time.sleep(3)
-        if self.model is not None:
-            self.model_loop(total_timesteps)
-        else:
-            self.main_loop(total_timesteps)
+        self.main_loop(total_timesteps)
+
+        # if self.model is not None:
+        #     self.model_loop(total_timesteps)
+        # else:
+        #     self.main_loop(total_timesteps)
         # with threading:
         # for _ in range(total_timesteps):
         #     print(np.array([self.action]))
