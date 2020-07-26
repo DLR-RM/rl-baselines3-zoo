@@ -159,7 +159,7 @@ class HumanTeleop(BaseAlgorithm):
         # Note: when using continuous actions,
         # we assume that the policy uses tanh to scale the action
         # We use non-deterministic action in the case of SAC, for TD3, it does not matter
-        unscaled_action, _ = self.model.predict(self._last_obs, deterministic=False)
+        unscaled_action, _ = self.model.predict(self._last_obs, deterministic=True)
 
         # Rescale the action from [low, high] to [-1, 1]
         scaled_action = self.model.policy.scale_action(unscaled_action)
@@ -232,17 +232,28 @@ class HumanTeleop(BaseAlgorithm):
 
             # Smooth control for teleoperation
             control_throttle, control_steering = control(x, theta, control_throttle, control_steering)
-            self.action = np.array([-control_steering, control_throttle]).astype(np.float32)
-            buffer_action = action = np.array([self.action])
+            scaled_action = np.array([[-control_steering, control_throttle]]).astype(np.float32)
+            # We store the scaled action in the buffer
 
-            if self.model is not None:
-                if self.model.use_sde and self.model.sde_sample_freq > 0 and n_steps % self.model.sde_sample_freq == 0:
-                    # Sample a new noise matrix
-                    self.model.actor.reset_noise()
+            _, buffer_action_model = self._sample_action()
+            # scaled_action = 0.9 * scaled_action + 0.1* buffer_action_model
+            # scaled_action = np.tanh(scaled_action)
+            scaled_action = np.tanh(2 * scaled_action + 0.0 * np.random.randn())
 
-                # Select action randomly or according to policy
-                action, buffer_action = self._sample_action()
-                self.action = action.copy()[0]
+            buffer_action = scaled_action
+
+            action = self.model.policy.unscale_action(scaled_action)
+
+            self.action = action.copy()[0]
+
+            # if self.model is not None:
+            #     # if self.model.use_sde and self.model.sde_sample_freq > 0 and n_steps % self.model.sde_sample_freq == 0:
+            #     #     # Sample a new noise matrix
+            #     #     self.model.actor.reset_noise()
+
+            #     # Select action randomly or according to policy
+            #     action, buffer_action = self._sample_action()
+            #     self.action = action.copy()[0]
 
             new_obs, reward, done, infos = self.env.step(action)
 

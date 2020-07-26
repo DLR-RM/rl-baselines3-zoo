@@ -477,7 +477,7 @@ if __name__ == "__main__":  # noqa: C901
         model.load_replay_buffer(args.pretrain_buffer)
         # Artificially reduce buffer size
         # model.replay_buffer.full = False
-        # model.replay_buffer.pos = 5000
+        # model.replay_buffer.pos = 2500
 
         print(f"{model.replay_buffer.size()} transitions in the replay buffer")
         n_iterations = args.pretrain_params.get("n_iterations", 10)
