@@ -68,7 +68,9 @@ def control(x, theta, control_throttle, control_steering):
 
 
 class HumanTeleop(BaseAlgorithm):
-    def __init__(self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None):
+    def __init__(
+        self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None, device=None, _init_setup_model=False
+    ):
         super(HumanTeleop, self).__init__(
             policy=None, env=env, policy_base=None, learning_rate=0.0, verbose=verbose, seed=seed
         )

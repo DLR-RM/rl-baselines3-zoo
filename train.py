@@ -514,6 +514,9 @@ if __name__ == "__main__":  # noqa: C901
                     print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         except KeyboardInterrupt:
             pass
+        finally:
+            print("Starting training, clearing the buffer...")
+            model.replay_buffer.reset()
 
     try:
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
