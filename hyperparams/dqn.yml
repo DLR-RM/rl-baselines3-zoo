@@ -24,7 +24,7 @@ CartPole-v1:
   buffer_size: 100000
   learning_starts: 0
   gamma: 0.99
-  target_update_interval: 5000
+  target_update_interval: 1250
   train_freq: 16
   gradient_steps: 4
   exploration_fraction: 0.06
@@ -39,7 +39,7 @@ MountainCar-v0:
   buffer_size: 10000
   learning_starts: 1000
   gamma: 0.98
-  target_update_interval: 5000
+  target_update_interval: 600
   train_freq: 16
   gradient_steps: 8
   exploration_fraction: 0.2
@@ -55,7 +55,7 @@ LunarLander-v2:
   buffer_size: 50000
   learning_starts: 0
   gamma: 0.99
-  target_update_interval: 1000
+  target_update_interval: 250
   train_freq: 4
   gradient_steps: -1
   exploration_fraction: 0.12
@@ -71,7 +71,7 @@ Acrobot-v1:
   buffer_size: 50000
   learning_starts: 0
   gamma: 0.99
-  target_update_interval: 1000
+  target_update_interval: 250
   train_freq: 4
   gradient_steps: -1
   exploration_fraction: 0.12
