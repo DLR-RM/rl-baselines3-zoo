@@ -32,7 +32,7 @@ class TrialEvalCallback(EvalCallback):
             # report num_timesteps or elasped time ?
             self.trial.report(self.last_mean_reward, self.eval_idx)
             # Prune trial if need
-            if self.trial.should_prune(self.eval_idx):
+            if self.trial.should_prune():
                 self.is_pruned = True
                 return False
         return True
