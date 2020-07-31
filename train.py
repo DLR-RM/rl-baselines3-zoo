@@ -469,6 +469,9 @@ if __name__ == "__main__":  # noqa: C901
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
     except KeyboardInterrupt:
         pass
+    finally:
+        # Release resources
+        env.close()
 
     # Save trained model
 
