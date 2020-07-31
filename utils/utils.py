@@ -411,6 +411,9 @@ def evaluate_policy_add_to_buffer(
         done, state = False, None
         episode_reward = 0.0
         episode_length = 0
+        if model.use_sde:
+            mode.actor.reset_noise()
+
         while not done:
             action, state = model.predict(obs, state=state, deterministic=deterministic)
             new_obs, reward, done, _info = env.step(action)

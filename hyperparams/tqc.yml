@@ -437,16 +437,17 @@ donkey-generated-track-v0:
   learning_rate: !!float 3e-4
   buffer_size: 50000
   batch_size: 256
-  ent_coef: 'auto'
+  # ent_coef: 'auto'
+  ent_coef: 0.0
   gamma: 0.99
-  tau: 0.02
+  tau: 0.01
   # train_freq: 64
   train_freq: -1
   n_episodes_rollout: 1
   # gradient_steps: -1
   gradient_steps: 64
-  learning_starts: 10000
+  learning_starts: 5000
   use_sde_at_warmup: True
   use_sde: True
   sde_sample_freq: 64
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256])"
+  policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256])"

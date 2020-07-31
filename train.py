@@ -6,6 +6,7 @@ import time
 import uuid
 import warnings
 from collections import OrderedDict
+from copy import deepcopy
 from pprint import pprint
 
 import gym
@@ -474,6 +475,7 @@ if __name__ == "__main__":  # noqa: C901
     print(f"Log path: {save_path}")
 
     if args.pretrain_buffer is not None:
+        old_buffer = deepcopy(model.replay_buffer)
         model.load_replay_buffer(args.pretrain_buffer)
         # Artificially reduce buffer size
         # model.replay_buffer.full = False
@@ -489,6 +491,7 @@ if __name__ == "__main__":  # noqa: C901
         n_eval_episodes = args.pretrain_params.get("n_eval_episodes", 5)
         add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
         exp_temperature = args.pretrain_params.get("exp_temperature", 1.0)
+        deterministic = args.pretrain_params.get("deterministic", True)
         try:
             mean_reward, std_reward = evaluate_policy_add_to_buffer(
                 model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
@@ -508,15 +511,29 @@ if __name__ == "__main__":  # noqa: C901
                         reduce=reduce,
                         exp_temperature=exp_temperature,
                     )
+
                     mean_reward, std_reward = evaluate_policy_add_to_buffer(
-                        model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
+                        model,
+                        model.get_env(),
+                        n_eval_episodes=n_eval_episodes,
+                        add_to_buffer=add_to_buffer,
+                        deterministic=deterministic,
                     )
                     print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+                    # if mean_reward > 2500:
+                    #     break
         except KeyboardInterrupt:
             pass
         finally:
             print("Starting training, clearing the buffer...")
-            model.replay_buffer.reset()
+            # model.replay_buffer.reset()
+            # model.replay_buffer = old_buffer
+            # Small exploration
+            # value = th.ones_like(model.actor.log_std)
+            # model.actor.log_std = th.nn.Parameter(value * -4.0)
+            # Small learning rate
+            # model.lr_schedule = lambda _: 1e-5
+            # evaluate_policy_add_to_buffer(model, model.get_env(), n_eval_episodes=10, add_to_buffer=True)
 
     try:
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
