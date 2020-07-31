@@ -1,4 +1,4 @@
-## Release ... (WIP)
+## Release 0.8.0a6 (WIP)
 
 ### Breaking Changes
 
@@ -9,6 +9,7 @@
 - Added DQN support
 - Added saving of command line args (@SammyRamone)
 - Added DDPG support
+- Added version
 
 ### Bug fixes
 - Fixed optuna warning (@SammyRamone)
@@ -33,3 +34,4 @@
 - Added github ci
 - Fixes most linter warnings
 - Now using black and isort for auto-formatting
+- Updated plots
