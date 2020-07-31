@@ -30,7 +30,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         # cpu version of pytorch - faster to download
-        pip install torch==1.4.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        pip install torch==1.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        # Install gSDE branch
+        pip install git+https://github.com/DLR-RM/stable-baselines3@sde
         # faster to install because pre-built wheel
         pip install pybullet==2.8.4
         pip install -r requirements.txt
