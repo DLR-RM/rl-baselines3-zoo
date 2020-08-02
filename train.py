@@ -476,7 +476,18 @@ if __name__ == "__main__":  # noqa: C901
 
     if args.pretrain_buffer is not None:
         old_buffer = deepcopy(model.replay_buffer)
+
         model.load_replay_buffer(args.pretrain_buffer)
+        # Load expert data
+        old_buffer.extend(
+            model.replay_buffer.observations,
+            model.replay_buffer.observations,
+            model.replay_buffer.actions,
+            model.replay_buffer.rewards,
+            model.replay_buffer.dones,
+        )
+        model.replay_buffer = old_buffer
+        print(f"Buffer size = {model.replay_buffer.buffer_size}")
         # Artificially reduce buffer size
         # model.replay_buffer.full = False
         # model.replay_buffer.pos = 2500
@@ -520,8 +531,14 @@ if __name__ == "__main__":  # noqa: C901
                         deterministic=deterministic,
                     )
                     print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
-                    # if mean_reward > 2500:
-                    #     break
+                    if mean_reward > 2000:
+                        pass
+                        # break
+                        # add_to_buffer = True
+                        # deterministic = False
+                        #  n_steps = 101
+                        # exp_temperature = 1.0
+                        print("Adding to buffer")
         except KeyboardInterrupt:
             pass
         finally:

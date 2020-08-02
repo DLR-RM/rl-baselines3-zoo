@@ -142,7 +142,7 @@ def main():  # noqa: C901
     obs = env.reset()
 
     # Force deterministic for DQN, DDPG, SAC and HER (that is a wrapper around)
-    deterministic = args.deterministic or algo in ["dqn", "ddpg", "sac", "her", "td3"] and not args.stochastic
+    deterministic = args.deterministic or algo in ["cmaes", "dqn", "ddpg", "sac", "her", "td3"] and not args.stochastic
 
     state = None
     episode_reward = 0.0
