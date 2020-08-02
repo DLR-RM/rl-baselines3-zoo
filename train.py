@@ -479,14 +479,14 @@ if __name__ == "__main__":  # noqa: C901
 
         model.load_replay_buffer(args.pretrain_buffer)
         # Load expert data
-        old_buffer.extend(
-            model.replay_buffer.observations,
-            model.replay_buffer.observations,
-            model.replay_buffer.actions,
-            model.replay_buffer.rewards,
-            model.replay_buffer.dones,
-        )
-        model.replay_buffer = old_buffer
+        # old_buffer.extend(
+        #     model.replay_buffer.observations,
+        #     model.replay_buffer.observations,
+        #     model.replay_buffer.actions,
+        #     model.replay_buffer.rewards,
+        #     model.replay_buffer.dones,
+        # )
+        # model.replay_buffer = old_buffer
         print(f"Buffer size = {model.replay_buffer.buffer_size}")
         # Artificially reduce buffer size
         # model.replay_buffer.full = False
