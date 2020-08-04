@@ -1,64 +1,4 @@
 # Tuned
-MountainCarContinuous-v0:
-  n_timesteps: 300000
-  policy: 'MlpPolicy'
-  noise_type: 'ornstein-uhlenbeck'
-  noise_std: 0.5
-
-Pendulum-v0:
-  n_timesteps: 20000
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
-LunarLanderContinuous-v2:
-  n_timesteps: !!float 3e5
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
-BipedalWalker-v3:
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
-# To be tuned
-BipedalWalkerHardcore-v3:
-  n_timesteps: !!float 1e7
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
-# Tuned
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
@@ -72,6 +12,7 @@ HalfCheetahBulletEnv-v0:
   n_episodes_rollout: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
+  use_sde: False
 
 AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -86,6 +27,7 @@ AntBulletEnv-v0:
   n_episodes_rollout: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
+  use_sde: False
 
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -100,6 +42,7 @@ HopperBulletEnv-v0:
   n_episodes_rollout: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
+  use_sde: False
 
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -114,79 +57,4 @@ Walker2DBulletEnv-v0:
   n_episodes_rollout: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
-
-
-# TO BE tested
-HumanoidBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
-# Tuned
-ReacherBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 3e5
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
-# Tuned
-InvertedDoublePendulumBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
-# Tuned
-InvertedPendulumSwingupBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 3e5
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  n_episodes_rollout: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
-MinitaurBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  gamma: 0.99
-  buffer_size: 1000000
-  noise_type: 'normal'
-  noise_std: 0.1
-  learning_starts: 10000
-  batch_size: 100
-  learning_rate: !!float 1e-3
-  train_freq: 1000
-  gradient_steps: 1000
-  policy_kwargs: "dict(net_arch=[400, 300])"
+  use_sde: False
