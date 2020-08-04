@@ -1,4 +1,4 @@
-## Release 0.8.0a6 (WIP)
+## Release 0.8.0 (2020-08-04)
 
 ### Breaking Changes
 
@@ -10,6 +10,7 @@
 - Added saving of command line args (@SammyRamone)
 - Added DDPG support
 - Added version
+- Added ``RMSpropTFLike`` support
 
 ### Bug fixes
 - Fixed optuna warning (@SammyRamone)
