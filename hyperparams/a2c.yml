@@ -15,7 +15,8 @@ HalfCheetahBulletEnv-v0:
   normalize_advantage: False
   learning_rate: lin_0.002
   use_sde: False
-  policy_kwargs: "dict(log_std_init=0.0, ortho_init=True)"
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=True,
+                       optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
 
 
 AntBulletEnv-v0:
@@ -34,7 +35,8 @@ AntBulletEnv-v0:
   normalize_advantage: False
   learning_rate: lin_0.002
   use_sde: False
-  policy_kwargs: "dict(log_std_init=0.0, ortho_init=True)"
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=True,
+                       optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
 
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -52,7 +54,8 @@ HopperBulletEnv-v0:
   normalize_advantage: False
   learning_rate: lin_0.002
   use_sde: False
-  policy_kwargs: "dict(log_std_init=0.0, ortho_init=True)"
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=True,
+                       optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
 
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -70,4 +73,5 @@ Walker2DBulletEnv-v0:
   normalize_advantage: False
   learning_rate: lin_0.002
   use_sde: False
-  policy_kwargs: "dict(log_std_init=0.0, ortho_init=True)"
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=True,
+                       optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))"
