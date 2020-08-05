@@ -12,7 +12,6 @@ HalfCheetahBulletEnv-v0:
   n_episodes_rollout: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
-  use_sde: False
 
 AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -27,7 +26,6 @@ AntBulletEnv-v0:
   n_episodes_rollout: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
-  use_sde: False
 
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -42,7 +40,6 @@ HopperBulletEnv-v0:
   n_episodes_rollout: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
-  use_sde: False
 
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
@@ -57,4 +54,3 @@ Walker2DBulletEnv-v0:
   n_episodes_rollout: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
-  use_sde: False
