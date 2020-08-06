@@ -104,10 +104,10 @@ class HumanTeleop(BaseAlgorithm):
         :return: (List[str]) List of parameters that should be excluded from save
         """
         # Exclude aliases
-        return super().excluded_save_params() + ["process", "window", "model"]
+        return super().excluded_save_params() + ["process", "window", "model", "exit_thread"]
 
     def _setup_model(self):
-        pass
+        self.exit_thread = False
 
     def init_buttons(self):
         """
@@ -240,7 +240,7 @@ class HumanTeleop(BaseAlgorithm):
             _, buffer_action_model = self._sample_action()
             # scaled_action = 0.9 * scaled_action + 0.1* buffer_action_model
             # scaled_action = np.tanh(scaled_action)
-            scaled_action = np.tanh(2 * scaled_action + 0.0 * np.random.randn())
+            scaled_action = np.tanh(1.0 * scaled_action + 0.0 * np.random.randn())
 
             buffer_action = scaled_action
 
@@ -271,6 +271,8 @@ class HumanTeleop(BaseAlgorithm):
 
             if done:
                 print(f"{n_steps} steps")
+                # reset values
+                control_throttle, control_steering = 0, 0
 
             for event in pygame.event.get():
                 if (event.type == QUIT or event.type == KEYDOWN) and event.key in [  # pytype: disable=name-error

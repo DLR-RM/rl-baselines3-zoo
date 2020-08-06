@@ -98,7 +98,9 @@ donkey-generated-track-v0:
         filename: None
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
-  std_init: 0.1
+  std_init: 0.05
+  pop_size: 10
+  diagonal_cov: True
   n_steps: 700
   policy_kwargs: "dict(net_arch=[256, 256])"
   best_individual: "logs/sac/donkey-generated-track-v0_114/rl_model_400000_steps.zip"
