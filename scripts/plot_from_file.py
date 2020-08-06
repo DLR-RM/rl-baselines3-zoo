@@ -2,9 +2,30 @@ import argparse
 import pickle
 
 import numpy as np
+import pandas as pd
 import pytablewriter
 import seaborn
 from matplotlib import pyplot as plt
+
+
+# From https://github.com/mwaskom/seaborn/blob/master/seaborn/categorical.py
+def restyle_boxplot(artist_dict, color, gray="#222222", linewidth=1, fliersize=5):
+    """Take a drawn matplotlib boxplot and make it look nice."""
+    for box in artist_dict["boxes"]:
+        box.update(dict(facecolor=color, zorder=0.9, edgecolor=gray, linewidth=linewidth))
+
+    for whisk in artist_dict["whiskers"]:
+        whisk.update(dict(color=gray, linewidth=linewidth, linestyle="-"))
+
+    for cap in artist_dict["caps"]:
+        cap.update(dict(color=gray, linewidth=linewidth))
+
+    for med in artist_dict["medians"]:
+        med.update(dict(color=gray, linewidth=linewidth))
+
+    for fly in artist_dict["fliers"]:
+        fly.update(dict(markerfacecolor=gray, marker="d", markeredgecolor=gray, markersize=fliersize))
+
 
 parser = argparse.ArgumentParser("Gather results, plot them and create table")
 parser.add_argument("-i", "--input", help="Input filename (numpy archive)", type=str)
@@ -24,6 +45,9 @@ args = parser.parse_args()
 
 # Activate seaborn
 seaborn.set()
+# Seaborn style
+seaborn.set(style="whitegrid")
+
 # Enable LaTeX support
 if args.latex:
     plt.rc("text", usetex=True)
@@ -84,36 +108,58 @@ if not args.skip_timesteps:
         plt.legend(fontsize=args.fontsize)
         plt.tight_layout()
 
+# Convert to pandas dataframe, in order to use seaborn
+labels_df, envs_df, scores = [], [], []
+for key in keys:
+    for env in envs:
+        if isinstance(results[env][key]["last_evals"], np.float32):
+            continue
+        for score in results[env][key]["last_evals"]:
+            labels_df.append(labels[key])
+            # convert to int if needed
+            # labels_df.append(int(labels[key]))
+            envs_df.append(env)
+            scores.append(score)
+
+data_frame = pd.DataFrame(data=dict(Method=labels_df, Environment=envs_df, Score=scores))
+
 # Plot final results with env as x axis
 plt.figure("Sensitivity plot", figsize=args.figsize)
 plt.title("Sensitivity plot", fontsize=args.fontsize)
 # plt.title('Influence of the time feature', fontsize=args.fontsize)
 # plt.title('Influence of the network architecture', fontsize=args.fontsize)
 # plt.title('Influence of the exploration variance $log \sigma$', fontsize=args.fontsize)
-# plt.title('Influence of the sampling frequency', fontsize=args.fontsize)
+plt.title("Influence of the sampling frequency", fontsize=args.fontsize)
 # plt.title('Parallel vs No Parallel Sampling', fontsize=args.fontsize)
 # plt.title('Influence of the exploration function input', fontsize=args.fontsize)
 plt.xticks(fontsize=13)
 plt.xlabel("Environment", fontsize=args.fontsize)
 plt.ylabel("Score", fontsize=args.fontsize)
 
-for key in keys:
-    values = [np.mean(results[env][key]["last_evals"]) for env in envs]
-    # Overwrite the labels
-    # labels = {key:i for i, key in enumerate(keys, start=-6)}
-    plt.errorbar(
-        envs,
-        values,
-        yerr=results[env][key]["std_error"][-1],
-        linewidth=3,
-        fmt="-o",
-        label=labels[key],
-        capsize=5,
-        capthick=2,
-        elinewidth=2,
-    )
 
-plt.legend(fontsize=13, loc=args.legend_loc)
+ax = seaborn.barplot(x="Environment", y="Score", hue="Method", data=data_frame)
+# Custom legend title
+handles, labels_legend = ax.get_legend_handles_labels()
+# ax.legend(handles=handles, labels=labels_legend, title=r"$log \sigma$", loc=args.legend_loc)
+# ax.legend(handles=handles, labels=labels_legend, title="Network Architecture", loc=args.legend_loc)
+# ax.legend(handles=handles, labels=labels_legend, title="Interval", loc=args.legend_loc)
+# Old error plot
+# for key in keys:
+#     values = [np.mean(results[env][key]["last_evals"]) for env in envs]
+#     # Overwrite the labels
+#     # labels = {key:i for i, key in enumerate(keys, start=-6)}
+#     plt.errorbar(
+#         envs,
+#         values,
+#         yerr=results[env][key]["std_error"][-1],
+#         linewidth=3,
+#         fmt="-o",
+#         label=labels[key],
+#         capsize=5,
+#         capthick=2,
+#         elinewidth=2,
+#     )
+# plt.legend(fontsize=13, loc=args.legend_loc)
 plt.tight_layout()
 if args.output is not None:
     plt.savefig(args.output, format=args.format)
@@ -136,8 +182,6 @@ if args.output is not None:
 # plt.tight_layout()
 
 if args.boxplot:
-    # Change background style
-    seaborn.set(style="whitegrid")
     # Box plot
     plt.figure("Sensitivity box plot", figsize=args.figsize)
     plt.title("Sensitivity box plot", fontsize=args.fontsize)
@@ -146,7 +190,7 @@ if args.boxplot:
     # plt.title('Influence of the exploration function input on Hopper', fontsize=args.fontsize)
     plt.xticks(fontsize=13)
     # plt.xlabel('Exploration variance $log \sigma$', fontsize=args.fontsize)
-    plt.xlabel("Sampling frequency", fontsize=args.fontsize)
+    # plt.xlabel("Sampling frequency", fontsize=args.fontsize)
     # plt.xlabel('Method', fontsize=args.fontsize)
     plt.ylabel("Score", fontsize=args.fontsize)
 
@@ -156,7 +200,13 @@ if args.boxplot:
             data.append(results[env][key]["last_evals"])
             text = f"{env}-{labels[key]}" if len(envs) > 1 else labels[key]
             labels_.append(text)
-    plt.boxplot(data)
+    artist_dict = plt.boxplot(data, patch_artist=True)
+    # Make the boxplot looks nice
+    # see https://github.com/mwaskom/seaborn/blob/master/seaborn/categorical.py
+    color_palette = seaborn.color_palette()
+    # orange
+    boxplot_color = color_palette[1]
+    restyle_boxplot(artist_dict, color=boxplot_color)
     plt.xticks(np.arange(1, len(data) + 1), labels_, rotation=0)
     plt.tight_layout()
 

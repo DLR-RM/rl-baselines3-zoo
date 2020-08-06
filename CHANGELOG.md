@@ -1,4 +1,18 @@
-## Release ... (WIP)
+## Release 0.9.0a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+- Add support for n-step replay buffer
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
+## Release 0.8.0 (2020-08-04)
 
 ### Breaking Changes
 
@@ -9,6 +23,8 @@
 - Added DQN support
 - Added saving of command line args (@SammyRamone)
 - Added DDPG support
+- Added version
+- Added ``RMSpropTFLike`` support
 
 ### Bug fixes
 - Fixed optuna warning (@SammyRamone)
@@ -20,6 +36,8 @@
 - Fixed a bug where reward where not normalized when doing hyperparameter optimization (@caburu)
 - Removed `nminibatches` from `ppo.yml` for `MountainCar-v0` and `Acrobot-v1`. (@blurLake)
 - Fixed `--save-replay-buffer` to be compatible with latest SB3 version
+- Close environment at the end of training
+- Updated DQN hyperparameters on simpler gym env (due to an update in the implementation)
 
 ### Documentation
 
@@ -31,3 +49,4 @@
 - Added github ci
 - Fixes most linter warnings
 - Now using black and isort for auto-formatting
+- Updated plots
