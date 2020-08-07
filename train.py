@@ -17,6 +17,7 @@ import torch as th
 # Register custom envs
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
 import yaml
+from stable_baselines3.common.buffers import NstepReplayBuffer  # noqa: F401
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.preprocessing import is_image_space
@@ -474,18 +475,33 @@ if __name__ == "__main__":  # noqa: C901
     print(f"Log path: {save_path}")
 
     if args.pretrain_buffer is not None:
-        old_buffer = deepcopy(model.replay_buffer)
+        n_step_replay = args.pretrain_params.get("n_step_replay", 4)
+        # old_buffer = deepcopy(model.replay_buffer)
+        old_buffer = model.replay_buffer
 
+        n_step_buffer = NstepReplayBuffer(
+            old_buffer.buffer_size,
+            old_buffer.observation_space,
+            old_buffer.action_space,
+            old_buffer.device,
+            gamma=model.gamma,
+            n_step=n_step_replay,
+        )
+        # n_step_buffer.actor = model.actor
+        # n_step_buffer.ent_coef = 0.0
         model.load_replay_buffer(args.pretrain_buffer)
+
+        pos = model.replay_buffer.size()
         # Load expert data
-        # old_buffer.extend(
-        #     model.replay_buffer.observations,
-        #     model.replay_buffer.observations,
-        #     model.replay_buffer.actions,
-        #     model.replay_buffer.rewards,
-        #     model.replay_buffer.dones,
-        # )
-        # model.replay_buffer = old_buffer
+        # TODO: keep old data
+        n_step_buffer.extend(
+            model.replay_buffer.observations[:pos],
+            model.replay_buffer.next_observations[:pos],
+            model.replay_buffer.actions[:pos],
+            model.replay_buffer.rewards[:pos],
+            model.replay_buffer.dones[:pos],
+        )
+        model.replay_buffer = n_step_buffer
         print(f"Buffer size = {model.replay_buffer.buffer_size}")
         # Artificially reduce buffer size
         # model.replay_buffer.full = False
@@ -503,10 +519,10 @@ if __name__ == "__main__":  # noqa: C901
         exp_temperature = args.pretrain_params.get("exp_temperature", 1.0)
         deterministic = args.pretrain_params.get("deterministic", True)
         try:
-            mean_reward, std_reward = evaluate_policy_add_to_buffer(
-                model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
-            )
-            print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+            # mean_reward, std_reward = evaluate_policy_add_to_buffer(
+            #     model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
+            # )
+            # print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
             for i in range(n_iterations):
                 # Pretrain with Critic Regularized Regression
                 if strategy == "normal":
@@ -522,22 +538,22 @@ if __name__ == "__main__":  # noqa: C901
                         exp_temperature=exp_temperature,
                     )
 
-                    mean_reward, std_reward = evaluate_policy_add_to_buffer(
-                        model,
-                        model.get_env(),
-                        n_eval_episodes=n_eval_episodes,
-                        add_to_buffer=add_to_buffer,
-                        deterministic=deterministic,
-                    )
-                    print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
-                    if mean_reward > 2000:
-                        pass
-                        # break
-                        # add_to_buffer = True
-                        # deterministic = False
-                        #  n_steps = 101
-                        # exp_temperature = 1.0
-                        print("Adding to buffer")
+                mean_reward, std_reward = evaluate_policy_add_to_buffer(
+                    model,
+                    model.get_env(),
+                    n_eval_episodes=n_eval_episodes,
+                    add_to_buffer=add_to_buffer,
+                    deterministic=deterministic,
+                )
+                print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+                if mean_reward > 2000:
+                    pass
+                    # break
+                    # add_to_buffer = True
+                    # deterministic = False
+                    #  n_steps = 101
+                    # exp_temperature = 1.0
+                    # print("Adding to buffer")
         except KeyboardInterrupt:
             pass
         finally:
