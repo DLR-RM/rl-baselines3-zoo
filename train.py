@@ -489,7 +489,7 @@ if __name__ == "__main__":  # noqa: C901
             n_step=n_step_replay,
         )
         n_step_buffer.actor = model.actor
-        # n_step_buffer.ent_coef = 0.0
+        n_step_buffer.ent_coef = 0.0
         model.load_replay_buffer(args.pretrain_buffer)
 
         pos = model.replay_buffer.size()
