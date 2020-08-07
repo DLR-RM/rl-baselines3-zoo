@@ -475,7 +475,8 @@ if __name__ == "__main__":  # noqa: C901
     print(f"Log path: {save_path}")
 
     if args.pretrain_buffer is not None:
-        n_step_replay = args.pretrain_params.get("n_step_replay", 4)
+        n_step_replay = args.pretrain_params.get("n_step_replay", 1)
+        print(f"n_step_replay={n_step_replay}")
         # old_buffer = deepcopy(model.replay_buffer)
         old_buffer = model.replay_buffer
 
