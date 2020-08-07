@@ -135,7 +135,9 @@ def main():  # noqa: C901
     kwargs = dict(seed=args.seed)
     if algo in ["dqn", "ddpg", "sac", "her", "td3"]:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
-        kwargs.update(dict(buffer_size=1))
+        # Note: large enough to avoid error when using n_step replay buffer
+        buffer_size = 1000
+        kwargs.update(dict(buffer_size=buffer_size))
 
     model = ALGOS[algo].load(model_path, env=env, **kwargs)
 
