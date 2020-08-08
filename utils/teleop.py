@@ -94,7 +94,7 @@ class HumanTeleop(BaseAlgorithm):
         # self.start_process()
         self.model = None
         # Pretrained model
-        # self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
+        self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
 
     def excluded_save_params(self) -> List[str]:
         """
