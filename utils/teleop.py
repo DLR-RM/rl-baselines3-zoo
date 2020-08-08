@@ -20,8 +20,8 @@ KEY_CODE_SPACE = 32
 
 MAX_TURN = 1
 # Smoothing constants
-STEP_THROTTLE = 0.3
-STEP_TURN = 0.3
+STEP_THROTTLE = 0.8
+STEP_TURN = 0.8
 
 GREEN = (72, 205, 40)
 RED = (205, 39, 46)
@@ -94,7 +94,7 @@ class HumanTeleop(BaseAlgorithm):
         # self.start_process()
         self.model = None
         # Pretrained model
-        self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
+        # self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
 
     def excluded_save_params(self) -> List[str]:
         """
@@ -170,39 +170,6 @@ class HumanTeleop(BaseAlgorithm):
         action = self.model.policy.unscale_action(scaled_action)
         return action, buffer_action
 
-    def model_loop(self, total_timesteps):
-        total_steps = 0
-
-        if self.model.use_sde:
-            self.model.actor.reset_noise()
-
-        while total_steps < total_timesteps:
-            done = False
-
-            while not done:
-
-                if self.model.use_sde and self.model.sde_sample_freq > 0 and total_steps % self.model.sde_sample_freq == 0:
-                    # Sample a new noise matrix
-                    self.model.actor.reset_noise()
-
-                # Select action randomly or according to policy
-                action, buffer_action = self._sample_action()
-
-                # Rescale and perform action
-                new_obs, reward, done, infos = self.env.step(action)
-
-                # Store data in replay buffer
-                self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
-
-                self._last_obs = new_obs
-
-                if done:
-                    print(f"{total_steps} steps")
-
-                total_steps += 1
-                if 0 < total_timesteps <= total_steps:
-                    break
-
     def main_loop(self, total_timesteps=-1):
         """
         Pygame loop that listens to keyboard events.
@@ -235,13 +202,16 @@ class HumanTeleop(BaseAlgorithm):
             # Smooth control for teleoperation
             control_throttle, control_steering = control(x, theta, control_throttle, control_steering)
             scaled_action = np.array([[-control_steering, control_throttle]]).astype(np.float32)
-            # We store the scaled action in the buffer
 
-            _, buffer_action_model = self._sample_action()
-            # scaled_action = 0.9 * scaled_action + 0.1* buffer_action_model
+            # Use trained RL model action
+            # _, buffer_action_model = self._sample_action()
+            buffer_action_model = 0.0
+            # scaled_action = 0.9 * scaled_action + 0.1 * buffer_action_model
+            scaled_action = 0.5 * scaled_action + 0.0 * buffer_action_model
             # scaled_action = np.tanh(scaled_action)
-            scaled_action = np.tanh(1.0 * scaled_action + 0.0 * np.random.randn())
+            # scaled_action = np.tanh(1.0 * scaled_action + 0.0 * np.random.randn())
 
+            # We store the scaled action in the buffer
             buffer_action = scaled_action
 
             action = self.model.policy.unscale_action(scaled_action)
@@ -337,10 +307,6 @@ class HumanTeleop(BaseAlgorithm):
         # time.sleep(3)
         self.main_loop(total_timesteps)
 
-        # if self.model is not None:
-        #     self.model_loop(total_timesteps)
-        # else:
-        #     self.main_loop(total_timesteps)
         # with threading:
         # for _ in range(total_timesteps):
         #     print(np.array([self.action]))

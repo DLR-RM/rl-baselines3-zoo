@@ -426,9 +426,10 @@ donkey-generated-track-v0:
   env_wrapper:
     - gym.wrappers.time_limit.TimeLimit:
         max_episode_steps: 700
-    - utils.wrappers.HistoryWrapper:
-        horizon: 5
-    - utils.wrappers.TimeFeatureWrapper
+    # - utils.wrappers.HistoryWrapper:
+    #     horizon: 2
+    - utils.wrappers.TimeFeatureWrapper:
+        test_mode: True
     - stable_baselines3.common.monitor.Monitor:
         filename: None
   n_timesteps: !!float 2e6
@@ -450,4 +451,4 @@ donkey-generated-track-v0:
   use_sde_at_warmup: True
   use_sde: True
   sde_sample_freq: 64
-  policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256])"
+  policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256], n_critics=1)"
