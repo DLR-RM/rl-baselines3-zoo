@@ -8,7 +8,7 @@ import gym
 import yaml
 
 # from stable_baselines3.common import logger
-from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
+from stable_baselines3 import A2C, DDPG, DQN, HER, PPO, SAC, TD3
 from stable_baselines3.common.monitor import Monitor
 
 # from stable_baselines3.common.cmd_util import make_atari_env
@@ -18,7 +18,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecFram
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
 
-ALGOS = {"a2c": A2C, "ddpg": DDPG, "dqn": DQN, "ppo": PPO, "sac": SAC, "td3": TD3}
+ALGOS = {"a2c": A2C, "ddpg": DDPG, "dqn": DQN, "her": HER, "ppo": PPO, "sac": SAC, "td3": TD3}
 
 
 def flatten_dict_observations(env):

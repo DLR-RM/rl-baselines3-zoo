@@ -4,6 +4,7 @@ from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import RandomSampler, TPESampler
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
+from stable_baselines3 import SAC, DDPG, TD3
 from torch import nn as nn
 from utils import linear_schedule
 
@@ -463,11 +464,35 @@ def sample_dqn_params(trial):
 
     return hyperparams
 
+def sample_her_params(trial):
+    """
+   Sampler for HER hyperparams.
+
+   :param trial: (optuna.trial)
+   :return: (dict)
+    """
+
+    if trial.model_class == SAC:
+        hyperparams = sample_sac_params(trial)
+    elif trial.model_class == DDPG:
+        hyperparams = sample_ddpg_params(trial)
+    elif trial.model_class == TD3:
+        hyperparams = sample_td3_params(trial)
+
+    hyperparams["model_class"] = trial.suggest_categorical("model_class", ["SAC", "DDPG", "TD3"])
+    hyperparams["n_goals"] = trial.suggest_int("n_goals", 1, 5)
+    hyperparams["goal_strategy"] = trial.suggest_categorical("goal_strategy", ["random","final", "episode", "future"])
+    hyperparams["online_sampling"] = trial.suggest_categorical("online_sampling", [True, False])
+    hyperparams["her_ratio"] = trial.suggest_int("her_ratio", 1, 5)
+
+    return hyperparams
+
 
 HYPERPARAMS_SAMPLER = {
     "a2c": sample_a2c_params,
     "ddpg": sample_ddpg_params,
     "dqn": sample_dqn_params,
+    "her": sample_her_params,
     "sac": sample_sac_params,
     "ppo": sample_ppo_params,
     "td3": sample_td3_params,
