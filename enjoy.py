@@ -133,7 +133,7 @@ def main():  # noqa: C901
     )
 
     kwargs = dict(seed=args.seed)
-    if algo in ["dqn", "ddpg", "sac", "her", "td3"]:
+    if algo in ["dqn", "ddpg", "sac", "her", "td3", "tqc"]:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         # Note: large enough to avoid error when using n_step replay buffer
         buffer_size = 1000
@@ -144,7 +144,8 @@ def main():  # noqa: C901
     obs = env.reset()
 
     # Force deterministic for DQN, DDPG, SAC and HER (that is a wrapper around)
-    deterministic = args.deterministic or algo in ["cmaes", "dqn", "ddpg", "sac", "her", "td3"] and not args.stochastic
+    algos_ = ["cmaes", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
+    deterministic = args.deterministic or algo in algos_ and not args.stochastic
 
     state = None
     episode_reward = 0.0

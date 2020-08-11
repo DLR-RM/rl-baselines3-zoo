@@ -94,7 +94,7 @@ class HumanTeleop(BaseAlgorithm):
         # self.start_process()
         self.model = None
         # Pretrained model
-        self.model = SAC.load("logs/sac/donkey-generated-track-v0_113/donkey-generated-track-v0.zip")
+        self.model = SAC.load("logs/tqc/donkey-generated-track-v0_9/donkey-generated-track-v0.zip")
 
     def excluded_save_params(self) -> List[str]:
         """
@@ -204,10 +204,11 @@ class HumanTeleop(BaseAlgorithm):
             scaled_action = np.array([[-control_steering, control_throttle]]).astype(np.float32)
 
             # Use trained RL model action
-            # _, buffer_action_model = self._sample_action()
-            buffer_action_model = 0.0
+            _, buffer_action_model = self._sample_action()
+            # buffer_action_model = 0.0
             # scaled_action = 0.9 * scaled_action + 0.1 * buffer_action_model
-            scaled_action = 0.5 * scaled_action + 0.0 * buffer_action_model
+            scaled_action = 0.5 * scaled_action + 1.0 * buffer_action_model
+            # scaled_action = np.clip(scaled_action, -1.0, 1.0)
             # scaled_action = np.tanh(scaled_action)
             # scaled_action = np.tanh(1.0 * scaled_action + 0.0 * np.random.randn())
 

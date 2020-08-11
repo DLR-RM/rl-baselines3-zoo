@@ -547,14 +547,12 @@ if __name__ == "__main__":  # noqa: C901
                     deterministic=deterministic,
                 )
                 print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
-                if mean_reward > 2000:
-                    pass
+                if mean_reward > 2000 and i > 10:
                     # break
-                    # add_to_buffer = True
+                    add_to_buffer = True
                     # deterministic = False
-                    #  n_steps = 101
                     # exp_temperature = 1.0
-                    # print("Adding to buffer")
+                    print("Adding to buffer")
         except KeyboardInterrupt:
             pass
         finally:
