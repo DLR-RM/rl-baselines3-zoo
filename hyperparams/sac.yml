@@ -431,9 +431,9 @@ donkey-generated-track-v0:
   env_wrapper:
     - gym.wrappers.time_limit.TimeLimit:
         max_episode_steps: 700
-    - utils.wrappers.HistoryWrapper:
-        horizon: 5
-    - utils.wrappers.TimeFeatureWrapper
+    # - utils.wrappers.HistoryWrapper:
+    #     horizon: 5
+    # - utils.wrappers.TimeFeatureWrapper
     - stable_baselines3.common.monitor.Monitor:
         filename: None
   n_timesteps: !!float 2e6
@@ -448,9 +448,9 @@ donkey-generated-track-v0:
   # train_freq: 64
   train_freq: -1
   n_episodes_rollout: 1
-  # gradient_steps: -1
-  gradient_steps: 64
-  learning_starts: 10000
+  gradient_steps: -1
+  # gradient_steps: 64
+  learning_starts: 5000
   use_sde_at_warmup: True
   use_sde: True
   sde_sample_freq: 64

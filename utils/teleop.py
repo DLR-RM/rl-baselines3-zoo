@@ -9,7 +9,7 @@ from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.buffers import ReplayBuffer
 from stable_baselines3.common.save_util import load_from_pkl, save_to_pkl
 
-TELEOP_RATE = 1 / 60
+# TELEOP_RATE = 1 / 60
 
 UP = (1, 0)
 LEFT = (0, 1)
@@ -69,7 +69,19 @@ def control(x, theta, control_throttle, control_steering):
 
 class HumanTeleop(BaseAlgorithm):
     def __init__(
-        self, policy, env, buffer_size=50000, tensorboard_log=None, verbose=0, seed=None, device=None, _init_setup_model=False
+        self,
+        policy,
+        env,
+        buffer_size=50000,
+        tensorboard_log=None,
+        verbose=0,
+        seed=None,
+        device=None,
+        _init_setup_model=False,
+        scale_human=1.0,
+        scale_model=0.0,
+        model_path=None,
+        deterministic=True,
     ):
         super(HumanTeleop, self).__init__(
             policy=None, env=env, policy_base=None, learning_rate=0.0, verbose=verbose, seed=seed
@@ -91,10 +103,15 @@ class HumanTeleop(BaseAlgorithm):
         self.replay_buffer = ReplayBuffer(
             buffer_size, self.observation_space, self.action_space, self.device, optimize_memory_usage=False
         )
+        self.scale_human = scale_human
+        self.scale_model = scale_model
         # self.start_process()
         self.model = None
+        self.deterministic = deterministic
         # Pretrained model
-        self.model = SAC.load("logs/tqc/donkey-generated-track-v0_9/donkey-generated-track-v0.zip")
+        if model_path is not None:
+            # "logs/tqc/donkey-generated-track-v0_9/donkey-generated-track-v0.zip"
+            self.model = SAC.load(model_path)
 
     def excluded_save_params(self) -> List[str]:
         """
@@ -158,10 +175,7 @@ class HumanTeleop(BaseAlgorithm):
         #     self.is_manual = not self.is_manual
 
     def _sample_action(self) -> Tuple[np.ndarray, np.ndarray]:
-        # Note: when using continuous actions,
-        # we assume that the policy uses tanh to scale the action
-        # We use non-deterministic action in the case of SAC, for TD3, it does not matter
-        unscaled_action, _ = self.model.predict(self._last_obs, deterministic=True)
+        unscaled_action, _ = self.model.predict(self._last_obs, deterministic=self.deterministic)
 
         # Rescale the action from [low, high] to [-1, 1]
         scaled_action = self.model.policy.scale_action(unscaled_action)
@@ -204,29 +218,33 @@ class HumanTeleop(BaseAlgorithm):
             scaled_action = np.array([[-control_steering, control_throttle]]).astype(np.float32)
 
             # Use trained RL model action
-            _, buffer_action_model = self._sample_action()
-            # buffer_action_model = 0.0
-            # scaled_action = 0.9 * scaled_action + 0.1 * buffer_action_model
-            scaled_action = 0.5 * scaled_action + 1.0 * buffer_action_model
-            # scaled_action = np.clip(scaled_action, -1.0, 1.0)
-            # scaled_action = np.tanh(scaled_action)
-            # scaled_action = np.tanh(1.0 * scaled_action + 0.0 * np.random.randn())
+            if self.model is not None:
+                _, buffer_action_model = self._sample_action()
+            else:
+                buffer_action_model = 0.0
+            scaled_action = self.scale_human * scaled_action + self.scale_model * buffer_action_model
+            scaled_action = np.clip(scaled_action, -1.0, 1.0)
 
             # We store the scaled action in the buffer
             buffer_action = scaled_action
 
-            action = self.model.policy.unscale_action(scaled_action)
+            # No need to unnormalized normally as the bounds are [-1, 1]
+            if self.model is not None:
+                action = self.model.policy.unscale_action(scaled_action)
+            else:
+                action = scaled_action.copy()
 
             self.action = action.copy()[0]
 
-            # if self.model is not None:
-            #     # if self.model.use_sde and self.model.sde_sample_freq > 0 and n_steps % self.model.sde_sample_freq == 0:
-            #     #     # Sample a new noise matrix
-            #     #     self.model.actor.reset_noise()
-
-            #     # Select action randomly or according to policy
-            #     action, buffer_action = self._sample_action()
-            #     self.action = action.copy()[0]
+            if self.model is not None:
+                if (
+                    self.model.use_sde
+                    and self.model.sde_sample_freq > 0
+                    and n_steps % self.model.sde_sample_freq == 0
+                    and not self.deterministic
+                ):
+                    # Sample a new noise matrix
+                    self.model.actor.reset_noise()
 
             new_obs, reward, done, infos = self.env.step(action)
 
@@ -253,7 +271,7 @@ class HumanTeleop(BaseAlgorithm):
                     self.exit_thread = True
             pygame.display.flip()
             # Limit FPS
-            pygame.time.Clock().tick(1 / TELEOP_RATE)
+            # pygame.time.Clock().tick(1 / TELEOP_RATE)
 
     def write_text(self, text, x, y, font, color=GREY):
         """

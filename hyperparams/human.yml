@@ -8,4 +8,4 @@ donkey-generated-track-v0:
         test_mode: True
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  buffer_size: 50000
+  buffer_size: 100000
