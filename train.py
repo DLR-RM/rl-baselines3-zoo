@@ -218,10 +218,11 @@ if __name__ == "__main__":  # noqa: C901
             normalize = True
         del hyperparams["normalize"]
 
-    if "policy_kwargs" in hyperparams.keys():
-        # Convert to python object if needed
-        if isinstance(hyperparams["policy_kwargs"], str):
-            hyperparams["policy_kwargs"] = eval(hyperparams["policy_kwargs"])
+    for key in ["replay_buffer_kwargs", "policy_kwargs", "replay_buffer_class"]:
+        if key in hyperparams.keys():
+            # Convert to python object if needed
+            if isinstance(hyperparams[key], str):
+                hyperparams[key] = eval(hyperparams[key])
 
     # Delete keys so the dict can be pass to the model constructor
     if "n_envs" in hyperparams.keys():
@@ -509,6 +510,7 @@ if __name__ == "__main__":  # noqa: C901
         # model.replay_buffer.pos = 5000
 
         print(f"{model.replay_buffer.size()} transitions in the replay buffer")
+
         n_iterations = args.pretrain_params.get("n_iterations", 10)
         n_steps = args.pretrain_params.get("n_steps", 1000)
         batch_size = args.pretrain_params.get("batch_size", 512)
@@ -549,14 +551,15 @@ if __name__ == "__main__":  # noqa: C901
                 print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
                 if mean_reward > 2000 and i > 10:
                     # break
-                    add_to_buffer = True
+                    # add_to_buffer = True
                     # deterministic = False
                     # exp_temperature = 1.0
-                    print("Adding to buffer")
+                    # print("Adding to buffer")
+                    pass
         except KeyboardInterrupt:
             pass
         finally:
-            print("Starting training, clearing the buffer...")
+            print("Starting training")
             # model.replay_buffer.reset()
             # model.replay_buffer = old_buffer
             # Small exploration

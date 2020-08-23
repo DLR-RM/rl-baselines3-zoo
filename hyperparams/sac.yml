@@ -448,8 +448,8 @@ donkey-generated-track-v0:
   # train_freq: 64
   train_freq: -1
   n_episodes_rollout: 1
-  gradient_steps: -1
-  # gradient_steps: 64
+  # gradient_steps: -1
+  gradient_steps: 64
   learning_starts: 5000
   use_sde_at_warmup: True
   use_sde: True

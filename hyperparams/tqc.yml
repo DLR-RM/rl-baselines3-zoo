@@ -427,21 +427,22 @@ donkey-generated-track-v0:
     - gym.wrappers.time_limit.TimeLimit:
         max_episode_steps: 700
     # - utils.wrappers.HistoryWrapper:
-    #     horizon: 1
-    - utils.wrappers.TimeFeatureWrapper:
-        test_mode: True
+    #     horizon: 2
+    # - utils.wrappers.TimeFeatureWrapper:
+    #     test_mode: True
     - stable_baselines3.common.monitor.Monitor:
         filename: None
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   # learning_rate: !!float 7.3e-4
   learning_rate: !!float 3e-4
-  buffer_size: 50000
+  buffer_size: 100000
+  replay_buffer_class: NstepReplayBuffer
+  replay_buffer_kwargs: "dict(n_step=5)"
   batch_size: 256
   ent_coef: 'auto'
   gamma: 0.99
   tau: 0.01
-  # train_freq: 64
   train_freq: -1
   n_episodes_rollout: 1
   # gradient_steps: -1
