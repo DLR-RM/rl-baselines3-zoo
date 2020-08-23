@@ -476,34 +476,34 @@ if __name__ == "__main__":  # noqa: C901
     print(f"Log path: {save_path}")
 
     if args.pretrain_buffer is not None:
-        n_step_replay = args.pretrain_params.get("n_step_replay", 1)
-        print(f"n_step_replay={n_step_replay}")
+        # n_step_replay = args.pretrain_params.get("n_step_replay", 1)
+        # print(f"n_step_replay={n_step_replay}")
         # old_buffer = deepcopy(model.replay_buffer)
-        old_buffer = model.replay_buffer
+        # old_buffer = model.replay_buffer
 
-        n_step_buffer = NstepReplayBuffer(
-            old_buffer.buffer_size,
-            old_buffer.observation_space,
-            old_buffer.action_space,
-            old_buffer.device,
-            gamma=model.gamma,
-            n_step=n_step_replay,
-        )
-        n_step_buffer.actor = model.actor
-        n_step_buffer.ent_coef = 0.0
+        # n_step_buffer = NstepReplayBuffer(
+        #     old_buffer.buffer_size,
+        #     old_buffer.observation_space,
+        #     old_buffer.action_space,
+        #     old_buffer.device,
+        #     gamma=model.gamma,
+        #     n_step=n_step_replay,
+        # )
+        # n_step_buffer.actor = model.actor
+        # n_step_buffer.ent_coef = 0.0
         model.load_replay_buffer(args.pretrain_buffer)
 
-        pos = model.replay_buffer.size()
+        # pos = model.replay_buffer.size()
         # Load expert data
         # TODO: keep old data
-        n_step_buffer.extend(
-            model.replay_buffer.observations[:pos],
-            model.replay_buffer.next_observations[:pos],
-            model.replay_buffer.actions[:pos],
-            model.replay_buffer.rewards[:pos],
-            model.replay_buffer.dones[:pos],
-        )
-        model.replay_buffer = n_step_buffer
+        # n_step_buffer.extend(
+        #     model.replay_buffer.observations[:pos],
+        #     model.replay_buffer.next_observations[:pos],
+        #     model.replay_buffer.actions[:pos],
+        #     model.replay_buffer.rewards[:pos],
+        #     model.replay_buffer.dones[:pos],
+        # )
+        # model.replay_buffer = n_step_buffer
         print(f"Buffer size = {model.replay_buffer.buffer_size}")
         # Artificially reduce buffer size
         # model.replay_buffer.full = False
