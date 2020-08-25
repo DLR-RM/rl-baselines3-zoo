@@ -14,6 +14,8 @@ import seaborn
 import torch as th
 
 # Register custom envs
+from stable_baselines3.common.vec_env.obs_dict_wrapper import ObsDictWrapper
+
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
 import yaml
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
@@ -268,6 +270,9 @@ if __name__ == "__main__":  # noqa: C901
                     for i in range(n_envs)
                 ]
             )
+        # check if wrapper for dict support is needed
+        if isinstance(env.observation_space, gym.spaces.dict.Dict):
+            env = ObsDictWrapper(env)
 
         if normalize:
             # Copy to avoid changing default values by reference

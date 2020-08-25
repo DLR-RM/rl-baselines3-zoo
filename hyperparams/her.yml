@@ -1,8 +1,25 @@
 # DDPG hyperparams
+#parking-v0:
+#  n_timesteps: !!float 2e5
+#  policy: 'MlpPolicy'
+#  model_class: 'ddpg'
+#  n_sampled_goal: 4
+#  goal_selection_strategy: 'future'
+#  buffer_size: 1000000
+#  batch_size: 256
+#  gamma: 0.95
+#  learning_rate: !!float 1e-3
+#  noise_type: 'normal'
+#  noise_std: 0.2
+#  policy_kwargs: "dict(net_arch=[256, 256, 256])"
+#  online_sampling: True
+#  max_episode_length: 100
+
+# SAC hyperparams, her paper
 parking-v0:
-  n_timesteps: !!float 1e5
+  n_timesteps: !!float 2e5
   policy: 'MlpPolicy'
-  model_class: 'ddpg'
+  model_class: 'sac'
   n_sampled_goal: 4
   goal_selection_strategy: 'future'
   buffer_size: 1000000
@@ -13,24 +30,7 @@ parking-v0:
   noise_std: 0.2
   policy_kwargs: "dict(net_arch=[256, 256, 256])"
   online_sampling: True
-  #max_episode_length: 100
-
-# SAC hyperparams, her paper
-#parking-v0:
-#  n_timesteps: !!float 2e5
-#  policy: 'MlpPolicy'
-#  model_class: 'sac'
-#  n_sampled_goal: 4
-#  goal_selection_strategy: 'future'
-#  buffer_size: 1000000
-#  batch_size: 256
-#  gamma: 0.95
-#  learning_rate: !!float 1e-3
-#  noise_type: 'normal'
-#  noise_std: 0.2
-#  policy_kwargs: "dict(net_arch=[256, 256, 256])"
-#  online_sampling: False
-#  max_episode_length: -1
+  max_episode_length: 100
 
 # TD3 hyperparams, her paper
 #parking-v0:
@@ -46,5 +46,5 @@ parking-v0:
 #  noise_type: 'normal'
 #  noise_std: 0.2
 #  policy_kwargs: "dict(net_arch=[256, 256, 256])"
-#  online_sampling: False
-#  max_episode_length: -1
+#  online_sampling: True
+#  max_episode_length: 100
