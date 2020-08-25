@@ -14,8 +14,6 @@ import seaborn
 import torch as th
 
 # Register custom envs
-from stable_baselines3.her.obs_wrapper import ObsWrapper
-
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
 import yaml
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
@@ -261,7 +259,6 @@ if __name__ == "__main__":  # noqa: C901
             env = DummyVecEnv(
                 [make_env(env_id, 0, args.seed, wrapper_class=env_wrapper, log_dir=log_dir, env_kwargs=env_kwargs)]
             )
-            env = ObsWrapper(env)
         else:
             # env = SubprocVecEnv([make_env(env_id, i, args.seed) for i in range(n_envs)])
             # On most env, SubprocVecEnv does not help and is quite memory hungry
@@ -271,6 +268,7 @@ if __name__ == "__main__":  # noqa: C901
                     for i in range(n_envs)
                 ]
             )
+
         if normalize:
             # Copy to avoid changing default values by reference
             local_normalize_kwargs = normalize_kwargs.copy()
