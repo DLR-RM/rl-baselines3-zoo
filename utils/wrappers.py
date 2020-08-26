@@ -47,10 +47,11 @@ class TimeFeatureWrapper(gym.Wrapper):
 
         super(TimeFeatureWrapper, self).__init__(env)
 
-        if isinstance(env, TimeLimit):
-            self._max_steps = env._max_episode_steps
-        else:
+        try:
+            self._max_steps = env.spec.max_episode_steps
+        except AttributeError:
             self._max_steps = max_steps
+
         self._current_step = 0
         self._test_mode = test_mode
 

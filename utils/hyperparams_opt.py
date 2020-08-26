@@ -3,9 +3,10 @@ import optuna
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import RandomSampler, TPESampler
+from stable_baselines3 import DDPG, SAC, TD3
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-from stable_baselines3 import SAC, DDPG, TD3
 from torch import nn as nn
+
 from utils import linear_schedule
 
 from .callbacks import TrialEvalCallback
@@ -464,6 +465,7 @@ def sample_dqn_params(trial):
 
     return hyperparams
 
+
 def sample_her_params(trial):
     """
    Sampler for HER hyperparams.
@@ -481,7 +483,7 @@ def sample_her_params(trial):
 
     hyperparams["model_class"] = trial.suggest_categorical("model_class", ["SAC", "DDPG", "TD3"])
     hyperparams["n_goals"] = trial.suggest_int("n_goals", 1, 5)
-    hyperparams["goal_strategy"] = trial.suggest_categorical("goal_strategy", ["random","final", "episode", "future"])
+    hyperparams["goal_strategy"] = trial.suggest_categorical("goal_strategy", ["random", "final", "episode", "future"])
     hyperparams["online_sampling"] = trial.suggest_categorical("online_sampling", [True, False])
     hyperparams["her_ratio"] = trial.suggest_int("her_ratio", 1, 5)
 

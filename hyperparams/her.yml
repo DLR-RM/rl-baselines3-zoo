@@ -13,7 +13,6 @@
 #  noise_std: 0.2
 #  policy_kwargs: "dict(net_arch=[256, 256, 256])"
 #  online_sampling: True
-#  max_episode_length: 100
 
 # SAC hyperparams, her paper
 parking-v0:
@@ -30,7 +29,6 @@ parking-v0:
   noise_std: 0.2
   policy_kwargs: "dict(net_arch=[256, 256, 256])"
   online_sampling: True
-  max_episode_length: 100
 
 # TD3 hyperparams, her paper
 #parking-v0:
@@ -47,4 +45,3 @@ parking-v0:
 #  noise_std: 0.2
 #  policy_kwargs: "dict(net_arch=[256, 256, 256])"
 #  online_sampling: True
-#  max_episode_length: 100

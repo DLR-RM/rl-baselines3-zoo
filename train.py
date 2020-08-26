@@ -12,23 +12,20 @@ import gym
 import numpy as np
 import seaborn
 import torch as th
-
-# Register custom envs
-from stable_baselines3.common.vec_env.obs_dict_wrapper import ObsDictWrapper
-
-import utils.import_envs  # noqa: F401 pytype: disable=import-error
 import yaml
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import constant_fn, set_random_seed
-
-# from stable_baselines3.common.cmd_util import make_atari_env
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecNormalize, VecTransposeImage
+from stable_baselines3.common.vec_env.obs_dict_wrapper import ObsDictWrapper
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pytype: disable=unused-import
+
+# Register custom envs
+import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils import ALGOS, get_latest_run_id, get_wrapper_class, linear_schedule, make_env
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.hyperparams_opt import hyperparam_optimization
@@ -167,7 +164,7 @@ if __name__ == "__main__":  # noqa: C901
     # HER is only a wrapper around an algo
     if args.algo == "her":
         algo_ = saved_hyperparams["model_class"]
-        assert algo_ in {"sac", "ddpg", "dqn", "td3"}, "{} is not compatible with HER".format(algo_)
+        assert algo_ in {"sac", "ddpg", "dqn", "td3"}, f"{algo_} is not compatible with HER"
         # Retrieve the model class
         hyperparams["model_class"] = ALGOS[saved_hyperparams["model_class"]]
 
@@ -270,9 +267,6 @@ if __name__ == "__main__":  # noqa: C901
                     for i in range(n_envs)
                 ]
             )
-        # check if wrapper for dict support is needed
-        if isinstance(env.observation_space, gym.spaces.dict.Dict):
-            env = ObsDictWrapper(env)
 
         if normalize:
             # Copy to avoid changing default values by reference
@@ -301,6 +295,13 @@ if __name__ == "__main__":  # noqa: C901
             if args.verbose > 0:
                 print("Wrapping into a VecTransposeImage")
             env = VecTransposeImage(env)
+
+        # check if wrapper for dict support is needed
+        if args.algo == "her":
+            if args.verbose > 0:
+                print("Wrapping into a ObsDictWrapper")
+            env = ObsDictWrapper(env)
+
         return env
 
     env = create_env(n_envs)
