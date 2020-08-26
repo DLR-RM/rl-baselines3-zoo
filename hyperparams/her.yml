@@ -45,3 +45,103 @@ parking-v0:
 #  noise_std: 0.2
 #  policy_kwargs: "dict(net_arch=[256, 256, 256])"
 #  online_sampling: True
+
+
+# Mujoco Robotic Env
+# DDPG hyperparams
+# FetchReach-v1:
+#   n_timesteps: !!float 20000
+#   policy: 'MlpPolicy'
+#   model_class: 'ddpg'
+#   n_sampled_goal: 4
+#   goal_selection_strategy: 'future'
+#   buffer_size: 1000000
+#   batch_size: 256
+#   gamma: 0.95
+#   random_exploration: 0.3
+#   actor_lr: !!float 1e-3
+#   critic_lr: !!float 1e-3
+#   noise_type: 'normal'
+#   noise_std: 0.2
+#   normalize_observations: true
+#   normalize_returns: false
+#   policy_kwargs: "dict(layers=[256, 256, 256])"
+#   online_sampling: True
+
+# NOTE: shoube be run with 8 workers: mpirun -n 8
+# FetchPush-v1:
+#   n_timesteps: !!float 2e6
+#   policy: 'MlpPolicy'
+#   model_class: 'ddpg'
+#   n_sampled_goal: 4
+#   goal_selection_strategy: 'future'
+#   buffer_size: 200000
+#   batch_size: 256
+#   gamma: 0.95
+#   random_exploration: 0.3
+#   actor_lr: !!float 1e-3
+#   critic_lr: !!float 1e-3
+#   noise_type: 'normal'
+#   noise_std: 0.2
+#   normalize_observations: true
+#   normalize_returns: false
+#   policy_kwargs: "dict(layers=[16, 16, 16])"
+
+FetchPush-v1:
+  n_timesteps: !!float 3e6
+  policy: 'MlpPolicy'
+  model_class: 'sac'
+  n_sampled_goal: 4
+  goal_selection_strategy: 'future'
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  gamma: 0.95
+  learning_rate: !!float 1e-3
+  noise_type: 'normal'
+  noise_std: 0.2
+  learning_starts: 1000
+  train_freq: 1
+  online_sampling: True
+
+FetchPickAndPlace-v1:
+  n_timesteps: !!float 4e6
+  policy: 'MlpPolicy'
+  model_class: 'sac'
+  n_sampled_goal: 4
+  goal_selection_strategy: 'future'
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  # batch_size: 256
+  gamma: 0.95
+  # learning_rate: !!float 1e-3
+  learning_starts: 1000
+  train_freq: 1
+  online_sampling: True
+
+# SAC hyperparams
+FetchReach-v1:
+  n_timesteps: !!float 20000
+  policy: 'MlpPolicy'
+  model_class: 'sac'
+  n_sampled_goal: 4
+  goal_selection_strategy: 'future'
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  batch_size: 256
+  gamma: 0.95
+  learning_rate: 0.001
+  learning_starts: 1000
+  online_sampling: True
+
+# TD3 hyperparams
+# FetchReach-v1:
+#   n_timesteps: !!float 25000
+#   policy: 'MlpPolicy'
+#   model_class: 'td3'
+#   n_sampled_goal: 4
+#   goal_selection_strategy: 'future'
+#   buffer_size: 1000000
+#   batch_size: 256
+#   gamma: 0.95
+#   learning_rate: 0.001
+#   learning_starts: 1000
