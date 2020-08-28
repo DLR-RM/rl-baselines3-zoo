@@ -181,7 +181,7 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None, env_kwarg
         # Wrap first with a monitor (e.g. for Atari env where reward clipping is used)
         log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
         # Monitor success rate too for the real robot
-        info_keywords = ("is_success",) if "NeckEnv" in env_id else ()
+        info_keywords = ("is_success",) if "Neck" in env_id else ()
         env = Monitor(env, log_file, info_keywords=info_keywords)
 
         # Dict observation space is currently not supported.

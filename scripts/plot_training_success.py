@@ -7,7 +7,7 @@ import os
 import numpy as np
 import seaborn
 from matplotlib import pyplot as plt
-from stable_baselines3.common.monitor import load_results
+from stable_baselines3.common.monitor import get_monitor_files, load_results
 from stable_baselines3.common.results_plotter import X_EPISODES, X_TIMESTEPS, X_WALLTIME, ts2xy, window_func
 
 # For tensorflow imported with tensorboard
@@ -39,11 +39,14 @@ x_axis = {"steps": X_TIMESTEPS, "episodes": X_EPISODES, "time": X_WALLTIME}[args
 
 x_label = {"steps": "Timesteps", "episodes": "Episodes", "time": "Walltime (in hours)"}[args.x_axis]
 
-dirs = [
-    os.path.join(log_path, folder)
-    for folder in os.listdir(log_path)
-    if (env in folder and os.path.isdir(os.path.join(log_path, folder)))
-]
+dirs = []
+
+for folder in os.listdir(log_path):
+    path = os.path.join(log_path, folder)
+    if env in folder and os.path.isdir(path):
+        monitor_files = get_monitor_files(path)
+        if len(monitor_files) > 0:
+            dirs.append(path)
 
 plt.figure("Training Success Rate", figsize=args.figsize)
 plt.title("Training Success Rate", fontsize=args.fontsize)
