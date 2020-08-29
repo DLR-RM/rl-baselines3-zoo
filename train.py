@@ -13,9 +13,6 @@ import gym
 import numpy as np
 import seaborn
 import torch as th
-
-# Register custom envs
-import utils.import_envs  # noqa: F401 pytype: disable=import-error
 import yaml
 from stable_baselines3.common.buffers import NstepReplayBuffer  # noqa: F401
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
@@ -27,6 +24,9 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecNorm
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pytype: disable=unused-import
+
+# Register custom envs
+import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils import ALGOS, get_latest_run_id, get_wrapper_class, linear_schedule, make_env
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.hyperparams_opt import hyperparam_optimization
@@ -540,7 +540,7 @@ if __name__ == "__main__":  # noqa: C901
                         strategy=strategy,
                         reduce=reduce,
                         exp_temperature=exp_temperature,
-                        off_policy_update_freq=off_policy_update_freq
+                        off_policy_update_freq=off_policy_update_freq,
                     )
 
                 mean_reward, std_reward = evaluate_policy_add_to_buffer(

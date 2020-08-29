@@ -5,6 +5,7 @@ from optuna.pruners import MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import RandomSampler, TPESampler
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torch import nn as nn
+
 from utils import linear_schedule
 
 from .callbacks import TrialEvalCallback
@@ -188,7 +189,10 @@ def sample_ppo_params(trial):
     if lr_schedule == "linear":
         learning_rate = linear_schedule(learning_rate)
 
-    net_arch = {"small": [dict(pi=[64, 64], vf=[64, 64])], "medium": [dict(pi=[256, 256], vf=[256, 256])],}[net_arch]
+    net_arch = {
+        "small": [dict(pi=[64, 64], vf=[64, 64])],
+        "medium": [dict(pi=[256, 256], vf=[256, 256])],
+    }[net_arch]
 
     activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
 
@@ -238,9 +242,16 @@ def sample_a2c_params(trial):
     if lr_schedule == "linear":
         learning_rate = linear_schedule(learning_rate)
 
-    net_arch = {"small": [dict(pi=[64, 64], vf=[64, 64])], "medium": [dict(pi=[256, 256], vf=[256, 256])],}[net_arch]
+    net_arch = {
+        "small": [dict(pi=[64, 64], vf=[64, 64])],
+        "medium": [dict(pi=[256, 256], vf=[256, 256])],
+    }[net_arch]
 
-    sde_net_arch = {None: None, "tiny": [64], "small": [64, 64],}[sde_net_arch]
+    sde_net_arch = {
+        None: None,
+        "tiny": [64],
+        "small": [64, 64],
+    }[sde_net_arch]
 
     activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
 
@@ -290,7 +301,11 @@ def sample_sac_params(trial):
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
-    net_arch = {"small": [64, 64], "medium": [256, 256], "big": [400, 300],}[net_arch]
+    net_arch = {
+        "small": [64, 64],
+        "medium": [256, 256],
+        "big": [400, 300],
+    }[net_arch]
 
     target_entropy = "auto"
     # if ent_coef == 'auto':
@@ -340,7 +355,11 @@ def sample_td3_params(trial):
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
-    net_arch = {"small": [64, 64], "medium": [256, 256], "big": [400, 300],}[net_arch]
+    net_arch = {
+        "small": [64, 64],
+        "medium": [256, 256],
+        "big": [400, 300],
+    }[net_arch]
 
     hyperparams = {
         "gamma": gamma,
@@ -395,7 +414,11 @@ def sample_ddpg_params(trial):
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
-    net_arch = {"small": [64, 64], "medium": [256, 256], "big": [400, 300],}[net_arch]
+    net_arch = {
+        "small": [64, 64],
+        "medium": [256, 256],
+        "big": [400, 300],
+    }[net_arch]
 
     hyperparams = {
         "gamma": gamma,
