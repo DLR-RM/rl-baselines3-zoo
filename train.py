@@ -522,6 +522,8 @@ if __name__ == "__main__":  # noqa: C901
         exp_temperature = args.pretrain_params.get("exp_temperature", 1.0)
         deterministic = args.pretrain_params.get("deterministic", True)
         off_policy_update_freq = args.pretrain_params.get("off_policy_update_freq", -1)
+        target_update_interval = args.pretrain_params.get("target_update_interval", 1)
+        tau = args.pretrain_params.get("tau", 0.005)
         try:
             # mean_reward, std_reward = evaluate_policy_add_to_buffer(
             #     model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
@@ -541,6 +543,8 @@ if __name__ == "__main__":  # noqa: C901
                         reduce=reduce,
                         exp_temperature=exp_temperature,
                         off_policy_update_freq=off_policy_update_freq,
+                        target_update_interval=target_update_interval,
+                        tau=tau,
                     )
 
                 mean_reward, std_reward = evaluate_policy_add_to_buffer(
