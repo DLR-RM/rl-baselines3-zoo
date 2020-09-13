@@ -287,6 +287,13 @@ class HistoryWrapper(gym.Wrapper):
 
 
 class HistoryWrapperObsDict(gym.Wrapper):
+    """
+    History Wrapper for dict observation.
+
+    :param env: (gym.Env)
+    :param horizon: (int) Number of steps to keep in the history.
+    """
+
     def __init__(self, env, horizon=5):
         assert isinstance(env.observation_space.spaces["observation"], gym.spaces.Box)
 
