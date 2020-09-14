@@ -49,6 +49,9 @@ class TimeFeatureWrapper(gym.Wrapper):
         try:
             self._max_steps = env.spec.max_episode_steps
         except AttributeError:
+            self._max_steps = None
+
+        if self._max_steps is None:
             self._max_steps = max_steps
 
         self._current_step = 0
