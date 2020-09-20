@@ -1,7 +1,10 @@
+import os
+
 import gym
 import numpy as np
 from gym.wrappers import TimeLimit
 from matplotlib import pyplot as plt
+from stable_baselines3 import SAC
 
 
 class DoneOnSuccessWrapper(gym.Wrapper):
@@ -189,6 +192,54 @@ class HistoryWrapper(gym.Wrapper):
         self.action_history = np.roll(self.action_history, shift=-action.shape[-1], axis=-1)
         self.action_history[..., -action.shape[-1] :] = action
         return self._create_obs_from_history(), reward, done, info
+
+
+class ResidualExpertWrapper(gym.Wrapper):
+    """
+
+    :param env: (gym.Env)
+    :param model_path: (str)
+    :param add_expert_to_obs: (obs)
+    :param residual_scale: (float)
+    """
+
+    def __init__(self, env, model_path=os.environ.get("MODEL_PATH"), add_expert_to_obs=True, residual_scale=0.2):
+        assert isinstance(env.observation_space, gym.spaces.Box)
+        assert model_path is not None
+
+        wrapped_obs_space = env.observation_space
+
+        low = np.concatenate((wrapped_obs_space.low, np.finfo(np.float32).min * np.ones(2)))
+        high = np.concatenate((wrapped_obs_space.high, np.finfo(np.float32).max * np.ones(2)))
+
+        # Overwrite the observation space
+        env.observation_space = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
+
+        super(ResidualExpertWrapper, self).__init__(env)
+
+        print(f"Loading model from {model_path}")
+        self.model = SAC.load(model_path)
+        self._last_obs = None
+        self.residual_scale = residual_scale
+        self.add_expert_to_obs = add_expert_to_obs
+
+    def _predict(self, obs):
+        expert_action, _ = self.model.predict(obs, deterministic=True)
+        if self.add_expert_to_obs:
+            obs = np.concatenate((obs, expert_action), axis=-1)
+        return obs, expert_action
+
+    def reset(self):
+        obs = self.env.reset()
+        obs, self.expert_action = self._predict(obs)
+        return obs
+
+    def step(self, action):
+        action = np.clip(self.expert_action + self.residual_scale * action, -1.0, 1.0)
+        obs, reward, done, info = self.env.step(action)
+        obs, self.expert_action = self._predict(obs)
+
+        return obs, reward, done, info
 
 
 class PlotActionWrapper(gym.Wrapper):
