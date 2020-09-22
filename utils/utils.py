@@ -23,8 +23,7 @@ ALGOS = {"a2c": A2C, "ddpg": DDPG, "dqn": DQN, "ppo": PPO, "sac": SAC, "td3": TD
 
 def flatten_dict_observations(env):
     assert isinstance(env.observation_space, gym.spaces.Dict)
-    keys = env.observation_space.spaces.keys()
-    return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
+    return gym.wrappers.FlattenObservation(env)
 
 
 def get_wrapper_class(hyperparams):
