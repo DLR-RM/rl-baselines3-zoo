@@ -1,3 +1,12 @@
+## Release 0.9.0a1 (WIP)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+- Fixed ``flatten_dict_observations`` in `utils/utils.py` for recent Gym versions (@ManifoldFR)
+
 ## Release 0.8.0 (2020-08-04)
 
 ### Breaking Changes
