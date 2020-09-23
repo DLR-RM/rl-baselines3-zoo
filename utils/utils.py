@@ -25,7 +25,7 @@ def flatten_dict_observations(env):
     assert isinstance(env.observation_space, gym.spaces.Dict)
     try:
         return gym.wrappers.FlattenObservation(env)
-    except:
+    except AttributeError:
         keys = env.observation_space.spaces.keys()
         return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
 
