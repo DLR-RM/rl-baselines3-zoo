@@ -1,6 +1,5 @@
 import gym
 import numpy as np
-from gym.wrappers import TimeLimit
 from matplotlib import pyplot as plt
 
 
@@ -38,7 +37,7 @@ class TimeFeatureWrapper(gym.Wrapper):
         learning a deterministic pre-defined sequence of actions.
     """
 
-    def __init__(self, env, max_steps=1000, test_mode=False):
+    def __init__(self, env: gym.Env, max_steps: int = 1000, test_mode: bool = False):
         assert isinstance(env.observation_space, gym.spaces.Box)
         # Add a time feature to the observation
         low, high = env.observation_space.low, env.observation_space.high
@@ -47,10 +46,14 @@ class TimeFeatureWrapper(gym.Wrapper):
 
         super(TimeFeatureWrapper, self).__init__(env)
 
-        if isinstance(env, TimeLimit):
-            self._max_steps = env._max_episode_steps
-        else:
+        try:
+            self._max_steps = env.spec.max_episode_steps
+        except AttributeError:
+            self._max_steps = None
+
+        if self._max_steps is None:
             self._max_steps = max_steps
+
         self._current_step = 0
         self._test_mode = test_mode
 
@@ -133,14 +136,13 @@ class DelayedRewardWrapper(gym.Wrapper):
 
 class HistoryWrapper(gym.Wrapper):
     """
-    Delay the reward by `delay` steps, it makes the task harder but more realistic.
-    The reward is accumulated during those steps.
+    Stack past observations and actions to give an history to the agent.
 
     :param env: (gym.Env)
     :param horizon: (int) Number of steps to keep in the history.
     """
 
-    def __init__(self, env, horizon=5):
+    def __init__(self, env: gym.Env, horizon: int = 5):
         assert isinstance(env.observation_space, gym.spaces.Box)
 
         wrapped_obs_space = env.observation_space
