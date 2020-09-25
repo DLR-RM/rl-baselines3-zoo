@@ -6,6 +6,7 @@
 
 ### Bug fixes
 - Fixed `TimeFeatureWrapper` inferring max timesteps
+- Fixed ``flatten_dict_observations`` in `utils/utils.py` for recent Gym versions (@ManifoldFR)
 
 ### Documentation
 
