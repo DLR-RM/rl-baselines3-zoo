@@ -10,6 +10,7 @@
 ### Documentation
 
 ### Other
+- Added tests for the wrappers
 
 
 ## Release 0.8.0 (2020-08-04)
