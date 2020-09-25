@@ -1,11 +1,18 @@
-## Release 0.9.0a1 (WIP)
+## Pre-Release 0.9.0a2 (WIP)
 
 ### Breaking Changes
 
 ### New Features
 
 ### Bug fixes
+- Fixed `TimeFeatureWrapper` inferring max timesteps
 - Fixed ``flatten_dict_observations`` in `utils/utils.py` for recent Gym versions (@ManifoldFR)
+
+### Documentation
+
+### Other
+- Added tests for the wrappers
+
 
 ## Release 0.8.0 (2020-08-04)
 
