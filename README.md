@@ -17,6 +17,8 @@ Goals of this repository:
 3. Provide tuned hyperparameters for each environment and RL algorithm
 4. Have fun with the trained agents!
 
+This is the SB3 version of the original SB2 [rl-zoo](https://github.com/araffin/rl-baselines-zoo).
+
 ## Enjoy a Trained Agent
 
 **Note: to download the repo with the trained agents, you must use `git clone --recursive https://github.com/DLR-RM/rl-baselines3-zoo`** in order to clone the submodule too.
