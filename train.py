@@ -12,9 +12,6 @@ import gym
 import numpy as np
 import seaborn
 import torch as th
-
-# Register custom envs
-import utils.import_envs  # noqa: F401 pytype: disable=import-error
 import yaml
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
@@ -27,6 +24,9 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecNorm
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pytype: disable=unused-import
+
+# Register custom envs
+import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils import ALGOS, get_latest_run_id, get_wrapper_class, linear_schedule, make_env
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.hyperparams_opt import hyperparam_optimization

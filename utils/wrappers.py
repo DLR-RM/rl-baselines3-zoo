@@ -1,6 +1,5 @@
 import gym
 import numpy as np
-from gym.wrappers import TimeLimit
 from matplotlib import pyplot as plt
 
 
@@ -38,7 +37,7 @@ class TimeFeatureWrapper(gym.Wrapper):
         learning a deterministic pre-defined sequence of actions.
     """
 
-    def __init__(self, env, max_steps=1000, test_mode=False):
+    def __init__(self, env: gym.Env, max_steps: int = 1000, test_mode: bool = False):
         assert isinstance(env.observation_space, gym.spaces.Box)
         # Add a time feature to the observation
         low, high = env.observation_space.low, env.observation_space.high
@@ -47,10 +46,14 @@ class TimeFeatureWrapper(gym.Wrapper):
 
         super(TimeFeatureWrapper, self).__init__(env)
 
-        if isinstance(env, TimeLimit):
-            self._max_steps = env._max_episode_steps
-        else:
+        try:
+            self._max_steps = env.spec.max_episode_steps
+        except AttributeError:
+            self._max_steps = None
+
+        if self._max_steps is None:
             self._max_steps = max_steps
+
         self._current_step = 0
         self._test_mode = test_mode
 
@@ -133,14 +136,13 @@ class DelayedRewardWrapper(gym.Wrapper):
 
 class HistoryWrapper(gym.Wrapper):
     """
-    Delay the reward by `delay` steps, it makes the task harder but more realistic.
-    The reward is accumulated during those steps.
+    Stack past observations and actions to give an history to the agent.
 
     :param env: (gym.Env)
     :param horizon: (int) Number of steps to keep in the history.
     """
 
-    def __init__(self, env, horizon=5):
+    def __init__(self, env: gym.Env, horizon: int = 5):
         assert isinstance(env.observation_space, gym.spaces.Box)
 
         wrapped_obs_space = env.observation_space
@@ -199,14 +201,11 @@ class PlotActionWrapper(gym.Wrapper):
 
     :param env: (gym.Env)
     :param plot_freq: (int) Plot every `plot_freq` episodes
-    :param fft_plot: (bool) Whether to plot the fft plot of the actions
-        (to see the frequency) needs some tuning (regarding the sampling frequency)
     """
 
-    def __init__(self, env, plot_freq=5, fft_plot=False):
+    def __init__(self, env, plot_freq=5):
         super(PlotActionWrapper, self).__init__(env)
         self.plot_freq = plot_freq
-        self.fft_plot = fft_plot
         self.current_episode = 0
         # Observation buffer (Optional)
         # self.observations = []
@@ -248,18 +247,5 @@ class PlotActionWrapper(gym.Wrapper):
             # plt.scatter(x[start:end], np.clip(self.actions[i], -1, 1), s=1)
             # plt.scatter(x[start:end], self.actions[i], s=1)
             start = end
-
-        # Plot Frequency plot
-        if self.fft_plot:
-            signal = np.concatenate(tuple(self.actions))
-            n_samples = len(signal)
-            # TODO: change the time_delta to match the real one
-            time_delta = 1 / 4e4
-            # Sanity check: sinusoidal signal
-            # signal = np.sin(10 * 2 * np.pi * np.arange(n_samples) * time_delta)
-            signal_fft = np.fft.fft(signal)
-            freq = np.fft.fftfreq(n_samples, time_delta)
-            plt.figure("FFT")
-            plt.plot(freq[: n_samples // 2], np.abs(signal_fft[: n_samples // 2]))
 
         plt.show()
