@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import pytest
+
 from utils import get_trained_models
 
 
