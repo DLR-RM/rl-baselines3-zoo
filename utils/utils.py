@@ -29,6 +29,7 @@ def flatten_dict_observations(env):
         keys = env.observation_space.spaces.keys()
         return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
 
+
 def get_wrapper_class(hyperparams):
     """
     Get one or more Gym environment wrapper class specified as a hyper parameter
