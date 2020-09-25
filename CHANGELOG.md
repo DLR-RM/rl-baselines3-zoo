@@ -1,9 +1,8 @@
-## Pre-Release 0.9.0a0 (WIP)
+## Pre-Release 0.9.0a2 (WIP)
 
 ### Breaking Changes
 
 ### New Features
-- Added HER support
 
 ### Bug fixes
 - Fixed `TimeFeatureWrapper` inferring max timesteps
@@ -11,6 +10,7 @@
 ### Documentation
 
 ### Other
+- Added tests for the wrappers
 
 
 ## Release 0.8.0 (2020-08-04)
