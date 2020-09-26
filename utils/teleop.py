@@ -113,7 +113,7 @@ class HumanTeleop(BaseAlgorithm):
             # "logs/tqc/donkey-generated-track-v0_9/donkey-generated-track-v0.zip"
             self.model = SAC.load(model_path)
 
-    def excluded_save_params(self) -> List[str]:
+    def _excluded_save_params(self) -> List[str]:
         """
         Returns the names of the parameters that should be excluded by default
         when saving the model.
@@ -121,7 +121,7 @@ class HumanTeleop(BaseAlgorithm):
         :return: (List[str]) List of parameters that should be excluded from save
         """
         # Exclude aliases
-        return super().excluded_save_params() + ["process", "window", "model", "exit_thread"]
+        return super()._excluded_save_params() + ["process", "window", "model", "exit_thread"]
 
     def _setup_model(self):
         self.exit_thread = False
@@ -298,7 +298,7 @@ class HumanTeleop(BaseAlgorithm):
         steering, throttle = action
         self.write_text("Throttle: {:.2f}, Steering: {:.2f}".format(throttle, steering), 20, 0, FONT, WHITE)
 
-    def get_torch_variables(self) -> Tuple[List[str], List[str]]:
+    def _get_torch_save_params(self) -> Tuple[List[str], List[str]]:
         """
         Get the name of the torch variables that will be saved.
         ``th.save`` and ``th.load`` will be used with the right device
