@@ -1,5 +1,5 @@
 import gym
-import pybullet_envs
+import pybullet_envs  # noqa: F401
 import pytest
 from stable_baselines3.common.env_checker import check_env
 
