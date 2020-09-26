@@ -205,7 +205,9 @@ class ResidualExpertWrapper(gym.Wrapper):
     :param residual_scale: (float)
     """
 
-    def __init__(self, env, model_path=os.environ.get("MODEL_PATH"), add_expert_to_obs=True, residual_scale=0.2):
+    def __init__(
+        self, env, model_path=os.environ.get("MODEL_PATH"), add_expert_to_obs=True, residual_scale=0.2, expert_scale=1.0
+    ):
         assert isinstance(env.observation_space, gym.spaces.Box)
         assert model_path is not None
 
@@ -223,6 +225,7 @@ class ResidualExpertWrapper(gym.Wrapper):
         self.model = SAC.load(model_path)
         self._last_obs = None
         self.residual_scale = residual_scale
+        self.expert_scale = expert_scale
         self.add_expert_to_obs = add_expert_to_obs
 
     def _predict(self, obs):
@@ -237,7 +240,7 @@ class ResidualExpertWrapper(gym.Wrapper):
         return obs
 
     def step(self, action):
-        action = np.clip(self.expert_action + self.residual_scale * action, -1.0, 1.0)
+        action = np.clip(self.expert_scale * self.expert_action + self.residual_scale * action, -1.0, 1.0)
         obs, reward, done, info = self.env.step(action)
         obs, self.expert_action = self._predict(obs)
 
