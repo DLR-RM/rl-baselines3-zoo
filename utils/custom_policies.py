@@ -15,10 +15,10 @@ class ResidualActor(Actor):
         self.action_dim = get_action_dim(self.action_space)
         # Before sigmoid, output close to 1
         init_scale_expert = 5.0
-        # Before sigmoid, output close to 0 (here around 0.1)
-        init_scale_rl = -2.0
         self.scale_expert = nn.Parameter(th.ones(self.action_dim) * init_scale_expert, requires_grad=True)
-        self.scale_rl = nn.Parameter(th.ones(self.action_dim) * init_scale_rl, requires_grad=True)
+        # Before sigmoid, output close to 0 (here around 0.1)
+        # init_scale_rl = -2.0
+        # self.scale_rl = nn.Parameter(th.ones(self.action_dim) * init_scale_rl, requires_grad=True)
 
     def get_action_dist_params(self, obs: th.Tensor) -> Tuple[th.Tensor, th.Tensor, Dict[str, th.Tensor]]:
         """
@@ -35,7 +35,9 @@ class ResidualActor(Actor):
         # Assume that expert action is are the last features
         expert_actions = TanhBijector.inverse(obs[:, -self.action_dim :])
         # expert_actions = obs[:, -self.action_dim :]
-        mean_actions_ = th.sigmoid(self.scale_rl) * mean_actions + th.sigmoid(self.scale_expert) * expert_actions
+        # mean_actions_ = th.sigmoid(self.scale_rl) * mean_actions + th.sigmoid(self.scale_expert) * expert_actions
+        h = th.sigmoid(self.scale_expert)
+        mean_actions_ = (1 - h) * mean_actions + h * expert_actions
 
         if self.use_sde:
             latent_sde = latent_pi
