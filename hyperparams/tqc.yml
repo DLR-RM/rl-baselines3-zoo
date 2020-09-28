@@ -22,6 +22,32 @@ NeckEnvRelative-v1:
   # sde_sample_freq: 25
   policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
 
+BertEnv-v1:
+  env_wrapper:
+    - utils.wrappers.HistoryWrapper:
+        horizon: 2
+    - utils.wrappers.TimeFeatureWrapper:
+        test_mode: False
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  # replay_buffer_class: NstepReplayBuffer
+  # replay_buffer_kwargs: "dict(n_step=5)"
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.99
+  tau: 0.01
+  train_freq: -1
+  n_episodes_rollout: 1
+  gradient_steps: -1
+  learning_starts: 1000
+  use_sde_at_warmup: True
+  use_sde: True
+  sde_sample_freq: 20
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], n_critics=2)"
+
+
 NeckEnv3Tendons-v1:
   env_wrapper:
     - utils.wrappers.TimeFeatureWrapper
