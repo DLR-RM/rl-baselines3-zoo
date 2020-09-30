@@ -63,6 +63,8 @@ for folder in dirs:
     if x.shape[0] >= args.episode_window:
         # Compute and plot rolling mean with window of size args.episode_window
         x, y_mean = window_func(x, success, args.episode_window, np.mean)
-        plt.plot(x, y_mean, linewidth=2)
+        plt.plot(x, y_mean, linewidth=2, label=folder.split("/")[-1])
+
+plt.legend()
 plt.tight_layout()
 plt.show()
