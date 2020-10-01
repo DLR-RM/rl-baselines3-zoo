@@ -7,7 +7,7 @@ import os
 import numpy as np
 import seaborn
 from matplotlib import pyplot as plt
-from stable_baselines3.common.monitor import load_results
+from stable_baselines3.common.monitor import load_results, LoadMonitorResultsError
 from stable_baselines3.common.results_plotter import X_EPISODES, X_TIMESTEPS, X_WALLTIME, ts2xy, window_func
 
 # For tensorflow imported with tensorboard
@@ -53,7 +53,10 @@ plt.title(y_label, fontsize=args.fontsize)
 plt.xlabel(f"{x_label}", fontsize=args.fontsize)
 plt.ylabel(y_label, fontsize=args.fontsize)
 for folder in dirs:
-    data_frame = load_results(folder)
+    try:
+        data_frame = load_results(folder)
+    except LoadMonitorResultsError:
+        continue
     if args.max_timesteps is not None:
         data_frame = data_frame[data_frame.l.cumsum() <= args.max_timesteps]
     success = np.array(data_frame[y_axis])
