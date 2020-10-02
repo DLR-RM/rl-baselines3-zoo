@@ -39,7 +39,7 @@ log_path = os.path.join(args.exp_folder, algo)
 x_axis = {"steps": X_TIMESTEPS, "episodes": X_EPISODES, "time": X_WALLTIME}[args.x_axis]
 x_label = {"steps": "Timesteps", "episodes": "Episodes", "time": "Walltime (in hours)"}[args.x_axis]
 
-y_axis = {"success": "success", "reward": "r"}[args.y_axis]
+y_axis = {"success": "is_success", "reward": "r"}[args.y_axis]
 y_label = {"success": "Training Success Rate", "reward": "Training Episodic Reward"}[args.y_axis]
 
 dirs = []
