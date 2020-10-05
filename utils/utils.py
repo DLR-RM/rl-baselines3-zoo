@@ -7,8 +7,6 @@ from typing import Dict, Tuple
 import gym
 import numpy as np
 import yaml
-
-# from stable_baselines3.common import logger
 from stable_baselines3 import A2C, CMAES, DDPG, DQN, PPO, SAC, TD3, TQC
 from stable_baselines3.common.buffers import NstepReplayBuffer  # noqa: F401
 from stable_baselines3.common.monitor import Monitor
@@ -395,7 +393,7 @@ def evaluate_policy_add_to_buffer(
     callback=None,
     reward_threshold=None,
     return_episode_rewards=False,
-    add_to_buffer=False,
+    replay_buffer=None,
 ):
     """
     Runs policy for ``n_eval_episodes`` episodes and returns average reward.
@@ -435,10 +433,10 @@ def evaluate_policy_add_to_buffer(
             if callback is not None:
                 callback(locals(), globals())
             episode_length += 1
-            if hasattr(model, "replay_buffer") and add_to_buffer:
+            if replay_buffer is not None:
                 # We assume actions are normalized but not observation/reward
                 buffer_action = action
-                model.replay_buffer.add(obs, new_obs, buffer_action, reward, done)
+                replay_buffer.add(obs, new_obs, buffer_action, reward, done)
             obs = new_obs
             if render:
                 env.render()

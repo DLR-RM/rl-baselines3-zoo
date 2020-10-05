@@ -22,6 +22,14 @@ from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  #
 from stable_baselines3.common.utils import constant_fn, set_random_seed
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecNormalize, VecTransposeImage
 
+try:
+    from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL
+    from d3rlpy.sb3.convert import to_mdp_dataset, to_sb3_predict
+
+    offline_algos = dict(awr=AWR, awac=AWAC, bc=BC, bcq=BCQ, bear=BEAR, cql=CQL)
+except ImportError:
+    offline_algos = None
+
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pytype: disable=unused-import
 
@@ -38,6 +46,9 @@ seaborn.set()
 if __name__ == "__main__":  # noqa: C901
     parser = argparse.ArgumentParser()
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
+    parser.add_argument(
+        "--offline-algo", help="Offline RL Algorithm", type=str, required=False, choices=list(offline_algos.keys())
+    )
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
     parser.add_argument("-tb", "--tensorboard-log", help="Tensorboard log dir", default="", type=str)
     parser.add_argument("-i", "--trained-agent", help="Path to a pretrained agent to continue training", default="", type=str)
@@ -512,7 +523,9 @@ if __name__ == "__main__":  # noqa: C901
         print(f"{model.replay_buffer.size()} transitions in the replay buffer")
 
         n_iterations = args.pretrain_params.get("n_iterations", 10)
-        n_steps = args.pretrain_params.get("n_steps", 1000)
+        n_epochs = args.pretrain_params.get("n_epochs", 1)
+        n_epochs = args.pretrain_params.get("n_epochs", 1)
+        q_func_type = args.pretrain_params.get("q_func_type")
         batch_size = args.pretrain_params.get("batch_size", 512)
         strategy = args.pretrain_params.get("strategy", "exp")
         n_action_samples = args.pretrain_params.get("n_action_samples", 1)
@@ -525,33 +538,47 @@ if __name__ == "__main__":  # noqa: C901
         target_update_interval = args.pretrain_params.get("target_update_interval", 1)
         tau = args.pretrain_params.get("tau", 0.005)
         try:
-            # mean_reward, std_reward = evaluate_policy_add_to_buffer(
-            #     model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
-            # )
-            # print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+            if args.offline_algo is not None and offline_algos is not None:
+                kwargs = {} if q_func_type is None else dict(q_func_type=q_func_type)
+                offline_model = offline_algos[args.offline_algo](n_epochs=n_epochs, **kwargs)
+                offline_model = to_sb3_predict(offline_model)
+                offline_model.use_sde = False
+                # break the logger...
+                # offline_model.replay_buffer = model.replay_buffer
+
             for i in range(n_iterations):
-                # Pretrain with Critic Regularized Regression
-                if strategy == "normal":
-                    # Normal off-policy training
-                    model.train(gradient_steps=n_steps, batch_size=batch_size)
+                if offline_model is not None:
+                    dataset = to_mdp_dataset(model.replay_buffer)
+                    offline_model.fit(dataset.episodes)
+                    pretrain_model = offline_model
                 else:
-                    model.pretrain(
-                        gradient_steps=n_steps,
-                        batch_size=batch_size,
-                        n_action_samples=n_action_samples,
-                        strategy=strategy,
-                        reduce=reduce,
-                        exp_temperature=exp_temperature,
-                        off_policy_update_freq=off_policy_update_freq,
-                        target_update_interval=target_update_interval,
-                        tau=tau,
-                    )
+                    pretrain_model = model
+                    # mean_reward, std_reward = evaluate_policy_add_to_buffer(
+                    #     model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
+                    # )
+                    # print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+                    # Pretrain with Critic Regularized Regression
+                    if strategy == "normal":
+                        # Normal off-policy training
+                        model.train(gradient_steps=n_steps, batch_size=batch_size)
+                    else:
+                        model.pretrain(
+                            gradient_steps=n_steps,
+                            batch_size=batch_size,
+                            n_action_samples=n_action_samples,
+                            strategy=strategy,
+                            reduce=reduce,
+                            exp_temperature=exp_temperature,
+                            off_policy_update_freq=off_policy_update_freq,
+                            target_update_interval=target_update_interval,
+                            tau=tau,
+                        )
 
                 mean_reward, std_reward = evaluate_policy_add_to_buffer(
-                    model,
+                    pretrain_model,
                     model.get_env(),
                     n_eval_episodes=n_eval_episodes,
-                    add_to_buffer=add_to_buffer,
+                    replay_buffer=model.replay_buffer if add_to_buffer else None,
                     deterministic=deterministic,
                 )
                 print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")

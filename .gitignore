@@ -14,3 +14,5 @@ htmlcov/
 git_rewrite_commit_history.sh
 .vscode/
 *.csv
+d3rlpy_logs/
+runs/
