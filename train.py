@@ -24,11 +24,12 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecNorm
 
 try:
     from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL
-    from d3rlpy.sb3.convert import to_mdp_dataset, to_sb3_predict
+    from d3rlpy.sb3.convert import to_mdp_dataset
+    from d3rlpy.sb3.wrappers import SB3Wrapper
 
     offline_algos = dict(awr=AWR, awac=AWAC, bc=BC, bcq=BCQ, bear=BEAR, cql=CQL)
 except ImportError:
-    offline_algos = None
+    offline_algos = {}
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pytype: disable=unused-import
@@ -524,58 +525,27 @@ if __name__ == "__main__":  # noqa: C901
 
         n_iterations = args.pretrain_params.get("n_iterations", 10)
         n_epochs = args.pretrain_params.get("n_epochs", 1)
-        n_epochs = args.pretrain_params.get("n_epochs", 1)
         q_func_type = args.pretrain_params.get("q_func_type")
         batch_size = args.pretrain_params.get("batch_size", 512)
-        strategy = args.pretrain_params.get("strategy", "exp")
-        n_action_samples = args.pretrain_params.get("n_action_samples", 1)
-        reduce = args.pretrain_params.get("reduce", "mean")
+        # n_action_samples = args.pretrain_params.get("n_action_samples", 1)
         n_eval_episodes = args.pretrain_params.get("n_eval_episodes", 5)
         add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
-        exp_temperature = args.pretrain_params.get("exp_temperature", 1.0)
         deterministic = args.pretrain_params.get("deterministic", True)
-        off_policy_update_freq = args.pretrain_params.get("off_policy_update_freq", -1)
-        target_update_interval = args.pretrain_params.get("target_update_interval", 1)
-        tau = args.pretrain_params.get("tau", 0.005)
         try:
-            if args.offline_algo is not None and offline_algos is not None:
-                kwargs = {} if q_func_type is None else dict(q_func_type=q_func_type)
-                offline_model = offline_algos[args.offline_algo](n_epochs=n_epochs, **kwargs)
-                offline_model = to_sb3_predict(offline_model)
-                offline_model.use_sde = False
-                # break the logger...
-                # offline_model.replay_buffer = model.replay_buffer
+            assert args.offline_algo is not None and offline_algos is not None
+            kwargs = {} if q_func_type is None else dict(q_func_type=q_func_type)
+            offline_model = offline_algos[args.offline_algo](n_epochs=n_epochs, **kwargs)
+            offline_model = SB3Wrapper(offline_model)
+            offline_model.use_sde = False
+            # break the logger...
+            # offline_model.replay_buffer = model.replay_buffer
 
             for i in range(n_iterations):
-                if offline_model is not None:
-                    dataset = to_mdp_dataset(model.replay_buffer)
-                    offline_model.fit(dataset.episodes)
-                    pretrain_model = offline_model
-                else:
-                    pretrain_model = model
-                    # mean_reward, std_reward = evaluate_policy_add_to_buffer(
-                    #     model, model.get_env(), n_eval_episodes=n_eval_episodes, add_to_buffer=add_to_buffer
-                    # )
-                    # print(f"Before training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
-                    # Pretrain with Critic Regularized Regression
-                    if strategy == "normal":
-                        # Normal off-policy training
-                        model.train(gradient_steps=n_steps, batch_size=batch_size)
-                    else:
-                        model.pretrain(
-                            gradient_steps=n_steps,
-                            batch_size=batch_size,
-                            n_action_samples=n_action_samples,
-                            strategy=strategy,
-                            reduce=reduce,
-                            exp_temperature=exp_temperature,
-                            off_policy_update_freq=off_policy_update_freq,
-                            target_update_interval=target_update_interval,
-                            tau=tau,
-                        )
+                dataset = to_mdp_dataset(model.replay_buffer)
+                offline_model.fit(dataset.episodes)
 
                 mean_reward, std_reward = evaluate_policy_add_to_buffer(
-                    pretrain_model,
+                    offline_model,
                     model.get_env(),
                     n_eval_episodes=n_eval_episodes,
                     replay_buffer=model.replay_buffer if add_to_buffer else None,
@@ -593,14 +563,6 @@ if __name__ == "__main__":  # noqa: C901
             pass
         finally:
             print("Starting training")
-            # model.replay_buffer.reset()
-            # model.replay_buffer = old_buffer
-            # Small exploration
-            # value = th.ones_like(model.actor.log_std)
-            # model.actor.log_std = th.nn.Parameter(value * -4.0)
-            # Small learning rate
-            # model.lr_schedule = lambda _: 1e-5
-            # evaluate_policy_add_to_buffer(model, model.get_env(), n_eval_episodes=10, add_to_buffer=True)
 
     try:
         model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
