@@ -531,10 +531,27 @@ if __name__ == "__main__":  # noqa: C901
         n_eval_episodes = args.pretrain_params.get("n_eval_episodes", 5)
         add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
         deterministic = args.pretrain_params.get("deterministic", True)
+        for arg_name in {
+            "n_iterations",
+            "n_epochs",
+            "q_func_type",
+            "batch_size",
+            "n_eval_episodes",
+            "add_to_buffer",
+            "deterministic",
+        }:
+            if arg_name in args.pretrain_params:
+                del args.pretrain_params[arg_name]
         try:
             assert args.offline_algo is not None and offline_algos is not None
-            kwargs = {} if q_func_type is None else dict(q_func_type=q_func_type)
-            offline_model = offline_algos[args.offline_algo](n_epochs=n_epochs, **kwargs)
+            kwargs_ = {} if q_func_type is None else dict(q_func_type=q_func_type)
+            kwargs_.update(args.pretrain_params)
+
+            offline_model = offline_algos[args.offline_algo](
+                n_epochs=n_epochs,
+                batch_size=batch_size,
+                **kwargs_,
+            )
             offline_model = SB3Wrapper(offline_model)
             offline_model.use_sde = False
             # break the logger...
