@@ -7,7 +7,7 @@ import os
 import numpy as np
 import seaborn
 from matplotlib import pyplot as plt
-from stable_baselines3.common.monitor import get_monitor_files, load_results
+from stable_baselines3.common.monitor import LoadMonitorResultsError, load_results
 from stable_baselines3.common.results_plotter import X_EPISODES, X_TIMESTEPS, X_WALLTIME, ts2xy, window_func
 
 # For tensorflow imported with tensorboard
@@ -42,21 +42,21 @@ x_label = {"steps": "Timesteps", "episodes": "Episodes", "time": "Walltime (in h
 y_axis = {"success": "is_success", "reward": "r"}[args.y_axis]
 y_label = {"success": "Training Success Rate", "reward": "Training Episodic Reward"}[args.y_axis]
 
-dirs = []
-
-for folder in os.listdir(log_path):
-    path = os.path.join(log_path, folder)
-    if env in folder and os.path.isdir(path):
-        monitor_files = get_monitor_files(path)
-        if len(monitor_files) > 0:
-            dirs.append(path)
+dirs = [
+    os.path.join(log_path, folder)
+    for folder in os.listdir(log_path)
+    if (env in folder and os.path.isdir(os.path.join(log_path, folder)))
+]
 
 plt.figure(y_label, figsize=args.figsize)
 plt.title(y_label, fontsize=args.fontsize)
 plt.xlabel(f"{x_label}", fontsize=args.fontsize)
 plt.ylabel(y_label, fontsize=args.fontsize)
 for folder in dirs:
-    data_frame = load_results(folder)
+    try:
+        data_frame = load_results(folder)
+    except LoadMonitorResultsError:
+        continue
     if args.max_timesteps is not None:
         data_frame = data_frame[data_frame.l.cumsum() <= args.max_timesteps]
     success = np.array(data_frame[y_axis])
@@ -66,6 +66,8 @@ for folder in dirs:
     if x.shape[0] >= args.episode_window:
         # Compute and plot rolling mean with window of size args.episode_window
         x, y_mean = window_func(x, success, args.episode_window, np.mean)
-        plt.plot(x, y_mean, linewidth=2)
+        plt.plot(x, y_mean, linewidth=2, label=folder.split("/")[-1])
+
+plt.legend()
 plt.tight_layout()
 plt.show()

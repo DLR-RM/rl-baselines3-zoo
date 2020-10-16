@@ -12,6 +12,7 @@
 
 ### Other
 - Added tests for the wrappers
+- Updated plotting script
 
 
 ## Release 0.8.0 (2020-08-04)
