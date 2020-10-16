@@ -207,6 +207,8 @@ if __name__ == "__main__":  # noqa: C901
         if isinstance(normalize, str):
             normalize_kwargs = eval(normalize)
             normalize = True
+        if "gamma" in hyperparams:
+            normalize_kwargs["gamma"] = hyperparams["gamma"]
         del hyperparams["normalize"]
 
     if "policy_kwargs" in hyperparams.keys():
