@@ -73,17 +73,18 @@ NeckGoalEnvRelativeDense-v2:
 parking-v0:
   n_timesteps: !!float 2e5
   policy: 'MlpPolicy'
-  model_class: 'sac'
+  model_class: 'ddpg'
   n_sampled_goal: 4
   goal_selection_strategy: 'future'
   buffer_size: 1000000
   batch_size: 256
   gamma: 0.95
   learning_rate: !!float 1e-3
-  # noise_type: 'normal'
-  # noise_std: 0.2
-  policy_kwargs: "dict(net_arch=[256, 256, 256], log_std_init=-1)"
+  noise_type: 'normal'
+  noise_std: 0.2
+  policy_kwargs: "dict(net_arch=[256, 256, 256])"
   online_sampling: True
+  normalize: True
 
 # TD3 hyperparams, her paper
 #parking-v0:
@@ -143,6 +144,10 @@ parking-v0:
 #   policy_kwargs: "dict(layers=[16, 16, 16])"
 
 FetchPush-v1:
+  env_wrapper:
+    - utils.wrappers.HistoryWrapperObsDict:
+        horizon: 2
+    # - utils.wrappers.TimeFeatureObsDictWrapper
   n_timesteps: !!float 3e6
   policy: 'MlpPolicy'
   model_class: 'sac'
@@ -151,12 +156,17 @@ FetchPush-v1:
   buffer_size: 1000000
   ent_coef: 'auto'
   gamma: 0.95
-  learning_rate: !!float 1e-3
-  noise_type: 'normal'
-  noise_std: 0.2
+  learning_rate: !!float 7e-4
+  use_sde: True
+  gradient_steps: -1
+  train_freq: -1
+  n_episodes_rollout: 1
+  sde_sample_freq: 10
+  # noise_type: 'normal'
+  # noise_std: 0.2
   learning_starts: 1000
-  train_freq: 1
   online_sampling: True
+  normalize: True
 
 FetchPickAndPlace-v1:
   n_timesteps: !!float 4e6
@@ -187,6 +197,8 @@ FetchReach-v1:
   learning_rate: 0.001
   learning_starts: 1000
   online_sampling: True
+  normalize: True
+
 
 # TD3 hyperparams
 # FetchReach-v1:
