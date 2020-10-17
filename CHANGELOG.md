@@ -1,8 +1,10 @@
-## Pre-Release 0.9.0a2 (WIP)
+## Pre-Release 0.10.0a0 (WIP)
 
 ### Breaking Changes
 
 ### New Features
+- Added `TQC` support, implementation from sb3-contrib
+
 
 ### Bug fixes
 - Fixed `TimeFeatureWrapper` inferring max timesteps

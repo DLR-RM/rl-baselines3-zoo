@@ -65,11 +65,11 @@ def main():  # noqa: C901
 
     if args.exp_id == 0:
         args.exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
-        print("Loading latest experiment, id={}".format(args.exp_id))
+        print(f"Loading latest experiment, id={args.exp_id}")
 
     # Sanity checks
     if args.exp_id > 0:
-        log_path = os.path.join(folder, algo, "{}_{}".format(env_id, args.exp_id))
+        log_path = os.path.join(folder, algo, f"{env_id}_{args.exp_id}")
     else:
         log_path = os.path.join(folder, algo)
 
@@ -93,7 +93,7 @@ def main():  # noqa: C901
     if not found:
         raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
 
-    if algo in ["dqn", "ddpg", "sac", "td3"]:
+    if algo in ["dqn", "ddpg", "sac", "td3", "tqc"]:
         args.n_envs = 1
 
     set_random_seed(args.seed)
@@ -134,7 +134,7 @@ def main():  # noqa: C901
     )
 
     kwargs = dict(seed=args.seed)
-    if algo in ["dqn", "ddpg", "sac", "her", "td3"]:
+    if algo in ["dqn", "ddpg", "sac", "her", "td3", "tqc"]:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
 
@@ -143,7 +143,7 @@ def main():  # noqa: C901
     obs = env.reset()
 
     # Force deterministic for DQN, DDPG, SAC and HER (that is a wrapper around)
-    deterministic = args.deterministic or algo in ["dqn", "ddpg", "sac", "her", "td3"] and not args.stochastic
+    deterministic = args.deterministic or algo in ["dqn", "ddpg", "sac", "her", "td3", "tqc"] and not args.stochastic
 
     state = None
     episode_reward = 0.0
