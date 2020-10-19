@@ -43,6 +43,7 @@ parser.add_argument("--fontsize", help="Font size", type=int, default=14)
 parser.add_argument("-l", "--labels", help="Custom labels", type=str, nargs="+")
 parser.add_argument("-b", "--boxplot", help="Enable boxplot", action="store_true", default=False)
 parser.add_argument("-latex", "--latex", help="Enable latex support", action="store_true", default=False)
+parser.add_argument("--merge", help="Merge with other results files", nargs="+", default=[], type=str)
 
 args = parser.parse_args()
 
@@ -72,14 +73,15 @@ writer.write_table()
 
 del results["results_table"]
 
-# Merge with another file
-# with open("logs/tqc_results_2.pkl", "rb") as file_handler:
-#     results_2 = pickle.load(file_handler)
-#     del results_2["results_table"]
-#     for key in results.keys():
-#         if key in results_2:
-#             for new_key in results_2[key].keys():
-#                 results[key][new_key] = results_2[key][new_key]
+for filename in args.merge:
+    # Merge other files
+    with open(filename, "rb") as file_handler:
+        results_2 = pickle.load(file_handler)
+        del results_2["results_table"]
+        for key in results.keys():
+            if key in results_2:
+                for new_key in results_2[key].keys():
+                    results[key][new_key] = results_2[key][new_key]
 
 
 keys = [key for key in results[list(results.keys())[0]].keys() if key not in args.skip_keys]
