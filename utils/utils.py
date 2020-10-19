@@ -12,7 +12,7 @@ from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecFrameStack, VecNormalize
 
 try:
-    from sb3_contrib import TQC
+    from sb3_contrib import TQC  # pytype: disable=import-error
 except ImportError:
     TQC = None
 
