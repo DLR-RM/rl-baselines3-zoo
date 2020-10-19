@@ -73,7 +73,7 @@ writer.write_table()
 del results["results_table"]
 
 # Merge with another file
-# with open("logs/tqc_results.pkl", "rb") as file_handler:
+# with open("logs/tqc_results_2.pkl", "rb") as file_handler:
 #     results_2 = pickle.load(file_handler)
 #     del results_2["results_table"]
 #     for key in results.keys():
@@ -82,7 +82,7 @@ del results["results_table"]
 #                 results[key][new_key] = results_2[key][new_key]
 
 
-keys = [key for key in results[list(results.keys())[4]].keys() if key not in args.skip_keys]
+keys = [key for key in results[list(results.keys())[0]].keys() if key not in args.skip_keys]
 print(f"keys: {keys}")
 if len(args.keep_keys) > 0:
     keys = [key for key in keys if key in args.keep_keys]
@@ -152,7 +152,7 @@ plt.title("Sensitivity plot", fontsize=args.fontsize)
 # plt.title("Influence of the sampling frequency", fontsize=args.fontsize)
 # plt.title('Parallel vs No Parallel Sampling', fontsize=args.fontsize)
 # plt.title('Influence of the exploration function input', fontsize=args.fontsize)
-plt.title('PyBullet envs', fontsize=args.fontsize)
+plt.title("PyBullet envs", fontsize=args.fontsize)
 plt.xticks(fontsize=13)
 plt.xlabel("Environment", fontsize=args.fontsize)
 plt.ylabel("Score", fontsize=args.fontsize)
