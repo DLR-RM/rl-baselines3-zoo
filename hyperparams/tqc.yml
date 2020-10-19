@@ -108,6 +108,7 @@ HopperBulletEnv-v0:
   gradient_steps: 64
   learning_starts: 10000
   use_sde: True
+  top_quantiles_to_drop_per_net: 5
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 Walker2DBulletEnv-v0:
@@ -143,7 +144,7 @@ ReacherBulletEnv-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
-HumanoidBulletEnv-v0:
+HumanoidBulletEnv-v02:
   normalize: "{'norm_obs': True, 'norm_reward': False}"
   n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
@@ -154,6 +155,22 @@ HumanoidBulletEnv-v0:
   train_freq: 1
   gradient_steps: 1
   learning_starts: 1000
+
+HumanoidBulletEnv-v0:
+  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 1e7
+  policy: 'MlpPolicy'
+  learning_rate: lin_7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 InvertedDoublePendulumBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
