@@ -45,6 +45,8 @@ BipedalWalker-v3:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
+# Almost tuned
+# History wrapper of size 2 for better performances
 BipedalWalkerHardcore-v3:
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
@@ -62,6 +64,7 @@ BipedalWalkerHardcore-v3:
 
 # === Bullet envs ===
 
+# Tuned
 HalfCheetahBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
@@ -78,6 +81,7 @@ HalfCheetahBulletEnv-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
+# Tuned
 AntBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
@@ -94,6 +98,7 @@ AntBulletEnv-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
+# Tuned
 HopperBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
@@ -111,6 +116,7 @@ HopperBulletEnv-v0:
   top_quantiles_to_drop_per_net: 5
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
+# Tuned
 Walker2DBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
@@ -144,18 +150,19 @@ ReacherBulletEnv-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
-HumanoidBulletEnv-v02:
-  normalize: "{'norm_obs': True, 'norm_reward': False}"
-  n_timesteps: !!float 1e7
-  policy: 'MlpPolicy'
-  learning_rate: lin_3e-4
-  buffer_size: 1000000
-  batch_size: 64
-  ent_coef: 'auto'
-  train_freq: 1
-  gradient_steps: 1
-  learning_starts: 1000
+# HumanoidBulletEnv-v0:
+#   normalize: "{'norm_obs': True, 'norm_reward': False}"
+#   n_timesteps: !!float 1e7
+#   policy: 'MlpPolicy'
+#   learning_rate: lin_3e-4
+#   buffer_size: 1000000
+#   batch_size: 64
+#   ent_coef: 'auto'
+#   train_freq: 1
+#   gradient_steps: 1
+#   learning_starts: 1000
 
+# Almost tuned
 HumanoidBulletEnv-v0:
   env_wrapper: utils.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e7
@@ -169,6 +176,7 @@ HumanoidBulletEnv-v0:
   train_freq: 64
   gradient_steps: 64
   learning_starts: 10000
+  top_quantiles_to_drop_per_net: 5
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
