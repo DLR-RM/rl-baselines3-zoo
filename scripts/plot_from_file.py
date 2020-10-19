@@ -30,6 +30,9 @@ def restyle_boxplot(artist_dict, color, gray="#222222", linewidth=1, fliersize=5
 parser = argparse.ArgumentParser("Gather results, plot them and create table")
 parser.add_argument("-i", "--input", help="Input filename (numpy archive)", type=str)
 parser.add_argument("-skip", "--skip-envs", help="Environments to skip", nargs="+", default=[], type=str)
+parser.add_argument("--keep-envs", help="Envs to keep", nargs="+", default=[], type=str)
+parser.add_argument("--skip-keys", help="Keys to skip", nargs="+", default=[], type=str)
+parser.add_argument("--keep-keys", help="Keys to keep", nargs="+", default=[], type=str)
 parser.add_argument("--no-million", action="store_true", default=False, help="Do not convert x-axis to million")
 parser.add_argument("--skip-timesteps", action="store_true", default=False, help="Do not display learning curves")
 parser.add_argument("-o", "--output", help="Output filename (image)", type=str)
@@ -69,8 +72,25 @@ writer.write_table()
 
 del results["results_table"]
 
-keys = [key for key in results[list(results.keys())[0]].keys()]
+# Merge with another file
+# with open("logs/tqc_results.pkl", "rb") as file_handler:
+#     results_2 = pickle.load(file_handler)
+#     del results_2["results_table"]
+#     for key in results.keys():
+#         if key in results_2:
+#             for new_key in results_2[key].keys():
+#                 results[key][new_key] = results_2[key][new_key]
+
+
+keys = [key for key in results[list(results.keys())[4]].keys() if key not in args.skip_keys]
+print(f"keys: {keys}")
+if len(args.keep_keys) > 0:
+    keys = [key for key in keys if key in args.keep_keys]
 envs = [env for env in results.keys() if env not in args.skip_envs]
+
+if len(args.keep_envs) > 0:
+    envs = [env for env in envs if env in args.keep_envs]
+
 labels = {key: key for key in keys}
 if args.labels is not None:
     for key, label in zip(keys, args.labels):
@@ -129,9 +149,10 @@ plt.title("Sensitivity plot", fontsize=args.fontsize)
 # plt.title('Influence of the time feature', fontsize=args.fontsize)
 # plt.title('Influence of the network architecture', fontsize=args.fontsize)
 # plt.title('Influence of the exploration variance $log \sigma$', fontsize=args.fontsize)
-plt.title("Influence of the sampling frequency", fontsize=args.fontsize)
+# plt.title("Influence of the sampling frequency", fontsize=args.fontsize)
 # plt.title('Parallel vs No Parallel Sampling', fontsize=args.fontsize)
 # plt.title('Influence of the exploration function input', fontsize=args.fontsize)
+plt.title('PyBullet envs', fontsize=args.fontsize)
 plt.xticks(fontsize=13)
 plt.xlabel("Environment", fontsize=args.fontsize)
 plt.ylabel("Score", fontsize=args.fontsize)
