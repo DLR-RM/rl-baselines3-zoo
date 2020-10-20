@@ -85,6 +85,7 @@ parking-v0:
   policy_kwargs: "dict(net_arch=[256, 256, 256])"
   online_sampling: False
   # normalize: True
+  max_episode_length: 100
 
 # TD3 hyperparams, her paper
 #parking-v0:
