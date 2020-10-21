@@ -245,20 +245,18 @@ def create_test_env(
         if hyperparams["normalize"]:
             print("Loading running average")
             print("with params: {}".format(hyperparams["normalize_kwargs"]))
-            env = VecNormalize(env, training=False, **hyperparams["normalize_kwargs"])
-
-            if os.path.exists(os.path.join(stats_path, "vecnormalize.pkl")):
-                env = VecNormalize.load(os.path.join(stats_path, "vecnormalize.pkl"), env)
+            path_ = os.path.join(stats_path, "vecnormalize.pkl")
+            if os.path.exists(path_):
+                env = VecNormalize.load(path_, env)
                 # Deactivate training and reward normalization
                 env.training = False
                 env.norm_reward = False
             else:
-                # Legacy:
-                env.load_running_average(stats_path)
+                raise ValueError(f"VecNormalize stats {path_} not found")
 
         n_stack = hyperparams.get("frame_stack", 0)
         if n_stack > 0:
-            print("Stacking {} frames".format(n_stack))
+            print(f"Stacking {n_stack} frames")
             env = VecFrameStack(env, n_stack)
     return env
 

@@ -276,7 +276,18 @@ if __name__ == "__main__":  # noqa: C901
                 ]
             )
 
-        if normalize:
+        # Pretrained model, load normalization
+        path_ = os.path.join(os.path.dirname(args.trained_agent), args.env)
+        path_ = os.path.join(path_, "vecnormalize.pkl")
+        if os.path.exists(path_):
+            print("Loading saved VecNormalize stats")
+            env = VecNormalize.load(path_, env)
+            # Deactivate training and reward normalization
+            if eval_env:
+                env.training = False
+                env.norm_reward = False
+
+        elif normalize:
             # Copy to avoid changing default values by reference
             local_normalize_kwargs = normalize_kwargs.copy()
             # Do not normalize reward for env used for evaluation
@@ -315,35 +326,34 @@ if __name__ == "__main__":  # noqa: C901
     env = create_env(n_envs)
 
     # Create test env if needed, do not normalize reward
-    eval_env = None
+    eval_callback = None
     if args.eval_freq > 0 and not args.optimize_hyperparameters:
         # Account for the number of parallel environments
         args.eval_freq = max(args.eval_freq // n_envs, 1)
 
-        if "NeckEnv" in env_id:
-            # Use the training env as eval env when using the neck
-            # because there is only one robot
-            # there will be an issue with the reset
-            eval_callback = EvalCallback(
-                env, callback_on_new_best=None, best_model_save_path=save_path, log_path=save_path, eval_freq=args.eval_freq
-            )
-            callbacks.append(eval_callback)
-        else:
-            if args.verbose > 0:
-                print("Creating test environment")
+        # if "NeckEnv" in env_id:
+        #     # Use the training env as eval env when using the neck
+        #     # because there is only one robot
+        #     # there will be an issue with the reset
+        #     eval_callback = EvalCallback(
+        #         env, callback_on_new_best=None, best_model_save_path=save_path, log_path=save_path, eval_freq=args.eval_freq
+        #     )
+        #     callbacks.append(eval_callback)
+        if args.verbose > 0:
+            print("Creating test environment")
 
-            save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
-            eval_callback = EvalCallback(
-                create_env(1, eval_env=True),
-                callback_on_new_best=save_vec_normalize,
-                best_model_save_path=save_path,
-                n_eval_episodes=args.eval_episodes,
-                log_path=save_path,
-                eval_freq=args.eval_freq,
-                deterministic=not is_atari,
-            )
+        save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
+        eval_callback = EvalCallback(
+            create_env(1, eval_env=True),
+            callback_on_new_best=save_vec_normalize,
+            best_model_save_path=save_path,
+            n_eval_episodes=args.eval_episodes,
+            log_path=save_path,
+            eval_freq=args.eval_freq,
+            deterministic=not is_atari,
+        )
 
-            callbacks.append(eval_callback)
+        callbacks.append(eval_callback)
 
     # TODO: check for hyperparameters optimization
     # TODO: check What happens with the eval env when using frame stack
@@ -394,16 +404,6 @@ if __name__ == "__main__":  # noqa: C901
         model = ALGOS[args.algo].load(
             args.trained_agent, env=env, seed=args.seed, tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams
         )
-
-        exp_folder = args.trained_agent.split(".zip")[0]
-        if normalize:
-            print("Loading saved running average")
-            stats_path = os.path.join(exp_folder, env_id)
-            if os.path.exists(os.path.join(stats_path, "vecnormalize.pkl")):
-                env = VecNormalize.load(os.path.join(stats_path, "vecnormalize.pkl"), env)
-            else:
-                # Legacy:
-                env.load_running_average(exp_folder)
 
         replay_buffer_path = os.path.join(os.path.dirname(args.trained_agent), "replay_buffer.pkl")
         if os.path.exists(replay_buffer_path):
@@ -486,7 +486,7 @@ if __name__ == "__main__":  # noqa: C901
     print(f"Log path: {save_path}")
 
     try:
-        model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
+        model.learn(n_timesteps, **kwargs)
     except KeyboardInterrupt:
         pass
     finally:
