@@ -10,6 +10,7 @@
 - Fixed `TimeFeatureWrapper` inferring max timesteps
 - Fixed ``flatten_dict_observations`` in `utils/utils.py` for recent Gym versions (@ManifoldFR)
 - `VecNormalize` now takes `gamma` hyperparameter into account
+- Fix loading of `VecNormalize` when continuing training or using trained agent
 
 ### Documentation
 
