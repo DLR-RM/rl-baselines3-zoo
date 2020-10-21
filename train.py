@@ -40,6 +40,12 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
     parser.add_argument("-tb", "--tensorboard-log", help="Tensorboard log dir", default="", type=str)
     parser.add_argument("-i", "--trained-agent", help="Path to a pretrained agent to continue training", default="", type=str)
+    parser.add_argument(
+        "--truncate-last-trajectory",
+        help="When using HER with online sampling the last trajectory in the replay buffer will be truncated after reloading the replay buffer.",
+        default=True,
+        type=bool,
+    )
     parser.add_argument("-n", "--n-timesteps", help="Overwrite the number of timesteps", default=-1, type=int)
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
     parser.add_argument("--log-interval", help="Override log interval (default: -1, no change)", default=-1, type=int)
@@ -402,7 +408,11 @@ if __name__ == "__main__":  # noqa: C901
         replay_buffer_path = os.path.join(os.path.dirname(args.trained_agent), "replay_buffer.pkl")
         if os.path.exists(replay_buffer_path):
             print("Loading replay buffer")
-            model.load_replay_buffer(replay_buffer_path)
+            if args.algo == "her":
+                # if we use HER we have to add an additional argument
+                model.load_replay_buffer(replay_buffer_path, args.truncate_last_trajectory)
+            else:
+                model.load_replay_buffer(replay_buffer_path)
 
     elif args.optimize_hyperparameters:
 
