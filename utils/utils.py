@@ -6,19 +6,31 @@ from typing import Dict, Tuple
 
 import gym
 import yaml
-
-# from stable_baselines3.common import logger
 from stable_baselines3 import A2C, DDPG, DQN, HER, PPO, SAC, TD3
 from stable_baselines3.common.monitor import Monitor
-
-# from stable_baselines3.common.cmd_util import make_atari_env
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecFrameStack, VecNormalize
+
+try:
+    from sb3_contrib import TQC  # pytype: disable=import-error
+except ImportError:
+    TQC = None
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
 
-ALGOS = {"a2c": A2C, "ddpg": DDPG, "dqn": DQN, "her": HER, "ppo": PPO, "sac": SAC, "td3": TD3}
+ALGOS = {
+    "a2c": A2C,
+    "ddpg": DDPG,
+    "dqn": DQN,
+    "ppo": PPO,
+    "her": HER,
+    "sac": SAC,
+    "td3": TD3,
+}
+
+if TQC is not None:
+    ALGOS["tqc"] = TQC
 
 
 def flatten_dict_observations(env):

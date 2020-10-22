@@ -5,6 +5,7 @@
 ### New Features
 - Added support for `HER`
 - Added low-pass filter wrappers in `utils/wrappers.py`
+- Added `TQC` support, implementation from sb3-contrib
 
 ### Bug fixes
 - Fixed `TimeFeatureWrapper` inferring max timesteps

@@ -170,7 +170,7 @@ if __name__ == "__main__":  # noqa: C901
     # HER is only a wrapper around an algo
     if args.algo == "her":
         algo_ = saved_hyperparams["model_class"]
-        assert algo_ in {"sac", "ddpg", "dqn", "td3"}, f"{algo_} is not compatible with HER"
+        assert algo_ in {"sac", "ddpg", "dqn", "td3", "tqc"}, f"{algo_} is not compatible with HER"
         # Retrieve the model class
         hyperparams["model_class"] = ALGOS[saved_hyperparams["model_class"]]
 

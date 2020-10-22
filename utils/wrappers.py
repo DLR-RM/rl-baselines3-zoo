@@ -1,6 +1,7 @@
 import gym
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.signal import iirfilter, sosfilt, zpk2sos
 
 
 class DoneOnSuccessWrapper(gym.Wrapper):
@@ -170,9 +171,6 @@ class ActionNoiseWrapper(gym.Wrapper):
 
 
 # from https://docs.obspy.org
-from scipy.signal import iirfilter, sosfilt, zpk2sos
-
-
 def lowpass(data, freq, df, corners=4, zerophase=False):
     """
     Butterworth-Lowpass Filter.
