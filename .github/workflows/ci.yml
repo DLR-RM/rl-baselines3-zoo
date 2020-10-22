@@ -36,8 +36,8 @@ jobs:
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
-        # TODO: remove once SB3 is updated
-        pip install black isort
+        # install parking-env to test HER
+        pip install git+https://github.com/eleurent/highway-env
     - name: Type check
       run: |
         make type

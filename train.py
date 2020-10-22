@@ -18,9 +18,8 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import constant_fn, set_random_seed
-
-# from stable_baselines3.common.cmd_util import make_atari_env
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecNormalize, VecTransposeImage
+from stable_baselines3.common.vec_env.obs_dict_wrapper import ObsDictWrapper
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pytype: disable=unused-import
@@ -41,6 +40,12 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
     parser.add_argument("-tb", "--tensorboard-log", help="Tensorboard log dir", default="", type=str)
     parser.add_argument("-i", "--trained-agent", help="Path to a pretrained agent to continue training", default="", type=str)
+    parser.add_argument(
+        "--truncate-last-trajectory",
+        help="When using HER with online sampling the last trajectory in the replay buffer will be truncated after reloading the replay buffer.",
+        default=True,
+        type=bool,
+    )
     parser.add_argument("-n", "--n-timesteps", help="Overwrite the number of timesteps", default=-1, type=int)
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
     parser.add_argument("--log-interval", help="Override log interval (default: -1, no change)", default=-1, type=int)
@@ -165,7 +170,7 @@ if __name__ == "__main__":  # noqa: C901
     # HER is only a wrapper around an algo
     if args.algo == "her":
         algo_ = saved_hyperparams["model_class"]
-        assert algo_ in {"sac", "ddpg", "dqn", "td3"}, "{} is not compatible with HER".format(algo_)
+        assert algo_ in {"sac", "ddpg", "dqn", "td3"}, f"{algo_} is not compatible with HER"
         # Retrieve the model class
         hyperparams["model_class"] = ALGOS[saved_hyperparams["model_class"]]
 
@@ -208,6 +213,8 @@ if __name__ == "__main__":  # noqa: C901
         if isinstance(normalize, str):
             normalize_kwargs = eval(normalize)
             normalize = True
+        if "gamma" in hyperparams:
+            normalize_kwargs["gamma"] = hyperparams["gamma"]
         del hyperparams["normalize"]
 
     if "policy_kwargs" in hyperparams.keys():
@@ -268,7 +275,19 @@ if __name__ == "__main__":  # noqa: C901
                     for i in range(n_envs)
                 ]
             )
-        if normalize:
+
+        # Pretrained model, load normalization
+        path_ = os.path.join(os.path.dirname(args.trained_agent), args.env)
+        path_ = os.path.join(path_, "vecnormalize.pkl")
+        if os.path.exists(path_):
+            print("Loading saved VecNormalize stats")
+            env = VecNormalize.load(path_, env)
+            # Deactivate training and reward normalization
+            if eval_env:
+                env.training = False
+                env.norm_reward = False
+
+        elif normalize:
             # Copy to avoid changing default values by reference
             local_normalize_kwargs = normalize_kwargs.copy()
             # Do not normalize reward for env used for evaluation
@@ -295,40 +314,46 @@ if __name__ == "__main__":  # noqa: C901
             if args.verbose > 0:
                 print("Wrapping into a VecTransposeImage")
             env = VecTransposeImage(env)
+
+        # check if wrapper for dict support is needed
+        if args.algo == "her":
+            if args.verbose > 0:
+                print("Wrapping into a ObsDictWrapper")
+            env = ObsDictWrapper(env)
+
         return env
 
     env = create_env(n_envs)
 
     # Create test env if needed, do not normalize reward
-    eval_env = None
+    eval_callback = None
     if args.eval_freq > 0 and not args.optimize_hyperparameters:
         # Account for the number of parallel environments
         args.eval_freq = max(args.eval_freq // n_envs, 1)
 
-        if "NeckEnv" in env_id:
-            # Use the training env as eval env when using the neck
-            # because there is only one robot
-            # there will be an issue with the reset
-            eval_callback = EvalCallback(
-                env, callback_on_new_best=None, best_model_save_path=save_path, log_path=save_path, eval_freq=args.eval_freq
-            )
-            callbacks.append(eval_callback)
-        else:
-            if args.verbose > 0:
-                print("Creating test environment")
+        # if "NeckEnv" in env_id:
+        #     # Use the training env as eval env when using the neck
+        #     # because there is only one robot
+        #     # there will be an issue with the reset
+        #     eval_callback = EvalCallback(
+        #         env, callback_on_new_best=None, best_model_save_path=save_path, log_path=save_path, eval_freq=args.eval_freq
+        #     )
+        #     callbacks.append(eval_callback)
+        if args.verbose > 0:
+            print("Creating test environment")
 
-            save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
-            eval_callback = EvalCallback(
-                create_env(1, eval_env=True),
-                callback_on_new_best=save_vec_normalize,
-                best_model_save_path=save_path,
-                n_eval_episodes=args.eval_episodes,
-                log_path=save_path,
-                eval_freq=args.eval_freq,
-                deterministic=not is_atari,
-            )
+        save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=params_path)
+        eval_callback = EvalCallback(
+            create_env(1, eval_env=True),
+            callback_on_new_best=save_vec_normalize,
+            best_model_save_path=save_path,
+            n_eval_episodes=args.eval_episodes,
+            log_path=save_path,
+            eval_freq=args.eval_freq,
+            deterministic=not is_atari,
+        )
 
-            callbacks.append(eval_callback)
+        callbacks.append(eval_callback)
 
     # TODO: check for hyperparameters optimization
     # TODO: check What happens with the eval env when using frame stack
@@ -380,20 +405,14 @@ if __name__ == "__main__":  # noqa: C901
             args.trained_agent, env=env, seed=args.seed, tensorboard_log=tensorboard_log, verbose=args.verbose, **hyperparams
         )
 
-        exp_folder = args.trained_agent.split(".zip")[0]
-        if normalize:
-            print("Loading saved running average")
-            stats_path = os.path.join(exp_folder, env_id)
-            if os.path.exists(os.path.join(stats_path, "vecnormalize.pkl")):
-                env = VecNormalize.load(os.path.join(stats_path, "vecnormalize.pkl"), env)
-            else:
-                # Legacy:
-                env.load_running_average(exp_folder)
-
         replay_buffer_path = os.path.join(os.path.dirname(args.trained_agent), "replay_buffer.pkl")
         if os.path.exists(replay_buffer_path):
             print("Loading replay buffer")
-            model.load_replay_buffer(replay_buffer_path)
+            if args.algo == "her":
+                # if we use HER we have to add an additional argument
+                model.load_replay_buffer(replay_buffer_path, args.truncate_last_trajectory)
+            else:
+                model.load_replay_buffer(replay_buffer_path)
 
     elif args.optimize_hyperparameters:
 
@@ -467,7 +486,7 @@ if __name__ == "__main__":  # noqa: C901
     print(f"Log path: {save_path}")
 
     try:
-        model.learn(n_timesteps, eval_log_path=save_path, eval_env=eval_env, eval_freq=args.eval_freq, **kwargs)
+        model.learn(n_timesteps, **kwargs)
     except KeyboardInterrupt:
         pass
     finally:

@@ -10,7 +10,7 @@ def _assert_eq(left, right):
 
 
 N_STEPS = 100
-N_TRIALS = 3
+N_TRIALS = 2
 N_JOBS = 1
 
 ALGOS = ("ppo", "a2c")
@@ -27,6 +27,8 @@ for algo in ALGOS:
 experiments["sac-Pendulum-v0"] = ("sac", "Pendulum-v0")
 # Test for TD3
 experiments["td3-Pendulum-v0"] = ("td3", "Pendulum-v0")
+# Test for HER
+experiments["her-parking-v0"] = ("her", "parking-v0")
 
 # Clean up
 if os.path.isdir(LOG_FOLDER):
@@ -38,6 +40,11 @@ if os.path.isdir(LOG_FOLDER):
 @pytest.mark.parametrize("experiment", experiments.keys())
 def test_optimize(sampler, pruner, experiment):
     algo, env_id = experiments[experiment]
+
+    # Skip slow tests
+    if algo not in {"a2c", "ppo"} and not (sampler == "random" and pruner == "median"):
+        pytest.skip("Skipping slow tests")
+
     args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id, "-params", 'policy_kwargs:"dict(net_arch=[32])"', "n_envs:1"]
     args += ["n_steps:10"] if algo == "ppo" else []
     args += [

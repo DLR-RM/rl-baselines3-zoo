@@ -3,7 +3,11 @@ NeckEnvRelative-v2:
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
-    - utils.wrappers.TimeFeatureWrapper
+    - utils.wrappers.TimeFeatureWrapper:
+        test_mode: False
+    # - utils.wrappers.LowPassFilterWrapper:
+    #     freq: 2.0
+    #     df: 25.0
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4

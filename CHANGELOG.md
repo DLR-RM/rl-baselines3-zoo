@@ -1,17 +1,22 @@
-## Pre-Release 0.9.0a2 (WIP)
+## Pre-Release 0.10.0a0 (WIP)
 
 ### Breaking Changes
 
 ### New Features
+- Added support for `HER`
+- Added low-pass filter wrappers in `utils/wrappers.py`
 
 ### Bug fixes
 - Fixed `TimeFeatureWrapper` inferring max timesteps
 - Fixed ``flatten_dict_observations`` in `utils/utils.py` for recent Gym versions (@ManifoldFR)
+- `VecNormalize` now takes `gamma` hyperparameter into account
+- Fix loading of `VecNormalize` when continuing training or using trained agent
 
 ### Documentation
 
 ### Other
 - Added tests for the wrappers
+- Updated plotting script
 
 
 ## Release 0.8.0 (2020-08-04)
