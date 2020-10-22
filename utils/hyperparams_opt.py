@@ -3,6 +3,7 @@ import optuna
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import RandomSampler, TPESampler
+from stable_baselines3 import DDPG, SAC, TD3
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torch import nn as nn
 
@@ -60,6 +61,7 @@ def hyperparam_optimization(
     if sampler_method == "random":
         sampler = RandomSampler(seed=seed)
     elif sampler_method == "tpe":
+        # TODO: try with multivariate=True
         sampler = TPESampler(n_startup_trials=n_startup_trials, seed=seed)
     elif sampler_method == "skopt":
         # cf https://scikit-optimize.github.io/#skopt.Optimizer
@@ -487,10 +489,35 @@ def sample_dqn_params(trial):
     return hyperparams
 
 
+def sample_her_params(trial):
+    """
+    Sampler for HER hyperparams.
+
+    :param trial: (optuna.trial)
+    :return: (dict)
+    """
+    model_class_str = {
+        SAC: "sac",
+        DDPG: "ddpg",
+        TD3: "td3",
+    }[trial.model_class]
+
+    hyperparams = HYPERPARAMS_SAMPLER[model_class_str](trial)
+
+    hyperparams["n_sampled_goal"] = trial.suggest_int("n_sampled_goal", 1, 5)
+    hyperparams["goal_selection_strategy"] = trial.suggest_categorical(
+        "goal_selection_strategy", ["final", "episode", "future"]
+    )
+    hyperparams["online_sampling"] = trial.suggest_categorical("online_sampling", [True, False])
+
+    return hyperparams
+
+
 HYPERPARAMS_SAMPLER = {
     "a2c": sample_a2c_params,
     "ddpg": sample_ddpg_params,
     "dqn": sample_dqn_params,
+    "her": sample_her_params,
     "sac": sample_sac_params,
     "ppo": sample_ppo_params,
     "td3": sample_td3_params,

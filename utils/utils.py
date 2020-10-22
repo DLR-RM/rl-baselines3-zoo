@@ -6,6 +6,7 @@ from typing import Dict, Tuple
 
 import gym
 import yaml
+
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.utils import set_random_seed
@@ -24,6 +25,7 @@ ALGOS = {
     "ddpg": DDPG,
     "dqn": DQN,
     "ppo": PPO,
+    "her": HER,
     "sac": SAC,
     "td3": TD3,
 }
@@ -195,7 +197,7 @@ def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None, env_kwarg
         # Wrap first with a monitor (e.g. for Atari env where reward clipping is used)
         log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
         # Monitor success rate too for the real robot
-        info_keywords = ("is_success",) if "NeckEnv" in env_id else ()
+        info_keywords = ("is_success",) if "Neck" in env_id else ()
         env = Monitor(env, log_file, info_keywords=info_keywords)
 
         # Dict observation space is currently not supported.
@@ -256,20 +258,18 @@ def create_test_env(
         if hyperparams["normalize"]:
             print("Loading running average")
             print("with params: {}".format(hyperparams["normalize_kwargs"]))
-            env = VecNormalize(env, training=False, **hyperparams["normalize_kwargs"])
-
-            if os.path.exists(os.path.join(stats_path, "vecnormalize.pkl")):
-                env = VecNormalize.load(os.path.join(stats_path, "vecnormalize.pkl"), env)
+            path_ = os.path.join(stats_path, "vecnormalize.pkl")
+            if os.path.exists(path_):
+                env = VecNormalize.load(path_, env)
                 # Deactivate training and reward normalization
                 env.training = False
                 env.norm_reward = False
             else:
-                # Legacy:
-                env.load_running_average(stats_path)
+                raise ValueError(f"VecNormalize stats {path_} not found")
 
         n_stack = hyperparams.get("frame_stack", 0)
         if n_stack > 0:
-            print("Stacking {} frames".format(n_stack))
+            print(f"Stacking {n_stack} frames")
             env = VecFrameStack(env, n_stack)
     return env
 
