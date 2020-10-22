@@ -61,6 +61,7 @@ def hyperparam_optimization(
     if sampler_method == "random":
         sampler = RandomSampler(seed=seed)
     elif sampler_method == "tpe":
+        # TODO: try with multivariate=True
         sampler = TPESampler(n_startup_trials=n_startup_trials, seed=seed)
     elif sampler_method == "skopt":
         # cf https://scikit-optimize.github.io/#skopt.Optimizer
@@ -495,19 +496,19 @@ def sample_her_params(trial):
     :param trial: (optuna.trial)
     :return: (dict)
     """
+    model_class_str = {
+        SAC: "sac",
+        DDPG: "ddpg",
+        TD3: "td3",
+    }[trial.model_class]
 
-    if trial.model_class == SAC:
-        hyperparams = sample_sac_params(trial)
-    elif trial.model_class == DDPG:
-        hyperparams = sample_ddpg_params(trial)
-    elif trial.model_class == TD3:
-        hyperparams = sample_td3_params(trial)
+    hyperparams = HYPERPARAMS_SAMPLER[model_class_str](trial)
 
-    hyperparams["model_class"] = trial.suggest_categorical("model_class", ["SAC", "DDPG", "TD3"])
-    hyperparams["n_goals"] = trial.suggest_int("n_goals", 1, 5)
-    hyperparams["goal_strategy"] = trial.suggest_categorical("goal_strategy", ["random", "final", "episode", "future"])
+    hyperparams["n_sampled_goal"] = trial.suggest_int("n_sampled_goal", 1, 5)
+    hyperparams["goal_selection_strategy"] = trial.suggest_categorical(
+        "goal_selection_strategy", ["final", "episode", "future"]
+    )
     hyperparams["online_sampling"] = trial.suggest_categorical("online_sampling", [True, False])
-    hyperparams["her_ratio"] = trial.suggest_int("her_ratio", 1, 5)
 
     return hyperparams
 

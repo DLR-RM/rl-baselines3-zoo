@@ -21,6 +21,7 @@ RUN \
     mkdir -p ${CODE_DIR}/rl_zoo && \
     pip uninstall -y stable-baselines3 && \
     pip install -r /tmp/requirements.txt && \
+    pip install git+https://github.com/eleurent/highway-env && \
     rm -rf $HOME/.cache/pip
 
 ENV PATH=$VENV/bin:$PATH

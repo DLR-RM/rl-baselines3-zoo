@@ -91,6 +91,7 @@ class TimeFeatureWrapper(gym.Wrapper):
         # Optionnaly: concatenate [time_feature, time_feature ** 2]
         return np.concatenate((obs, [time_feature]))
 
+
 class TimeFeatureObsDictWrapper(gym.Wrapper):
     """
     Add remaining time to observation space for fixed length episodes.
@@ -147,6 +148,7 @@ class TimeFeatureObsDictWrapper(gym.Wrapper):
             time_feature = 1.0
         obs["observation"] = np.concatenate((obs["observation"], [time_feature]))
         return obs
+
 
 class ActionNoiseWrapper(gym.Wrapper):
     """
