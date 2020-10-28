@@ -1,3 +1,16 @@
+## Pre-Release 0.11.0a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+
+### Documentation
+
+### Other
+- Refactored train script, now uses a `ExperimentManager` class
+
 ## Pre-Release 0.10.0 (2020-10-28)
 
 ### Breaking Changes
