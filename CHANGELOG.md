@@ -1,4 +1,4 @@
-## Pre-Release 0.10.0a0 (WIP)
+## Pre-Release 0.10.0 (2020-10-28)
 
 ### Breaking Changes
 
