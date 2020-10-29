@@ -124,10 +124,6 @@ if __name__ == "__main__":  # noqa: C901
             args.trained_agent
         ), "The trained_agent must be a valid path to a .zip file"
 
-    is_atari = False
-    if "NoFrameskip" in env_id:
-        is_atari = True
-
     print("=" * 10, env_id, "=" * 10)
     print(f"Seed: {args.seed}")
 
@@ -153,7 +149,6 @@ if __name__ == "__main__":  # noqa: C901
         args.pruner,
         n_startup_trials=args.n_startup_trials,
         n_evaluations=args.n_evaluations,
-        is_atari=is_atari,
         truncate_last_trajectory=args.truncate_last_trajectory,
         uuid_str=uuid_str,
         seed=args.seed,

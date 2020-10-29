@@ -5,6 +5,7 @@
 ### New Features
 
 ### Bug fixes
+- Improved detection of Atari games
 
 ### Documentation
 

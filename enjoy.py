@@ -12,6 +12,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv, VecEnvWrapper
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 from utils.utils import StoreDict
+from utils.exp_manager import ExperimentManager
 
 
 def main():  # noqa: C901
@@ -103,7 +104,7 @@ def main():  # noqa: C901
             print(f"Setting torch.num_threads to {args.num_threads}")
         th.set_num_threads(args.num_threads)
 
-    is_atari = "NoFrameskip" in env_id
+    is_atari = ExperimentManager.is_atari(env_id)
 
     stats_path = os.path.join(log_path, env_id)
     hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
