@@ -275,6 +275,15 @@ class ExperimentManager(object):
             del hyperparams["normalize"]
         return hyperparams
 
+    def _preprocess_her_model_class(self, hyperparams: Dict[str, Any]) -> Dict[str, Any]:
+        # HER is only a wrapper around an algo
+        if self.algo == "her":
+            model_class = hyperparams["model_class"]
+            assert model_class in {"sac", "ddpg", "dqn", "td3", "tqc"}, f"{model_class} is not compatible with HER"
+            # Retrieve the model class
+            hyperparams["model_class"] = ALGOS[hyperparams["model_class"]]
+        return hyperparams
+
     def _preprocess_hyperparams(
         self, hyperparams: Dict[str, Any]
     ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback]]:
@@ -283,13 +292,8 @@ class ExperimentManager(object):
         if self.verbose > 0:
             print(f"Using {self.n_envs} environments")
 
-        # HER is only a wrapper around an algo
-        if self.algo == "her":
-            model_class = hyperparams["model_class"]
-            assert model_class in {"sac", "ddpg", "dqn", "td3", "tqc"}, f"{model_class} is not compatible with HER"
-            # Retrieve the model class
-            hyperparams["model_class"] = ALGOS[hyperparams["model_class"]]
-
+        # Convert model class string to an object if needed (when using HER)
+        hyperparams = self._preprocess_her_model_class(hyperparams)
         hyperparams = self._preprocess_schedules(hyperparams)
 
         # Should we overwrite the number of timesteps?
@@ -412,7 +416,6 @@ class ExperimentManager(object):
     @staticmethod
     def is_robotics_env(env_id: str) -> bool:
         return "gym.envs.robotics" in gym.envs.registry.env_specs[env_id].entry_point
-
 
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """

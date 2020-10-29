@@ -157,12 +157,10 @@ if __name__ == "__main__":  # noqa: C901
         verbose=args.verbose,
     )
 
+    # Prepare experiment and launch hyperparameter optimization if needed
     model = exp_manager.setup_experiment()
 
-    # Hyperparameter optimization
-    if model is None:
-        exit()
-
-    exp_manager.learn(model)
-
-    exp_manager.save_trained_model(model)
+    # Normal training
+    if model is not None:
+        exp_manager.learn(model)
+        exp_manager.save_trained_model(model)

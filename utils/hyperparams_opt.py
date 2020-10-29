@@ -18,7 +18,7 @@ def hyperparam_optimization(
     env_fn,
     n_trials=10,
     n_timesteps=5000,
-    hyperparams=None,  # noqa: C901
+    hyperparams=None,
     n_jobs=1,
     sampler_method="tpe",
     pruner_method="median",
