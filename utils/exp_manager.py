@@ -172,13 +172,19 @@ class ExperimentManager(object):
         try:
             model.learn(self.n_timesteps, **kwargs)
         except KeyboardInterrupt:
+            # this allows to save the model when interrupting training
             pass
         finally:
             # Release resources
             model.env.close()
 
-    def save_trained_model(self, model: BaseAlgorithm):
-        # Save trained model
+    def save_trained_model(self, model: BaseAlgorithm) -> None:
+        """
+        Save trained model optionally with its replay buffer
+        and ``VecNormalize`` statistics
+
+        :param model:
+        """
         print(f"Saving to {self.save_path}")
         model.save(f"{self.save_path}/{self.env_id}")
 
@@ -190,10 +196,12 @@ class ExperimentManager(object):
             # Important: save the running average, for testing the agent we need that normalization
             model.get_vec_normalize_env().save(os.path.join(self.params_path, "vecnormalize.pkl"))
 
-    def _save_config(self, saved_hyperparams: Dict[str, Any]):
+    def _save_config(self, saved_hyperparams: Dict[str, Any]) -> None:
         """
         Save unprocessed hyperparameters, this can be use later
         to reproduce an experiment.
+
+        :param saved_hyperparams:
         """
         # Save hyperparams
         with open(os.path.join(self.params_path, "config.yml"), "w") as f:
@@ -222,14 +230,6 @@ class ExperimentManager(object):
             hyperparams.update(self.hyperparams)
         # Sort hyperparams that will be saved
         saved_hyperparams = OrderedDict([(key, hyperparams[key]) for key in sorted(hyperparams.keys())])
-
-        # model_class = self.algo
-        # HER is only a wrapper around an algo
-        if self.algo == "her":
-            model_class = saved_hyperparams["model_class"]
-            assert model_class in {"sac", "ddpg", "dqn", "td3", "tqc"}, f"{model_class} is not compatible with HER"
-            # Retrieve the model class
-            hyperparams["model_class"] = ALGOS[saved_hyperparams["model_class"]]
 
         if self.verbose > 0:
             pprint(saved_hyperparams)
@@ -282,6 +282,13 @@ class ExperimentManager(object):
 
         if self.verbose > 0:
             print(f"Using {self.n_envs} environments")
+
+        # HER is only a wrapper around an algo
+        if self.algo == "her":
+            model_class = hyperparams["model_class"]
+            assert model_class in {"sac", "ddpg", "dqn", "td3", "tqc"}, f"{model_class} is not compatible with HER"
+            # Retrieve the model class
+            hyperparams["model_class"] = ALGOS[hyperparams["model_class"]]
 
         hyperparams = self._preprocess_schedules(hyperparams)
 
