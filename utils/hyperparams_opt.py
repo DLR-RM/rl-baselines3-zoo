@@ -108,8 +108,7 @@ def hyperparam_optimization(
         eval_env = env_fn(n_envs=1, eval_env=True)
         # Account for parallel envs
         eval_freq_ = max(eval_freq // model.get_env().num_envs, 1)
-        # TODO: Use non-deterministic eval for Atari
-        # or use maximum number of steps to avoid infinite loop
+        # Use non-deterministic eval for Atari
         eval_callback = TrialEvalCallback(
             eval_env, trial, n_eval_episodes=n_eval_episodes, eval_freq=eval_freq_, deterministic=deterministic_eval
         )

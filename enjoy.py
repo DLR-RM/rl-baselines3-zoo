@@ -11,8 +11,8 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv, VecEnvWrapper
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
-from utils.utils import StoreDict
 from utils.exp_manager import ExperimentManager
+from utils.utils import StoreDict
 
 
 def main():  # noqa: C901

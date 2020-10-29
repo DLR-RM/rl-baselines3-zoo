@@ -410,35 +410,15 @@ class ExperimentManager(object):
     def is_atari(env_id: str) -> bool:
         return "AtariEnv" in gym.envs.registry.env_specs[env_id].entry_point
 
-    def create_envs(self, n_envs: int, eval_env: bool = False, no_log: bool = False) -> VecEnv:
+    def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """
-        Create the environment and wrap it if necessary.
+        Wrap the env into a VecNormalize wrapper if needed
+        and load saved statistics when present.
 
-        :param n_envs:
-        :param eval_env: Whether is it an environment used for evaluation or not
-        :param no_log: Do not log training when doing hyperparameter optim
-            (issue with writing the same file)
+        :param env:
+        :param eval_env:
         :return:
         """
-        # Do not log eval env (issue with writing the same file)
-        log_dir = None if eval_env or no_log else self.save_path
-
-        # env = SubprocVecEnv([make_env(env_id, i, self.seed) for i in range(n_envs)])
-        # On most env, SubprocVecEnv does not help and is quite memory hungry
-        env = DummyVecEnv(
-            [
-                make_env(
-                    self.env_id,
-                    i,
-                    self.seed,
-                    log_dir=log_dir,
-                    env_kwargs=self.env_kwargs,
-                    wrapper_class=self.env_wrapper,
-                )
-                for i in range(n_envs)
-            ]
-        )
-
         # Pretrained model, load normalization
         path_ = os.path.join(os.path.dirname(self.trained_agent), self.env_id)
         path_ = os.path.join(path_, "vecnormalize.pkl")
@@ -467,6 +447,40 @@ class ExperimentManager(object):
                 else:
                     print("Normalizing input and reward")
             env = VecNormalize(env, **local_normalize_kwargs)
+        return env
+
+    def create_envs(self, n_envs: int, eval_env: bool = False, no_log: bool = False) -> VecEnv:
+        """
+        Create the environment and wrap it if necessary.
+
+        :param n_envs:
+        :param eval_env: Whether is it an environment used for evaluation or not
+        :param no_log: Do not log training when doing hyperparameter optim
+            (issue with writing the same file)
+        :return: the vectorized environment, with appropriate wrappers
+        """
+        # Do not log eval env (issue with writing the same file)
+        log_dir = None if eval_env or no_log else self.save_path
+
+        # env = SubprocVecEnv([make_env(env_id, i, self.seed) for i in range(n_envs)])
+        # On most env, SubprocVecEnv does not help and is quite memory hungry
+        env = DummyVecEnv(
+            [
+                make_env(
+                    self.env_id,
+                    i,
+                    self.seed,
+                    log_dir=log_dir,
+                    env_kwargs=self.env_kwargs,
+                    wrapper_class=self.env_wrapper,
+                )
+                for i in range(n_envs)
+            ]
+        )
+
+        # Wrap the env into a VecNormalize wrapper if needed
+        # and load saved statistics when present
+        env = self._maybe_normalize(env, eval_env)
 
         # Optional Frame-stacking
         if self.frame_stack is not None:
@@ -475,6 +489,8 @@ class ExperimentManager(object):
             if self.verbose > 0:
                 print(f"Stacking {n_stack} frames")
 
+        # Wrap if needed to re-order channels
+        # (switch from channel last to channel first convention)
         if is_image_space(env.observation_space):
             if self.verbose > 0:
                 print("Wrapping into a VecTransposeImage")
@@ -540,8 +556,8 @@ class ExperimentManager(object):
 
         data_frame = hyperparam_optimization(
             self.algo,
-            create_model,
-            self.create_envs,
+            model_fn=create_model,
+            env_fn=self.create_envs,
             n_trials=self.n_trials,
             n_timesteps=self.n_timesteps,
             hyperparams=hyperparams,
