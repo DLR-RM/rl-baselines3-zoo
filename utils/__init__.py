@@ -6,5 +6,4 @@ from .utils import (
     get_trained_models,
     get_wrapper_class,
     linear_schedule,
-    make_env,
 )

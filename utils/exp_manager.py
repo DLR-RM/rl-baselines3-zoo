@@ -1,4 +1,6 @@
 import argparse
+import csv
+import json
 import os
 import time
 import warnings
@@ -11,6 +13,8 @@ import numpy as np
 import yaml
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
+from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
@@ -26,7 +30,7 @@ import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.hyperparams_opt import hyperparam_optimization
 from utils.noise import LinearNormalActionNoise
-from utils.utils import ALGOS, get_callback_class, get_latest_run_id, get_wrapper_class, linear_schedule, make_env
+from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
 class ExperimentManager(object):
@@ -312,7 +316,7 @@ class ExperimentManager(object):
         if "env_wrapper" in hyperparams.keys():
             del hyperparams["env_wrapper"]
 
-        callbacks = get_callback_class(hyperparams)
+        callbacks = get_callback_list(hyperparams)
         if "callback" in hyperparams.keys():
             del hyperparams["callback"]
 
@@ -378,18 +382,6 @@ class ExperimentManager(object):
             # Account for the number of parallel environments
             self.eval_freq = max(self.eval_freq // self.n_envs, 1)
 
-            # if "NeckEnv" in env_id:
-            #     # Use the training env as eval env when using the neck
-            #     # because there is only one robot
-            #     # there will be an issue with the reset
-            #     eval_callback = EvalCallback(
-            #         env,
-            #         callback_on_new_best=None,
-            #         best_model_save_path=save_path,
-            #         log_path=save_path,
-            #         eval_freq=args.eval_freq,
-            #     )
-            #     callbacks.append(eval_callback)
             if self.verbose > 0:
                 print("Creating test environment")
 
@@ -409,6 +401,11 @@ class ExperimentManager(object):
     @staticmethod
     def is_atari(env_id: str) -> bool:
         return "AtariEnv" in gym.envs.registry.env_specs[env_id].entry_point
+
+    @staticmethod
+    def is_robotics_env(env_id: str) -> bool:
+        return "gym.envs.robotics" in gym.envs.registry.env_specs[env_id].entry_point
+
 
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """
@@ -449,6 +446,29 @@ class ExperimentManager(object):
             env = VecNormalize(env, **local_normalize_kwargs)
         return env
 
+    def _log_success_rate(self, env: VecEnv) -> None:
+        # Hack to log the success rate
+        # TODO: allow to pass keyword arguments to the Monitor class
+        monitor: gym.Env = env.envs[0]
+        # unwrap
+        while not isinstance(monitor, Monitor):
+            monitor = monitor.env
+
+        if monitor.file_handler is None:
+            return
+
+        filename = monitor.file_handler.name
+        monitor.file_handler.close()
+
+        monitor.info_keywords = ("is_success",)
+        monitor.file_handler = open(filename, "wt")
+        monitor.file_handler.write(
+            "#%s\n" % json.dumps({"t_start": monitor.t_start, "env_id": monitor.env.spec and monitor.env.spec.id})
+        )
+        monitor.logger = csv.DictWriter(monitor.file_handler, fieldnames=("r", "l", "t") + monitor.info_keywords)
+        monitor.logger.writeheader()
+        monitor.file_handler.flush()
+
     def create_envs(self, n_envs: int, eval_env: bool = False, no_log: bool = False) -> VecEnv:
         """
         Create the environment and wrap it if necessary.
@@ -464,19 +484,20 @@ class ExperimentManager(object):
 
         # env = SubprocVecEnv([make_env(env_id, i, self.seed) for i in range(n_envs)])
         # On most env, SubprocVecEnv does not help and is quite memory hungry
-        env = DummyVecEnv(
-            [
-                make_env(
-                    self.env_id,
-                    i,
-                    self.seed,
-                    log_dir=log_dir,
-                    env_kwargs=self.env_kwargs,
-                    wrapper_class=self.env_wrapper,
-                )
-                for i in range(n_envs)
-            ]
+        env = make_vec_env(
+            env_id=self.env_id,
+            n_envs=n_envs,
+            seed=self.seed,
+            env_kwargs=self.env_kwargs,
+            monitor_dir=log_dir,
+            wrapper_class=self.env_wrapper,
+            vec_env_cls=DummyVecEnv,
+            vec_env_kwargs=None,
         )
+
+        # Special case for GoalEnvs: log success rate too
+        if "Neck" in self.env_id or self.is_robotics_env(self.env_id):
+            self._log_success_rate(env)
 
         # Wrap the env into a VecNormalize wrapper if needed
         # and load saved statistics when present

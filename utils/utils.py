@@ -7,8 +7,7 @@ from typing import Dict, Tuple
 import gym
 import yaml
 from stable_baselines3 import A2C, DDPG, DQN, HER, PPO, SAC, TD3
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.utils import set_random_seed
+from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecFrameStack, VecNormalize
 
 try:
@@ -113,7 +112,7 @@ def get_wrapper_class(hyperparams):
         return None
 
 
-def get_callback_class(hyperparams):
+def get_callback_list(hyperparams):
     """
     Get one or more Callback class specified as a hyper-parameter
     "callback".
@@ -170,47 +169,6 @@ def get_callback_class(hyperparams):
     return callbacks
 
 
-def make_env(env_id, rank=0, seed=0, log_dir=None, wrapper_class=None, env_kwargs=None):
-    """
-    Helper function to multiprocess training
-    and log the progress.
-
-    :param env_id: (str)
-    :param rank: (int)
-    :param seed: (int)
-    :param log_dir: (str)
-    :param wrapper_class: (Type[gym.Wrapper]) a subclass of gym.Wrapper
-        to wrap the original env with
-    :param env_kwargs: (Dict[str, Any]) Optional keyword argument to pass to the env constructor
-    """
-    if log_dir is not None:
-        os.makedirs(log_dir, exist_ok=True)
-
-    if env_kwargs is None:
-        env_kwargs = {}
-
-    def _init():
-        set_random_seed(seed + rank)
-        env = gym.make(env_id, **env_kwargs)
-
-        # Wrap first with a monitor (e.g. for Atari env where reward clipping is used)
-        log_file = os.path.join(log_dir, str(rank)) if log_dir is not None else None
-        # Monitor success rate too for the real robot
-        info_keywords = ("is_success",) if "Neck" in env_id else ()
-        env = Monitor(env, log_file, info_keywords=info_keywords)
-
-        # Dict observation space is currently not supported.
-        # https://github.com/hill-a/stable-baselines/issues/321
-        # We allow a Gym env wrapper (a subclass of gym.Wrapper)
-        if wrapper_class:
-            env = wrapper_class(env)
-
-        env.seed(seed + rank)
-        return env
-
-    return _init
-
-
 def create_test_env(
     env_id, n_envs=1, stats_path=None, seed=0, log_dir="", should_render=True, hyperparams=None, env_kwargs=None
 ):
@@ -227,29 +185,29 @@ def create_test_env(
     :param env_kwargs: (Dict[str, Any]) Optional keyword argument to pass to the env constructor
     :return: (gym.Env)
     """
-    # HACK to save logs
-    # if log_dir is not None:
-    #     os.environ["OPENAI_LOG_FORMAT"] = 'csv'
-    #     os.environ["OPENAI_LOGDIR"] = os.path.abspath(log_dir)
-    #     os.makedirs(log_dir, exist_ok=True)
-    #     logger.configure()
-
     # Create the environment and wrap it if necessary
     env_wrapper = get_wrapper_class(hyperparams)
     if "env_wrapper" in hyperparams.keys():
         del hyperparams["env_wrapper"]
 
-    if n_envs > 1:
-        # start_method = 'spawn' for thread safe
-        env = SubprocVecEnv(
-            [make_env(env_id, i, seed, log_dir, wrapper_class=env_wrapper, env_kwargs=env_kwargs) for i in range(n_envs)]
-        )
-    # Pybullet envs does not follow gym.render() interface
-    elif "Bullet" in env_id:
+    vec_env_kwargs = {}
+    vec_env_cls = DummyVecEnv
+    if n_envs > 1 or "Bullet" in env_id:
         # HACK: force SubprocVecEnv for Bullet env
-        env = SubprocVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper, env_kwargs=env_kwargs)])
-    else:
-        env = DummyVecEnv([make_env(env_id, 0, seed, log_dir, wrapper_class=env_wrapper, env_kwargs=env_kwargs)])
+        # as Pybullet envs does not follow gym.render() interface
+        vec_env_cls = SubprocVecEnv
+        # start_method = 'spawn' for thread safe
+
+    env = make_vec_env(
+        env_id,
+        n_envs=n_envs,
+        monitor_dir=log_dir,
+        seed=seed,
+        wrapper_class=env_wrapper,
+        env_kwargs=env_kwargs,
+        vec_env_cls=vec_env_cls,
+        vec_env_kwargs=vec_env_kwargs,
+    )
 
     # Load saved stats for normalizing input and rewards
     # And optionally stack frames
