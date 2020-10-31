@@ -224,7 +224,7 @@ if __name__ == "__main__":  # noqa: C901
 
             for i in range(n_iterations):
                 dataset = to_mdp_dataset(model.replay_buffer)
-                offline_model.fit(dataset.episodes, n_epochs=n_epochs, save_metrics=False)
+                offline_model.fit(dataset.episodes, n_epochs=n_epochs, save_metrics=False, tensorboard=False)
 
                 mean_reward, std_reward = evaluate_policy_add_to_buffer(
                     offline_model,
