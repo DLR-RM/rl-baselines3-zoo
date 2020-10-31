@@ -78,7 +78,7 @@ class ExperimentManager(object):
         self.algo = algo
         self.env_id = env_id
         # Custom params
-        self.hyperparams = hyperparams
+        self.custom_hyperparams = hyperparams
         self.env_kwargs = {} if env_kwargs is None else env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False
@@ -95,7 +95,7 @@ class ExperimentManager(object):
 
         self.n_envs = 1  # it will be updated when reading hyperparams
         self.n_actions = None  # For DDPG/TD3 action noise objects
-        self.hyperparams = {}
+        self._hyperparams = {}
 
         self.trained_agent = trained_agent
         self.continue_training = trained_agent.endswith(".zip") and os.path.isfile(trained_agent)
@@ -146,10 +146,10 @@ class ExperimentManager(object):
         # Create env to have access to action space for action noise
         env = self.create_envs(self.n_envs, no_log=False)
 
-        self.hyperparams = self._preprocess_action_noise(hyperparams, env)
+        self._hyperparams = self._preprocess_action_noise(hyperparams, env)
 
         if self.continue_training:
-            model = self._load_pretrained_agent(self.hyperparams, env)
+            model = self._load_pretrained_agent(self._hyperparams, env)
         elif self.optimize_hyperparameters:
             return None
         else:
@@ -159,7 +159,7 @@ class ExperimentManager(object):
                 tensorboard_log=self.tensorboard_log,
                 seed=self.seed,
                 verbose=self.verbose,
-                **self.hyperparams,
+                **self._hyperparams,
             )
 
         self._save_config(saved_hyperparams)
@@ -232,9 +232,9 @@ class ExperimentManager(object):
             else:
                 raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_id}")
 
-        if self.hyperparams is not None:
+        if self.custom_hyperparams is not None:
             # Overwrite hyperparams if needed
-            hyperparams.update(self.hyperparams)
+            hyperparams.update(self.custom_hyperparams)
         # Sort hyperparams that will be saved
         saved_hyperparams = OrderedDict([(key, hyperparams[key]) for key in sorted(hyperparams.keys())])
 
@@ -594,11 +594,11 @@ class ExperimentManager(object):
 
     def objective(self, trial: optuna.Trial) -> float:
 
-        kwargs = self.hyperparams.copy()
+        kwargs = self._hyperparams.copy()
 
         trial.model_class = None
         if self.algo == "her":
-            trial.model_class = self.hyperparams.get("model_class", None)
+            trial.model_class = self._hyperparams.get("model_class", None)
 
         # Hack to use DDPG/TD3 noise sampler
         trial.n_actions = self.n_actions
