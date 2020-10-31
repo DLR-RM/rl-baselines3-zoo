@@ -10,10 +10,19 @@ import seaborn
 import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
+try:
+    from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL
+    from d3rlpy.sb3.convert import to_mdp_dataset
+    from d3rlpy.sb3.wrappers import SB3Wrapper
+
+    offline_algos = dict(awr=AWR, awac=AWAC, bc=BC, bcq=BCQ, bear=BEAR, cql=CQL)
+except ImportError:
+    offline_algos = {}
+
 # Register custom envs
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils.exp_manager import ExperimentManager
-from utils.utils import ALGOS, StoreDict
+from utils.utils import ALGOS, StoreDict, evaluate_policy_add_to_buffer
 
 seaborn.set()
 
@@ -88,6 +97,17 @@ if __name__ == "__main__":  # noqa: C901
         help="Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)",
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
+    parser.add_argument(
+        "--offline-algo", help="Offline RL Algorithm", type=str, required=False, choices=list(offline_algos.keys())
+    )
+    parser.add_argument("-b", "--pretrain-buffer", help="Path to a saved replay buffer for pretraining", type=str)
+    parser.add_argument(
+        "--pretrain-params",
+        type=str,
+        nargs="+",
+        action=StoreDict,
+        help="Optional arguments for pretraining with replay buffer",
+    )
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -159,6 +179,65 @@ if __name__ == "__main__":  # noqa: C901
 
     # Prepare experiment and launch hyperparameter optimization if needed
     model = exp_manager.setup_experiment()
+
+    if args.pretrain_buffer is not None and model is not None:
+        model.load_replay_buffer(args.pretrain_buffer)
+        print(f"Buffer size = {model.replay_buffer.buffer_size}")
+        # Artificially reduce buffer size
+        # model.replay_buffer.full = False
+        # model.replay_buffer.pos = 5000
+
+        print(f"{model.replay_buffer.size()} transitions in the replay buffer")
+
+        n_iterations = args.pretrain_params.get("n_iterations", 10)
+        n_epochs = args.pretrain_params.get("n_epochs", 1)
+        q_func_type = args.pretrain_params.get("q_func_type")
+        batch_size = args.pretrain_params.get("batch_size", 512)
+        # n_action_samples = args.pretrain_params.get("n_action_samples", 1)
+        n_eval_episodes = args.pretrain_params.get("n_eval_episodes", 5)
+        add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
+        deterministic = args.pretrain_params.get("deterministic", True)
+        for arg_name in {
+            "n_iterations",
+            "n_epochs",
+            "q_func_type",
+            "batch_size",
+            "n_eval_episodes",
+            "add_to_buffer",
+            "deterministic",
+        }:
+            if arg_name in args.pretrain_params:
+                del args.pretrain_params[arg_name]
+        try:
+            assert args.offline_algo is not None and offline_algos is not None
+            kwargs_ = {} if q_func_type is None else dict(q_func_type=q_func_type)
+            kwargs_.update(args.pretrain_params)
+
+            offline_model = offline_algos[args.offline_algo](
+                batch_size=batch_size,
+                **kwargs_,
+            )
+            offline_model = SB3Wrapper(offline_model)
+            offline_model.use_sde = False
+            # break the logger...
+            # offline_model.replay_buffer = model.replay_buffer
+
+            for i in range(n_iterations):
+                dataset = to_mdp_dataset(model.replay_buffer)
+                offline_model.fit(dataset.episodes, n_epochs=n_epochs, save_metrics=False)
+
+                mean_reward, std_reward = evaluate_policy_add_to_buffer(
+                    offline_model,
+                    model.get_env(),
+                    n_eval_episodes=n_eval_episodes,
+                    replay_buffer=model.replay_buffer if add_to_buffer else None,
+                    deterministic=deterministic,
+                )
+                print(f"Iteration {i + 1} training, mean_reward={mean_reward:.2f} +/- {std_reward:.2f}")
+        except KeyboardInterrupt:
+            pass
+        finally:
+            print("Starting training")
 
     # Normal training
     if model is not None:
