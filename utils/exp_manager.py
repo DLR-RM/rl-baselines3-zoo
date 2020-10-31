@@ -10,7 +10,11 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import gym
 import numpy as np
+import optuna
 import yaml
+from optuna.integration.skopt import SkoptSampler
+from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
+from optuna.samplers import BaseSampler, RandomSampler, TPESampler
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -27,8 +31,8 @@ from torch import nn as nn  # noqa: F401
 
 # Register custom envs
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
-from utils.callbacks import SaveVecNormalizeCallback
-from utils.hyperparams_opt import hyperparam_optimization
+from utils.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
+from utils.hyperparams_opt import HYPERPARAMS_SAMPLER
 from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
@@ -90,22 +94,27 @@ class ExperimentManager(object):
         self.n_eval_episodes = n_eval_episodes
 
         self.n_envs = 1  # it will be updated when reading hyperparams
+        self.n_actions = None  # For DDPG/TD3 action noise objects
+        self.hyperparams = {}
 
         self.trained_agent = trained_agent
         self.continue_training = trained_agent.endswith(".zip") and os.path.isfile(trained_agent)
         self.truncate_last_trajectory = truncate_last_trajectory
 
-        self.is_atari = self.is_atari(env_id)
+        self._is_atari = self.is_atari(env_id)
         # Hyperparameter optimization config
         self.optimize_hyperparameters = optimize_hyperparameters
         self.storage = storage
         self.study_name = study_name
+        # maximum number of trials for finding the best hyperparams
         self.n_trials = n_trials
+        # number of parallel jobs when doing hyperparameter search
         self.n_jobs = n_jobs
         self.sampler = sampler
         self.pruner = pruner
         self.n_startup_trials = n_startup_trials
         self.n_evaluations = n_evaluations
+        self.deterministic_eval = not self.is_atari(self.env_id)
 
         # Logging
         self.log_folder = log_folder
@@ -137,12 +146,11 @@ class ExperimentManager(object):
         # Create env to have access to action space for action noise
         env = self.create_envs(self.n_envs, no_log=False)
 
-        hyperparams = self._preprocess_action_noise(hyperparams, env)
+        self.hyperparams = self._preprocess_action_noise(hyperparams, env)
 
         if self.continue_training:
-            model = self._load_pretrained_agent(hyperparams, env)
+            model = self._load_pretrained_agent(self.hyperparams, env)
         elif self.optimize_hyperparameters:
-            self._hyperparameters_optimization(hyperparams)
             return None
         else:
             # Train an agent from scratch
@@ -151,7 +159,7 @@ class ExperimentManager(object):
                 tensorboard_log=self.tensorboard_log,
                 seed=self.seed,
                 verbose=self.verbose,
-                **hyperparams,
+                **self.hyperparams,
             )
 
         self._save_config(saved_hyperparams)
@@ -219,7 +227,7 @@ class ExperimentManager(object):
             hyperparams_dict = yaml.safe_load(f)
             if self.env_id in list(hyperparams_dict.keys()):
                 hyperparams = hyperparams_dict[self.env_id]
-            elif self.is_atari:
+            elif self._is_atari:
                 hyperparams = hyperparams_dict["atari"]
             else:
                 raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_id}")
@@ -340,17 +348,18 @@ class ExperimentManager(object):
             noise_type = hyperparams["noise_type"].strip()
             noise_std = hyperparams["noise_std"]
 
-            n_actions = env.action_space.shape[0]
+            # Save for later (hyperparameter optimization)
+            self.n_actions = env.action_space.shape[0]
 
             if "normal" in noise_type:
                 hyperparams["action_noise"] = NormalActionNoise(
-                    mean=np.zeros(n_actions),
-                    sigma=noise_std * np.ones(n_actions),
+                    mean=np.zeros(self.n_actions),
+                    sigma=noise_std * np.ones(self.n_actions),
                 )
             elif "ornstein-uhlenbeck" in noise_type:
                 hyperparams["action_noise"] = OrnsteinUhlenbeckActionNoise(
-                    mean=np.zeros(n_actions),
-                    sigma=noise_std * np.ones(n_actions),
+                    mean=np.zeros(self.n_actions),
+                    sigma=noise_std * np.ones(self.n_actions),
                 )
             else:
                 raise RuntimeError(f'Unknown noise type "{noise_type}"')
@@ -395,7 +404,7 @@ class ExperimentManager(object):
                 n_eval_episodes=self.n_eval_episodes,
                 log_path=self.save_path,
                 eval_freq=self.eval_freq,
-                deterministic=not self.is_atari,
+                deterministic=self.deterministic_eval,
             )
 
             self.callbacks.append(eval_callback)
@@ -555,7 +564,98 @@ class ExperimentManager(object):
                 model.load_replay_buffer(replay_buffer_path)
         return model
 
-    def _hyperparameters_optimization(self, hyperparams: Dict[str, Any]):
+    def _create_sampler(self, sampler_method: str) -> BaseSampler:
+        # n_warmup_steps: Disable pruner until the trial reaches the given number of step.
+        if sampler_method == "random":
+            sampler = RandomSampler(seed=self.seed)
+        elif sampler_method == "tpe":
+            # TODO: try with multivariate=True
+            sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed)
+        elif sampler_method == "skopt":
+            # cf https://scikit-optimize.github.io/#skopt.Optimizer
+            # GP: gaussian process
+            # Gradient boosted regression: GBRT
+            sampler = SkoptSampler(skopt_kwargs={"base_estimator": "GP", "acq_func": "gp_hedge"})
+        else:
+            raise ValueError(f"Unknown sampler: {sampler_method}")
+        return sampler
+
+    def _create_pruner(self, pruner_method: str) -> BasePruner:
+        if pruner_method == "halving":
+            pruner = SuccessiveHalvingPruner(min_resource=1, reduction_factor=4, min_early_stopping_rate=0)
+        elif pruner_method == "median":
+            pruner = MedianPruner(n_startup_trials=self.n_startup_trials, n_warmup_steps=self.n_evaluations // 3)
+        elif pruner_method == "none":
+            # Do not prune
+            pruner = MedianPruner(n_startup_trials=self.n_trials, n_warmup_steps=self.n_evaluations)
+        else:
+            raise ValueError(f"Unknown pruner: {pruner_method}")
+        return pruner
+
+    def objective(self, trial: optuna.Trial) -> float:
+
+        kwargs = self.hyperparams.copy()
+
+        trial.model_class = None
+        if self.algo == "her":
+            trial.model_class = self.hyperparams.get("model_class", None)
+
+        # Hack to use DDPG/TD3 noise sampler
+        trial.n_actions = self.n_actions
+        # Sample candidate hyperparameters
+        kwargs.update(HYPERPARAMS_SAMPLER[self.algo](trial))
+
+        model = ALGOS[self.algo](
+            env=self.create_envs(self.n_envs, no_log=True),
+            tensorboard_log=None,
+            # We do not seed the trial
+            seed=None,
+            verbose=0,
+            **kwargs,
+        )
+
+        model.trial = trial
+
+        eval_env = self.create_envs(n_envs=1, eval_env=True)
+
+        eval_freq = int(self.n_timesteps / self.n_evaluations)
+        # Account for parallel envs
+        eval_freq_ = max(eval_freq // model.get_env().num_envs, 1)
+        # Use non-deterministic eval for Atari
+        eval_callback = TrialEvalCallback(
+            eval_env,
+            trial,
+            n_eval_episodes=self.n_eval_episodes,
+            eval_freq=eval_freq_,
+            deterministic=self.deterministic_eval,
+        )
+
+        try:
+            model.learn(self.n_timesteps, callback=eval_callback)
+            # Free memory
+            model.env.close()
+            eval_env.close()
+        except AssertionError as e:
+            # Sometimes, random hyperparams can generate NaN
+            # Free memory
+            model.env.close()
+            eval_env.close()
+            # Prune hyperparams that generate NaNs
+            print(e)
+            raise optuna.exceptions.TrialPruned()
+        is_pruned = eval_callback.is_pruned
+        reward = eval_callback.last_mean_reward
+
+        del model.env, eval_env
+        del model
+
+        if is_pruned:
+            raise optuna.exceptions.TrialPruned()
+
+        return reward
+
+    def hyperparameters_optimization(self) -> None:
+
         if self.verbose > 0:
             print("Optimizing hyperparameters")
 
@@ -570,30 +670,37 @@ class ExperimentManager(object):
             warnings.warn("Tensorboard log is deactivated when running hyperparameter optimization")
             self.tensorboard_log = None
 
-        def create_model(*_args, **kwargs) -> BaseAlgorithm:
-            """
-            Helper to create a model with different hyperparameters
-            """
-            return ALGOS[self.algo](env=self.create_envs(self.n_envs, no_log=True), tensorboard_log=None, verbose=0, **kwargs)
+        # TODO: eval each hyperparams several times to account for noisy evaluation
+        sampler = self._create_sampler(self.sampler)
+        pruner = self._create_pruner(self.pruner)
 
-        data_frame = hyperparam_optimization(
-            self.algo,
-            model_fn=create_model,
-            env_fn=self.create_envs,
-            n_trials=self.n_trials,
-            n_timesteps=self.n_timesteps,
-            hyperparams=hyperparams,
-            n_jobs=self.n_jobs,
-            seed=self.seed,
-            sampler_method=self.sampler,
-            pruner_method=self.pruner,
-            n_startup_trials=self.n_startup_trials,
-            n_evaluations=self.n_evaluations,
+        if self.verbose > 0:
+            print(f"Sampler: {self.sampler} - Pruner: {self.pruner}")
+
+        study = optuna.create_study(
+            sampler=sampler,
+            pruner=pruner,
             storage=self.storage,
             study_name=self.study_name,
-            verbose=self.verbose,
-            deterministic_eval=not self.is_atari,
+            load_if_exists=True,
+            direction="maximize",
         )
+
+        try:
+            study.optimize(self.objective, n_trials=self.n_trials, n_jobs=self.n_jobs)
+        except KeyboardInterrupt:
+            pass
+
+        print("Number of finished trials: ", len(study.trials))
+
+        print("Best trial:")
+        trial = study.best_trial
+
+        print("Value: ", trial.value)
+
+        print("Params: ")
+        for key, value in trial.params.items():
+            print(f"    {key}: {value}")
 
         report_name = (
             f"report_{self.env_id}_{self.n_trials}-trials-{self.n_timesteps}"
@@ -607,4 +714,4 @@ class ExperimentManager(object):
 
         # Write report
         os.makedirs(os.path.dirname(log_path), exist_ok=True)
-        data_frame.to_csv(log_path)
+        study.trials_dataframe().to_csv(log_path)
