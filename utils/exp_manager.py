@@ -29,7 +29,6 @@ from torch import nn as nn  # noqa: F401
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils.callbacks import SaveVecNormalizeCallback
 from utils.hyperparams_opt import hyperparam_optimization
-from utils.noise import LinearNormalActionNoise
 from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
@@ -344,30 +343,22 @@ class ExperimentManager(object):
             n_actions = env.action_space.shape[0]
 
             if "normal" in noise_type:
-                if "lin" in noise_type:
-                    final_sigma = hyperparams.get("noise_std_final", 0.0) * np.ones(n_actions)
-                    hyperparams["action_noise"] = LinearNormalActionNoise(
-                        mean=np.zeros(n_actions),
-                        sigma=noise_std * np.ones(n_actions),
-                        final_sigma=final_sigma,
-                        max_steps=self.n_timesteps,
-                    )
-                else:
-                    hyperparams["action_noise"] = NormalActionNoise(
-                        mean=np.zeros(n_actions), sigma=noise_std * np.ones(n_actions)
-                    )
+                hyperparams["action_noise"] = NormalActionNoise(
+                    mean=np.zeros(n_actions),
+                    sigma=noise_std * np.ones(n_actions),
+                )
             elif "ornstein-uhlenbeck" in noise_type:
                 hyperparams["action_noise"] = OrnsteinUhlenbeckActionNoise(
-                    mean=np.zeros(n_actions), sigma=noise_std * np.ones(n_actions)
+                    mean=np.zeros(n_actions),
+                    sigma=noise_std * np.ones(n_actions),
                 )
             else:
                 raise RuntimeError(f'Unknown noise type "{noise_type}"')
+
             print(f"Applying {noise_type} noise with std {noise_std}")
 
             del hyperparams["noise_type"]
             del hyperparams["noise_std"]
-            if "noise_std_final" in hyperparams:
-                del hyperparams["noise_std_final"]
 
         return hyperparams
 

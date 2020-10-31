@@ -1,6 +1,7 @@
 ## Pre-Release 0.11.0a0 (WIP)
 
 ### Breaking Changes
+- Removed `LinearNormalActionNoise`
 
 ### New Features
 
