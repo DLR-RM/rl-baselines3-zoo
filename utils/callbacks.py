@@ -1,9 +1,11 @@
 import os
+from typing import Optional
 
 import numpy as np
+import optuna
 from matplotlib import pyplot as plt
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
-from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv
 
 
 class TrialEvalCallback(EvalCallback):
@@ -11,7 +13,15 @@ class TrialEvalCallback(EvalCallback):
     Callback used for evaluating and reporting a trial.
     """
 
-    def __init__(self, eval_env, trial, n_eval_episodes=5, eval_freq=10000, deterministic=True, verbose=0):
+    def __init__(
+        self,
+        eval_env: VecEnv,
+        trial: optuna.Trial,
+        n_eval_episodes: int = 5,
+        eval_freq: int = 10000,
+        deterministic: bool = True,
+        verbose: int = 0,
+    ):
 
         super(TrialEvalCallback, self).__init__(
             eval_env=eval_env,
@@ -24,7 +34,7 @@ class TrialEvalCallback(EvalCallback):
         self.eval_idx = 0
         self.is_pruned = False
 
-    def _on_step(self):
+    def _on_step(self) -> bool:
         if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
             super(TrialEvalCallback, self)._on_step()
             self.eval_idx += 1
@@ -48,7 +58,7 @@ class SaveVecNormalizeCallback(BaseCallback):
         only one file will be kept.
     """
 
-    def __init__(self, save_freq: int, save_path: str, name_prefix=None, verbose=0):
+    def __init__(self, save_freq: int, save_path: str, name_prefix: Optional[str] = None, verbose: int = 0):
         super(SaveVecNormalizeCallback, self).__init__(verbose)
         self.save_freq = save_freq
         self.save_path = save_path
@@ -81,7 +91,7 @@ class PlotNoiseRatioCallback(BaseCallback):
     :param verbose: (int)
     """
 
-    def __init__(self, display_freq=1000, verbose=0):
+    def __init__(self, display_freq: int = 1000, verbose: int = 0):
         super(PlotNoiseRatioCallback, self).__init__(verbose)
         self.display_freq = display_freq
         # Action buffers

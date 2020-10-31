@@ -59,13 +59,17 @@ for folder in dirs:
         continue
     if args.max_timesteps is not None:
         data_frame = data_frame[data_frame.l.cumsum() <= args.max_timesteps]
-    success = np.array(data_frame[y_axis])
+    try:
+        y = np.array(data_frame[y_axis])
+    except KeyError:
+        print(f"No data available for {folder}")
+        continue
     x, _ = ts2xy(data_frame, x_axis)
 
     # Do not plot the smoothed curve at all if the timeseries is shorter than window size.
     if x.shape[0] >= args.episode_window:
         # Compute and plot rolling mean with window of size args.episode_window
-        x, y_mean = window_func(x, success, args.episode_window, np.mean)
+        x, y_mean = window_func(x, y, args.episode_window, np.mean)
         plt.plot(x, y_mean, linewidth=2, label=folder.split("/")[-1])
 
 plt.legend()

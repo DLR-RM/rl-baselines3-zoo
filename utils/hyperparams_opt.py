@@ -1,168 +1,20 @@
+from typing import Any, Dict
+
 import numpy as np
 import optuna
-from optuna.integration.skopt import SkoptSampler
-from optuna.pruners import MedianPruner, SuccessiveHalvingPruner
-from optuna.samplers import RandomSampler, TPESampler
 from stable_baselines3 import DDPG, SAC, TD3
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torch import nn as nn
 
 from utils import linear_schedule
 
-from .callbacks import TrialEvalCallback
 
-
-def hyperparam_optimization(
-    algo,
-    model_fn,
-    env_fn,
-    n_trials=10,
-    n_timesteps=5000,
-    hyperparams=None,  # noqa: C901
-    n_jobs=1,
-    sampler_method="tpe",
-    pruner_method="median",
-    n_startup_trials=10,
-    n_evaluations=20,
-    n_eval_episodes=5,
-    storage=None,
-    study_name=None,
-    seed=0,
-    verbose=1,
-    deterministic_eval=True,
-):
-    """
-    :param algo: (str)
-    :param model_fn: (func) function that is used to instantiate the model
-    :param env_fn: (func) function that is used to instantiate the env
-    :param n_trials: (int) maximum number of trials for finding the best hyperparams
-    :param n_timesteps: (int) maximum number of timesteps per trial
-    :param hyperparams: (dict)
-    :param n_jobs: (int) number of parallel jobs
-    :param sampler_method: (str)
-    :param pruner_method: (str)
-    :param n_startup_trials: (int)
-    :param n_evaluations: (int) Evaluate every 20th of the maximum budget per iteration
-    :param n_eval_episodes: (int) Evaluate the model during 5 episodes
-    :param storage: (Optional[str])
-    :param study_name: (Optional[str])
-    :param seed: (int)
-    :param verbose: (int)
-    :param deterministic_eval: (bool)
-    :return: (pd.Dataframe) detailed result of the optimization
-    """
-    # TODO: eval each hyperparams several times to account for noisy evaluation
-    if hyperparams is None:
-        hyperparams = {}
-
-    eval_freq = int(n_timesteps / n_evaluations)
-
-    # n_warmup_steps: Disable pruner until the trial reaches the given number of step.
-    if sampler_method == "random":
-        sampler = RandomSampler(seed=seed)
-    elif sampler_method == "tpe":
-        # TODO: try with multivariate=True
-        sampler = TPESampler(n_startup_trials=n_startup_trials, seed=seed)
-    elif sampler_method == "skopt":
-        # cf https://scikit-optimize.github.io/#skopt.Optimizer
-        # GP: gaussian process
-        # Gradient boosted regression: GBRT
-        sampler = SkoptSampler(skopt_kwargs={"base_estimator": "GP", "acq_func": "gp_hedge"})
-    else:
-        raise ValueError(f"Unknown sampler: {sampler_method}")
-
-    if pruner_method == "halving":
-        pruner = SuccessiveHalvingPruner(min_resource=1, reduction_factor=4, min_early_stopping_rate=0)
-    elif pruner_method == "median":
-        pruner = MedianPruner(n_startup_trials=n_startup_trials, n_warmup_steps=n_evaluations // 3)
-    elif pruner_method == "none":
-        # Do not prune
-        pruner = MedianPruner(n_startup_trials=n_trials, n_warmup_steps=n_evaluations)
-    else:
-        raise ValueError(f"Unknown pruner: {pruner_method}")
-
-    if verbose > 0:
-        print(f"Sampler: {sampler_method} - Pruner: {pruner_method}")
-
-    study = optuna.create_study(
-        sampler=sampler, pruner=pruner, storage=storage, study_name=study_name, load_if_exists=True, direction="maximize"
-    )
-    algo_sampler = HYPERPARAMS_SAMPLER[algo]
-
-    def objective(trial):
-
-        kwargs = hyperparams.copy()
-
-        trial.model_class = None
-        if algo == "her":
-            trial.model_class = hyperparams["model_class"]
-
-        # Hack to use DDPG/TD3 noise sampler
-        if algo in ["ddpg", "td3"] or trial.model_class in ["ddpg", "td3"]:
-            trial.n_actions = env_fn(n_envs=1).action_space.shape[0]
-        kwargs.update(algo_sampler(trial))
-
-        model = model_fn(**kwargs)
-        model.trial = trial
-
-        eval_env = env_fn(n_envs=1, eval_env=True)
-        # Account for parallel envs
-        eval_freq_ = max(eval_freq // model.get_env().num_envs, 1)
-        # TODO: Use non-deterministic eval for Atari
-        # or use maximum number of steps to avoid infinite loop
-        eval_callback = TrialEvalCallback(
-            eval_env, trial, n_eval_episodes=n_eval_episodes, eval_freq=eval_freq_, deterministic=deterministic_eval
-        )
-
-        try:
-            model.learn(n_timesteps, callback=eval_callback)
-            # Free memory
-            model.env.close()
-            eval_env.close()
-        except AssertionError as e:
-            # Sometimes, random hyperparams can generate NaN
-            # Free memory
-            model.env.close()
-            eval_env.close()
-            # Prune hyperparams that generate NaNs
-            print(e)
-            raise optuna.exceptions.TrialPruned()
-        is_pruned = eval_callback.is_pruned
-        reward = eval_callback.last_mean_reward
-
-        del model.env, eval_env
-        del model
-
-        if is_pruned:
-            raise optuna.exceptions.TrialPruned()
-
-        return reward
-
-    try:
-        study.optimize(objective, n_trials=n_trials, n_jobs=n_jobs)
-    except KeyboardInterrupt:
-        pass
-
-    print("Number of finished trials: ", len(study.trials))
-
-    print("Best trial:")
-    trial = study.best_trial
-
-    print("Value: ", trial.value)
-
-    print("Params: ")
-    for key, value in trial.params.items():
-        print(f"    {key}: {value}")
-
-    return study.trials_dataframe()
-
-
-def sample_ppo_params(trial):
+def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for PPO2 hyperparams.
 
-    :param trial: (optuna.trial)
-    :return: (dict)
+    :param trial:
+    :return:
     """
     batch_size = trial.suggest_categorical("batch_size", [8, 16, 32, 64, 128, 256, 512])
     n_steps = trial.suggest_categorical("n_steps", [8, 16, 32, 64, 128, 256, 512, 1024, 2048])
@@ -211,17 +63,20 @@ def sample_ppo_params(trial):
         "vf_coef": vf_coef,
         "sde_sample_freq": sde_sample_freq,
         "policy_kwargs": dict(
-            log_std_init=log_std_init, net_arch=net_arch, activation_fn=activation_fn, ortho_init=ortho_init
+            log_std_init=log_std_init,
+            net_arch=net_arch,
+            activation_fn=activation_fn,
+            ortho_init=ortho_init,
         ),
     }
 
 
-def sample_a2c_params(trial):
+def sample_a2c_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for A2C hyperparams.
 
-    :param trial: (optuna.trial)
-    :return: (dict)
+    :param trial:
+    :return:
     """
     gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     normalize_advantage = trial.suggest_categorical("normalize_advantage", [False, True])
@@ -236,8 +91,8 @@ def sample_a2c_params(trial):
     log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
     ortho_init = trial.suggest_categorical("ortho_init", [False, True])
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
-    sde_net_arch = trial.suggest_categorical("sde_net_arch", [None, "tiny", "small"])
-    full_std = trial.suggest_categorical("full_std", [False, True])
+    # sde_net_arch = trial.suggest_categorical("sde_net_arch", [None, "tiny", "small"])
+    # full_std = trial.suggest_categorical("full_std", [False, True])
     # activation_fn = trial.suggest_categorical('activation_fn', ['tanh', 'relu', 'elu', 'leaky_relu'])
     activation_fn = trial.suggest_categorical("activation_fn", ["tanh", "relu"])
 
@@ -249,11 +104,11 @@ def sample_a2c_params(trial):
         "medium": [dict(pi=[256, 256], vf=[256, 256])],
     }[net_arch]
 
-    sde_net_arch = {
-        None: None,
-        "tiny": [64],
-        "small": [64, 64],
-    }[sde_net_arch]
+    # sde_net_arch = {
+    #     None: None,
+    #     "tiny": [64],
+    #     "small": [64, 64],
+    # }[sde_net_arch]
 
     activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
 
@@ -270,20 +125,20 @@ def sample_a2c_params(trial):
         "policy_kwargs": dict(
             log_std_init=log_std_init,
             net_arch=net_arch,
-            full_std=full_std,
+            # full_std=full_std,
             activation_fn=activation_fn,
-            sde_net_arch=sde_net_arch,
+            # sde_net_arch=sde_net_arch,
             ortho_init=ortho_init,
         ),
     }
 
 
-def sample_sac_params(trial):
+def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for SAC hyperparams.
 
-    :param trial: (optuna.trial)
-    :return: (dict)
+    :param trial:
+    :return:
     """
     gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform("lr", 1e-5, 1)
@@ -329,12 +184,12 @@ def sample_sac_params(trial):
     }
 
 
-def sample_td3_params(trial):
+def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for TD3 hyperparams.
 
-    :param trial: (optuna.trial)
-    :return: (dict)
+    :param trial:
+    :return:
     """
     gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform("lr", 1e-5, 1)
@@ -386,12 +241,12 @@ def sample_td3_params(trial):
     return hyperparams
 
 
-def sample_ddpg_params(trial):
+def sample_ddpg_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for DDPG hyperparams.
 
-    :param trial: (optuna.trial)
-    :return: (dict)
+    :param trial:
+    :return:
     """
     gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform("lr", 1e-5, 1)
@@ -446,12 +301,12 @@ def sample_ddpg_params(trial):
     return hyperparams
 
 
-def sample_dqn_params(trial):
+def sample_dqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for DQN hyperparams.
 
-    :param trial: (optuna.trial)
-    :return: (dict)
+    :param trial:
+    :return:
     """
     gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform("lr", 1e-5, 1)
@@ -489,12 +344,12 @@ def sample_dqn_params(trial):
     return hyperparams
 
 
-def sample_her_params(trial):
+def sample_her_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for HER hyperparams.
 
-    :param trial: (optuna.trial)
-    :return: (dict)
+    :param trial:
+    :return:
     """
     model_class_str = {
         SAC: "sac",

@@ -1,3 +1,21 @@
+## Pre-Release 0.11.0a0 (WIP)
+
+### Breaking Changes
+- Removed `LinearNormalActionNoise`
+
+### New Features
+
+### Bug fixes
+- Improved detection of Atari games
+
+### Documentation
+
+### Other
+- Refactored train script, now uses a `ExperimentManager` class
+- Replaced `make_env` with SB3 built-in `make_vec_env`
+- Add more type hints (`utils/utils.py` done)
+- Use f-strings when possible
+
 ## Pre-Release 0.10.0 (2020-10-28)
 
 ### Breaking Changes

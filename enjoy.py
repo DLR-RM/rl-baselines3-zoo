@@ -2,7 +2,6 @@ import argparse
 import importlib
 import os
 
-import gym
 import numpy as np
 import torch as th
 import yaml
@@ -11,6 +10,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv, VecEnvWrapper
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
+from utils.exp_manager import ExperimentManager
 from utils.utils import StoreDict
 
 
@@ -93,7 +93,9 @@ def main():  # noqa: C901
     if not found:
         raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
 
-    if algo in ["dqn", "ddpg", "sac", "td3", "tqc"]:
+    off_policy_algos = ["dqn", "ddpg", "sac", "her", "td3", "tqc"]
+
+    if algo in off_policy_algos:
         args.n_envs = 1
 
     set_random_seed(args.seed)
@@ -103,7 +105,7 @@ def main():  # noqa: C901
             print(f"Setting torch.num_threads to {args.num_threads}")
         th.set_num_threads(args.num_threads)
 
-    is_atari = "NoFrameskip" in env_id
+    is_atari = ExperimentManager.is_atari(env_id)
 
     stats_path = os.path.join(log_path, env_id)
     hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
@@ -134,7 +136,7 @@ def main():  # noqa: C901
     )
 
     kwargs = dict(seed=args.seed)
-    if algo in ["dqn", "ddpg", "sac", "her", "td3", "tqc"]:
+    if algo in off_policy_algos:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
 
@@ -143,7 +145,7 @@ def main():  # noqa: C901
     obs = env.reset()
 
     # Force deterministic for DQN, DDPG, SAC and HER (that is a wrapper around)
-    deterministic = args.deterministic or algo in ["dqn", "ddpg", "sac", "her", "td3", "tqc"] and not args.stochastic
+    deterministic = args.deterministic or algo in off_policy_algos and not args.stochastic
 
     state = None
     episode_reward = 0.0
@@ -153,11 +155,6 @@ def main():  # noqa: C901
     successes = []
     for _ in range(args.n_timesteps):
         action, state = model.predict(obs, state=state, deterministic=deterministic)
-        # Random Agent
-        # action = [env.action_space.sample()]
-        # Clip Action to avoid out of bound errors
-        if isinstance(env.action_space, gym.spaces.Box):
-            action = np.clip(action, env.action_space.low, env.action_space.high)
         obs, reward, done, infos = env.step(action)
         if not args.no_render:
             env.render("human")
@@ -197,13 +194,13 @@ def main():  # noqa: C901
                     episode_reward, ep_len = 0.0, 0
 
     if args.verbose > 0 and len(successes) > 0:
-        print("Success rate: {:.2f}%".format(100 * np.mean(successes)))
+        print(f"Success rate: {100 * np.mean(successes):.2f}%")
 
     if args.verbose > 0 and len(episode_rewards) > 0:
-        print("Mean reward: {:.2f} +/- {:.2f}".format(np.mean(episode_rewards), np.std(episode_rewards)))
+        print(f"Mean reward: {np.mean(episode_rewards):.2f} +/- {np.std(episode_rewards):.2f}")
 
     if args.verbose > 0 and len(episode_lengths) > 0:
-        print("Mean episode length: {:.2f} +/- {:.2f}".format(np.mean(episode_lengths), np.std(episode_lengths)))
+        print(f"Mean episode length: {np.mean(episode_lengths):.2f} +/- {np.std(episode_lengths):.2f}")
 
     # Workaround for https://github.com/openai/gym/issues/893
     if not args.no_render:

@@ -26,37 +26,6 @@ NeckEnvRelative-v2:
   sde_sample_freq: 64
   policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256])"
 
-NeckEnvRelativeEval-v2:
-  env_wrapper:
-    - utils.wrappers.HistoryWrapper:
-        horizon: 2
-    - utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-
-NeckEnv3Tendons-v1:
-  env_wrapper:
-    - utils.wrappers.TimeFeatureWrapper
-    - utils.wrappers.HistoryWrapper:
-        horizon: 5
-  n_timesteps: !!float 1e5
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 100000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.99
-  tau: 0.02
-  n_episodes_rollout: 1
-  gradient_steps: -1
-  train_freq: -1
-  # 20 episodes of warm-up
-  learning_starts: 4000
-  use_sde_at_warmup: True
-  use_sde: True
-  # sde_sample_freq: 25
-  policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
-
 # Tuned
 MountainCarContinuous-v0:
   # env_wrapper: utils.wrappers.PlotActionWrapper
@@ -308,100 +277,6 @@ MinitaurBulletDuckEnv-v0:
   gradient_steps: 1
   learning_starts: 1000
 
-
-# ==== Custom Envs ===
-
-SquareEnvironment50Hz-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 2e5
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
-
-PixelMountainCarContinuous-v0:
-  env_wrapper:
-    - gym.wrappers.resize_observation.ResizeObservation:
-        shape: 64
-    - gym.wrappers.gray_scale_observation.GrayScaleObservation:
-        keep_dim: true
-  frame_stack: 2
-  # callback:
-  #   - utils.callbacks.PlotNoiseRatioCallback:
-  #       display_freq: 500
-  n_timesteps: !!float 100000
-  policy: 'CnnPolicy'
-  learning_rate: !!float 3e-4
-  buffer_size: 10000
-  batch_size: 512
-  ent_coef: 0.1
-  train_freq: 32
-  gradient_steps: 32
-  gamma: 0.9999
-  tau: 0.01
-  learning_starts: 0
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3.67, features_extractor_kwargs=dict(features_dim=64))"
-
-
-# ===  Mocca envs ===
-
-CassieEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 3e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
-
-Walker3DCustomEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 3e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 500000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
-
-Walker3DStepperEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
-
 # To be tuned
 CarRacing-v0:
   env_wrapper:
@@ -430,6 +305,7 @@ CarRacing-v0:
   use_sde_at_warmup: True
   policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
 
+# ==== Custom Envs ===
 
 donkey-generated-track-v0:
   env_wrapper:

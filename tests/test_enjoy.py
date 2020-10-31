@@ -12,8 +12,6 @@ def _assert_eq(left, right):
 
 FOLDER = "rl-trained-agents/"
 N_STEPS = 100
-LOG_FOLDER = "logs/tests/"
-
 
 trained_models = get_trained_models(FOLDER)
 
@@ -73,14 +71,14 @@ def test_load(tmp_path):
     _assert_eq(return_code, 0)
 
 
-def test_record_video():
-    args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v0", "-o", "logs/tests/videos/"]
+def test_record_video(tmp_path):
+    args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v0", "-o", str(tmp_path)]
 
     # Skip if no X-Server
     pytest.importorskip("pyglet.gl")
 
     return_code = subprocess.call(["python", "-m", "utils.record_video"] + args)
     _assert_eq(return_code, 0)
-    video_path = "logs/tests/videos/sac-Pendulum-v0-step-0-to-step-100.mp4"
+    video_path = str(tmp_path / "sac-Pendulum-v0-step-0-to-step-100.mp4")
     # File is not empty
     assert os.stat(video_path).st_size != 0, "Recorded video is empty"

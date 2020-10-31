@@ -1,5 +1,3 @@
-import os
-import shutil
 import subprocess
 
 import pytest
@@ -15,7 +13,6 @@ N_JOBS = 1
 
 ALGOS = ("ppo", "a2c")
 ENV_IDS = ("CartPole-v1",)
-LOG_FOLDER = "logs/tests_optimize/"
 
 experiments = {}
 
@@ -30,15 +27,11 @@ experiments["td3-Pendulum-v0"] = ("td3", "Pendulum-v0")
 # Test for HER
 experiments["her-parking-v0"] = ("her", "parking-v0")
 
-# Clean up
-if os.path.isdir(LOG_FOLDER):
-    shutil.rmtree(LOG_FOLDER)
-
 
 @pytest.mark.parametrize("sampler", ["random", "tpe"])
 @pytest.mark.parametrize("pruner", ["none", "halving", "median"])
 @pytest.mark.parametrize("experiment", experiments.keys())
-def test_optimize(sampler, pruner, experiment):
+def test_optimize(tmp_path, sampler, pruner, experiment):
     algo, env_id = experiments[experiment]
 
     # Skip slow tests
@@ -49,7 +42,7 @@ def test_optimize(sampler, pruner, experiment):
     args += ["n_steps:10"] if algo == "ppo" else []
     args += [
         "--log-folder",
-        LOG_FOLDER,
+        tmp_path,
         "--n-trials",
         str(N_TRIALS),
         "--n-jobs",
