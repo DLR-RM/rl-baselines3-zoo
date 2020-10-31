@@ -2,7 +2,6 @@ import argparse
 import importlib
 import os
 
-import gym
 import numpy as np
 import torch as th
 import yaml
@@ -156,11 +155,6 @@ def main():  # noqa: C901
     successes = []
     for _ in range(args.n_timesteps):
         action, state = model.predict(obs, state=state, deterministic=deterministic)
-        # Random Agent
-        # action = [env.action_space.sample()]
-        # Clip Action to avoid out of bound errors
-        if isinstance(env.action_space, gym.spaces.Box):
-            action = np.clip(action, env.action_space.low, env.action_space.high)
         obs, reward, done, infos = env.step(action)
         if not args.no_render:
             env.render("human")

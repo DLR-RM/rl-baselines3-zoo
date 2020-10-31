@@ -1,11 +1,9 @@
 import argparse
 import os
 
-import gym
-import numpy as np
-from stable_baselines3.common.vec_env import VecFrameStack, VecNormalize, VecVideoRecorder
+from stable_baselines3.common.vec_env import DummyVecEnv, VecEnvWrapper, VecVideoRecorder
 
-from .utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
+from utils.utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
@@ -62,24 +60,28 @@ obs = env.reset()
 
 # Note: apparently it renders by default
 env = VecVideoRecorder(
-    env, video_folder, record_video_trigger=lambda x: x == 0, video_length=video_length, name_prefix=f"{algo}-{env_id}"
+    env,
+    video_folder,
+    record_video_trigger=lambda x: x == 0,
+    video_length=video_length,
+    name_prefix=f"{algo}-{env_id}",
 )
 
 env.reset()
 for _ in range(video_length + 1):
-    # action = [env.action_space.sample()]
     action, _ = model.predict(obs, deterministic=deterministic)
-    if isinstance(env.action_space, gym.spaces.Box):
-        action = np.clip(action, env.action_space.low, env.action_space.high)
     obs, _, _, _ = env.step(action)
 
 # Workaround for https://github.com/openai/gym/issues/893
 if n_envs == 1 and "Bullet" not in env_id and not is_atari:
     env = env.venv
     # DummyVecEnv
-    while isinstance(env, VecNormalize) or isinstance(env, VecFrameStack):
+    while isinstance(env, VecEnvWrapper):
         env = env.venv
-    env.envs[0].env.close()
+    if isinstance(env, DummyVecEnv):
+        env.envs[0].env.close()
+    else:
+        env.close()
 else:
     # SubprocVecEnv
     env.close()
