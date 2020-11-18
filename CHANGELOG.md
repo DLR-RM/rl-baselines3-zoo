@@ -16,7 +16,8 @@
 - Replaced `make_env` with SB3 built-in `make_vec_env`
 - Add more type hints (`utils/utils.py` done)
 - Use f-strings when possible
-- Change `PPO` atari hyperparameters (removed vf clipping)
+- Changed `PPO` atari hyperparameters (removed vf clipping)
+- Changed `A2C` atari hyperparameters (eps value of the optimizer)
 
 ## Pre-Release 0.10.0 (2020-10-28)
 
