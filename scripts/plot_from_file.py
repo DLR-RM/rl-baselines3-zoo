@@ -103,7 +103,7 @@ if not args.skip_timesteps:
     for env in envs:
 
         plt.figure(f"Results {env}")
-        title = f"{env}BulletEnv-v0"
+        title = f"{env}"  # BulletEnv-v0
         if "Mountain" in env:
             title = "MountainCarContinuous-v0"
 
@@ -134,7 +134,9 @@ if not args.skip_timesteps:
 labels_df, envs_df, scores = [], [], []
 for key in keys:
     for env in envs:
-        if isinstance(results[env][key]["last_evals"], np.float32):
+        if isinstance(results[env][key]["last_evals"], (np.float32, np.float64)):
+            # No enough timesteps
+            print(f"Skipping {env}-{key}")
             continue
         for score in results[env][key]["last_evals"]:
             labels_df.append(labels[key])
