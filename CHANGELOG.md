@@ -4,6 +4,7 @@
 - Removed `LinearNormalActionNoise`
 
 ### New Features
+- Added option to choose which `VecEnv` class to use for multiprocessing
 
 ### Bug fixes
 - Improved detection of Atari games
