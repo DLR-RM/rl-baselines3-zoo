@@ -8,7 +8,6 @@ import gym
 import numpy as np
 import seaborn
 import torch as th
-from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import set_random_seed
 
 # Register custom envs
