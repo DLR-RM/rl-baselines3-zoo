@@ -23,7 +23,7 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import constant_fn
-from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv, VecFrameStack, VecNormalize, VecTransposeImage
+from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize, VecTransposeImage
 from stable_baselines3.common.vec_env.obs_dict_wrapper import ObsDictWrapper
 
 # For custom activation fn
@@ -73,6 +73,7 @@ class ExperimentManager(object):
         log_interval: int = 0,
         save_replay_buffer: bool = False,
         verbose: int = 1,
+        vec_env_type: str = "dummy",
     ):
         super(ExperimentManager, self).__init__()
         self.algo = algo
@@ -86,6 +87,11 @@ class ExperimentManager(object):
         self.env_wrapper = None
         self.frame_stack = None
         self.seed = seed
+
+        self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
+
+        self.vec_env_kwargs = {}
+        # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
 
         # Callbacks
         self.callbacks = []
@@ -183,7 +189,10 @@ class ExperimentManager(object):
             pass
         finally:
             # Release resources
-            model.env.close()
+            try:
+                model.env.close()
+            except EOFError:
+                pass
 
     def save_trained_model(self, model: BaseAlgorithm) -> None:
         """
@@ -501,8 +510,8 @@ class ExperimentManager(object):
             env_kwargs=self.env_kwargs,
             monitor_dir=log_dir,
             wrapper_class=self.env_wrapper,
-            vec_env_cls=DummyVecEnv,
-            vec_env_kwargs=None,
+            vec_env_cls=self.vec_env_class,
+            vec_env_kwargs=self.vec_env_kwargs,
         )
 
         # Special case for GoalEnvs: log success rate too

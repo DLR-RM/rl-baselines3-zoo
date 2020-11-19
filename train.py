@@ -43,6 +43,7 @@ if __name__ == "__main__":  # noqa: C901
     )
     parser.add_argument("-f", "--log-folder", help="Log folder", type=str, default="logs")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=-1)
+    parser.add_argument("--vec-env", help="VecEnv type", type=str, default="dummy", choices=["dummy", "subproc"])
     parser.add_argument("--n-trials", help="Number of trials for optimizing hyperparameters", type=int, default=10)
     parser.add_argument(
         "-optimize", "--optimize-hyperparameters", action="store_true", default=False, help="Run hyperparameters search"
@@ -155,6 +156,7 @@ if __name__ == "__main__":  # noqa: C901
         log_interval=args.log_interval,
         save_replay_buffer=args.save_replay_buffer,
         verbose=args.verbose,
+        vec_env_type=args.vec_env,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
