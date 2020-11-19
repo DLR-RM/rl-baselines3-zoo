@@ -189,7 +189,10 @@ class ExperimentManager(object):
             pass
         finally:
             # Release resources
-            model.env.close()
+            try:
+                model.env.close()
+            except EOFError:
+                pass
 
     def save_trained_model(self, model: BaseAlgorithm) -> None:
         """
