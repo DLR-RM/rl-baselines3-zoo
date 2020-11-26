@@ -17,7 +17,8 @@ trained_models = get_trained_models(FOLDER)
 
 
 @pytest.mark.parametrize("trained_model", trained_models.keys())
-def test_enjoy(trained_model):
+@pytest.mark.slow
+def test_trained_agents(trained_model):
     algo, env_id = trained_models[trained_model]
     args = ["-n", str(N_STEPS), "-f", FOLDER, "--algo", algo, "--env", env_id, "--no-render"]
 

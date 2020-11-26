@@ -13,6 +13,11 @@ pytest:
   # MKL_THREADING_LAYER=GNU to avoid MKL_THREADING_LAYER=INTEL incompatibility error
   - MKL_THREADING_LAYER=GNU make pytest
 
+check-trained-agents:
+  script:
+  # MKL_THREADING_LAYER=GNU to avoid MKL_THREADING_LAYER=INTEL incompatibility error
+  - MKL_THREADING_LAYER=GNU make check-trained-agents
+
 lint:
   script:
     - make check-codestyle

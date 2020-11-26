@@ -150,9 +150,11 @@ python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000
 ```
 
 
-## Current Collection: 120+ Trained Agents!
+## Current Collection: to be added soon (after v1.0 release)
 
-Scores can be found in `benchmark.md`. To compute them, simply run `python -m utils.benchmark`.
+Final performance of the trained agents can be found in `benchmark.md`. To compute them, simply run `python -m utils.benchmark`.
+
+*NOTE: this is not a quantitative benchmark as it corresponds to only one run (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)). This benchmark is meant to check algorithm (maximal) performance, find potential bugs and also allow users to have access to pretrained agents.*
 
 ### Atari Games
 

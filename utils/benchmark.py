@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import shutil
 import subprocess
 
 import numpy as np
@@ -28,17 +29,17 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
     algo, env_id = trained_models[trained_model]
     n_envs = args.n_envs
     n_timesteps = args.n_timesteps
-    if algo in ["dqn", "ddpg", "sac", "td3"]:
+    if algo in ["dqn", "ddpg", "sac", "td3", "tqc", "her"]:
         n_envs = 1
         n_timesteps *= args.n_envs
 
-    # Comment out to becnhmark HER robotics env
+    # Comment out to benchmark HER robotics env
     # this requires a mujoco licence
     if "Fetch" in env_id:
         print(f"Skipping mujoco env: {env_id}")
         continue
 
-    reward_log = f"{args.benchmark_dir}/{trained_model}/"
+    reward_log = os.path.join(args.benchmark_dir, trained_model)
     arguments = [
         "-n",
         str(n_timesteps),
@@ -51,6 +52,8 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
         "--env",
         env_id,
         "--no-render",
+        # "--num-threads",
+        # str(2),
         "--seed",
         str(args.seed),
         "--verbose",
@@ -103,16 +106,35 @@ results_df = results_df.sort_values(by=["algo", "env_id"])
 
 writer = pytablewriter.MarkdownTableWriter()
 writer.from_dataframe(results_df)
+
+header = """
+## Performance of trained agents
+
+Final performance of the trained agents can be found in the table below.
+This was computed by running `python -m utils.benchmark`:
+it runs the trained agent for `n_timesteps` and then reports the mean episode reward
+during this evaluation.
+
+It uses the deterministic policy except for Atari games.
+
+*NOTE: this is not a quantitative benchmark as it corresponds to only one run
+(cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)).
+This benchmark is meant to check algorithm (maximal) performance, find potential bugs
+and also allow users to have access to pretrained agents.*
+
+"""
+
 # change the output stream to a file
-with open(f"{args.benchmark_dir}/benchmark.md", "w") as f:
+tmp_path = os.path.join(args.benchmark_dir, "benchmark.md")
+with open(tmp_path, "w") as f:
+    f.write(header)
     writer.stream = f
     writer.write_table()
-print(f"Results written to: {args.benchmark_dir}/benchmark.md")
+print(f"Results written to: {tmp_path}")
 
 # Update root benchmark file
-with open("benchmark.md", "w") as f:
-    writer.stream = f
-    writer.write_table()
+if not args.test_mode:
+    shutil.copy(tmp_path, "benchmark.md")
 
 # Alternatively, to dump as csv file:
 # results_df.to_csv(f"{args.benchmark_dir}/benchmark.csv",sep=",", index=False)

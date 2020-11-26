@@ -4,6 +4,10 @@ LINT_PATHS = *.py tests/ scripts/ utils/
 pytest:
 	./scripts/run_tests.sh
 
+# check all trained agents (slow)
+check-trained-agents:
+	python -m pytest -v tests/test_enjoy.py -k trained_agent
+
 # Type check
 type:
 	pytype -j auto ${LINT_PATHS}
