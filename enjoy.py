@@ -37,7 +37,7 @@ def main():  # noqa: C901
         help="Load checkpoint instead of last model if available, "
         "you must pass the number of timesteps corresponding to it",
     )
-    parser.add_argument("--stochastic", action="store_true", default=False, help="Use stochastic actions (for DDPG/DQN/SAC)")
+    parser.add_argument("--stochastic", action="store_true", default=False, help="Use stochastic actions")
     parser.add_argument(
         "--norm-reward", action="store_true", default=False, help="Normalize reward if applicable (trained with VecNormalize)"
     )
@@ -144,8 +144,9 @@ def main():  # noqa: C901
 
     obs = env.reset()
 
-    # Force deterministic for DQN, DDPG, SAC and HER (that is a wrapper around)
-    deterministic = args.deterministic or algo in off_policy_algos and not args.stochastic
+    # Deterministic by default except for atari games
+    stochastic = args.stochastic or is_atari and not args.deterministic
+    deterministic = not stochastic
 
     state = None
     episode_reward = 0.0
