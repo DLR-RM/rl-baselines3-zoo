@@ -12,8 +12,7 @@ from stable_baselines3.common.utils import set_random_seed
 
 try:
     from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL
-    from d3rlpy.sb3.convert import to_mdp_dataset
-    from d3rlpy.sb3.wrappers import SB3Wrapper
+    from d3rlpy.wrappers.sb3 import SB3Wrapper, to_mdp_dataset
 
     offline_algos = dict(awr=AWR, awac=AWAC, bc=BC, bcq=BCQ, bear=BEAR, cql=CQL)
 except ImportError:
