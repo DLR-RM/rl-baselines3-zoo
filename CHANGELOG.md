@@ -1,8 +1,10 @@
-## Pre-Release 0.11.0a0 (WIP)
+## Pre-Release 0.11.0a2 (WIP)
 
 ### Breaking Changes
 - Removed `LinearNormalActionNoise`
 - Evaluation is now deterministic by default, except for Atari games
+- `sb3_contrib` is now required
+- `TimeFeatureWrapper` was moved to the contrib repo
 
 ### New Features
 - Added option to choose which `VecEnv` class to use for multiprocessing

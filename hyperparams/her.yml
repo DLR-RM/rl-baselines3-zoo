@@ -4,7 +4,7 @@ NeckGoalEnvRelativeSparse-v2:
   # env_wrapper:
   #   - utils.wrappers.HistoryWrapper:
   #       horizon: 2
-  #   - utils.wrappers.TimeFeatureWrapper
+  #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -31,7 +31,7 @@ NeckGoalEnvRelativeDense-v2:
   env_wrapper:
     - utils.wrappers.HistoryWrapperObsDict:
         horizon: 2
-  #   - utils.wrappers.TimeFeatureWrapper
+  #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
