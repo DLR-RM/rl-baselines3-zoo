@@ -71,23 +71,22 @@ NeckGoalEnvRelativeDense-v2:
 #  max_episode_length: 100
 
 
-# SAC hyperparams, her paper
 parking-v0:
   n_timesteps: !!float 2e5
   policy: 'MlpPolicy'
-  model_class: 'sac'
+  model_class: 'tqc'
   n_sampled_goal: 4
   goal_selection_strategy: 'future'
   buffer_size: 1000000
-  batch_size: 256
+  batch_size: 2048
   gamma: 0.95
   learning_rate: !!float 1e-3
-  # noise_type: 'normal'
-  # noise_std: 0.2
-  policy_kwargs: "dict(net_arch=[256, 256, 256])"
-  online_sampling: False
-  # normalize: True
+  tau: 0.05
+  ent_coef: 0.01
+  policy_kwargs: "dict(n_critics=1, net_arch=[256, 256, 256])"
+  online_sampling: True
   max_episode_length: 100
+  # normalize: True
 
 # TD3 hyperparams, her paper
 #parking-v0:
@@ -128,64 +127,77 @@ parking-v0:
 #   policy_kwargs: "dict(layers=[256, 256, 256])"
 #   online_sampling: True
 
-# NOTE: shoube be run with 8 workers: mpirun -n 8
-# FetchPush-v1:
-#   n_timesteps: !!float 2e6
-#   policy: 'MlpPolicy'
-#   model_class: 'ddpg'
-#   n_sampled_goal: 4
-#   goal_selection_strategy: 'future'
-#   buffer_size: 200000
-#   batch_size: 256
-#   gamma: 0.95
-#   random_exploration: 0.3
-#   actor_lr: !!float 1e-3
-#   critic_lr: !!float 1e-3
-#   noise_type: 'normal'
-#   noise_std: 0.2
-#   normalize_observations: true
-#   normalize_returns: false
-#   policy_kwargs: "dict(layers=[16, 16, 16])"
 
-FetchPush-v1:
-  env_wrapper:
-    - utils.wrappers.HistoryWrapperObsDict:
-        horizon: 2
-    # - utils.wrappers.TimeFeatureObsDictWrapper
-  n_timesteps: !!float 3e6
+FetchSlide-v1:
+  n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  model_class: 'sac'
-  n_sampled_goal: 4
+  model_class: 'tqc'
+  n_sampled_goal: 1
   goal_selection_strategy: 'future'
   buffer_size: 1000000
   ent_coef: 'auto'
+  batch_size: 1024
   gamma: 0.95
+  tau: 0.005
   learning_rate: !!float 7e-4
-  use_sde: True
-  gradient_steps: -1
-  train_freq: -1
-  n_episodes_rollout: 1
-  sde_sample_freq: 10
-  # noise_type: 'normal'
-  # noise_std: 0.2
-  learning_starts: 1000
-  online_sampling: True
-  normalize: True
-
-FetchPickAndPlace-v1:
-  n_timesteps: !!float 4e6
-  policy: 'MlpPolicy'
-  model_class: 'sac'
-  n_sampled_goal: 4
-  goal_selection_strategy: 'future'
-  buffer_size: 1000000
-  ent_coef: 'auto'
-  # batch_size: 256
-  gamma: 0.95
-  # learning_rate: !!float 1e-3
   learning_starts: 1000
   train_freq: 1
   online_sampling: True
+  policy_kwargs: "dict(net_arch=[256, 256, 256])"
+
+FetchPush-v1:
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  model_class: 'tqc'
+  n_sampled_goal: 3
+  goal_selection_strategy: 'future'
+  buffer_size: 1000000
+  ent_coef: 0.01
+  batch_size: 1024
+  gamma: 0.95
+  tau: 0.01
+  learning_rate: !!float 7e-4
+  learning_starts: 1000
+  train_freq: 1
+  online_sampling: True
+  # normalize: "{'norm_obs': True, 'norm_reward': False}"
+  # policy_kwargs: "dict(net_arch=[512, 512])"
+  policy_kwargs: "dict(n_critics=1)"
+
+# Tuned
+# FetchPickAndPlace-v1:
+#   n_timesteps: !!float 1e6
+#   policy: 'MlpPolicy'
+#   model_class: 'tqc'
+#   n_sampled_goal: 4
+#   goal_selection_strategy: 'future'
+#   buffer_size: 1000000
+#   ent_coef: 'auto'
+#   batch_size: 2048
+#   ent_coef: 0.01
+#   gamma: 0.95
+#   tau: 0.05
+#   learning_rate: !!float 1e-3
+#   learning_starts: 1000
+#   train_freq: 1
+#   online_sampling: True
+#   policy_kwargs: "dict(net_arch=[256, 256, 256])"
+
+FetchPickAndPlace-v1:
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  model_class: 'tqc'
+  n_sampled_goal: 4
+  goal_selection_strategy: 'future'
+  buffer_size: 1000000
+  batch_size: 2048
+  gamma: 0.95
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  ent_coef: 0.01
+  policy_kwargs: "dict(n_critics=1, net_arch=[256, 256, 256])"
+  online_sampling: True
+  max_episode_length: 100
 
 # SAC hyperparams
 FetchReach-v1:
