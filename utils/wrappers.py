@@ -11,7 +11,7 @@ class DoneOnSuccessWrapper(gym.Wrapper):
     Useful for GoalEnv.
     """
 
-    def __init__(self, env: gym.Env, reward_offset: float = 1.0, n_successes: int = 1):
+    def __init__(self, env: gym.Env, reward_offset: float = 0.0, n_successes: int = 1):
         super(DoneOnSuccessWrapper, self).__init__(env)
         self.reward_offset = reward_offset
         self.n_successes = n_successes
