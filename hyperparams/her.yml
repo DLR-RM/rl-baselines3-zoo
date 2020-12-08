@@ -129,40 +129,46 @@ parking-v0:
 
 
 FetchSlide-v1:
+  env_wrapper:
+    - sb3_contrib.common.wrappers.TimeFeatureWrapper
+    - utils.wrappers.DoneOnSuccessWrapper:
+        reward_offset: 0
+        n_successes: 4
+    - stable_baselines3.common.monitor.Monitor
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   model_class: 'tqc'
-  n_sampled_goal: 1
+  n_sampled_goal: 4
   goal_selection_strategy: 'future'
   buffer_size: 1000000
-  ent_coef: 'auto'
-  batch_size: 1024
+  batch_size: 2048
   gamma: 0.95
-  tau: 0.005
-  learning_rate: !!float 7e-4
-  learning_starts: 1000
-  train_freq: 1
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  ent_coef: 0.01
+  policy_kwargs: "dict(n_critics=2, net_arch=[256, 256, 256])"
   online_sampling: True
-  policy_kwargs: "dict(net_arch=[256, 256, 256])"
 
 FetchPush-v1:
+  env_wrapper:
+    - sb3_contrib.common.wrappers.TimeFeatureWrapper
+    - utils.wrappers.DoneOnSuccessWrapper:
+        reward_offset: 0
+        n_successes: 4
+    - stable_baselines3.common.monitor.Monitor
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   model_class: 'tqc'
-  n_sampled_goal: 3
+  n_sampled_goal: 4
   goal_selection_strategy: 'future'
   buffer_size: 1000000
-  ent_coef: 0.01
-  batch_size: 1024
+  batch_size: 2048
   gamma: 0.95
-  tau: 0.01
-  learning_rate: !!float 7e-4
-  learning_starts: 1000
-  train_freq: 1
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  ent_coef: 0.01
+  policy_kwargs: "dict(n_critics=2, net_arch=[256, 256, 256])"
   online_sampling: True
-  # normalize: "{'norm_obs': True, 'norm_reward': False}"
-  # policy_kwargs: "dict(net_arch=[512, 512])"
-  policy_kwargs: "dict(n_critics=1)"
 
 # Tuned
 # FetchPickAndPlace-v1:
@@ -185,9 +191,10 @@ FetchPush-v1:
 
 FetchPickAndPlace-v1:
   env_wrapper:
+    - sb3_contrib.common.wrappers.TimeFeatureWrapper
     - utils.wrappers.DoneOnSuccessWrapper:
         reward_offset: 0
-        n_successes: 2
+        n_successes: 4
     - stable_baselines3.common.monitor.Monitor
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
