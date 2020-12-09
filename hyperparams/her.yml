@@ -53,7 +53,6 @@ NeckGoalEnvRelativeDense-v2:
   goal_selection_strategy: 'future'
   online_sampling: False
 
-
 FetchPush-v1:
   env_wrapper:
     - sb3_contrib.common.wrappers.TimeFeatureWrapper
@@ -86,7 +85,6 @@ FetchPush-v1:
 #  policy_kwargs: "dict(net_arch=[256, 256, 256])"
 #  online_sampling: True
 #  max_episode_length: 100
-
 
 parking-v0:
   n_timesteps: !!float 2e5
@@ -142,7 +140,6 @@ parking-v0:
 #   normalize_returns: false
 #   policy_kwargs: "dict(layers=[256, 256, 256])"
 #   online_sampling: True
-
 
 FetchSlide-v1:
   env_wrapper:
