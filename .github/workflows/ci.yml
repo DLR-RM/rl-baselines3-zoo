@@ -33,8 +33,8 @@ jobs:
         pip install torch==1.7.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
         # avoid issue when trying to download pyenchant=1.6.5
         # related: https://github.com/pypa/pip/issues/8713
-        pip install pyenchant==3.2.0
-        pip install SQLAlchemy==1.3.20
+        # pip install pyenchant==3.2.0
+        # pip install SQLAlchemy==1.3.20
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
