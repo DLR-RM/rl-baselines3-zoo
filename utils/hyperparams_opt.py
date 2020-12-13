@@ -2,7 +2,8 @@ from typing import Any, Dict
 
 import numpy as np
 import optuna
-from stable_baselines3 import DDPG, SAC, TD3
+from sb3_contrib import TQC
+from stable_baselines3 import DDPG, DQN, SAC, TD3
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torch import nn as nn
 
@@ -370,7 +371,9 @@ def sample_her_params(trial: optuna.Trial) -> Dict[str, Any]:
     model_class_str = {
         SAC: "sac",
         DDPG: "ddpg",
+        DQN: "dqn",
         TD3: "td3",
+        TQC: "tqc",
     }[trial.model_class]
 
     hyperparams = HYPERPARAMS_SAMPLER[model_class_str](trial)

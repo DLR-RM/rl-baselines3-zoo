@@ -13,6 +13,7 @@
 ### Bug fixes
 - Improved detection of Atari games
 - Fix potential bug in plotting script when there is not enough timesteps
+- Fixed a bug when using HER + DQN/TQC for hyperparam optimization
 
 ### Documentation
 
