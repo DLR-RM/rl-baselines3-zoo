@@ -93,7 +93,7 @@ parking-v0:
   n_sampled_goal: 4
   goal_selection_strategy: 'future'
   buffer_size: 1000000
-  batch_size: 2048
+  batch_size: 1024
   gamma: 0.95
   learning_rate: !!float 1e-3
   tau: 0.05
@@ -102,44 +102,7 @@ parking-v0:
   max_episode_length: 100
   # normalize: True
 
-# TD3 hyperparams, her paper
-#parking-v0:
-#  n_timesteps: !!float 2e5
-#  policy: 'MlpPolicy'
-#  model_class: 'td3'
-#  n_sampled_goal: 4
-#  goal_selection_strategy: 'future'
-#  buffer_size: 1000000
-#  batch_size: 256
-#  gamma: 0.95
-#  learning_rate: !!float 1e-3
-#  noise_type: 'normal'
-#  noise_std: 0.2
-#  policy_kwargs: "dict(net_arch=[256, 256, 256])"
-#  online_sampling: True
-#  max_episode_length: 100
-
-
 # Mujoco Robotic Env
-# DDPG hyperparams
-# FetchReach-v1:
-#   n_timesteps: !!float 20000
-#   policy: 'MlpPolicy'
-#   model_class: 'ddpg'
-#   n_sampled_goal: 4
-#   goal_selection_strategy: 'future'
-#   buffer_size: 1000000
-#   batch_size: 256
-#   gamma: 0.95
-#   random_exploration: 0.3
-#   actor_lr: !!float 1e-3
-#   critic_lr: !!float 1e-3
-#   noise_type: 'normal'
-#   noise_std: 0.2
-#   normalize_observations: true
-#   normalize_returns: false
-#   policy_kwargs: "dict(layers=[256, 256, 256])"
-#   online_sampling: True
 
 FetchSlide-v1:
   env_wrapper:
@@ -161,10 +124,6 @@ FetchSlide-v1:
 FetchPush-v1:
   env_wrapper:
     - sb3_contrib.common.wrappers.TimeFeatureWrapper
-    - utils.wrappers.DoneOnSuccessWrapper:
-        reward_offset: 0
-        n_successes: 4
-    - stable_baselines3.common.monitor.Monitor
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   model_class: 'tqc'
@@ -179,44 +138,24 @@ FetchPush-v1:
   policy_kwargs: "dict(n_critics=2, net_arch=[256, 256, 256])"
   online_sampling: True
 
-# Tuned
-# FetchPickAndPlace-v1:
-#   n_timesteps: !!float 1e6
-#   policy: 'MlpPolicy'
-#   model_class: 'tqc'
-#   n_sampled_goal: 4
-#   goal_selection_strategy: 'future'
-#   buffer_size: 1000000
-#   ent_coef: 'auto'
-#   batch_size: 2048
-#   ent_coef: 0.01
-#   gamma: 0.95
-#   tau: 0.05
-#   learning_rate: !!float 1e-3
-#   learning_starts: 1000
-#   train_freq: 1
-#   online_sampling: True
-#   policy_kwargs: "dict(net_arch=[256, 256, 256])"
-
 FetchPickAndPlace-v1:
   env_wrapper:
     - sb3_contrib.common.wrappers.TimeFeatureWrapper
-    - utils.wrappers.DoneOnSuccessWrapper:
-        reward_offset: 0
-        n_successes: 4
-    - stable_baselines3.common.monitor.Monitor
+    # - utils.wrappers.DoneOnSuccessWrapper:
+    #     reward_offset: 0
+    #     n_successes: 4
+    # - stable_baselines3.common.monitor.Monitor
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   model_class: 'tqc'
   n_sampled_goal: 4
   goal_selection_strategy: 'future'
   buffer_size: 1000000
-  batch_size: 2048
+  batch_size: 1024
   gamma: 0.95
   learning_rate: !!float 1e-3
   tau: 0.05
-  # ent_coef: 0.01
-  policy_kwargs: "dict(n_critics=2, net_arch=[256, 256, 256])"
+  policy_kwargs: "dict(n_critics=2, net_arch=[512, 512, 512])"
   online_sampling: True
 
 # SAC hyperparams
@@ -234,17 +173,3 @@ FetchReach-v1:
   learning_starts: 1000
   online_sampling: True
   normalize: True
-
-
-# TD3 hyperparams
-# FetchReach-v1:
-#   n_timesteps: !!float 25000
-#   policy: 'MlpPolicy'
-#   model_class: 'td3'
-#   n_sampled_goal: 4
-#   goal_selection_strategy: 'future'
-#   buffer_size: 1000000
-#   batch_size: 256
-#   gamma: 0.95
-#   learning_rate: 0.001
-#   learning_starts: 1000
