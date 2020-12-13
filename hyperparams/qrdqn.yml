@@ -4,16 +4,16 @@ atari:
   frame_stack: 4
   policy: 'CnnPolicy'
   n_timesteps: !!float 1e7
-  buffer_size: 10000
-  learning_rate: !!float 1e-4
-  batch_size: 32
-  learning_starts: 100000
-  target_update_interval: 1000
-  train_freq: 4
-  gradient_steps: 1
-  exploration_fraction: 0.1
-  exploration_final_eps: 0.01
   optimize_memory_usage: True
+  # buffer_size: 10000
+  # learning_rate: !!float 1e-4
+  # batch_size: 32
+  # learning_starts: 100000
+  # target_update_interval: 1000
+  # train_freq: 4
+  # gradient_steps: 1
+  # exploration_fraction: 0.1
+  # exploration_final_eps: 0.01
 
 # Almost Tuned
 CartPole-v1:
@@ -24,11 +24,12 @@ CartPole-v1:
   buffer_size: 100000
   learning_starts: 0
   gamma: 0.99
-  target_update_interval: 1250
+  target_update_interval: 2000
   train_freq: 16
   gradient_steps: 4
   exploration_fraction: 0.06
   exploration_final_eps: 0.11
+  policy_kwargs: "dict(n_quantiles=25)"
 
 # Tuned
 MountainCar-v0:
@@ -44,7 +45,7 @@ MountainCar-v0:
   gradient_steps: 8
   exploration_fraction: 0.2
   exploration_final_eps: 0.07
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=25)"
 
 # Tuned
 LunarLander-v2:
@@ -60,7 +61,7 @@ LunarLander-v2:
   gradient_steps: -1
   exploration_fraction: 0.12
   exploration_final_eps: 0.1
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=25)"
 
 # Tuned
 Acrobot-v1:

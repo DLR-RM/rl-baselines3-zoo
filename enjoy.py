@@ -93,7 +93,7 @@ def main():  # noqa: C901
     if not found:
         raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
 
-    off_policy_algos = ["dqn", "ddpg", "sac", "her", "td3", "tqc"]
+    off_policy_algos = ["qrdqn", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
 
     if algo in off_policy_algos:
         args.n_envs = 1

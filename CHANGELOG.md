@@ -1,4 +1,4 @@
-## Pre-Release 0.11.0a2 (WIP)
+## Pre-Release 0.11.0a3 (WIP)
 
 ### Breaking Changes
 - Removed `LinearNormalActionNoise`
@@ -9,6 +9,7 @@
 ### New Features
 - Added option to choose which `VecEnv` class to use for multiprocessing
 - Added hyperparameter optimization support for `TQC`
+- Added support for `QR-DQN` from SB3 contrib
 
 ### Bug fixes
 - Improved detection of Atari games
