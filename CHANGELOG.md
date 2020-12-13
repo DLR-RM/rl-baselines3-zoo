@@ -1,15 +1,19 @@
-## Pre-Release 0.11.0a0 (WIP)
+## Pre-Release 0.11.0a2 (WIP)
 
 ### Breaking Changes
 - Removed `LinearNormalActionNoise`
 - Evaluation is now deterministic by default, except for Atari games
+- `sb3_contrib` is now required
+- `TimeFeatureWrapper` was moved to the contrib repo
 
 ### New Features
 - Added option to choose which `VecEnv` class to use for multiprocessing
+- Added hyperparameter optimization support for `TQC`
 
 ### Bug fixes
 - Improved detection of Atari games
 - Fix potential bug in plotting script when there is not enough timesteps
+- Fixed a bug when using HER + DQN/TQC for hyperparam optimization
 
 ### Documentation
 
@@ -21,6 +25,7 @@
 - Changed `PPO` atari hyperparameters (removed vf clipping)
 - Changed `A2C` atari hyperparameters (eps value of the optimizer)
 - Updated benchmark script
+- Updated hyperparameter optim search space (commented gSDE for A2C/PPO)
 
 ## Pre-Release 0.10.0 (2020-10-28)
 

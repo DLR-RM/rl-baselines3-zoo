@@ -3,7 +3,7 @@ NeckEnvRelative-v2:
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
-    - utils.wrappers.TimeFeatureWrapper:
+    - sb3_contrib.common.wrappers.TimeFeatureWrapper:
         test_mode: False
     # - utils.wrappers.LowPassFilterWrapper:
     #     freq: 2.0
@@ -117,12 +117,12 @@ BipedalWalkerHardcore-v3:
 # Tuned
 HalfCheetahBulletEnv-v0:
   # env_wrapper:
-  #   - utils.wrappers.TimeFeatureWrapper
+  #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
   #   - utils.wrappers.DelayedRewardWrapper:
   #       delay: 10
   #   - utils.wrappers.HistoryWrapper:
   #       horizon: 10
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -139,7 +139,7 @@ HalfCheetahBulletEnv-v0:
 
 # Tuned
 AntBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -155,7 +155,7 @@ AntBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 HopperBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -171,7 +171,7 @@ HopperBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 Walker2DBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -189,7 +189,7 @@ Walker2DBulletEnv-v0:
 
 # Tuned
 ReacherBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -218,7 +218,7 @@ HumanoidBulletEnv-v0:
 
 # Tuned
 InvertedDoublePendulumBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -235,7 +235,7 @@ InvertedDoublePendulumBulletEnv-v0:
 
 # Tuned
 InvertedPendulumSwingupBulletEnv-v0:
-  env_wrapper: utils.wrappers.TimeFeatureWrapper
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -313,7 +313,7 @@ donkey-generated-track-v0:
         max_episode_steps: 500
     - utils.wrappers.HistoryWrapper:
         horizon: 5
-    - utils.wrappers.TimeFeatureWrapper
+    - sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
