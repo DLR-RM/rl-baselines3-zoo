@@ -4,6 +4,7 @@ atari:
   frame_stack: 4
   policy: 'CnnPolicy'
   n_timesteps: !!float 1e7
+  exploration_fraction: 0.025  # explore 250k steps = 10M * 0.025
   optimize_memory_usage: True
   # buffer_size: 10000
   # learning_rate: !!float 1e-4
@@ -12,7 +13,6 @@ atari:
   # target_update_interval: 1000
   # train_freq: 4
   # gradient_steps: 1
-  # exploration_fraction: 0.1
   # exploration_final_eps: 0.01
 
 # Tuned
