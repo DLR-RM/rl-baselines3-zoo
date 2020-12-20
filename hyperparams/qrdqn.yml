@@ -47,23 +47,53 @@ MountainCar-v0:
   exploration_final_eps: 0.07
   policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=25)"
 
-# Tuned
+# Params:
+#     gamma: 0.995
+#     lr: 0.0014855219670373958
+#     batch_size: 128
+#     buffer_size: 100000
+#     exploration_final_eps: 0.1771394613100649
+#     exploration_fraction: 0.4277938191730202
+#     target_update_interval: 1
+#     learning_starts: 10000
+#     train_freq: 256
+#     subsample_steps: 1
+#     net_arch: medium
+#     n_quantiles: 168
+
 LunarLander-v2:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
-  learning_rate: !!float 6.3e-4
+  learning_rate: !!float 1.5e-3
   batch_size: 128
-  buffer_size: 50000
-  learning_starts: 0
-  gamma: 0.99
-  target_update_interval: 250
-  train_freq: 4
+  buffer_size: 100000
+  learning_starts: 10000
+  gamma: 0.995
+  target_update_interval: 1
+  train_freq: 256
   gradient_steps: -1
-  exploration_fraction: 0.12
-  exploration_final_eps: 0.1
-  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=25)"
+  exploration_fraction: 0.24
+  exploration_final_eps: 0.18
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=170)"
+
 
 # Tuned
+# LunarLander-v2:
+#   n_timesteps: !!float 1e5
+#   policy: 'MlpPolicy'
+#   learning_rate: !!float 3e-4
+#   batch_size: 128
+#   buffer_size: 50000
+#   learning_starts: 0
+#   gamma: 0.99
+#   target_update_interval: 250
+#   train_freq: 4
+#   gradient_steps: -1
+#   exploration_fraction: 0.12
+#   exploration_final_eps: 0.1
+#   policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=150)"
+#
+# # Tuned
 Acrobot-v1:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
