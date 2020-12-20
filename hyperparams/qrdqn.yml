@@ -51,7 +51,7 @@ MountainCar-v0:
 LunarLander-v2:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
-  learning_rate: !!float lin_1.5e-3
+  learning_rate: lin_1.5e-3
   batch_size: 128
   buffer_size: 100000
   learning_starts: 10000
