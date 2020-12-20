@@ -417,10 +417,7 @@ def sample_qrdqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     hyperparams = sample_dqn_params(trial)
 
     n_quantiles = trial.suggest_int("n_quantiles", 5, 200)
-    # top_quantiles_to_drop_per_net = trial.suggest_int("top_quantiles_to_drop_per_net", 0, n_quantiles - 1)
-
     hyperparams["policy_kwargs"].update({"n_quantiles": n_quantiles})
-    # hyperparams["top_quantiles_to_drop_per_net"] = top_quantiles_to_drop_per_net
 
     return hyperparams
 
