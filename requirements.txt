@@ -1,4 +1,4 @@
-stable-baselines3[extra,tests,docs]>=0.11.0a2
+stable-baselines3[extra,tests,docs]>=0.11.0a4
 box2d-py==2.3.8
 pybullet
 gym-minigrid
@@ -7,4 +7,4 @@ optuna
 pytablewriter
 seaborn
 pyyaml>=5.1
-sb3-contrib>=0.11.0a3
+sb3-contrib>=0.11.0a4
