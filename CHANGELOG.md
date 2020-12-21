@@ -28,6 +28,8 @@
 - Updated benchmark script
 - Updated hyperparameter optim search space (commented gSDE for A2C/PPO)
 - Updated `DQN` hyperparameters for CartPole
+- Do not wrap channel-first image env (now natively supported by SB3)
+- Removed hack to log success rate
 
 ## Pre-Release 0.10.0 (2020-10-28)
 
