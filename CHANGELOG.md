@@ -1,4 +1,4 @@
-## Pre-Release 0.11.0a2 (WIP)
+## Pre-Release 0.11.0a4 (WIP)
 
 ### Breaking Changes
 - Removed `LinearNormalActionNoise`
@@ -9,6 +9,7 @@
 ### New Features
 - Added option to choose which `VecEnv` class to use for multiprocessing
 - Added hyperparameter optimization support for `TQC`
+- Added support for `QR-DQN` from SB3 contrib
 
 ### Bug fixes
 - Improved detection of Atari games
@@ -26,6 +27,7 @@
 - Changed `A2C` atari hyperparameters (eps value of the optimizer)
 - Updated benchmark script
 - Updated hyperparameter optim search space (commented gSDE for A2C/PPO)
+- Updated `DQN` hyperparameters for CartPole
 
 ## Pre-Release 0.10.0 (2020-10-28)
 
