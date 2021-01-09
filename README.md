@@ -85,41 +85,26 @@ python train.py --algo sac --env Pendulum-v0 --save-replay-buffer
 ```
 It will be automatically loaded if present when continuing training.
 
-## Default agent hyperparameters
-
-Note that the default hyperparameters used in the zoo when tuning or training are not always the same as the defaults provided in [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/modules/base.html).  Consult the latest source code to be sure of these settings. For example:
-
-- PPO tuning assumes a network architecture with `ortho_init = False` when tuning, though it is `True` by [default](https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html#ppo-policies). 
-
-- PPO and A2C will use seperate architectures for policy and value networks, e.g. `net_arch=[dict(pi=[64, 64], vf=[64, 64])`, while the default is a shared network, `net_arch=[64, 64]`
-
-- Non-epsodic rollout in TD3 and DDPG assumes `gradient_steps = train_freq` and so tunes only `train_freq`.  
-
-- By default, the training environment is always wrapped in [VecNormalize](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_normalize.py#L13).  [Normalization uses](https://github.com/DLR-RM/rl-baselines3-zoo/issues/64) the default parameters of `VecNormalize`, with the exception of `gamma` which is set to match that of the agent.  This can be [overridden](https://github.com/DLR-RM/rl-baselines3-zoo/blob/v0.10.0/hyperparams/sac.yml#L239) using the appropriate `hyperparameters/algo_name.yml`, e.g.
-
-```
-  normalize: "{'norm_obs': True, 'norm_reward': False}"
-```
 
 ## Hyperparameter yaml syntax
 
 The syntax used in `hyperparameters/algo_name.yml` for setting hyperparameters (likewise the syntax to [overwrite hyperparameters](https://github.com/DLR-RM/rl-baselines3-zoo#overwrite-hyperparameters) on the cli) may be specialized if the argument is a function.  See examples in the `hyperparameters/` directory. For example:
 
-- Specify a linear change rate in learning:
+- Specify a linear schedule for the learning rate:
 
-```
+```yaml
   learning_rate: lin_0.012486195510232303
 ```
 
 Specify a different activation function for the network:
 
-```
+```yaml
   policy_kwargs: "dict(activation_fn=nn.ReLU)"
- ```
+```
 
 ## Hyperparameter Tuning
 
-We use [Optuna](https://optuna.org/) for optimizing the hyperparameters.  
+We use [Optuna](https://optuna.org/) for optimizing the hyperparameters.
 Not all hyperparameters are tuned, and tuning enforces certain default hyperparameter settings that may be different from the official defaults.  See [utils/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/utils/hyperparams_opt.py) for the current settings for each agent.
 
 Note: hyperparameters search is not implemented for DQN for now.
@@ -135,6 +120,22 @@ python train.py --algo ppo --env MountainCar-v0 -n 50000 -optimize --n-trials 10
 Distributed optimization using a shared database is also possible (see the corresponding [Optuna documentation](https://optuna.readthedocs.io/en/latest/tutorial/distributed.html)):
 ```
 python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage sqlite:///example.db
+```
+
+### Default agent hyperparameters
+
+Note that the default hyperparameters used in the zoo when tuning are not always the same as the defaults provided in [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/modules/base.html). Consult the latest source code to be sure of these settings. For example:
+
+- PPO tuning assumes a network architecture with `ortho_init = False` when tuning, though it is `True` by [default](https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html#ppo-policies).
+
+- PPO and A2C will use seperate architectures for policy and value networks, e.g. `net_arch=[dict(pi=[64, 64], vf=[64, 64])`, while the default is a shared network, `net_arch=[64, 64]`
+
+- Non-epsodic rollout in TD3 and DDPG assumes `gradient_steps = train_freq` and so tunes only `train_freq`.  
+
+- `normalize: True` means that the training environment will be wrapped in a [VecNormalize](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_normalize.py#L13) wrapper. [Normalization uses](https://github.com/DLR-RM/rl-baselines3-zoo/issues/64) the default parameters of `VecNormalize`, with the exception of `gamma` which is set to match that of the agent.  This can be [overridden](https://github.com/DLR-RM/rl-baselines3-zoo/blob/v0.10.0/hyperparams/sac.yml#L239) using the appropriate `hyperparameters/algo_name.yml`, e.g.
+
+```yaml
+  normalize: "{'norm_obs': True, 'norm_reward': False}"
 ```
 
 ## Env Wrappers
