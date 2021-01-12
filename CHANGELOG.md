@@ -17,6 +17,7 @@
 - Fixed a bug when using HER + DQN/TQC for hyperparam optimization
 
 ### Documentation
+- Improved documentation (@cboettig)
 
 ### Other
 - Refactored train script, now uses a `ExperimentManager` class
