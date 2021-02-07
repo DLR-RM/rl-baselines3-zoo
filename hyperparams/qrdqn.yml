@@ -4,18 +4,10 @@ atari:
   frame_stack: 4
   policy: 'CnnPolicy'
   n_timesteps: !!float 1e7
-  buffer_size: 10000
-  learning_rate: !!float 1e-4
-  batch_size: 32
-  learning_starts: 100000
-  target_update_interval: 1000
-  train_freq: 4
-  gradient_steps: 1
-  exploration_fraction: 0.1
-  exploration_final_eps: 0.01
+  exploration_fraction: 0.025  # explore 250k steps = 10M * 0.025
   optimize_memory_usage: True
 
-# Almost Tuned
+# Tuned
 CartPole-v1:
   n_timesteps: !!float 5e4
   policy: 'MlpPolicy'
@@ -29,7 +21,7 @@ CartPole-v1:
   gradient_steps: 128
   exploration_fraction: 0.16
   exploration_final_eps: 0.04
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=10)"
 
 # Tuned
 MountainCar-v0:
@@ -45,23 +37,23 @@ MountainCar-v0:
   gradient_steps: 8
   exploration_fraction: 0.2
   exploration_final_eps: 0.07
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=25)"
 
 # Tuned
 LunarLander-v2:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
-  learning_rate: !!float 6.3e-4
+  learning_rate: lin_1.5e-3
   batch_size: 128
-  buffer_size: 50000
-  learning_starts: 0
-  gamma: 0.99
-  target_update_interval: 250
-  train_freq: 4
+  buffer_size: 100000
+  learning_starts: 10000
+  gamma: 0.995
+  target_update_interval: 1
+  train_freq: 256
   gradient_steps: -1
-  exploration_fraction: 0.12
-  exploration_final_eps: 0.1
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  exploration_fraction: 0.24
+  exploration_final_eps: 0.18
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=170)"
 
 # Tuned
 Acrobot-v1:
@@ -77,4 +69,4 @@ Acrobot-v1:
   gradient_steps: -1
   exploration_fraction: 0.12
   exploration_final_eps: 0.1
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=25)"

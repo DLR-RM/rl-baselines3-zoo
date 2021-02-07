@@ -1,17 +1,23 @@
-## Pre-Release 0.11.0a0 (WIP)
+## Pre-Release 0.11.0a4 (WIP)
 
 ### Breaking Changes
 - Removed `LinearNormalActionNoise`
 - Evaluation is now deterministic by default, except for Atari games
+- `sb3_contrib` is now required
+- `TimeFeatureWrapper` was moved to the contrib repo
 
 ### New Features
 - Added option to choose which `VecEnv` class to use for multiprocessing
+- Added hyperparameter optimization support for `TQC`
+- Added support for `QR-DQN` from SB3 contrib
 
 ### Bug fixes
 - Improved detection of Atari games
 - Fix potential bug in plotting script when there is not enough timesteps
+- Fixed a bug when using HER + DQN/TQC for hyperparam optimization
 
 ### Documentation
+- Improved documentation (@cboettig)
 
 ### Other
 - Refactored train script, now uses a `ExperimentManager` class
@@ -21,6 +27,10 @@
 - Changed `PPO` atari hyperparameters (removed vf clipping)
 - Changed `A2C` atari hyperparameters (eps value of the optimizer)
 - Updated benchmark script
+- Updated hyperparameter optim search space (commented gSDE for A2C/PPO)
+- Updated `DQN` hyperparameters for CartPole
+- Do not wrap channel-first image env (now natively supported by SB3)
+- Removed hack to log success rate
 
 ## Pre-Release 0.10.0 (2020-10-28)
 

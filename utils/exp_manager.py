@@ -20,7 +20,7 @@ from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback,
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-from stable_baselines3.common.preprocessing import is_image_space
+from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import constant_fn
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize, VecTransposeImage
@@ -465,29 +465,6 @@ class ExperimentManager(object):
             env = VecNormalize(env, **local_normalize_kwargs)
         return env
 
-    def _log_success_rate(self, env: VecEnv) -> None:
-        # Hack to log the success rate
-        # TODO: allow to pass keyword arguments to the Monitor class
-        monitor: gym.Env = env.envs[0]
-        # unwrap
-        while not isinstance(monitor, Monitor):
-            monitor = monitor.env
-
-        if monitor.file_handler is None:
-            return
-
-        filename = monitor.file_handler.name
-        monitor.file_handler.close()
-
-        monitor.info_keywords = ("is_success",)
-        monitor.file_handler = open(filename, "wt")
-        monitor.file_handler.write(
-            "#%s\n" % json.dumps({"t_start": monitor.t_start, "env_id": monitor.env.spec and monitor.env.spec.id})
-        )
-        monitor.logger = csv.DictWriter(monitor.file_handler, fieldnames=("r", "l", "t") + monitor.info_keywords)
-        monitor.logger.writeheader()
-        monitor.file_handler.flush()
-
     def create_envs(self, n_envs: int, eval_env: bool = False, no_log: bool = False) -> VecEnv:
         """
         Create the environment and wrap it if necessary.
@@ -501,8 +478,13 @@ class ExperimentManager(object):
         # Do not log eval env (issue with writing the same file)
         log_dir = None if eval_env or no_log else self.save_path
 
-        # env = SubprocVecEnv([make_env(env_id, i, self.seed) for i in range(n_envs)])
+        monitor_kwargs = {}
+        # Special case for GoalEnvs: log success rate too
+        if "Neck" in self.env_id or self.is_robotics_env(self.env_id) or "parking-v0" in self.env_id:
+            monitor_kwargs = dict(info_keywords=("is_success",))
+
         # On most env, SubprocVecEnv does not help and is quite memory hungry
+        # therefore we use DummyVecEnv by default
         env = make_vec_env(
             env_id=self.env_id,
             n_envs=n_envs,
@@ -512,11 +494,8 @@ class ExperimentManager(object):
             wrapper_class=self.env_wrapper,
             vec_env_cls=self.vec_env_class,
             vec_env_kwargs=self.vec_env_kwargs,
+            monitor_kwargs=monitor_kwargs,
         )
-
-        # Special case for GoalEnvs: log success rate too
-        if "Neck" in self.env_id or self.is_robotics_env(self.env_id):
-            self._log_success_rate(env)
 
         # Wrap the env into a VecNormalize wrapper if needed
         # and load saved statistics when present
@@ -531,7 +510,7 @@ class ExperimentManager(object):
 
         # Wrap if needed to re-order channels
         # (switch from channel last to channel first convention)
-        if is_image_space(env.observation_space):
+        if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):
             if self.verbose > 0:
                 print("Wrapping into a VecTransposeImage")
             env = VecTransposeImage(env)

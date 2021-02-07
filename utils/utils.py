@@ -9,16 +9,12 @@ import numpy as np
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
+from sb3_contrib import QRDQN, TQC
 from stable_baselines3 import A2C, DDPG, DQN, HER, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize
-
-try:
-    from sb3_contrib import TQC  # pytype: disable=import-error
-except ImportError:
-    TQC = None
 
 try:
     from utils.teleop import HumanTeleop
@@ -37,10 +33,10 @@ ALGOS = {
     "sac": SAC,
     "td3": TD3,
     "human": HumanTeleop,
+    # SB3 Contrib,
+    "qrdqn": QRDQN,
+    "tqc": TQC,
 }
-
-if TQC is not None:
-    ALGOS["tqc"] = TQC
 
 
 def flatten_dict_observations(env: gym.Env) -> gym.Env:
