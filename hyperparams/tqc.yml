@@ -201,7 +201,7 @@ InvertedPendulumSwingupBulletEnv-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
-  ## Custom envs
+## Custom envs
 
 donkey-generated-track-v0:
   env_wrapper:
@@ -209,6 +209,11 @@ donkey-generated-track-v0:
         max_episode_steps: 1200
     - utils.wrappers.HistoryWrapper:
         horizon: 2
+    # - utils.wrappers.ResidualExpertWrapper:
+    #     model_path: ./logs/human/donkey-generated-track-v0_2/policy.pt
+    #     d3rlpy_model: True
+    #     residual_scale: 0.5
+    #     expert_scale: 1.0
     #- utils.wrappers.TimeFeatureWrapper:
     #    test_mode: False
     - stable_baselines3.common.monitor.Monitor:

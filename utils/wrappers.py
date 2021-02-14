@@ -3,6 +3,7 @@ from typing import Optional
 
 import gym
 import numpy as np
+import torch as th
 from matplotlib import pyplot as plt
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from scipy.signal import iirfilter, sosfilt, zpk2sos
@@ -385,6 +386,7 @@ class ResidualExpertWrapper(gym.Wrapper):
         add_expert_to_obs: bool = True,
         residual_scale: float = 0.2,
         expert_scale: float = 1.0,
+        d3rlpy_model: bool = False,
     ):
         assert isinstance(env.observation_space, gym.spaces.Box)
         assert model_path is not None
@@ -400,14 +402,22 @@ class ResidualExpertWrapper(gym.Wrapper):
         super(ResidualExpertWrapper, self).__init__(env)
 
         print(f"Loading model from {model_path}")
-        self.model = SAC.load(model_path)
+        if d3rlpy_model:
+            self.model = th.jit.load(model_path)
+        else:
+            self.model = SAC.load(model_path)
+        self.d3rlpy_model = d3rlpy_model
         self._last_obs = None
         self.residual_scale = residual_scale
         self.expert_scale = expert_scale
         self.add_expert_to_obs = add_expert_to_obs
 
     def _predict(self, obs):
-        expert_action, _ = self.model.predict(obs, deterministic=True)
+        # TODO: move to gpu when possible
+        if self.d3rlpy_model:
+            expert_action = self.model(th.tensor(obs).reshape(1, -1)).cpu().numpy()[0, :]
+        else:
+            expert_action, _ = self.model.predict(obs, deterministic=True)
         if self.add_expert_to_obs:
             obs = np.concatenate((obs, expert_action), axis=-1)
         return obs, expert_action

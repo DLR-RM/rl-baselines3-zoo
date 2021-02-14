@@ -238,7 +238,12 @@ if __name__ == "__main__":  # noqa: C901
         except KeyboardInterrupt:
             pass
         finally:
-            print("Starting training")
+            print(f"Saving offline model to {exp_manager.save_path}/policy.pt")
+            offline_model.save_policy(f"{exp_manager.save_path}/policy.pt")
+            # print("Starting training")
+            # TODO: convert d3rlpy weights to DB3
+            model.env.close()
+            exit()
 
     # Normal training
     if model is not None:
