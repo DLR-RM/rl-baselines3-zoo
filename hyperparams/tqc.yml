@@ -217,9 +217,7 @@ donkey-generated-track-v0:
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
   #learning_rate: !!float 3e-4
-  buffer_size: 100000
-  # replay_buffer_class: NstepReplayBuffer
-  # replay_buffer_kwargs: "dict(n_step=5)"
+  buffer_size: 200000
   batch_size: 256
   ent_coef: 'auto'
   gamma: 0.98
