@@ -109,6 +109,12 @@ add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
 deterministic = args.pretrain_params.get("deterministic", True)
 ```
 
+## Human driving
+
+```
+python train.py --algo human --env donkey-generated-track-v0 --env-kwargs frame_skip:1 throttle_max:1.0 throttle_min:-1.0 steering_min:-1 steering_max:1 level:6 max_cte:100000  --num-threads 2 --eval-freq -1
+```
+
 ## Hyperparameter yaml syntax
 
 The syntax used in `hyperparameters/algo_name.yml` for setting hyperparameters (likewise the syntax to [overwrite hyperparameters](https://github.com/DLR-RM/rl-baselines3-zoo#overwrite-hyperparameters) on the cli) may be specialized if the argument is a function.  See examples in the `hyperparameters/` directory. For example:
