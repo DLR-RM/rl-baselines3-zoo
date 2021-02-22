@@ -93,17 +93,17 @@ for env in args.env:  # noqa: C901
 
                 # For post-processing
                 merged_timesteps.append(log["timesteps"])
-                merged_results.append(log["results"])
+                merged_results.append(log[args.key])
 
                 # Truncate the plots
                 while timesteps[max_len - 1] > args.max_timesteps:
                     max_len -= 1
                 timesteps = timesteps[:max_len]
 
-                if len(log["results"]) >= max_len:
-                    last_eval.append(log["results"][max_len - 1])
+                if len(log[args.key]) >= max_len:
+                    last_eval.append(log[args.key][max_len - 1])
                 else:
-                    last_eval.append(log["results"][-1])
+                    last_eval.append(log[args.key][-1])
 
             # Merge runs with different eval freq:
             # ex: (100,) eval vs (10,)
