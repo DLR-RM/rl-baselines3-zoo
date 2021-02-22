@@ -1,6 +1,7 @@
 import argparse
 import os
 import pickle
+from copy import deepcopy
 
 import numpy as np
 import pytablewriter
@@ -13,6 +14,14 @@ parser.add_argument("-a", "--algos", help="Algorithms to include", nargs="+", ty
 parser.add_argument("-e", "--env", help="Environments to include", nargs="+", type=str)
 parser.add_argument("-f", "--exp-folders", help="Folders to include", nargs="+", type=str)
 parser.add_argument("-l", "--labels", help="Label for each folder", nargs="+", type=str)
+parser.add_argument(
+    "-k",
+    "--key",
+    help="Key from the `evaluations.npz` file to use to aggregate results "
+    "(e.g. reward, success rate, ...), it is 'results' by default (i.e., the episode reward)",
+    default="results",
+    type=str,
+)
 parser.add_argument("-max", "--max-timesteps", help="Max number of timesteps to display", type=int, default=int(2e6))
 parser.add_argument("-min", "--min-timesteps", help="Min number of timesteps to keep a trial", type=int, default=-1)
 parser.add_argument("-o", "--output", help="Output filename (pickle file), where to save the post-processed data", type=str)
@@ -63,7 +72,6 @@ for env in args.env:  # noqa: C901
             ]
 
             max_len = 0
-            merged_mean, merged_std = [], []
             merged_timesteps, merged_results = [], []
             last_eval = []
             timesteps = np.empty(0)
@@ -75,16 +83,9 @@ for env in args.env:  # noqa: C901
                     continue
 
                 mean_ = np.squeeze(log["results"].mean(axis=1))
-                #
-                # TODO: Compute standard error for all the runs
-                # std_ = np.squeeze(log['results'].std(axis=1)) / np.sqrt(log['results'].shape[1])
-                std_ = np.squeeze(log["results"].std(axis=1))
 
                 if mean_.shape == ():
                     continue
-
-                merged_mean.append(mean_)
-                merged_std.append(std_)
 
                 max_len = max(max_len, len(mean_))
                 if len(log["timesteps"]) >= max_len:
@@ -120,49 +121,44 @@ for env in args.env:  # noqa: C901
                             while n_timesteps[max_len - 1] > args.max_timesteps:
                                 max_len -= 1
                             timesteps = n_timesteps[:max_len]
+                # Avoid modifying original aggregated results
+                merged_results_ = deepcopy(merged_results)
                 # Downsample if needed
                 for trial_idx, n_timesteps in enumerate(merged_timesteps):
                     # We assume they are the same, or they will be discarded in the next step
                     if len(n_timesteps) == min_ or n_timesteps[-1] < args.min_timesteps:
                         pass
                     else:
-                        # Discard
-                        # merged_mean[trial_idx] = []
-
-                        new_merged_mean, new_merged_std = [], []
+                        new_merged_results = []
                         # Nearest neighbour
                         distance_mat = distance_matrix(n_timesteps.reshape(-1, 1), timesteps.reshape(-1, 1))
                         closest_indices = distance_mat.argmin(axis=0)
                         for closest_idx in closest_indices:
-                            new_merged_mean.append(merged_mean[trial_idx][closest_idx])
-                            new_merged_std.append(merged_std[trial_idx][closest_idx])
-                        merged_mean[trial_idx] = new_merged_mean
-                        merged_std[trial_idx] = new_merged_std
-                        last_eval[trial_idx] = merged_results[trial_idx][closest_indices[-1]]
+                            new_merged_results.append(merged_results_[trial_idx][closest_idx])
+                        merged_results[trial_idx] = new_merged_results
+                        last_eval[trial_idx] = merged_results_[trial_idx][closest_indices[-1]]
 
             # Remove incomplete runs
-            mean_tmp, std_tmp, last_eval_tmp = [], [], []
-            for idx in range(len(merged_mean)):
-                if len(merged_mean[idx]) >= max_len:
-                    mean_tmp.append(merged_mean[idx][:max_len])
-                    std_tmp.append(merged_std[idx][:max_len])
+            merged_results_tmp, last_eval_tmp = [], []
+            for idx in range(len(merged_results)):
+                if len(merged_results[idx]) >= max_len:
+                    merged_results_tmp.append(merged_results[idx][:max_len])
                     last_eval_tmp.append(last_eval[idx])
-            merged_mean = mean_tmp
-            merged_std = std_tmp
+            merged_results = merged_results_tmp
             last_eval = last_eval_tmp
 
             # Post-process
-            if len(merged_mean) > 0:
+            if len(merged_results) > 0:
                 # shape: (n_trials, n_eval * n_eval_episodes)
-                merged_mean = np.array(merged_mean)
-                n_trials = len(merged_mean)
+                merged_results = np.array(merged_results)
+                n_trials = len(merged_results)
                 n_eval = len(timesteps)
 
                 if args.print_n_trials:
                     print(f"{env}-{algo}-{args.labels[folder_idx]}: {n_trials}")
 
                 # reshape to (n_trials, n_eval, n_eval_episodes)
-                evaluations = merged_mean.reshape((n_trials, n_eval, -1))
+                evaluations = merged_results.reshape((n_trials, n_eval, -1))
                 # re-arrange to (n_eval, n_trials, n_eval_episodes)
                 evaluations = np.swapaxes(evaluations, 0, 1)
                 # (n_eval,)
