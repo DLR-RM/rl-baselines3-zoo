@@ -383,3 +383,31 @@ CarRacing-v0:
   policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
                        )"
+
+donkey-generated-track-v0:
+  normalize: true
+  env_wrapper:
+    - utils.wrappers.HistoryWrapper:
+        horizon: 2
+    - stable_baselines3.common.monitor.Monitor:
+        filename: None
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_envs: 1
+  batch_size: 128
+  n_steps: 1024
+  gamma: 0.99
+  gae_lambda: 0.9
+  n_epochs: 20
+  ent_coef: 0.0
+  sde_sample_freq: 4
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  learning_rate: !!float 3e-5
+  use_sde: True
+  clip_range: 0.4
+  policy_kwargs: "dict(log_std_init=-2,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
