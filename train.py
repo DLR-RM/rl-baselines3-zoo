@@ -11,10 +11,18 @@ import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
 try:
-    from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL
+    from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL, CRR
     from d3rlpy.wrappers.sb3 import SB3Wrapper, to_mdp_dataset
 
-    offline_algos = dict(awr=AWR, awac=AWAC, bc=BC, bcq=BCQ, bear=BEAR, cql=CQL)
+    offline_algos = dict(
+        awr=AWR,
+        awac=AWAC,
+        bc=BC,
+        bcq=BCQ,
+        bear=BEAR,
+        cql=CQL,
+        crr=CRR,
+    )
 except ImportError:
     offline_algos = {}
 
@@ -192,7 +200,7 @@ if __name__ == "__main__":  # noqa: C901
 
         n_iterations = args.pretrain_params.get("n_iterations", 10)
         n_epochs = args.pretrain_params.get("n_epochs", 1)
-        q_func_type = args.pretrain_params.get("q_func_type")
+        q_func_factory = args.pretrain_params.get("q_func_factory")
         batch_size = args.pretrain_params.get("batch_size", 512)
         # n_action_samples = args.pretrain_params.get("n_action_samples", 1)
         n_eval_episodes = args.pretrain_params.get("n_eval_episodes", 5)
@@ -201,7 +209,7 @@ if __name__ == "__main__":  # noqa: C901
         for arg_name in {
             "n_iterations",
             "n_epochs",
-            "q_func_type",
+            "q_func_factory",
             "batch_size",
             "n_eval_episodes",
             "add_to_buffer",
@@ -211,7 +219,7 @@ if __name__ == "__main__":  # noqa: C901
                 del args.pretrain_params[arg_name]
         try:
             assert args.offline_algo is not None and offline_algos is not None
-            kwargs_ = {} if q_func_type is None else dict(q_func_type=q_func_type)
+            kwargs_ = {} if q_func_factory is None else dict(q_func_factory=q_func_factory)
             kwargs_.update(args.pretrain_params)
 
             offline_model = offline_algos[args.offline_algo](
