@@ -401,6 +401,8 @@ def evaluate_policy_add_to_buffer(
 
         while not done:
             action, state = model.predict(obs, state=state, deterministic=deterministic)
+            # Clip action for CRR
+            action = np.clip(action, -1.0, 1.0)
             new_obs, reward, done, _info = env.step(action)
             episode_reward += reward
             if callback is not None:

@@ -1,4 +1,5 @@
 import time
+import os
 from typing import List, Optional, Tuple
 
 import numpy as np
@@ -80,7 +81,7 @@ class HumanTeleop(BaseAlgorithm):
         _init_setup_model=False,
         scale_human=1.0,
         scale_model=0.0,
-        model_path=None,
+        model_path=os.environ.get("MODEL_PATH"),
         deterministic=True,
     ):
         super(HumanTeleop, self).__init__(
