@@ -1,5 +1,5 @@
-import time
 import os
+import time
 from typing import List, Optional, Tuple
 
 import numpy as np
