@@ -13,9 +13,9 @@ NeckGoalEnvRelativeSparse-v2:
   ent_coef: 'auto'
   gamma: 0.99
   tau: 0.02
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   gradient_steps: -1
-  train_freq: -1
+
   # 10 episodes of warm-up
   learning_starts: 1500
   use_sde_at_warmup: True
@@ -40,9 +40,8 @@ NeckGoalEnvRelativeDense-v2:
   ent_coef: 'auto'
   gamma: 0.99
   tau: 0.02
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   gradient_steps: -1
-  train_freq: -1
   # 10 episodes of warm-up
   learning_starts: 1500
   use_sde_at_warmup: True

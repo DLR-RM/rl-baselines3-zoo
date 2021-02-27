@@ -6,6 +6,7 @@
 - `sb3_contrib` is now required
 - `TimeFeatureWrapper` was moved to the contrib repo
 - Replaced old `plot_train.py` script with updated `plot_training_success.py`
+- Renamed ``n_episodes_rollout`` to ``train_freq`` tuple to match latest version of SB3
 
 ### New Features
 - Added option to choose which `VecEnv` class to use for multiprocessing
