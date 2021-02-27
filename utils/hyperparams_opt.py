@@ -212,12 +212,10 @@ def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
     episodic = trial.suggest_categorical("episodic", [True, False])
 
     if episodic:
-        n_episodes_rollout = 1
-        train_freq, gradient_steps = -1, -1
+        train_freq, gradient_steps = (1, "episode"), -1
     else:
         train_freq = trial.suggest_categorical("train_freq", [1, 16, 128, 256, 1000, 2000])
         gradient_steps = train_freq
-        n_episodes_rollout = -1
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
     noise_std = trial.suggest_uniform("noise_std", 0, 1)
@@ -241,7 +239,6 @@ def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
         "buffer_size": buffer_size,
         "train_freq": train_freq,
         "gradient_steps": gradient_steps,
-        "n_episodes_rollout": n_episodes_rollout,
         "policy_kwargs": dict(net_arch=net_arch),
     }
 
@@ -274,12 +271,10 @@ def sample_ddpg_params(trial: optuna.Trial) -> Dict[str, Any]:
     episodic = trial.suggest_categorical("episodic", [True, False])
 
     if episodic:
-        n_episodes_rollout = 1
-        train_freq, gradient_steps = -1, -1
+        train_freq, gradient_steps = (1, "episode"), -1
     else:
         train_freq = trial.suggest_categorical("train_freq", [1, 16, 128, 256, 1000, 2000])
         gradient_steps = train_freq
-        n_episodes_rollout = -1
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
     noise_std = trial.suggest_uniform("noise_std", 0, 1)
@@ -302,7 +297,6 @@ def sample_ddpg_params(trial: optuna.Trial) -> Dict[str, Any]:
         "buffer_size": buffer_size,
         "train_freq": train_freq,
         "gradient_steps": gradient_steps,
-        "n_episodes_rollout": n_episodes_rollout,
         "policy_kwargs": dict(net_arch=net_arch),
     }
 
@@ -337,7 +331,6 @@ def sample_dqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 128, 256, 1000])
     subsample_steps = trial.suggest_categorical("subsample_steps", [1, 2, 4, 8])
     gradient_steps = max(train_freq // subsample_steps, 1)
-    n_episodes_rollout = -1
 
     net_arch = trial.suggest_categorical("net_arch", ["tiny", "small", "medium"])
 
@@ -350,7 +343,6 @@ def sample_dqn_params(trial: optuna.Trial) -> Dict[str, Any]:
         "buffer_size": buffer_size,
         "train_freq": train_freq,
         "gradient_steps": gradient_steps,
-        "n_episodes_rollout": n_episodes_rollout,
         "exploration_fraction": exploration_fraction,
         "exploration_final_eps": exploration_final_eps,
         "target_update_interval": target_update_interval,
