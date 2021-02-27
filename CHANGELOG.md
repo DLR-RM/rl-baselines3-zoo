@@ -1,4 +1,4 @@
-## Pre-Release 0.11.0a7 (WIP)
+## Pre-Release 0.11.0 (2021-02-27)
 
 ### Breaking Changes
 - Removed `LinearNormalActionNoise`
