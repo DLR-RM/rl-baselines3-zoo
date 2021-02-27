@@ -309,6 +309,10 @@ class ExperimentManager(object):
         hyperparams = self._preprocess_her_model_class(hyperparams)
         hyperparams = self._preprocess_schedules(hyperparams)
 
+        # Pre-process train_freq
+        if "train_freq" in hyperparams and isinstance(hyperparams["train_freq"], list):
+            hyperparams["train_freq"] = tuple(hyperparams["train_freq"])
+
         # Should we overwrite the number of timesteps?
         if self.n_timesteps > 0:
             if self.verbose:
