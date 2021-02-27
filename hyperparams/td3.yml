@@ -14,7 +14,7 @@ Pendulum-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -27,7 +27,7 @@ LunarLanderContinuous-v2:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -40,7 +40,7 @@ BipedalWalker-v3:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -54,7 +54,7 @@ BipedalWalkerHardcore-v3:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -69,7 +69,7 @@ HalfCheetahBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -83,7 +83,7 @@ AntBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -97,7 +97,7 @@ HopperBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -111,7 +111,7 @@ Walker2DBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -127,7 +127,7 @@ HumanoidBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -142,7 +142,7 @@ ReacherBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -157,7 +157,7 @@ InvertedDoublePendulumBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -172,7 +172,7 @@ InvertedPendulumSwingupBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   gradient_steps: -1
-  n_episodes_rollout: 1
+  train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
