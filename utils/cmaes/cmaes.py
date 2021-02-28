@@ -68,6 +68,7 @@ class CMAES(BaseAlgorithm):
         self.weight_size = np.prod(self.weight_shape)
         self.bias_shape = self.policy.mu[0].bias.shape
         self.bias_size = self.bias_shape[0]
+        self.generation = 0
 
         if _init_setup_model:
             self._setup_model()
@@ -136,6 +137,9 @@ class CMAES(BaseAlgorithm):
 
         while self.num_timesteps < total_timesteps and not self.optimizer.should_stop() and continue_training:
             candidates = [self.optimizer.ask() for _ in range(self.optimizer.population_size)]
+            self.generation += 1
+            print()
+            print(f"=== Generation {self.generation} ====")
 
             # Add best (start individual)
             candidates[0] = self.best_individual
@@ -179,11 +183,11 @@ class CMAES(BaseAlgorithm):
 
                 if done:
                     if self.verbose > 0:
-                        print(f"Candidate {candidate_idx + 1}, return={float(returns[candidate_idx]):.2f}")
+                        print(f"Candidate {candidate_idx + 1}, return={returns[candidate_idx]:.2f}")
 
                     if self.best_ever is None or returns[candidate_idx] > self.best_ever:
                         print("New Best!")
-                        self.best_ever = float(returns[candidate_idx])
+                        self.best_ever = returns[candidate_idx]
                         self.best_individual = candidates[candidate_idx]
                         self._vector_to_params(self.policy, candidates[candidate_idx])
                     # force reset
@@ -218,7 +222,7 @@ class CMAES(BaseAlgorithm):
         logger.record("time/fps", fps)
         logger.record("time/time_elapsed", int(time.time() - self.start_time), exclude="tensorboard")
         logger.record("time/total timesteps", self.num_timesteps, exclude="tensorboard")
-        logger.record("rollout/best_ever", -self.best_ever.f)
+        logger.record("rollout/best_ever", self.best_ever)
 
         if len(self.ep_success_buffer) > 0:
             logger.record("rollout/success rate", safe_mean(self.ep_success_buffer))
