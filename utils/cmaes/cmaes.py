@@ -22,7 +22,7 @@ class CMAES(BaseAlgorithm):
         policy: Type[BasePolicy],
         env: Union[GymEnv, str],
         n_individuals: int = -1,
-        std_init: float = 0.2,
+        std_init: float = 0.1,
         model_path: str = os.environ.get("MODEL_PATH"),
         diagonal_cov: bool = False,
         pop_size: Optional[int] = None,
@@ -142,7 +142,7 @@ class CMAES(BaseAlgorithm):
             print(f"=== Generation {self.generation} ====")
 
             # Add best (start individual)
-            candidates[0] = self.best_individual
+            candidates[0] = self.best_individual.copy()
             returns = np.zeros((len(candidates),))
             candidate_idx = 0
             candidate_steps = 0
@@ -188,8 +188,8 @@ class CMAES(BaseAlgorithm):
                     if self.best_ever is None or returns[candidate_idx] > self.best_ever:
                         print("New Best!")
                         self.best_ever = returns[candidate_idx]
-                        self.best_individual = candidates[candidate_idx]
-                        self._vector_to_params(self.policy, candidates[candidate_idx])
+                        self.best_individual = candidates[candidate_idx].copy()
+                        self._vector_to_params(self.policy, candidates[candidate_idx].copy())
                     # force reset
                     # self._last_obs = self.env.reset()
                     candidate_idx += 1
