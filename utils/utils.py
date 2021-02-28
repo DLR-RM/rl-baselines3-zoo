@@ -21,6 +21,11 @@ try:
 except ImportError:
     HumanTeleop = None
 
+try:
+    from utils.cmaes.cmaes import CMAES
+except ImportError:
+    CMAES = None
+
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
 
@@ -33,6 +38,7 @@ ALGOS = {
     "sac": SAC,
     "td3": TD3,
     "human": HumanTeleop,
+    "cmaes": CMAES,
     # SB3 Contrib,
     "qrdqn": QRDQN,
     "tqc": TQC,
