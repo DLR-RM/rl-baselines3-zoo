@@ -16,7 +16,6 @@ from optuna.samplers import BaseSampler, RandomSampler, TPESampler
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
@@ -309,6 +308,10 @@ class ExperimentManager(object):
         # Convert model class string to an object if needed (when using HER)
         hyperparams = self._preprocess_her_model_class(hyperparams)
         hyperparams = self._preprocess_schedules(hyperparams)
+
+        # Pre-process train_freq
+        if "train_freq" in hyperparams and isinstance(hyperparams["train_freq"], list):
+            hyperparams["train_freq"] = tuple(hyperparams["train_freq"])
 
         # Should we overwrite the number of timesteps?
         if self.n_timesteps > 0:

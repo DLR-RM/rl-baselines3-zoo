@@ -1,10 +1,12 @@
-## Pre-Release 0.11.0a4 (WIP)
+## Pre-Release 0.11.1 (2021-02-27)
 
 ### Breaking Changes
 - Removed `LinearNormalActionNoise`
 - Evaluation is now deterministic by default, except for Atari games
 - `sb3_contrib` is now required
 - `TimeFeatureWrapper` was moved to the contrib repo
+- Replaced old `plot_train.py` script with updated `plot_training_success.py`
+- Renamed ``n_episodes_rollout`` to ``train_freq`` tuple to match latest version of SB3
 
 ### New Features
 - Added option to choose which `VecEnv` class to use for multiprocessing
@@ -31,6 +33,7 @@
 - Updated `DQN` hyperparameters for CartPole
 - Do not wrap channel-first image env (now natively supported by SB3)
 - Removed hack to log success rate
+- Simplify plot script
 
 ## Pre-Release 0.10.0 (2020-10-28)
 
