@@ -56,14 +56,14 @@ class CMAES(BaseAlgorithm):
         print(f"Loading model from {model_path}")
         if model_path.endswith(".pt"):
             self.policy = th.jit.load(model_path)
-            # Hack to get params
-            # model.forward.code_with_constants[1]["c5"]
+            self._actor = th.jit.load(model_path)
             self.d3rlpy_model = True
         else:
             with th.no_grad():
                 self.model = TQC.load(model_path)
                 self.policy = self.model.actor
             self.d3rlpy_model = False
+            self._actor = deepcopy(self.policy)
 
         self.start_individual = self._params_to_vector(self.policy)
         self.best_individual = self.start_individual.copy()
@@ -72,31 +72,62 @@ class CMAES(BaseAlgorithm):
         self.optimizer = None
         self.diagonal_cov = diagonal_cov
         self.pop_size = pop_size
-        self.weight_shape = self.policy.mu[0].weight.shape
+
+        if self.d3rlpy_model:
+            self.weight_shape = self.policy.code_with_constants[1].c4.shape
+            self.bias_shape = self.policy.code_with_constants[1].c5.shape
+        else:
+            self.weight_shape = self.policy.mu[0].weight.shape
+            self.bias_shape = self.policy.mu[0].bias.shape
+
         self.weight_size = np.prod(self.weight_shape)
-        self.bias_shape = self.policy.mu[0].bias.shape
         self.bias_size = self.bias_shape[0]
         self.generation = 0
 
         if _init_setup_model:
             self._setup_model()
 
+    def predict(self, obs, state=None, deterministic=True):
+        # TODO: move to gpu when possible
+        if self.d3rlpy_model:
+            action = self.policy(th.tensor(obs).reshape(1, -1)).cpu().numpy()
+        else:
+            action, _ = self.policy.predict(obs, deterministic=True)
+
+        return action, None
+
     @staticmethod
     def to_numpy(tensor):
         return tensor.detach().numpy().flatten()
 
     def _params_to_vector(self, actor) -> np.ndarray:
-        return np.concatenate([self.to_numpy(actor.mu[0].weight), self.to_numpy(actor.mu[0].bias)])
+        if self.d3rlpy_model:
+            weight = actor.code_with_constants[1].c4
+            bias = actor.code_with_constants[1].c5
+        else:
+            weight = actor.mu[0].weight
+            bias = actor.mu[0].bias
+        return np.concatenate([self.to_numpy(weight), self.to_numpy(bias)])
 
     def _vector_to_params(self, actor, candidate):
-        params = {
-            "mu.0.weight": th.tensor(candidate[: self.weight_size].reshape(self.weight_shape)).to(self.device),
-            "mu.0.bias": th.tensor(candidate[: self.bias_size].reshape(self.bias_shape)).to(self.device),
-        }
-        actor.load_state_dict(params, strict=False)
+        weight = th.tensor(candidate[: self.weight_size].reshape(self.weight_shape)).to(self.device)
+        bias = th.tensor(candidate[-self.bias_size :].reshape(self.bias_shape)).to(self.device)
+        if self.d3rlpy_model:
+            # Hack to change params
+            actor.forward.code_with_constants[1]["c4"] *= 0
+            actor.forward.code_with_constants[1]["c4"] += weight
+            actor.forward.code_with_constants[1]["c5"] *= 0
+            actor.forward.code_with_constants[1]["c5"] += bias
+        else:
+            params = {
+                "mu.0.weight": weight,
+                "mu.0.bias": bias,
+            }
+            actor.load_state_dict(params, strict=False)
 
     def _setup_model(self) -> None:
         self.set_random_seed(self.seed)
+        self._vector_to_params(self.policy, self.best_individual.copy())
 
     def learn(
         self,
@@ -138,7 +169,7 @@ class CMAES(BaseAlgorithm):
                 self.optimizer = CMA(self.best_individual, self.std_init, **options)
 
         continue_training = True
-        actor = deepcopy(self.policy)
+        actor = self._actor
 
         if self.verbose > 0:
             print(f"{self.optimizer.population_size} candidates")
@@ -161,7 +192,10 @@ class CMAES(BaseAlgorithm):
 
             while candidate_idx < len(candidates):
                 # TODO support num_envs > 0
-                action, _ = actor.predict(self._last_obs, deterministic=True)
+                if self.d3rlpy_model:
+                    action = actor(th.tensor(self._last_obs).reshape(1, -1)).cpu().numpy()
+                else:
+                    action, _ = actor.predict(self._last_obs, deterministic=True)
 
                 # Rescale and perform action
                 new_obs, reward, done, infos = self.env.step(action)
@@ -256,4 +290,5 @@ class CMAES(BaseAlgorithm):
         :return: (List[str]) List of parameters that should be excluded from save
         """
         # Exclude aliases
-        return super()._excluded_save_params() + ["model"]
+        exclude = ["policy", "_actor"] if self.d3rlpy_model else []
+        return super()._excluded_save_params() + ["model"] + exclude
