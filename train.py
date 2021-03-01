@@ -12,6 +12,7 @@ from stable_baselines3.common.utils import set_random_seed
 
 try:
     from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL, CRR
+    from d3rlpy.models.encoders import VectorEncoderFactory
     from d3rlpy.wrappers.sb3 import SB3Wrapper, to_mdp_dataset
 
     offline_algos = dict(
@@ -206,6 +207,8 @@ if __name__ == "__main__":  # noqa: C901
         n_eval_episodes = args.pretrain_params.get("n_eval_episodes", 5)
         add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
         deterministic = args.pretrain_params.get("deterministic", True)
+        net_arch = args.pretrain_params.get("net_arch", [256, 256])
+        encoder_factory = VectorEncoderFactory(hidden_units=net_arch)
         for arg_name in {
             "n_iterations",
             "n_epochs",
@@ -214,12 +217,14 @@ if __name__ == "__main__":  # noqa: C901
             "n_eval_episodes",
             "add_to_buffer",
             "deterministic",
+            "net_arch",
         }:
             if arg_name in args.pretrain_params:
                 del args.pretrain_params[arg_name]
         try:
             assert args.offline_algo is not None and offline_algos is not None
             kwargs_ = {} if q_func_factory is None else dict(q_func_factory=q_func_factory)
+            kwargs_.update(dict(encoder_factory=encoder_factory))
             kwargs_.update(args.pretrain_params)
 
             offline_model = offline_algos[args.offline_algo](
