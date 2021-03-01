@@ -198,6 +198,7 @@ def main():  # noqa: C901
         print(f"Success rate: {100 * np.mean(successes):.2f}%")
 
     if args.verbose > 0 and len(episode_rewards) > 0:
+        print(f"{len(episode_rewards)} Episodes")
         print(f"Mean reward: {np.mean(episode_rewards):.2f} +/- {np.std(episode_rewards):.2f}")
 
     if args.verbose > 0 and len(episode_lengths) > 0:
