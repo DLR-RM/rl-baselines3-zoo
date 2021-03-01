@@ -53,9 +53,17 @@ class CMAES(BaseAlgorithm):
 
         # Pretrained model
         assert model_path is not None
-        with th.no_grad():
-            self.model = TQC.load(model_path)
-            self.policy = self.model.actor
+        print(f"Loading model from {model_path}")
+        if model_path.endswith(".pt"):
+            self.policy = th.jit.load(model_path)
+            # Hack to get params
+            # model.forward.code_with_constants[1]["c5"]
+            self.d3rlpy_model = True
+        else:
+            with th.no_grad():
+                self.model = TQC.load(model_path)
+                self.policy = self.model.actor
+            self.d3rlpy_model = False
 
         self.start_individual = self._params_to_vector(self.policy)
         self.best_individual = self.start_individual.copy()
