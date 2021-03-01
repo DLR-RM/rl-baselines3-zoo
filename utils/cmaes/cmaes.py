@@ -65,6 +65,7 @@ class CMAES(BaseAlgorithm):
             self.d3rlpy_model = False
             self._actor = deepcopy(self.policy)
 
+        self.model_path = model_path
         self.start_individual = self._params_to_vector(self.policy)
         self.best_individual = self.start_individual.copy()
         self.best_ever = None
@@ -181,7 +182,9 @@ class CMAES(BaseAlgorithm):
             print(f"=== Generation {self.generation} ====")
 
             # Add best (start individual)
-            candidates[0] = self.best_individual.copy()
+            if self.best_ever is None:
+                candidates[0] = self.best_individual.copy()
+
             returns = np.zeros((len(candidates),))
             candidate_idx = 0
             candidate_steps = 0
