@@ -15,7 +15,7 @@ and also allow users to have access to pretrained agents.*
 
 "M" stands for Million (1e6)
 |algo|  env_id   |mean_reward|std_reward|n_timesteps|eval_timesteps|eval_episodes|
-|----|-----------|----------:|---------:|----------:|-------------:|------------:|
-|a2c |CartPole-v1|      500.0|      0.00|     500000|          1000|            2|
-|ppo |CartPole-v1|      500.0|      0.00|     100000|          1000|            2|
-|sac |Pendulum-v0|     -202.0|     60.50|      20000|          1000|            5|
+|----|-----------|----------:|---------:|-----------|-------------:|------------:|
+|a2c |CartPole-v1|      500.0|      0.00|500k       |          1000|            2|
+|ppo |CartPole-v1|      500.0|      0.00|100k       |          1000|            2|
+|sac |Pendulum-v0|     -202.0|     60.50|20k        |          1000|            5|

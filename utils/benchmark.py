@@ -94,7 +94,7 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
         hyperparams, _ = get_saved_hyperparams(log_path)
         # Hack to format it properly
         if hyperparams["n_timesteps"] < 1e6:
-            n_training_timesteps = hyperparams["n_timesteps"]
+            n_training_timesteps = f"{int(hyperparams['n_timesteps'] / 1e3)}k"
         else:
             n_training_timesteps = f"{int(hyperparams['n_timesteps'] / 1e6)}M"
 
@@ -142,6 +142,7 @@ This benchmark is meant to check algorithm (maximal) performance, find potential
 and also allow users to have access to pretrained agents.*
 
 "M" stands for Million (1e6)
+
 """
 
 # change the output stream to a file
