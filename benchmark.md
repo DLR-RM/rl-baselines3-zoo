@@ -3,7 +3,7 @@
 
 Final performance of the trained agents can be found in the table below.
 This was computed by running `python -m utils.benchmark`:
-it runs the trained agent for `n_timesteps` and then reports the mean episode reward
+it runs the trained agent (trained on `n_timesteps`) for `eval_timesteps` and then reports the mean episode reward
 during this evaluation.
 
 It uses the deterministic policy except for Atari games.
@@ -13,8 +13,9 @@ It uses the deterministic policy except for Atari games.
 This benchmark is meant to check algorithm (maximal) performance, find potential bugs
 and also allow users to have access to pretrained agents.*
 
-|algo|  env_id   |mean_reward|std_reward|n_timesteps|n_episodes|
-|----|-----------|----------:|---------:|----------:|---------:|
-|a2c |CartPole-v1|      500.0|      0.00|     150000|       300|
-|ppo |CartPole-v1|      500.0|      0.00|     150000|       300|
-|sac |Pendulum-v0|     -157.0|     88.71|     150000|       750|
+"M" stands for Million (1e6)
+|algo|  env_id   |mean_reward|std_reward|n_timesteps|eval_timesteps|eval_episodes|
+|----|-----------|----------:|---------:|----------:|-------------:|------------:|
+|a2c |CartPole-v1|      500.0|      0.00|     500000|          1000|            2|
+|ppo |CartPole-v1|      500.0|      0.00|     100000|          1000|            2|
+|sac |Pendulum-v0|     -202.0|     60.50|      20000|          1000|            5|
