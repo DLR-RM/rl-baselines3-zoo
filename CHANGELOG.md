@@ -5,6 +5,7 @@
 ### New Features
 
 ### Bug fixes
+- Bug fixes for `HER` handling action noise
 
 ### Documentation
 
