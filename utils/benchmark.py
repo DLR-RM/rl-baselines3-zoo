@@ -19,6 +19,7 @@ parser.add_argument("--n-envs", help="number of environments", default=1, type=i
 parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
 parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
 parser.add_argument("--test-mode", action="store_true", default=False, help="Do only one experiment (useful for testing)")
+parser.add_argument("--num-threads", help="Number of threads for PyTorch", default=2, type=int)
 args = parser.parse_args()
 
 trained_models = get_trained_models(args.log_dir)
@@ -60,8 +61,8 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
         "--env",
         env_id,
         "--no-render",
-        # "--num-threads",
-        # str(2),
+        "--num-threads",
+        str(args.num_threads),
         "--seed",
         str(args.seed),
         "--verbose",
