@@ -85,6 +85,9 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
         print("Skipping eval...")
     else:
         return_code = subprocess.call(["python", "enjoy.py"] + arguments)
+        if return_code != 0:
+            print("Error during evaluation, skipping...")
+            continue
         x, y = ts2xy(load_results(reward_log), "timesteps")
 
     if len(x) > 0:

@@ -14,6 +14,7 @@ This benchmark is meant to check algorithm (maximal) performance, find potential
 and also allow users to have access to pretrained agents.*
 
 "M" stands for Million (1e6)
+
 |algo|  env_id   |mean_reward|std_reward|n_timesteps|eval_timesteps|eval_episodes|
 |----|-----------|----------:|---------:|-----------|-------------:|------------:|
 |a2c |CartPole-v1|      500.0|      0.00|500k       |          1000|            2|
