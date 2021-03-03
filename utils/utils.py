@@ -202,7 +202,7 @@ def create_test_env(
 
     vec_env_kwargs = {}
     vec_env_cls = DummyVecEnv
-    if n_envs > 1 or "Bullet" in env_id:
+    if n_envs > 1 or ("Bullet" in env_id and should_render):
         # HACK: force SubprocVecEnv for Bullet env
         # as Pybullet envs does not follow gym.render() interface
         vec_env_cls = SubprocVecEnv
