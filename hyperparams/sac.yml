@@ -49,7 +49,17 @@ LunarLanderContinuous-v2:
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
   batch_size: 256
-  learning_starts: 1000
+  learning_rate: lin_7.3e-4
+  buffer_size: 1000000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.99
+  tau: 0.01
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 10000
+  policy_kwargs: "dict(net_arch=[400, 300])"
+
 
 # Tuned
 BipedalWalker-v3:
