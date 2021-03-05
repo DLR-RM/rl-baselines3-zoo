@@ -48,7 +48,7 @@ BipedalWalker-v3:
 BipedalWalkerHardcore-v3:
   n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
-  gamma: 0.98
+  gamma: 0.99
   buffer_size: 200000
   learning_starts: 10000
   noise_type: 'normal'
