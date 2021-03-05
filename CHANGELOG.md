@@ -1,8 +1,9 @@
-## Release 1.0rc0 (WIP)
+## Release 1.0rc1 (WIP)
 
 ### Breaking Changes
 
 ### New Features
+- Added 90+ trained agents + benchmark file
 
 ### Bug fixes
 - Bug fixes for `HER` handling action noise
@@ -10,7 +11,7 @@
 ### Documentation
 
 ### Other
-
+- Updated `HER` hyperparameters
 
 ## Pre-Release 0.11.1 (2021-02-27)
 
