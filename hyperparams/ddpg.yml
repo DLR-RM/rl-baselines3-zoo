@@ -136,7 +136,7 @@ HumanoidBulletEnv-v0:
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
-# To be tuned
+# Tuned
 ReacherBulletEnv-v0:
   env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
@@ -146,8 +146,7 @@ ReacherBulletEnv-v0:
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
+  train_freq: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
