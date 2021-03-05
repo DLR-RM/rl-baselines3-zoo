@@ -33,6 +33,7 @@ and also allow users to have access to pretrained agents.*
 |a2c  |Pendulum-v0                |   -162.965|   103.210|1M         |        150000|          750|
 |a2c  |PongNoFrameskip-v4         |     17.292|     3.214|10M        |        594910|           65|
 |a2c  |QbertNoFrameskip-v4        |   3882.345|  1223.327|10M        |        610670|          194|
+|a2c  |ReacherBulletEnv-v0        |     14.968|    10.978|2M         |        150000|         1000|
 |a2c  |SpaceInvadersNoFrameskip-v4|    627.160|   201.974|10M        |        604848|          162|
 |a2c  |Walker2DBulletEnv-v0       |    858.209|   333.116|2M         |        149156|          173|
 |ddpg |AntBulletEnv-v0            |   2399.147|    75.410|1M         |        150000|          150|
@@ -42,6 +43,7 @@ and also allow users to have access to pretrained agents.*
 |ddpg |LunarLanderContinuous-v2   |    230.217|    92.372|300k       |        149862|          556|
 |ddpg |MountainCarContinuous-v0   |     93.512|     0.048|300k       |        149965|         2260|
 |ddpg |Pendulum-v0                |   -152.099|    94.282|20k        |        150000|          750|
+|ddpg |ReacherBulletEnv-v0        |     15.582|     9.606|300k       |        150000|         1000|
 |ddpg |Walker2DBulletEnv-v0       |   1387.591|   736.955|1M         |        149051|          208|
 |dqn  |Acrobot-v1                 |    -76.639|    11.752|100k       |        149998|         1932|
 |dqn  |BeamRiderNoFrameskip-v4    |   4295.946|  1790.458|10M        |        600832|           37|
@@ -70,6 +72,7 @@ and also allow users to have access to pretrained agents.*
 |ppo  |Pendulum-v0                |   -169.887|   104.904|2M         |        150000|          750|
 |ppo  |PongNoFrameskip-v4         |     20.989|     0.105|10M        |        599902|           90|
 |ppo  |QbertNoFrameskip-v4        |  15627.108|  3313.538|10M        |        600248|           83|
+|ppo  |ReacherBulletEnv-v0        |     17.091|    11.048|1M         |        150000|         1000|
 |ppo  |SpaceInvadersNoFrameskip-v4|    960.331|   425.355|10M        |        603771|          136|
 |ppo  |Walker2DBulletEnv-v0       |   2109.992|    13.899|2M         |        150000|          150|
 |qrdqn|Acrobot-v1                 |    -69.135|     9.967|100k       |        149949|         2138|
@@ -88,6 +91,7 @@ and also allow users to have access to pretrained agents.*
 |sac  |LunarLanderContinuous-v2   |    260.390|    65.467|500k       |        149634|          672|
 |sac  |MountainCarContinuous-v0   |     94.679|     1.134|50k        |        149966|         1443|
 |sac  |Pendulum-v0                |   -156.995|    88.714|20k        |        150000|          750|
+|sac  |ReacherBulletEnv-v0        |     18.062|     9.729|300k       |        150000|         1000|
 |sac  |Walker2DBulletEnv-v0       |   2292.266|    13.970|1M         |        149983|          150|
 |td3  |AntBulletEnv-v0            |   3300.026|    54.640|1M         |        150000|          150|
 |td3  |BipedalWalker-v3           |    305.990|    56.886|1M         |        149999|          224|
@@ -96,6 +100,7 @@ and also allow users to have access to pretrained agents.*
 |td3  |LunarLanderContinuous-v2   |    207.451|    67.562|300k       |        149488|          337|
 |td3  |MountainCarContinuous-v0   |     93.483|     0.075|300k       |        149976|         2275|
 |td3  |Pendulum-v0                |   -151.855|    90.227|20k        |        150000|          750|
+|td3  |ReacherBulletEnv-v0        |     17.114|     9.750|300k       |        150000|         1000|
 |td3  |Walker2DBulletEnv-v0       |    204.727|   115.196|1M         |        149927|         1338|
 |tqc  |AntBulletEnv-v0            |   3456.717|   248.733|1M         |        150000|          150|
 |tqc  |BipedalWalker-v3           |    329.808|    45.083|500k       |        149682|          254|
@@ -104,4 +109,5 @@ and also allow users to have access to pretrained agents.*
 |tqc  |LunarLanderContinuous-v2   |    277.956|    25.466|500k       |        149928|          706|
 |tqc  |MountainCarContinuous-v0   |     63.641|    45.259|50k        |        149796|          186|
 |tqc  |Pendulum-v0                |   -151.340|    87.893|20k        |        150000|          750|
+|tqc  |ReacherBulletEnv-v0        |     18.255|     9.543|300k       |        150000|         1000|
 |tqc  |Walker2DBulletEnv-v0       |   2508.934|   614.624|1M         |        149572|          159|
