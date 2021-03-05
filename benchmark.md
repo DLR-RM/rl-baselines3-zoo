@@ -31,7 +31,7 @@ and also allow users to have access to pretrained agents.*
 |a2c  |MountainCar-v0             |   -111.263|    24.087|1M         |        149982|         1348|
 |a2c  |MountainCarContinuous-v0   |     91.166|     0.255|100k       |        149923|         1659|
 |a2c  |Pendulum-v0                |   -162.965|   103.210|1M         |        150000|          750|
-|a2c  |PongNoFrameskip-v4         |     15.578|     2.351|10M        |        600740|           64|
+|a2c  |PongNoFrameskip-v4         |     17.292|     3.214|10M        |        594910|           65|
 |a2c  |QbertNoFrameskip-v4        |   3882.345|  1223.327|10M        |        610670|          194|
 |a2c  |SpaceInvadersNoFrameskip-v4|    627.160|   201.974|10M        |        604848|          162|
 |a2c  |Walker2DBulletEnv-v0       |    858.209|   333.116|2M         |        149156|          173|
@@ -47,6 +47,7 @@ and also allow users to have access to pretrained agents.*
 |dqn  |BeamRiderNoFrameskip-v4    |   4295.946|  1790.458|10M        |        600832|           37|
 |dqn  |BreakoutNoFrameskip-v4     |    358.327|    61.981|10M        |        601461|           55|
 |dqn  |CartPole-v1                |    500.000|     0.000|50k        |        150000|          300|
+|dqn  |EnduroNoFrameskip-v4       |    830.929|   194.544|10M        |        599040|           14|
 |dqn  |LunarLander-v2             |    154.382|    79.241|100k       |        149373|          200|
 |dqn  |MountainCar-v0             |   -100.849|     9.925|120k       |        149962|         1487|
 |dqn  |PongNoFrameskip-v4         |     20.602|     0.613|10M        |        598998|           88|
@@ -59,6 +60,7 @@ and also allow users to have access to pretrained agents.*
 |ppo  |BipedalWalker-v3           |    213.299|   129.490|5M         |        149826|          233|
 |ppo  |BreakoutNoFrameskip-v4     |    398.033|    33.328|10M        |        600418|           60|
 |ppo  |CartPole-v1                |    500.000|     0.000|100k       |        150000|          300|
+|ppo  |EnduroNoFrameskip-v4       |    996.364|   176.090|10M        |        572416|           11|
 |ppo  |HalfCheetahBulletEnv-v0    |   2924.721|    64.465|2M         |        150000|          150|
 |ppo  |HopperBulletEnv-v0         |   2575.054|   223.301|2M         |        149094|          152|
 |ppo  |LunarLander-v2             |    242.119|    31.823|1M         |        149636|          369|
