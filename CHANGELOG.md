@@ -5,6 +5,7 @@
 
 ### New Features
 - Added 90+ trained agents + benchmark file
+- Add support for loading saved model under python 3.8+ (no retraining possible)
 
 ### Bug fixes
 - Bug fixes for `HER` handling action noise
