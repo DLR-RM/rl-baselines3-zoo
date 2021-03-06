@@ -1,7 +1,7 @@
-## Release 1.0rc1 (WIP)
+## Release 1.0rc2 (WIP)
 
 ### Breaking Changes
-- Upgrade to SB3 >= 1.0rc1
+- Upgrade to SB3 >= 1.0rc2
 
 ### New Features
 - Added 90+ trained agents + benchmark file
