@@ -21,6 +21,7 @@ and also allow users to have access to pretrained agents.*
 |a2c  |AntBulletEnv-v0            |   2497.147|    37.359|2M         |        150000|          150|
 |a2c  |BeamRiderNoFrameskip-v4    |   2890.298|  1379.137|10M        |        591104|           47|
 |a2c  |BipedalWalker-v3           |    299.754|    23.459|5M         |        149287|          208|
+|a2c  |BipedalWalkerHardcore-v3   |     96.171|   122.943|200M       |        149704|          113|
 |a2c  |BreakoutNoFrameskip-v4     |    279.793|   122.177|10M        |        604115|           82|
 |a2c  |CartPole-v1                |    500.000|     0.000|500k       |        150000|          300|
 |a2c  |EnduroNoFrameskip-v4       |      0.000|     0.000|10M        |        599040|           45|
@@ -60,6 +61,7 @@ and also allow users to have access to pretrained agents.*
 |ppo  |AntBulletEnv-v0            |   2865.922|    56.468|2M         |        150000|          150|
 |ppo  |BeamRiderNoFrameskip-v4    |   3397.000|  1662.368|10M        |        598926|           46|
 |ppo  |BipedalWalker-v3           |    213.299|   129.490|5M         |        149826|          233|
+|ppo  |BipedalWalkerHardcore-v3   |    122.374|   117.605|100M       |        148036|          105|
 |ppo  |BreakoutNoFrameskip-v4     |    398.033|    33.328|10M        |        600418|           60|
 |ppo  |CartPole-v1                |    500.000|     0.000|100k       |        150000|          300|
 |ppo  |EnduroNoFrameskip-v4       |    996.364|   176.090|10M        |        572416|           11|
@@ -95,6 +97,7 @@ and also allow users to have access to pretrained agents.*
 |sac  |Walker2DBulletEnv-v0       |   2292.266|    13.970|1M         |        149983|          150|
 |td3  |AntBulletEnv-v0            |   3300.026|    54.640|1M         |        150000|          150|
 |td3  |BipedalWalker-v3           |    305.990|    56.886|1M         |        149999|          224|
+|td3  |BipedalWalkerHardcore-v3   |    -98.116|    16.087|10M        |        150000|           75|
 |td3  |HalfCheetahBulletEnv-v0    |   2821.641|    19.722|1M         |        150000|          150|
 |td3  |HopperBulletEnv-v0         |   2681.609|    27.806|1M         |        149486|          150|
 |td3  |LunarLanderContinuous-v2   |    207.451|    67.562|300k       |        149488|          337|
@@ -104,6 +107,7 @@ and also allow users to have access to pretrained agents.*
 |td3  |Walker2DBulletEnv-v0       |    204.727|   115.196|1M         |        149927|         1338|
 |tqc  |AntBulletEnv-v0            |   3456.717|   248.733|1M         |        150000|          150|
 |tqc  |BipedalWalker-v3           |    329.808|    45.083|500k       |        149682|          254|
+|tqc  |BipedalWalkerHardcore-v3   |    235.226|   110.569|2M         |        149032|          131|
 |tqc  |HalfCheetahBulletEnv-v0    |   3675.299|    17.681|1M         |        150000|          150|
 |tqc  |HopperBulletEnv-v0         |   2662.373|   206.210|1M         |        149881|          151|
 |tqc  |LunarLanderContinuous-v2   |    277.956|    25.466|500k       |        149928|          706|
