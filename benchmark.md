@@ -19,6 +19,7 @@ and also allow users to have access to pretrained agents.*
 |-----|---------------------------|----------:|---------:|-----------|-------------:|------------:|
 |a2c  |Acrobot-v1                 |    -83.353|    17.213|500k       |        149979|         1778|
 |a2c  |AntBulletEnv-v0            |   2497.147|    37.359|2M         |        150000|          150|
+|a2c  |AsteroidsNoFrameskip-v4    |   1286.550|   423.750|10M        |        614138|          258|
 |a2c  |BeamRiderNoFrameskip-v4    |   2890.298|  1379.137|10M        |        591104|           47|
 |a2c  |BipedalWalker-v3           |    299.754|    23.459|5M         |        149287|          208|
 |a2c  |BipedalWalkerHardcore-v3   |     96.171|   122.943|200M       |        149704|          113|
@@ -35,6 +36,8 @@ and also allow users to have access to pretrained agents.*
 |a2c  |PongNoFrameskip-v4         |     17.292|     3.214|10M        |        594910|           65|
 |a2c  |QbertNoFrameskip-v4        |   3882.345|  1223.327|10M        |        610670|          194|
 |a2c  |ReacherBulletEnv-v0        |     14.968|    10.978|2M         |        150000|         1000|
+|a2c  |RoadRunnerNoFrameskip-v4   |  31671.512|  6364.085|10M        |        606710|          172|
+|a2c  |SeaquestNoFrameskip-v4     |   1721.493|   105.339|10M        |        599691|           67|
 |a2c  |SpaceInvadersNoFrameskip-v4|    627.160|   201.974|10M        |        604848|          162|
 |a2c  |Walker2DBulletEnv-v0       |    858.209|   333.116|2M         |        149156|          173|
 |ddpg |AntBulletEnv-v0            |   2399.147|    75.410|1M         |        150000|          150|
@@ -47,6 +50,7 @@ and also allow users to have access to pretrained agents.*
 |ddpg |ReacherBulletEnv-v0        |     15.582|     9.606|300k       |        150000|         1000|
 |ddpg |Walker2DBulletEnv-v0       |   1387.591|   736.955|1M         |        149051|          208|
 |dqn  |Acrobot-v1                 |    -76.639|    11.752|100k       |        149998|         1932|
+|dqn  |AsteroidsNoFrameskip-v4    |    782.687|   259.247|10M        |        607962|          134|
 |dqn  |BeamRiderNoFrameskip-v4    |   4295.946|  1790.458|10M        |        600832|           37|
 |dqn  |BreakoutNoFrameskip-v4     |    358.327|    61.981|10M        |        601461|           55|
 |dqn  |CartPole-v1                |    500.000|     0.000|50k        |        150000|          300|
@@ -55,10 +59,13 @@ and also allow users to have access to pretrained agents.*
 |dqn  |MountainCar-v0             |   -100.849|     9.925|120k       |        149962|         1487|
 |dqn  |PongNoFrameskip-v4         |     20.602|     0.613|10M        |        598998|           88|
 |dqn  |QbertNoFrameskip-v4        |   9496.774|  5399.633|10M        |        605844|          124|
+|dqn  |RoadRunnerNoFrameskip-v4   |  40396.350|  7069.131|10M        |        603257|          137|
+|dqn  |SeaquestNoFrameskip-v4     |   2000.290|   606.644|10M        |        599505|           69|
 |dqn  |SpaceInvadersNoFrameskip-v4|    622.742|   201.564|10M        |        604311|          155|
 |her  |parking-v0                 |     -6.970|     2.970|200k       |        149980|         7106|
 |ppo  |Acrobot-v1                 |    -73.506|    18.201|1M         |        149979|         2013|
 |ppo  |AntBulletEnv-v0            |   2865.922|    56.468|2M         |        150000|          150|
+|ppo  |AsteroidsNoFrameskip-v4    |   2156.174|   744.640|10M        |        602092|          149|
 |ppo  |BeamRiderNoFrameskip-v4    |   3397.000|  1662.368|10M        |        598926|           46|
 |ppo  |BipedalWalker-v3           |    213.299|   129.490|5M         |        149826|          233|
 |ppo  |BipedalWalkerHardcore-v3   |    122.374|   117.605|100M       |        148036|          105|
@@ -75,9 +82,12 @@ and also allow users to have access to pretrained agents.*
 |ppo  |PongNoFrameskip-v4         |     20.989|     0.105|10M        |        599902|           90|
 |ppo  |QbertNoFrameskip-v4        |  15627.108|  3313.538|10M        |        600248|           83|
 |ppo  |ReacherBulletEnv-v0        |     17.091|    11.048|1M         |        150000|         1000|
+|ppo  |RoadRunnerNoFrameskip-v4   |  40680.645|  6675.058|10M        |        605786|          155|
+|ppo  |SeaquestNoFrameskip-v4     |   1783.636|    34.096|10M        |        598243|           66|
 |ppo  |SpaceInvadersNoFrameskip-v4|    960.331|   425.355|10M        |        603771|          136|
 |ppo  |Walker2DBulletEnv-v0       |   2109.992|    13.899|2M         |        150000|          150|
 |qrdqn|Acrobot-v1                 |    -69.135|     9.967|100k       |        149949|         2138|
+|qrdqn|AsteroidsNoFrameskip-v4    |   2185.303|  1097.172|10M        |        599784|           66|
 |qrdqn|BeamRiderNoFrameskip-v4    |  17122.941| 10769.997|10M        |        596483|           17|
 |qrdqn|BreakoutNoFrameskip-v4     |    393.600|    79.828|10M        |        579711|           40|
 |qrdqn|CartPole-v1                |    500.000|     0.000|50k        |        150000|          300|
@@ -85,9 +95,12 @@ and also allow users to have access to pretrained agents.*
 |qrdqn|MountainCar-v0             |   -106.042|    15.536|120k       |        149943|         1414|
 |qrdqn|PongNoFrameskip-v4         |     20.492|     0.687|10M        |        597443|           63|
 |qrdqn|QbertNoFrameskip-v4        |  14799.728|  2917.629|10M        |        600773|           92|
+|qrdqn|RoadRunnerNoFrameskip-v4   |  42325.424|  8361.161|10M        |        591016|           59|
+|qrdqn|SeaquestNoFrameskip-v4     |   2557.576|    76.951|10M        |        596275|           66|
 |qrdqn|SpaceInvadersNoFrameskip-v4|   1899.928|   823.488|10M        |        597218|           69|
 |sac  |AntBulletEnv-v0            |   3073.114|   175.148|1M         |        150000|          150|
 |sac  |BipedalWalker-v3           |    297.668|    33.060|500k       |        149530|          136|
+|sac  |BipedalWalkerHardcore-v3   |      4.423|   103.910|10M        |        149794|           88|
 |sac  |HalfCheetahBulletEnv-v0    |   2792.170|    12.088|1M         |        150000|          150|
 |sac  |HopperBulletEnv-v0         |   2603.494|   164.322|1M         |        149724|          151|
 |sac  |LunarLanderContinuous-v2   |    260.390|    65.467|500k       |        149634|          672|

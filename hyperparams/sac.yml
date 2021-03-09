@@ -79,12 +79,12 @@ BipedalWalker-v3:
 
 # Almost tuned
 BipedalWalkerHardcore-v3:
-  n_timesteps: !!float 3e7
+  n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
   buffer_size: 1000000
   batch_size: 256
-  ent_coef: 'auto'
+  ent_coef: 0.005
   gamma: 0.99
   tau: 0.01
   train_freq: 1

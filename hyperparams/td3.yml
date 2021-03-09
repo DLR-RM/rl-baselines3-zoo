@@ -49,13 +49,13 @@ BipedalWalkerHardcore-v3:
   n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
   gamma: 0.99
-  buffer_size: 200000
+  buffer_size: 1000000
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
-  gradient_steps: -1
+  batch_size: 256
   train_freq: 1
-  learning_rate: lin_1e-3
+  learning_rate: lin_7e-4
   policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
