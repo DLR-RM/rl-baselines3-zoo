@@ -2,7 +2,7 @@
 
 
 
-# RL Baselines3 Zoo: a Collection of Pre-Trained Reinforcement Learning Agents
+# RL Baselines3 Zoo: a Collection of 100+ Pre-Trained Reinforcement Learning Agents
 
 <!-- <img src="images/BipedalWalkerHardcorePPO.gif" align="right" width="35%"/> -->
 
@@ -201,7 +201,7 @@ python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000
 ```
 
 
-## Current Collection: 90+ Trained Agents!
+## Current Collection: 100+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
 
@@ -213,19 +213,20 @@ Final performance of the trained agents can be found in [`benchmark.md`](./bench
 
 |  RL Algo |  BeamRider         | Breakout           | Enduro             |  Pong | Qbert | Seaquest           | SpaceInvaders      |
 |----------|--------------------|--------------------|--------------------|-------|-------|--------------------|--------------------|
-| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | | :heavy_check_mark: |
-| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | | :heavy_check_mark: |
-| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | | :heavy_check_mark: |
-| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: |                    | :heavy_check_mark: | :heavy_check_mark: | | :heavy_check_mark: |
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: |                    | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 Additional Atari Games (to be completed):
 
-|  RL Algo |  MsPacman   |
-|----------|-------------|
-| A2C      |  |
-| PPO      |  |
-| DQN      |  |
-| QR-DQN   |  |
+|  RL Algo |  MsPacman   | Asteroids | RoadRunner |
+|----------|-------------|-----------|------------|
+| A2C      |  | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      |  | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      |  | :heavy_check_mark: | :heavy_check_mark: |
+| QR-DQN   |  | :heavy_check_mark: | :heavy_check_mark: |
+
 
 ### Classic Control Environments
 
@@ -245,14 +246,14 @@ Additional Atari Games (to be completed):
 
 |  RL Algo |  BipedalWalker-v3 | LunarLander-v2 | LunarLanderContinuous-v2 |  BipedalWalkerHardcore-v3 | CarRacing-v0 |
 |----------|--------------|----------------|------------|--------------|--------------------------|
-| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | | |
-| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | | |
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | DQN      | N/A | :heavy_check_mark: | N/A | N/A | N/A |
 | QR-DQN   | N/A | :heavy_check_mark: | N/A | N/A | N/A |
 | DDPG     | :heavy_check_mark: | N/A | :heavy_check_mark: | | |
-| SAC      | :heavy_check_mark: | N/A | :heavy_check_mark: | | |
-| TD3      | :heavy_check_mark: | N/A | :heavy_check_mark: | | |
-| TQC      | :heavy_check_mark: | N/A | :heavy_check_mark: | | |
+| SAC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
+| TD3      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
+| TQC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
 
 ### PyBullet Environments
 
