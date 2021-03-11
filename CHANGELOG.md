@@ -9,6 +9,7 @@
 
 ### Bug fixes
 - Bug fixes for `HER` handling action noise
+- Fixed double reset bug with `HER` and enjoy script
 
 ### Documentation
 

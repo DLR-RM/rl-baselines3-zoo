@@ -2,11 +2,11 @@
 
 
 
-# RL Baselines3 Zoo: a Collection of 100+ Pre-Trained Reinforcement Learning Agents
+# RL Baselines3 Zoo: A Training Framework for Stable Baselines3 Reinforcement Learning Agents
 
 <!-- <img src="images/BipedalWalkerHardcorePPO.gif" align="right" width="35%"/> -->
 
-A collection of trained Reinforcement Learning (RL) agents, with tuned hyperparameters, using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
+A Training Framework for Reinforcement Learning (RL), together with a collection of trained agents, with tuned hyperparameters, using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
 
 We are **looking for contributors** to complete the collection!
 
@@ -216,7 +216,7 @@ Final performance of the trained agents can be found in [`benchmark.md`](./bench
 | A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: |                    | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 Additional Atari Games (to be completed):
 

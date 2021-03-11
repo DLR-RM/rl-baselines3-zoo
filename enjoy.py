@@ -201,9 +201,7 @@ def main():  # noqa: C901
                 if done and infos[0].get("is_success") is not None:
                     if args.verbose > 1:
                         print("Success?", infos[0].get("is_success", False))
-                    # Alternatively, you can add a check to wait for the end of the episode
-                    if done:
-                        obs = env.reset()
+
                     if infos[0].get("is_success") is not None:
                         successes.append(infos[0].get("is_success", False))
                         episode_reward, ep_len = 0.0, 0
