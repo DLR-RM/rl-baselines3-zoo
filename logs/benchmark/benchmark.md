@@ -91,6 +91,7 @@ and also allow users to have access to pretrained agents.*
 |qrdqn|BeamRiderNoFrameskip-v4    |  17122.941| 10769.997|10M        |        596483|           17|
 |qrdqn|BreakoutNoFrameskip-v4     |    393.600|    79.828|10M        |        579711|           40|
 |qrdqn|CartPole-v1                |    500.000|     0.000|50k        |        150000|          300|
+|qrdqn|EnduroNoFrameskip-v4       |   3231.200|  1311.801|10M        |        585728|            5|
 |qrdqn|LunarLander-v2             |     70.236|   225.491|100k       |        149957|          522|
 |qrdqn|MountainCar-v0             |   -106.042|    15.536|120k       |        149943|         1414|
 |qrdqn|PongNoFrameskip-v4         |     20.492|     0.687|10M        |        597443|           63|
