@@ -2,11 +2,11 @@
 
 
 
-# RL Baselines3 Zoo: a Collection of Pre-Trained Reinforcement Learning Agents
+# RL Baselines3 Zoo: A Training Framework for Stable Baselines3 Reinforcement Learning Agents
 
 <!-- <img src="images/BipedalWalkerHardcorePPO.gif" align="right" width="35%"/> -->
 
-A collection of trained Reinforcement Learning (RL) agents, with tuned hyperparameters, using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
+A Training Framework for Reinforcement Learning (RL), together with a collection of trained agents, with tuned hyperparameters, using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
 
 We are **looking for contributors** to complete the collection!
 
@@ -18,37 +18,6 @@ Goals of this repository:
 4. Have fun with the trained agents!
 
 This is the SB3 version of the original SB2 [rl-zoo](https://github.com/araffin/rl-baselines-zoo).
-
-## Enjoy a Trained Agent
-
-**Note: to download the repo with the trained agents, you must use `git clone --recursive https://github.com/DLR-RM/rl-baselines3-zoo`** in order to clone the submodule too.
-
-
-If the trained agent exists, then you can see it in action using:
-```
-python enjoy.py --algo algo_name --env env_id
-```
-
-For example, enjoy A2C on Breakout during 5000 timesteps:
-```
-python enjoy.py --algo a2c --env BreakoutNoFrameskip-v4 --folder rl-trained-agents/ -n 5000
-```
-
-If you have trained an agent yourself, you need to do:
-```
-# exp-id 0 corresponds to the last experiment, otherwise, you can specify another ID
-python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 0
-```
-
-To load the best model (when using evaluation environment):
-```
-python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-best
-```
-
-To load a checkpoint (here the checkpoint name is `rl_model_10000_steps.zip`):
-```
-python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-checkpoint 10000
-```
 
 ## Train an Agent
 
@@ -85,6 +54,46 @@ python train.py --algo sac --env Pendulum-v0 --save-replay-buffer
 ```
 It will be automatically loaded if present when continuing training.
 
+## Plot Scripts
+
+Plot scripts (to be documented, see "Results" sections in SB3 documentation):
+- `scripts/all_plots.py`/`scripts/plot_from_file.py` for plotting evaluations
+- `scripts/plot_train.py` for plotting training reward/success
+
+## Custom Environment
+
+The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml`).
+
+## Enjoy a Trained Agent
+
+**Note: to download the repo with the trained agents, you must use `git clone --recursive https://github.com/DLR-RM/rl-baselines3-zoo`** in order to clone the submodule too.
+
+
+If the trained agent exists, then you can see it in action using:
+```
+python enjoy.py --algo algo_name --env env_id
+```
+
+For example, enjoy A2C on Breakout during 5000 timesteps:
+```
+python enjoy.py --algo a2c --env BreakoutNoFrameskip-v4 --folder rl-trained-agents/ -n 5000
+```
+
+If you have trained an agent yourself, you need to do:
+```
+# exp-id 0 corresponds to the last experiment, otherwise, you can specify another ID
+python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 0
+```
+
+To load the best model (when using evaluation environment):
+```
+python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-best
+```
+
+To load a checkpoint (here the checkpoint name is `rl_model_10000_steps.zip`):
+```
+python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-checkpoint 10000
+```
 
 ## Hyperparameter yaml syntax
 
@@ -160,7 +169,7 @@ for multiple, specify a list:
 env_wrapper:
     - utils.wrappers.DoneOnSuccessWrapper:
         reward_offset: 1.0
-    - utils.wrappers.TimeFeatureWrapper
+    - sb3_contrib.common.wrappers.TimeFeatureWrapper
 ```
 
 Note that you can easily specify parameters too.
@@ -181,6 +190,8 @@ You can easily overwrite hyperparameters in the command line, using ``--hyperpar
 python train.py --algo a2c --env MountainCarContinuous-v0 --hyperparams learning_rate:0.001 policy_kwargs:"dict(net_arch=[64, 64])"
 ```
 
+Note: if you want to pass a string, you need to escape it like that: `my_string:"'value'"`
+
 ## Record a Video of a Trained Agent
 
 Record 1000 steps:
@@ -190,9 +201,9 @@ python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000
 ```
 
 
-## Current Collection: to be added soon (after v1.0 release)
+## Current Collection: 100+ Trained Agents!
 
-Final performance of the trained agents can be found in `benchmark.md`. To compute them, simply run `python -m utils.benchmark`.
+Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
 
 *NOTE: this is not a quantitative benchmark as it corresponds to only one run (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)). This benchmark is meant to check algorithm (maximal) performance, find potential bugs and also allow users to have access to pretrained agents.*
 
@@ -202,42 +213,47 @@ Final performance of the trained agents can be found in `benchmark.md`. To compu
 
 |  RL Algo |  BeamRider         | Breakout           | Enduro             |  Pong | Qbert | Seaquest           | SpaceInvaders      |
 |----------|--------------------|--------------------|--------------------|-------|-------|--------------------|--------------------|
-| A2C      |  |  |  |  |  | | |
-| PPO      |  | |  |  |  | |   |
-| DQN     |  |  |  | |  | |  |
-
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 Additional Atari Games (to be completed):
 
-|  RL Algo |  MsPacman   |
-|----------|-------------|
-| A2C      |  |
-| PPO      |  |
-| DQN      |  |
+|  RL Algo |  MsPacman   | Asteroids | RoadRunner |
+|----------|-------------|-----------|------------|
+| A2C      |  | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      |  | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      |  | :heavy_check_mark: | :heavy_check_mark: |
+| QR-DQN   |  | :heavy_check_mark: | :heavy_check_mark: |
+
 
 ### Classic Control Environments
 
 |  RL Algo |  CartPole-v1 | MountainCar-v0 | Acrobot-v1 |  Pendulum-v0 | MountainCarContinuous-v0 |
 |----------|--------------|----------------|------------|--------------|--------------------------|
-| A2C      |  |  |  |  |  |
-| PPO      |  |  |  |  |  |
-| DQN      |  |  |  | N/A | N/A |
-| DDPG     |  N/A |  N/A  | N/A |  |  |
-| SAC      |  N/A |  N/A  | N/A |  |  |
-| TD3      |  N/A |  N/A  | N/A |  |  |
+| A2C      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
+| PPO      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
+| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A | N/A |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A | N/A |
+| DDPG     |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
+| SAC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
+| TD3      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
+| TQC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 
 
 ### Box2D Environments
 
-|  RL Algo |  BipedalWalker-v2 | LunarLander-v2 | LunarLanderContinuous-v2 |  BipedalWalkerHardcore-v2 | CarRacing-v0 |
+|  RL Algo |  BipedalWalker-v3 | LunarLander-v2 | LunarLanderContinuous-v2 |  BipedalWalkerHardcore-v3 | CarRacing-v0 |
 |----------|--------------|----------------|------------|--------------|--------------------------|
-| A2C      |  |  |  |  | |
-| PPO      |  |  |  |  | |
-| DQN      | N/A |  | N/A | N/A | N/A |
-| DDPG     |  | N/A |  | | |
-| SAC      |  | N/A |  |  | |
-| TD3      |  | N/A |  | | |
-| TRPO     |  |  |  | | |
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| DQN      | N/A | :heavy_check_mark: | N/A | N/A | N/A |
+| QR-DQN   | N/A | :heavy_check_mark: | N/A | N/A | N/A |
+| DDPG     | :heavy_check_mark: | N/A | :heavy_check_mark: | | |
+| SAC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
+| TD3      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
+| TQC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
 
 ### PyBullet Environments
 
@@ -248,23 +264,23 @@ Note: those environments are derived from [Roboschool](https://github.com/openai
 
 |  RL Algo |  Walker2D | HalfCheetah | Ant | Reacher |  Hopper | Humanoid |
 |----------|-----------|-------------|-----|---------|---------|----------|
-| A2C      |  |  |  | |  | |
-| PPO      |  |  |  |  |  |  |
-| DDPG     |  |  |  | | | |
-| SAC      |  |  |  |  |  |  |
-| TD3      |  |  |  | |  |  |
-| TRPO     |  |  |  | |  | |
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| DDPG     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| TD3      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| TQC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 
 PyBullet Envs (Continued)
 
 |  RL Algo |  Minitaur | MinitaurDuck | InvertedDoublePendulum | InvertedPendulumSwingup |
 |----------|-----------|-------------|-----|---------|
 | A2C      | | | | |
-| PPO      |  |  |  |  |
+| PPO      | | | | |
 | DDPG     | | | | |
-| SAC      | | |  |  |
-| TD3      | | |  |  |
-| TRPO     | | | |  |
+| SAC      | | | | |
+| TD3      | | | | |
+| TQC      | | | | |
 
 ### MiniGrid Envs
 
@@ -281,7 +297,7 @@ A simple, lightweight and fast Gym environments implementation of the famous gri
 
 There are 19 environment groups (variations for each) in total.
 
-Note that you need to specify --gym-packages gym_minigrid with enjoy.py and train.py as it is not a standard Gym environment, as well as installing the custom Gym package module or putting it in python path.
+Note that you need to specify `--gym-packages gym_minigrid` with `enjoy.py` and `train.py` as it is not a standard Gym environment, as well as installing the custom Gym package module or putting it in python path.
 
 ```
 pip install gym-minigrid
@@ -310,7 +326,8 @@ You can train agents online using [colab notebook](https://colab.research.google
 
 ### Stable-Baselines3 PyPi Package
 
-Min version: stable-baselines3[extra] >= 0.6.0
+Min version: stable-baselines3[extra] >= 1.0
+and sb3_contrib >= 1.0
 
 ```
 apt-get install swig cmake ffmpeg
@@ -364,7 +381,7 @@ make type
 
 To cite this repository in publications:
 
-```
+```bibtex
 @misc{rl-zoo3,
   author = {Raffin, Antonin},
   title = {RL Baselines3 Zoo},

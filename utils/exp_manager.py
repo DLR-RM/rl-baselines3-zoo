@@ -149,7 +149,7 @@ class ExperimentManager(object):
         # Create env to have access to action space for action noise
         env = self.create_envs(self.n_envs, no_log=False)
 
-        self._hyperparams = self._preprocess_action_noise(hyperparams, env)
+        self._hyperparams = self._preprocess_action_noise(hyperparams, saved_hyperparams, env)
 
         if self.continue_training:
             model = self._load_pretrained_agent(self._hyperparams, env)
@@ -350,11 +350,13 @@ class ExperimentManager(object):
 
         return hyperparams, env_wrapper, callbacks
 
-    def _preprocess_action_noise(self, hyperparams: Dict[str, Any], env: VecEnv) -> Dict[str, Any]:
+    def _preprocess_action_noise(
+        self, hyperparams: Dict[str, Any], saved_hyperparams: Dict[str, Any], env: VecEnv
+    ) -> Dict[str, Any]:
         # Special case for HER
-        algo = hyperparams["model_class"] if self.algo == "her" else self.algo
-        # Parse noise string for DDPG and SAC
-        if algo in ["ddpg", "sac", "td3", "tqc", "ddpg"] and hyperparams.get("noise_type") is not None:
+        algo = saved_hyperparams["model_class"] if self.algo == "her" else self.algo
+        # Parse noise string
+        if algo in ["ddpg", "sac", "td3", "tqc"] and hyperparams.get("noise_type") is not None:
             noise_type = hyperparams["noise_type"].strip()
             noise_std = hyperparams["noise_std"]
 

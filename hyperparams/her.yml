@@ -1,56 +1,37 @@
-# === Real Robot envs
-NeckGoalEnvRelativeSparse-v2:
-  model_class: 'sac'
-  # env_wrapper:
-  #   - utils.wrappers.HistoryWrapper:
-  #       horizon: 2
-  #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 100000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.99
-  tau: 0.02
-  train_freq: [1, "episode"]
-  gradient_steps: -1
+# DDPG hyperparams
+# parking-v0:
+#  n_timesteps: !!float 1e5
+#  policy: 'MlpPolicy'
+#  model_class: 'ddpg'
+#  n_sampled_goal: 4
+#  goal_selection_strategy: 'future'
+#  buffer_size: 1000000
+#  batch_size: 1024
+#  gamma: 0.95
+#  learning_rate: !!float 1e-3
+#  noise_type: 'normal'
+#  noise_std: 0.2
+#  policy_kwargs: "dict(net_arch=[512, 512, 512])"
+#  online_sampling: True
+#  max_episode_length: 100
 
-  # 10 episodes of warm-up
-  learning_starts: 1500
-  use_sde_at_warmup: True
-  use_sde: True
-  sde_sample_freq: 64
-  policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256])"
+parking-v0:
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  model_class: 'tqc'
   n_sampled_goal: 4
   goal_selection_strategy: 'future'
-  online_sampling: False
+  buffer_size: 1000000
+  batch_size: 1024
+  gamma: 0.95
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  policy_kwargs: "dict(n_critics=2, net_arch=[512, 512, 512])"
+  online_sampling: True
+  max_episode_length: 100
+  # normalize: True
 
-NeckGoalEnvRelativeDense-v2:
-  model_class: 'sac'
-  env_wrapper:
-    - utils.wrappers.HistoryWrapperObsDict:
-        horizon: 2
-  #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 200000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.99
-  tau: 0.02
-  train_freq: [1, "episode"]
-  gradient_steps: -1
-  # 10 episodes of warm-up
-  learning_starts: 1500
-  use_sde_at_warmup: True
-  use_sde: True
-  sde_sample_freq: 64
-  policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256])"
-  n_sampled_goal: 4
-  goal_selection_strategy: 'future'
-  online_sampling: False
+# Mujoco Robotic Env
 
 FetchPush-v1:
   env_wrapper:
@@ -67,41 +48,6 @@ FetchPush-v1:
   tau: 0.05
   policy_kwargs: "dict(n_critics=2, net_arch=[512, 512, 512])"
   online_sampling: True
-
-# DDPG hyperparams
-#parking-v0:
-#  n_timesteps: !!float 2e5
-#  policy: 'MlpPolicy'
-#  model_class: 'ddpg'
-#  n_sampled_goal: 4
-#  goal_selection_strategy: 'future'
-#  buffer_size: 1000000
-#  batch_size: 256
-#  gamma: 0.95
-#  learning_rate: !!float 1e-3
-#  noise_type: 'normal'
-#  noise_std: 0.2
-#  policy_kwargs: "dict(net_arch=[256, 256, 256])"
-#  online_sampling: True
-#  max_episode_length: 100
-
-parking-v0:
-  n_timesteps: !!float 2e5
-  policy: 'MlpPolicy'
-  model_class: 'tqc'
-  n_sampled_goal: 4
-  goal_selection_strategy: 'future'
-  buffer_size: 1000000
-  batch_size: 1024
-  gamma: 0.95
-  learning_rate: !!float 1e-3
-  tau: 0.05
-  policy_kwargs: "dict(n_critics=2, net_arch=[512, 512, 512])"
-  online_sampling: True
-  max_episode_length: 100
-  # normalize: True
-
-# Mujoco Robotic Env
 
 FetchSlide-v1:
   env_wrapper:
@@ -120,22 +66,6 @@ FetchSlide-v1:
   policy_kwargs: "dict(n_critics=2, net_arch=[512, 512, 512])"
   online_sampling: True
 
-FetchPush-v1:
-  env_wrapper:
-    - sb3_contrib.common.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  model_class: 'tqc'
-  n_sampled_goal: 4
-  goal_selection_strategy: 'future'
-  buffer_size: 1000000
-  batch_size: 2048
-  gamma: 0.95
-  learning_rate: !!float 1e-3
-  tau: 0.05
-  # ent_coef: 0.01
-  policy_kwargs: "dict(n_critics=2, net_arch=[256, 256, 256])"
-  online_sampling: True
 
 FetchPickAndPlace-v1:
   env_wrapper:
@@ -172,3 +102,56 @@ FetchReach-v1:
   learning_starts: 1000
   online_sampling: True
   normalize: True
+
+# === Real Robot envs
+NeckGoalEnvRelativeSparse-v2:
+  model_class: 'sac'
+  # env_wrapper:
+  #   - utils.wrappers.HistoryWrapper:
+  #       horizon: 2
+  #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 100000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.99
+  tau: 0.02
+  train_freq: [1, "episode"]
+  gradient_steps: -1
+  # 10 episodes of warm-up
+  learning_starts: 1500
+  use_sde_at_warmup: True
+  use_sde: True
+  sde_sample_freq: 64
+  policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256])"
+  n_sampled_goal: 4
+  goal_selection_strategy: 'future'
+  online_sampling: False
+
+NeckGoalEnvRelativeDense-v2:
+  model_class: 'sac'
+  env_wrapper:
+    - utils.wrappers.HistoryWrapperObsDict:
+        horizon: 2
+  #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 200000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.99
+  tau: 0.02
+  train_freq: [1, "episode"]
+  gradient_steps: -1
+  # 10 episodes of warm-up
+  learning_starts: 1500
+  use_sde_at_warmup: True
+  use_sde: True
+  sde_sample_freq: 64
+  policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256])"
+  n_sampled_goal: 4
+  goal_selection_strategy: 'future'
+  online_sampling: False

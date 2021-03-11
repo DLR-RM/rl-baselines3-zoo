@@ -202,7 +202,7 @@ def create_test_env(
 
     vec_env_kwargs = {}
     vec_env_cls = DummyVecEnv
-    if n_envs > 1 or "Bullet" in env_id:
+    if n_envs > 1 or ("Bullet" in env_id and should_render):
         # HACK: force SubprocVecEnv for Bullet env
         # as Pybullet envs does not follow gym.render() interface
         vec_env_cls = SubprocVecEnv
@@ -264,8 +264,8 @@ def linear_schedule(initial_value: Union[float, str]) -> Callable[[float], float
 
 def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
     """
-    :param log_folder: (str) Root log folder
-    :return: (Dict[str, Tuple[str, str]]) Dict representing the trained agent
+    :param log_folder: Root log folder
+    :return: Dict representing the trained agents
     """
     trained_models = {}
     for algo in os.listdir(log_folder):
@@ -296,7 +296,11 @@ def get_latest_run_id(log_path: str, env_id: str) -> int:
     return max_run_id
 
 
-def get_saved_hyperparams(stats_path: str, norm_reward: bool = False, test_mode: bool = False) -> Tuple[Dict[str, Any], str]:
+def get_saved_hyperparams(
+    stats_path: str,
+    norm_reward: bool = False,
+    test_mode: bool = False,
+) -> Tuple[Dict[str, Any], str]:
     """
     :param stats_path:
     :param norm_reward:

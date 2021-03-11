@@ -1,6 +1,7 @@
 import argparse
 import importlib
 import os
+import sys
 
 import numpy as np
 import torch as th
@@ -140,7 +141,19 @@ def main():  # noqa: C901
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
 
-    model = ALGOS[algo].load(model_path, env=env, **kwargs)
+    # Check if we are running python 3.8+
+    # we need to patch saved model under python 3.6/3.7 to load them
+    newer_python_version = sys.version_info.major == 3 and sys.version_info.minor >= 8
+
+    custom_objects = {}
+    if newer_python_version:
+        custom_objects = {
+            "learning_rate": 0.0,
+            "lr_schedule": lambda _: 0.0,
+            "clip_range": lambda _: 0.0,
+        }
+
+    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
 
     obs = env.reset()
 
@@ -154,45 +167,47 @@ def main():  # noqa: C901
     ep_len = 0
     # For HER, monitor success rate
     successes = []
-    for _ in range(args.n_timesteps):
-        action, state = model.predict(obs, state=state, deterministic=deterministic)
-        obs, reward, done, infos = env.step(action)
-        if not args.no_render:
-            env.render("human")
+    try:
+        for _ in range(args.n_timesteps):
+            action, state = model.predict(obs, state=state, deterministic=deterministic)
+            obs, reward, done, infos = env.step(action)
+            if not args.no_render:
+                env.render("human")
 
-        episode_reward += reward[0]
-        ep_len += 1
+            episode_reward += reward[0]
+            ep_len += 1
 
-        if args.n_envs == 1:
-            # For atari the return reward is not the atari score
-            # so we have to get it from the infos dict
-            if is_atari and infos is not None and args.verbose >= 1:
-                episode_infos = infos[0].get("episode")
-                if episode_infos is not None:
-                    print(f"Atari Episode Score: {episode_infos['r']:.2f}")
-                    print("Atari Episode Length", episode_infos["l"])
+            if args.n_envs == 1:
+                # For atari the return reward is not the atari score
+                # so we have to get it from the infos dict
+                if is_atari and infos is not None and args.verbose >= 1:
+                    episode_infos = infos[0].get("episode")
+                    if episode_infos is not None:
+                        print(f"Atari Episode Score: {episode_infos['r']:.2f}")
+                        print("Atari Episode Length", episode_infos["l"])
 
-            if done and not is_atari and args.verbose > 0:
-                # NOTE: for env using VecNormalize, the mean reward
-                # is a normalized reward when `--norm_reward` flag is passed
-                print(f"Episode Reward: {episode_reward:.2f}")
-                print("Episode Length", ep_len)
-                episode_rewards.append(episode_reward)
-                episode_lengths.append(ep_len)
-                episode_reward = 0.0
-                ep_len = 0
-                state = None
+                if done and not is_atari and args.verbose > 0:
+                    # NOTE: for env using VecNormalize, the mean reward
+                    # is a normalized reward when `--norm_reward` flag is passed
+                    print(f"Episode Reward: {episode_reward:.2f}")
+                    print("Episode Length", ep_len)
+                    episode_rewards.append(episode_reward)
+                    episode_lengths.append(ep_len)
+                    episode_reward = 0.0
+                    ep_len = 0
+                    state = None
 
-            # Reset also when the goal is achieved when using HER
-            if done and infos[0].get("is_success") is not None:
-                if args.verbose > 1:
-                    print("Success?", infos[0].get("is_success", False))
-                # Alternatively, you can add a check to wait for the end of the episode
-                if done:
-                    obs = env.reset()
-                if infos[0].get("is_success") is not None:
-                    successes.append(infos[0].get("is_success", False))
-                    episode_reward, ep_len = 0.0, 0
+                # Reset also when the goal is achieved when using HER
+                if done and infos[0].get("is_success") is not None:
+                    if args.verbose > 1:
+                        print("Success?", infos[0].get("is_success", False))
+
+                    if infos[0].get("is_success") is not None:
+                        successes.append(infos[0].get("is_success", False))
+                        episode_reward, ep_len = 0.0, 0
+
+    except KeyboardInterrupt:
+        pass
 
     if args.verbose > 0 and len(successes) > 0:
         print(f"Success rate: {100 * np.mean(successes):.2f}%")
