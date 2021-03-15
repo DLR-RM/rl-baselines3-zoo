@@ -62,6 +62,10 @@ and also allow users to have access to pretrained agents.*
 |dqn  |RoadRunnerNoFrameskip-v4   |  40396.350|  7069.131|10M        |        603257|          137|
 |dqn  |SeaquestNoFrameskip-v4     |   2000.290|   606.644|10M        |        599505|           69|
 |dqn  |SpaceInvadersNoFrameskip-v4|    622.742|   201.564|10M        |        604311|          155|
+|her  |FetchPickAndPlace-v1       |     -8.921|     6.509|1M         |        150000|         3000|
+|her  |FetchPush-v1               |    -10.526|     8.916|1M         |        150000|         3000|
+|her  |FetchReach-v1              |     -1.677|     1.069|20k        |        150000|         3000|
+|her  |FetchSlide-v1              |    -23.162|    10.625|2M         |        150000|         3000|
 |her  |parking-v0                 |     -6.970|     2.970|200k       |        149980|         7106|
 |ppo  |Acrobot-v1                 |    -73.506|    18.201|1M         |        149979|         2013|
 |ppo  |AntBulletEnv-v0            |   2865.922|    56.468|2M         |        150000|          150|
@@ -91,7 +95,6 @@ and also allow users to have access to pretrained agents.*
 |qrdqn|BeamRiderNoFrameskip-v4    |  17122.941| 10769.997|10M        |        596483|           17|
 |qrdqn|BreakoutNoFrameskip-v4     |    393.600|    79.828|10M        |        579711|           40|
 |qrdqn|CartPole-v1                |    500.000|     0.000|50k        |        150000|          300|
-|qrdqn|EnduroNoFrameskip-v4       |   3231.200|  1311.801|10M        |        585728|            5|
 |qrdqn|LunarLander-v2             |     70.236|   225.491|100k       |        149957|          522|
 |qrdqn|MountainCar-v0             |   -106.042|    15.536|120k       |        149943|         1414|
 |qrdqn|PongNoFrameskip-v4         |     20.492|     0.687|10M        |        597443|           63|
