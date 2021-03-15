@@ -282,6 +282,22 @@ PyBullet Envs (Continued)
 | TD3      | | | | |
 | TQC      | | | | |
 
+
+### Robotics Environments
+
+See https://gym.openai.com/envs/#robotics and https://github.com/DLR-RM/rl-baselines3-zoo/pull/71
+
+MuJoCo version: 1.50.1.0
+Gym version: 0.18.0
+
+We used the v1 environments.
+
+|  RL Algo |  FetchReach | FetchPickAndPlace | FetchPush | FetchSlide |
+|----------|-------------|-------------------|-----------|------------|
+| HER+TQC  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+
+
+
 ### MiniGrid Envs
 
 See https://github.com/maximecb/gym-minigrid
