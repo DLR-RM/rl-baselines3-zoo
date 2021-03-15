@@ -52,7 +52,7 @@ FetchPush-v1:
 FetchSlide-v1:
   env_wrapper:
     - sb3_contrib.common.wrappers.TimeFeatureWrapper
-  n_timesteps: !!float 1e6
+  n_timesteps: !!float 2.5e6
   policy: 'MlpPolicy'
   model_class: 'tqc'
   n_sampled_goal: 4
