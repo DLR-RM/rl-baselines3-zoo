@@ -1,10 +1,11 @@
-## Release 1.0rc2 (WIP)
+## Release 1.0 (2021-03-17)
 
 ### Breaking Changes
-- Upgrade to SB3 >= 1.0rc2
+- Upgrade to SB3 >= 1.0
+- Upgrade to sb3-contrib >= 1.0
 
 ### New Features
-- Added 90+ trained agents + benchmark file
+- Added 100+ trained agents + benchmark file
 - Add support for loading saved model under python 3.8+ (no retraining possible)
 - Added Robotics pre-trained agents (@sgillen)
 
@@ -13,6 +14,7 @@
 - Fixed double reset bug with `HER` and enjoy script
 
 ### Documentation
+- Added doc about plotting scripts
 
 ### Other
 - Updated `HER` hyperparameters
