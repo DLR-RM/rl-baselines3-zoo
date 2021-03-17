@@ -6,7 +6,12 @@
 
 <!-- <img src="images/BipedalWalkerHardcorePPO.gif" align="right" width="35%"/> -->
 
-A Training Framework for Reinforcement Learning (RL), together with a collection of trained agents, with tuned hyperparameters, using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
+RL Baselines3 Zoo is a training framework for Reinforcement Learning (RL), using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
+
+It provides scripts for training, evaluating agents, tuning hyperparameters, plotting results and recording videos.
+
+In addition, it includes a collection of tuned hyperparameters for common environments and RL algorithms, and agents trained with those settings.
+
 
 We are **looking for contributors** to complete the collection!
 
@@ -59,6 +64,20 @@ It will be automatically loaded if present when continuing training.
 Plot scripts (to be documented, see "Results" sections in SB3 documentation):
 - `scripts/all_plots.py`/`scripts/plot_from_file.py` for plotting evaluations
 - `scripts/plot_train.py` for plotting training reward/success
+
+*Examples (on the current collection)*
+
+Plot training success (y-axis) w.r.t. timesteps (x-axis) with a moving window of 500 episodes for all the `Fetch` environment with `HER` algorithm:
+
+```
+python scripts/plot_train.py -a her -e Fetch -y success -f rl-trained-agents/ -w 500 -x steps
+```
+
+Plot evaluation reward curve for TQC, SAC and TD3 on the HalfCheetah and Ant PyBullet environments:
+
+```
+python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f rl-trained-agents/
+```
 
 ## Custom Environment
 
