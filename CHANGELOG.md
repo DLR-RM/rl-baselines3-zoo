@@ -8,6 +8,7 @@
 - Added 100+ trained agents + benchmark file
 - Add support for loading saved model under python 3.8+ (no retraining possible)
 - Added Robotics pre-trained agents (@sgillen)
+- Record videos of best models and checkpoints (@mcres)
 
 ### Bug fixes
 - Bug fixes for `HER` handling action noise
