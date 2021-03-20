@@ -3,6 +3,7 @@ import os
 
 from stable_baselines3.common.vec_env import DummyVecEnv, VecEnvWrapper, VecVideoRecorder
 
+from utils.exp_manager import ExperimentManager
 from utils.utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
 parser = argparse.ArgumentParser()
@@ -16,6 +17,14 @@ parser.add_argument("--deterministic", action="store_true", default=False, help=
 parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
 parser.add_argument("--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)")
 parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
+parser.add_argument(
+    "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
+)
+parser.add_argument(
+    "--load-checkpoint",
+    type=int,
+    help="Load checkpoint instead of last model if available, you must pass the number of timesteps corresponding to it",
+)
 args = parser.parse_args()
 
 env_id = args.env
@@ -26,6 +35,8 @@ seed = args.seed
 deterministic = args.deterministic
 video_length = args.n_timesteps
 n_envs = args.n_envs
+load_best = args.load_best
+load_checkpoint = args.load_checkpoint
 
 if args.exp_id == 0:
     args.exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
@@ -36,13 +47,25 @@ if args.exp_id > 0:
 else:
     log_path = os.path.join(folder, algo)
 
-model_path = os.path.join(log_path, f"{env_id}.zip")
+assert os.path.isdir(log_path), f"The {log_path} folder was not found"
+
+if load_best:
+    model_path = os.path.join(log_path, "best_model.zip")
+elif load_checkpoint is None:
+    # Default: load latest model
+    model_path = os.path.join(log_path, f"{env_id}.zip")
+else:
+    model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
+
+found = os.path.isfile(model_path)
+if not found:
+    raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
 
 stats_path = os.path.join(log_path, env_id)
 hyperparams, stats_path = get_saved_hyperparams(stats_path)
 
 
-is_atari = "NoFrameskip" in env_id
+is_atari = ExperimentManager.is_atari(env_id)
 
 env = create_test_env(
     env_id,

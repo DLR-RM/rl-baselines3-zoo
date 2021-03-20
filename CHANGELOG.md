@@ -1,3 +1,16 @@
+## Release 1.1.0a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+- Add support for recording videos of best models and checkpoints (@mcres)
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
 ## Release 1.0 (2021-03-17)
 
 ### Breaking Changes
