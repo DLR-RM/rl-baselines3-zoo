@@ -1,3 +1,16 @@
+## Release 1.1.0a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+- Add support for recording videos of best models and checkpoints (@mcres)
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
 ## Release 1.0 (2021-03-17)
 
 ### Breaking Changes
@@ -8,7 +21,6 @@
 - Added 100+ trained agents + benchmark file
 - Add support for loading saved model under python 3.8+ (no retraining possible)
 - Added Robotics pre-trained agents (@sgillen)
-- Record videos of best models and checkpoints (@mcres)
 
 ### Bug fixes
 - Bug fixes for `HER` handling action noise

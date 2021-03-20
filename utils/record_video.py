@@ -3,6 +3,7 @@ import os
 
 from stable_baselines3.common.vec_env import DummyVecEnv, VecEnvWrapper, VecVideoRecorder
 
+from utils.exp_manager import ExperimentManager
 from utils.utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
 parser = argparse.ArgumentParser()
@@ -22,7 +23,7 @@ parser.add_argument(
 parser.add_argument(
     "--load-checkpoint",
     type=int,
-    help="Load checkpoint instead of last model if available, " "you must pass the number of timesteps corresponding to it",
+    help="Load checkpoint instead of last model if available, you must pass the number of timesteps corresponding to it",
 )
 args = parser.parse_args()
 
@@ -51,6 +52,7 @@ assert os.path.isdir(log_path), f"The {log_path} folder was not found"
 if load_best:
     model_path = os.path.join(log_path, "best_model.zip")
 elif load_checkpoint is None:
+    # Default: load latest model
     model_path = os.path.join(log_path, f"{env_id}.zip")
 else:
     model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
@@ -63,7 +65,7 @@ stats_path = os.path.join(log_path, env_id)
 hyperparams, stats_path = get_saved_hyperparams(stats_path)
 
 
-is_atari = "NoFrameskip" in env_id
+is_atari = ExperimentManager.is_atari(env_id)
 
 env = create_test_env(
     env_id,
