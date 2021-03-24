@@ -6,11 +6,13 @@
 - Add support for recording videos of best models and checkpoints (@mcres)
 
 ### Bug fixes
-- Fixed video rendering for PyBullet envs on linux
+- Fixed video rendering for PyBullet envs on Linux
 
 ### Documentation
 
 ### Other
+- Added `is_bullet()` to `ExperimentManager`
+- Simplify `close()` for the enjoy script
 
 ## Release 1.0 (2021-03-17)
 

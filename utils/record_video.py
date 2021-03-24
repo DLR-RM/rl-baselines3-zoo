@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from stable_baselines3.common.vec_env import DummyVecEnv, VecEnvWrapper, VecVideoRecorder
+from stable_baselines3.common.vec_env import VecVideoRecorder
 
 from utils.exp_manager import ExperimentManager
 from utils.utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
@@ -102,16 +102,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
 
-    # Workaround for https://github.com/openai/gym/issues/893
-    if n_envs == 1 and "Bullet" not in env_id and not is_atari:
-        env = env.venv
-        # DummyVecEnv
-        while isinstance(env, VecEnvWrapper):
-            env = env.venv
-        if isinstance(env, DummyVecEnv):
-            env.envs[0].env.close()
-        else:
-            env.close()
-    else:
-        # SubprocVecEnv
-        env.close()
+    env.close()

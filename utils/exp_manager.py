@@ -426,6 +426,10 @@ class ExperimentManager(object):
         return "AtariEnv" in gym.envs.registry.env_specs[env_id].entry_point
 
     @staticmethod
+    def is_bullet(env_id: str) -> bool:
+        return "pybullet_envs" in gym.envs.registry.env_specs[env_id].entry_point
+
+    @staticmethod
     def is_robotics_env(env_id: str) -> bool:
         return "gym.envs.robotics" in gym.envs.registry.env_specs[env_id].entry_point
 
