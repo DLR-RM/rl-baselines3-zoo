@@ -75,7 +75,7 @@ for env in args.env:  # noqa: C901
             merged_timesteps, merged_results = [], []
             last_eval = []
             timesteps = np.empty(0)
-            for idx, dir_ in enumerate(dirs):
+            for _, dir_ in enumerate(dirs):
                 try:
                     log = np.load(os.path.join(dir_, "evaluations.npz"))
                 except FileNotFoundError:

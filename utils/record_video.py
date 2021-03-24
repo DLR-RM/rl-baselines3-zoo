@@ -6,7 +6,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecEnvWrapper, VecVide
 from utils.exp_manager import ExperimentManager
 from utils.utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
@@ -16,7 +16,9 @@ if __name__ == '__main__':
     parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
-    parser.add_argument("--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)")
+    parser.add_argument(
+        "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
+    )
     parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
     parser.add_argument(
         "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
@@ -64,7 +66,6 @@ if __name__ == '__main__':
 
     stats_path = os.path.join(log_path, env_id)
     hyperparams, stats_path = get_saved_hyperparams(stats_path)
-
 
     is_atari = ExperimentManager.is_atari(env_id)
 
