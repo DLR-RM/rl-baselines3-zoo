@@ -6,6 +6,7 @@
 - Add support for recording videos of best models and checkpoints (@mcres)
 
 ### Bug fixes
+- Fixed video rendering for PyBullet envs on linux
 
 ### Documentation
 
