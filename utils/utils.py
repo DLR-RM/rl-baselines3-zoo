@@ -192,6 +192,9 @@ def create_test_env(
     :param env_kwargs: Optional keyword argument to pass to the env constructor
     :return:
     """
+    # Avoid circular import
+    from utils.exp_manager import ExperimentManager
+
     # Create the environment and wrap it if necessary
     env_wrapper = get_wrapper_class(hyperparams)
 
@@ -202,7 +205,7 @@ def create_test_env(
 
     vec_env_kwargs = {}
     vec_env_cls = DummyVecEnv
-    if n_envs > 1 or ("Bullet" in env_id and should_render):
+    if n_envs > 1 or (ExperimentManager.is_bullet(env_id) and should_render):
         # HACK: force SubprocVecEnv for Bullet env
         # as Pybullet envs does not follow gym.render() interface
         vec_env_cls = SubprocVecEnv

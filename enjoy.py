@@ -7,7 +7,6 @@ import numpy as np
 import torch as th
 import yaml
 from stable_baselines3.common.utils import set_random_seed
-from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv, VecEnvWrapper
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
@@ -219,20 +218,7 @@ def main():  # noqa: C901
     if args.verbose > 0 and len(episode_lengths) > 0:
         print(f"Mean episode length: {np.mean(episode_lengths):.2f} +/- {np.std(episode_lengths):.2f}")
 
-    # Workaround for https://github.com/openai/gym/issues/893
-    if not args.no_render:
-        if args.n_envs == 1 and "Bullet" not in env_id and not is_atari and isinstance(env, VecEnv):
-            # DummyVecEnv
-            # Unwrap env
-            while isinstance(env, VecEnvWrapper):
-                env = env.venv
-            if isinstance(env, DummyVecEnv):
-                env.envs[0].env.close()
-            else:
-                env.close()
-        else:
-            # SubprocVecEnv
-            env.close()
+    env.close()
 
 
 if __name__ == "__main__":
