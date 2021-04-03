@@ -4,6 +4,7 @@
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
+- Add support for recording videos of training experiments (@mcres)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
