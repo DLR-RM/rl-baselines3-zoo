@@ -44,8 +44,10 @@ if __name__ == "__main__":  # noqa: C901
 
     assert os.path.isdir(log_path), f"The {log_path} folder was not found"
 
-    videos_path = os.path.abspath(os.path.join(log_path, "videos"))
-    shutil.rmtree(videos_path, ignore_errors=True)
+    if video_folder is None:
+        video_folder = os.path.abspath(os.path.join(log_path, "videos"))
+    shutil.rmtree(video_folder, ignore_errors=True)
+    os.makedirs(video_folder, exist_ok=True)
 
     # record a video of every model
     models_dir_entries = [dir_ent.name for dir_ent in os.scandir(log_path) if dir_ent.is_file()]
@@ -62,6 +64,8 @@ if __name__ == "__main__":  # noqa: C901
         str(args.exp_id),
         "-f",
         folder,
+        "-o",
+        video_folder,
         "--n-timesteps",
         str(n_timesteps),
         "--n-envs",
@@ -90,7 +94,7 @@ if __name__ == "__main__":  # noqa: C901
         assert return_code == 0, f"Failed to record the {cp} checkpoint model"
 
     # add text to each video
-    episode_videos_names = [dir_ent.name for dir_ent in os.scandir(videos_path) if dir_ent.name.endswith(".mp4")]
+    episode_videos_names = [dir_ent.name for dir_ent in os.scandir(video_folder) if dir_ent.name.endswith(".mp4")]
 
     checkpoints_videos_names = list(filter(lambda x: x.startswith("checkpoint"), episode_videos_names))
 
@@ -109,7 +113,7 @@ if __name__ == "__main__":  # noqa: C901
     final_model_video_name = list(filter(lambda x: x.startswith("final-model"), episode_videos_names))
     best_model_video_name = list(filter(lambda x: x.startswith("best-model"), episode_videos_names))
     episode_videos_names = checkpoints_videos_names + final_model_video_name + best_model_video_name
-    episode_videos_path = [os.path.join(videos_path, video) for video in episode_videos_names]
+    episode_videos_path = [os.path.join(video_folder, video) for video in episode_videos_names]
 
     # the text displayed will be the first two words of the file
     def get_text_from_video_filename(filename):
@@ -131,26 +135,17 @@ if __name__ == "__main__":  # noqa: C901
         os.system(ffmpeg_command_to_add_text)
 
     # join videos together and convert to gif if needed
-    ffmpeg_text_file = os.path.join(videos_path, "tmp.txt")
+    ffmpeg_text_file = os.path.join(video_folder, "tmp.txt")
     with open(ffmpeg_text_file, "a") as file:
         for evp in episode_videos_path:
             file.write(f"file {evp}\n")
 
-    if video_folder is None:
-        final_video_path = os.path.abspath(os.path.join(videos_path, "training.mp4"))
-    else:
-        final_video_path = os.path.abspath(os.path.join(video_folder, "training.mp4"))
-
+    final_video_path = os.path.abspath(os.path.join(video_folder, "training.mp4"))
     os.system(f"ffmpeg -f concat -safe 0 -i {ffmpeg_text_file} -c copy {final_video_path} -hide_banner -loglevel error")
     os.remove(ffmpeg_text_file)
     print(f"Saving video to {final_video_path}")
 
     if convert_to_gif:
-        if video_folder is None:
-            final_gif_path = os.path.abspath(os.path.join(videos_path, "training.gif"))
-        else:
-            final_gif_path = os.path.abspath(os.path.join(video_folder, "training.gif"))
-
-        final_gif_path = os.path.abspath(os.path.join(videos_path, "training.gif"))
+        final_gif_path = os.path.abspath(os.path.join(video_folder, "training.gif"))
         os.system(f"ffmpeg -i {final_video_path} -vf fps=10 {final_gif_path} -hide_banner -loglevel error")
         print(f"Saving gif to {final_gif_path}")
