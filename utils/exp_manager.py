@@ -13,6 +13,8 @@ import yaml
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
+# For using HER with GoalEnv
+from stable_baselines3 import HerReplayBuffer  # noqa: F401
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -322,11 +324,11 @@ class ExperimentManager(object):
         # Pre-process normalize config
         hyperparams = self._preprocess_normalization(hyperparams)
 
-        # Pre-process policy keyword arguments
-        if "policy_kwargs" in hyperparams.keys():
-            # Convert to python object if needed
-            if isinstance(hyperparams["policy_kwargs"], str):
-                hyperparams["policy_kwargs"] = eval(hyperparams["policy_kwargs"])
+        # Pre-process policy/buffer keyword arguments
+        # Convert to python object if needed
+        for kwargs_key in {"policy_kwargs", "replay_buffer_class", "replay_buffer_kwargs"}:
+            if kwargs_key in hyperparams.keys() and isinstance(hyperparams[kwargs_key], str):
+                hyperparams[kwargs_key] = eval(hyperparams[kwargs_key])
 
         # Delete keys so the dict can be pass to the model constructor
         if "n_envs" in hyperparams.keys():
