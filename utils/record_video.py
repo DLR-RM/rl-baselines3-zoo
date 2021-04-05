@@ -54,14 +54,14 @@ if __name__ == "__main__":
 
     if load_best:
         model_path = os.path.join(log_path, "best_model.zip")
-        name_prefix = "best-model"
+        name_prefix = f"best-model-{algo}-{env_id}"
     elif load_checkpoint is None:
         # Default: load latest model
         model_path = os.path.join(log_path, f"{env_id}.zip")
-        name_prefix = "final-model"
+        name_prefix = f"final-model-{algo}-{env_id}"
     else:
         model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
-        name_prefix = f"checkpoint-{args.load_checkpoint}"
+        name_prefix = f"checkpoint-{args.load_checkpoint}-{algo}-{env_id}"
 
     found = os.path.isfile(model_path)
     if not found:
