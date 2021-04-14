@@ -1,3 +1,40 @@
+## Release 1.1.0a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+- Add support for recording videos of best models and checkpoints (@mcres)
+
+### Bug fixes
+- Fixed video rendering for PyBullet envs on Linux
+
+### Documentation
+
+### Other
+- Added `is_bullet()` to `ExperimentManager`
+- Simplify `close()` for the enjoy script
+
+## Release 1.0 (2021-03-17)
+
+### Breaking Changes
+- Upgrade to SB3 >= 1.0
+- Upgrade to sb3-contrib >= 1.0
+
+### New Features
+- Added 100+ trained agents + benchmark file
+- Add support for loading saved model under python 3.8+ (no retraining possible)
+- Added Robotics pre-trained agents (@sgillen)
+
+### Bug fixes
+- Bug fixes for `HER` handling action noise
+- Fixed double reset bug with `HER` and enjoy script
+
+### Documentation
+- Added doc about plotting scripts
+
+### Other
+- Updated `HER` hyperparameters
+
 ## Pre-Release 0.11.1 (2021-02-27)
 
 ### Breaking Changes

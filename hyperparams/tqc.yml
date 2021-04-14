@@ -26,8 +26,16 @@ Pendulum-v0:
 LunarLanderContinuous-v2:
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
+  learning_rate: lin_7.3e-4
+  buffer_size: 1000000
   batch_size: 256
-  learning_starts: 1000
+  ent_coef: 'auto'
+  gamma: 0.99
+  tau: 0.01
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 10000
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 BipedalWalker-v3:
   n_timesteps: !!float 5e5
@@ -55,11 +63,10 @@ BipedalWalkerHardcore-v3:
   ent_coef: 'auto'
   gamma: 0.99
   tau: 0.01
-  train_freq: 64
-  gradient_steps: 64
+  train_freq: 1
+  gradient_steps: 1
   learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], use_expln=True)"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # === Bullet envs ===
 

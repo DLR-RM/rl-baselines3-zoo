@@ -1,12 +1,12 @@
 import argparse
 import importlib
 import os
+import sys
 
 import numpy as np
 import torch as th
 import yaml
 from stable_baselines3.common.utils import set_random_seed
-from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv, VecEnvWrapper
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
@@ -140,7 +140,19 @@ def main():  # noqa: C901
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
 
-    model = ALGOS[algo].load(model_path, env=env, **kwargs)
+    # Check if we are running python 3.8+
+    # we need to patch saved model under python 3.6/3.7 to load them
+    newer_python_version = sys.version_info.major == 3 and sys.version_info.minor >= 8
+
+    custom_objects = {}
+    if newer_python_version:
+        custom_objects = {
+            "learning_rate": 0.0,
+            "lr_schedule": lambda _: 0.0,
+            "clip_range": lambda _: 0.0,
+        }
+
+    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
 
     obs = env.reset()
 
@@ -188,14 +200,14 @@ def main():  # noqa: C901
                 if done and infos[0].get("is_success") is not None:
                     if args.verbose > 1:
                         print("Success?", infos[0].get("is_success", False))
-                    # Alternatively, you can add a check to wait for the end of the episode
-                    if done:
-                        obs = env.reset()
+
                     if infos[0].get("is_success") is not None:
                         successes.append(infos[0].get("is_success", False))
                         episode_reward, ep_len = 0.0, 0
+
     except KeyboardInterrupt:
         print("Cancelled by the user...")
+        pass
 
     if args.verbose > 0 and len(successes) > 0:
         print(f"Success rate: {100 * np.mean(successes):.2f}%")
@@ -207,20 +219,7 @@ def main():  # noqa: C901
     if args.verbose > 0 and len(episode_lengths) > 0:
         print(f"Mean episode length: {np.mean(episode_lengths):.2f} +/- {np.std(episode_lengths):.2f}")
 
-    # Workaround for https://github.com/openai/gym/issues/893
-    if not args.no_render:
-        if args.n_envs == 1 and "Bullet" not in env_id and not is_atari and isinstance(env, VecEnv):
-            # DummyVecEnv
-            # Unwrap env
-            while isinstance(env, VecEnvWrapper):
-                env = env.venv
-            if isinstance(env, DummyVecEnv):
-                env.envs[0].env.close()
-            else:
-                env.close()
-        else:
-            # SubprocVecEnv
-            env.close()
+    env.close()
 
 
 if __name__ == "__main__":

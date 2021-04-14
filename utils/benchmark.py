@@ -9,7 +9,7 @@ import pandas as pd
 import pytablewriter
 from stable_baselines3.common.results_plotter import load_results, ts2xy
 
-from utils import get_trained_models
+from utils.utils import get_latest_run_id, get_saved_hyperparams, get_trained_models
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--log-dir", help="Root log folder", default="rl-trained-agents/", type=str)
@@ -19,17 +19,26 @@ parser.add_argument("--n-envs", help="number of environments", default=1, type=i
 parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
 parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
 parser.add_argument("--test-mode", action="store_true", default=False, help="Do only one experiment (useful for testing)")
+parser.add_argument("--num-threads", help="Number of threads for PyTorch", default=2, type=int)
 args = parser.parse_args()
 
 trained_models = get_trained_models(args.log_dir)
 n_experiments = len(trained_models)
-results = {"algo": [], "env_id": [], "mean_reward": [], "std_reward": [], "n_timesteps": [], "n_episodes": []}
+results = {
+    "algo": [],
+    "env_id": [],
+    "mean_reward": [],
+    "std_reward": [],
+    "n_timesteps": [],
+    "eval_timesteps": [],
+    "eval_episodes": [],
+}
 
 for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
     algo, env_id = trained_models[trained_model]
     n_envs = args.n_envs
     n_timesteps = args.n_timesteps
-    if algo in ["dqn", "ddpg", "sac", "td3", "tqc", "her"]:
+    if algo in ["dqn", "qrdqn", "ddpg", "sac", "td3", "tqc", "her"]:
         n_envs = 1
         n_timesteps *= args.n_envs
 
@@ -52,8 +61,8 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
         "--env",
         env_id,
         "--no-render",
-        # "--num-threads",
-        # str(2),
+        "--num-threads",
+        str(args.num_threads),
         "--seed",
         str(args.seed),
         "--verbose",
@@ -77,17 +86,31 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
         print("Skipping eval...")
     else:
         return_code = subprocess.call(["python", "enjoy.py"] + arguments)
+        if return_code != 0:
+            print("Error during evaluation, skipping...")
+            continue
         x, y = ts2xy(load_results(reward_log), "timesteps")
 
     if len(x) > 0:
+        # Retrieve training timesteps from config
+        exp_id = get_latest_run_id(os.path.join(args.log_dir, algo), env_id)
+        log_path = os.path.join(args.log_dir, algo, f"{env_id}_{exp_id}", env_id)
+        hyperparams, _ = get_saved_hyperparams(log_path)
+        # Hack to format it properly
+        if hyperparams["n_timesteps"] < 1e6:
+            n_training_timesteps = f"{int(hyperparams['n_timesteps'] / 1e3)}k"
+        else:
+            n_training_timesteps = f"{int(hyperparams['n_timesteps'] / 1e6)}M"
+
         mean_reward = np.mean(y)
         std_reward = np.std(y)
         results["algo"].append(algo)
         results["env_id"].append(env_id)
         results["mean_reward"].append(mean_reward)
         results["std_reward"].append(std_reward)
-        results["n_timesteps"].append(x[-1])
-        results["n_episodes"].append(len(y))
+        results["n_timesteps"].append(n_training_timesteps)
+        results["eval_timesteps"].append(x[-1])
+        results["eval_episodes"].append(len(y))
         if args.verbose >= 1:
             print(x[-1], "timesteps")
             print(len(y), "Episodes")
@@ -112,7 +135,7 @@ header = """
 
 Final performance of the trained agents can be found in the table below.
 This was computed by running `python -m utils.benchmark`:
-it runs the trained agent for `n_timesteps` and then reports the mean episode reward
+it runs the trained agent (trained on `n_timesteps`) for `eval_timesteps` and then reports the mean episode reward
 during this evaluation.
 
 It uses the deterministic policy except for Atari games.
@@ -121,6 +144,8 @@ It uses the deterministic policy except for Atari games.
 (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)).
 This benchmark is meant to check algorithm (maximal) performance, find potential bugs
 and also allow users to have access to pretrained agents.*
+
+"M" stands for Million (1e6)
 
 """
 
@@ -135,6 +160,7 @@ print(f"Results written to: {tmp_path}")
 # Update root benchmark file
 if not args.test_mode:
     shutil.copy(tmp_path, "benchmark.md")
+    print("Results copied to: benchmark.md")
 
 # Alternatively, to dump as csv file:
 # results_df.to_csv(f"{args.benchmark_dir}/benchmark.csv",sep=",", index=False)
