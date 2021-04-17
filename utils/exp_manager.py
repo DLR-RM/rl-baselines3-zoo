@@ -482,10 +482,7 @@ class ExperimentManager(object):
         env = ss.resize_v0(env, x_size=84, y_size=84)
         env = ss.frame_stack_v1(env, 3)
         env = ss.pettingzoo_env_to_vec_env_v0(env)
-        #env = ss.stable_baselines3_vec_env_v0(env, n_envs, multiprocessing=False)
-
-        if n_envs > 1:
-            env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines')
+        env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines')
 
         return env
 
