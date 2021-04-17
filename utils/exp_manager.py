@@ -32,6 +32,9 @@ from utils.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from utils.hyperparams_opt import HYPERPARAMS_SAMPLER
 from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
+from pettingzoo.butterfly import pistonball_v4
+import supersuit as ss
+
 
 class ExperimentManager(object):
     """
@@ -473,60 +476,15 @@ class ExperimentManager(object):
         return env
 
     def create_envs(self, n_envs: int, eval_env: bool = False, no_log: bool = False) -> VecEnv:
-        """
-        Create the environment and wrap it if necessary.
 
-        :param n_envs:
-        :param eval_env: Whether is it an environment used for evaluation or not
-        :param no_log: Do not log training when doing hyperparameter optim
-            (issue with writing the same file)
-        :return: the vectorized environment, with appropriate wrappers
-        """
-        # Do not log eval env (issue with writing the same file)
-        log_dir = None if eval_env or no_log else self.save_path
+        env = pistonball_v4.env(time_penalty=-1)
+        env = ss.color_reduction_v0(env, mode='B')
+        env = ss.resize_v0(env, x_size=84, y_size=84)
+        env = ss.frame_stack_v1(env, 3)
+        env = ss.stable_baselines3_vec_env_v0(env, n_envs, multiprocessing=False)
 
-        monitor_kwargs = {}
-        # Special case for GoalEnvs: log success rate too
-        if "Neck" in self.env_id or self.is_robotics_env(self.env_id) or "parking-v0" in self.env_id:
-            monitor_kwargs = dict(info_keywords=("is_success",))
-
-        # On most env, SubprocVecEnv does not help and is quite memory hungry
-        # therefore we use DummyVecEnv by default
-        env = make_vec_env(
-            env_id=self.env_id,
-            n_envs=n_envs,
-            seed=self.seed,
-            env_kwargs=self.env_kwargs,
-            monitor_dir=log_dir,
-            wrapper_class=self.env_wrapper,
-            vec_env_cls=self.vec_env_class,
-            vec_env_kwargs=self.vec_env_kwargs,
-            monitor_kwargs=monitor_kwargs,
-        )
-
-        # Wrap the env into a VecNormalize wrapper if needed
-        # and load saved statistics when present
-        env = self._maybe_normalize(env, eval_env)
-
-        # Optional Frame-stacking
-        if self.frame_stack is not None:
-            n_stack = self.frame_stack
-            env = VecFrameStack(env, n_stack)
-            if self.verbose > 0:
-                print(f"Stacking {n_stack} frames")
-
-        # Wrap if needed to re-order channels
-        # (switch from channel last to channel first convention)
-        if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):
-            if self.verbose > 0:
-                print("Wrapping into a VecTransposeImage")
-            env = VecTransposeImage(env)
-
-        # check if wrapper for dict support is needed
-        if self.algo == "her":
-            if self.verbose > 0:
-                print("Wrapping into a ObsDictWrapper")
-            env = ObsDictWrapper(env)
+        if n_envs > 1:
+            env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines')
 
         return env
 
