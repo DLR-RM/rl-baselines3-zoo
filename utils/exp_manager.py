@@ -484,6 +484,11 @@ class ExperimentManager(object):
         env = ss.pettingzoo_env_to_vec_env_v0(env)
         env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines3')
 
+        if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):
+            if self.verbose > 0:
+                print("Wrapping into a VecTransposeImage")
+            env = VecTransposeImage(env)
+
         return env
 
     def _load_pretrained_agent(self, hyperparams: Dict[str, Any], env: VecEnv) -> BaseAlgorithm:
