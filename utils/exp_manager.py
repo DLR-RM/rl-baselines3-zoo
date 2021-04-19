@@ -484,6 +484,8 @@ class ExperimentManager(object):
         env = ss.pettingzoo_env_to_vec_env_v0(env)
         env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines3')
 
+        env = self._maybe_normalize(env, eval_env)
+
         if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):
             if self.verbose > 0:
                 print("Wrapping into a VecTransposeImage")
