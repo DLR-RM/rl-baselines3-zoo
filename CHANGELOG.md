@@ -1,4 +1,4 @@
-## Release 1.1.0a0 (WIP)
+## Release 1.1.0a4 (WIP)
 
 ### Breaking Changes
 
@@ -7,6 +7,7 @@
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
+- Fixed `get_latest_run_id()` so it works in Windows too (@NicolasHaeffner)
 
 ### Documentation
 
