@@ -27,3 +27,8 @@ try:
     import gym_donkeycar  # pytype: disable=import-error
 except ImportError:
     gym_donkeycar = None
+
+try:
+    import rl_racing.envs  # pytype: disable=import-error
+except ImportError:
+    rl_racing = None

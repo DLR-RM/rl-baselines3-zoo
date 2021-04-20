@@ -26,6 +26,11 @@ try:
 except ImportError:
     CMAES = None
 
+try:
+    from rl_racing.utils.teleop import HumanTeleop as Teleop
+except ImportError:
+    Teleop = None
+
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
 
@@ -39,6 +44,7 @@ ALGOS = {
     "td3": TD3,
     "human": HumanTeleop,
     "cmaes": CMAES,
+    "teleop": Teleop,
     # SB3 Contrib,
     "qrdqn": QRDQN,
     "tqc": TQC,
