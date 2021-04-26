@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 import pygame
 from pygame.locals import *  # noqa: F403
-from stable_baselines3 import SAC
+from sb3_contrib import TQC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.buffers import ReplayBuffer
 from stable_baselines3.common.save_util import load_from_pkl, save_to_pkl
@@ -93,6 +93,8 @@ class HumanTeleop(BaseAlgorithm):
         # self.button_toggle_train_mode = K_t
         # pytype: enable=name-error
 
+        # TODO: add to model buffer + allow training in separate thread
+
         # Used to prevent from multiple successive key press
         self.last_time_pressed = {}
         self.event_buttons = None
@@ -112,7 +114,7 @@ class HumanTeleop(BaseAlgorithm):
         # Pretrained model
         if model_path is not None:
             # "logs/tqc/donkey-generated-track-v0_9/donkey-generated-track-v0.zip"
-            self.model = SAC.load(model_path)
+            self.model = TQC.load(model_path)
 
     def _excluded_save_params(self) -> List[str]:
         """
