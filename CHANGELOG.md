@@ -1,4 +1,4 @@
-## Release 1.1.0a4 (WIP)
+## Release 1.1.0a5 (WIP)
 
 ### Breaking Changes
 
@@ -14,6 +14,7 @@
 ### Other
 - Added `is_bullet()` to `ExperimentManager`
 - Simplify `close()` for the enjoy script
+- Updated docker image to include latest black version
 
 ## Release 1.0 (2021-03-17)
 
