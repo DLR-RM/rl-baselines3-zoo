@@ -27,3 +27,8 @@ try:
     import gym_donkeycar  # pytype: disable=import-error
 except ImportError:
     gym_donkeycar = None
+
+try:
+    import gym_space_engineers  # pytype: disable=import-error
+except ImportError:
+    gym_space_engineers = None
