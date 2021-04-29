@@ -118,7 +118,7 @@ and also allow users to have access to pretrained agents.*
 |td3  |MountainCarContinuous-v0   |     93.483|     0.075|300k       |        149976|         2275|
 |td3  |Pendulum-v0                |   -151.855|    90.227|20k        |        150000|          750|
 |td3  |ReacherBulletEnv-v0        |     17.114|     9.750|300k       |        150000|         1000|
-|td3  |Walker2DBulletEnv-v0       |    204.727|   115.196|1M         |        149927|         1338|
+|td3  |Walker2DBulletEnv-v0       |   2213.672|   230.558|1M         |        149800|          152|
 |tqc  |AntBulletEnv-v0            |   3456.717|   248.733|1M         |        150000|          150|
 |tqc  |BipedalWalker-v3           |    329.808|    45.083|500k       |        149682|          254|
 |tqc  |BipedalWalkerHardcore-v3   |    235.226|   110.569|2M         |        149032|          131|
