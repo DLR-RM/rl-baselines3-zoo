@@ -1,4 +1,4 @@
-## Release 1.1.0a0 (WIP)
+## Release 1.1.0a5 (WIP)
 
 ### Breaking Changes
 
@@ -8,12 +8,15 @@
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
+- Fixed `get_latest_run_id()` so it works in Windows too (@NicolasHaeffner)
 
 ### Documentation
 
 ### Other
 - Added `is_bullet()` to `ExperimentManager`
 - Simplify `close()` for the enjoy script
+- Updated docker image to include latest black version
+- Updated TD3 Walker2D model (thanks @modanesh)
 
 ## Release 1.0 (2021-03-17)
 
