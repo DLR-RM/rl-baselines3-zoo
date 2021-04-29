@@ -88,10 +88,10 @@ if __name__ == "__main__":  # noqa: C901
 
     args_checkpoint = args_final_model + ["--load-checkpoint"]
     args_checkpoint.append("0")
-    for cp in checkpoints:
-        args_checkpoint[-1] = str(cp)
+    for checkpoint in checkpoints:
+        args_checkpoint[-1] = str(checkpoint)
         return_code = subprocess.call(["python", "-m", "utils.record_video"] + args_checkpoint)
-        assert return_code == 0, f"Failed to record the {cp} checkpoint model"
+        assert return_code == 0, f"Failed to record the {checkpoint} checkpoint model"
 
     # add text to each video
     episode_videos_names = [dir_ent.name for dir_ent in os.scandir(video_folder) if dir_ent.name.endswith(".mp4")]
@@ -99,7 +99,7 @@ if __name__ == "__main__":  # noqa: C901
     checkpoints_videos_names = list(filter(lambda x: x.startswith("checkpoint"), episode_videos_names))
 
     # sort checkpoints by the number of steps
-    def get_number_from_checkpoint_filename(filename):
+    def get_number_from_checkpoint_filename(filename: str) -> int:
         match = re.search("checkpoint-(.*?)-", filename)
         number = 0
         if match is not None:
@@ -116,7 +116,7 @@ if __name__ == "__main__":  # noqa: C901
     episode_videos_path = [os.path.join(video_folder, video) for video in episode_videos_names]
 
     # the text displayed will be the first two words of the file
-    def get_text_from_video_filename(filename):
+    def get_text_from_video_filename(filename: str) -> str:
         match = re.search(r"^(\w+)-(\w+)", filename)
         text = ""
         if match is not None:
@@ -127,7 +127,7 @@ if __name__ == "__main__":  # noqa: C901
     episode_videos_names = list(map(get_text_from_video_filename, episode_videos_names))
     for i in range(len(episode_videos_path)):
         ffmpeg_command_to_add_text = (
-            f'ffmpeg -i {episode_videos_path[i]} -vf drawtext="fontfile=/path/to/font.ttf:'
+            f'ffmpeg -i {episode_videos_path[i]} -vf drawtext="'
             f"text='{episode_videos_names[i]}': fontcolor=white: fontsize=24: box=1: boxcolor=black@0.5:"
             f'boxborderw=5: x=(w-text_w)/2: y=12" -codec:a copy {episode_videos_path[i]} -y -hide_banner -loglevel error'
         )
