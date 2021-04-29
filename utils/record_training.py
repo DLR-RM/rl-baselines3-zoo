@@ -18,9 +18,6 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
     parser.add_argument("-g", "--gif", action="store_true", default=False, help="Convert final video to gif")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
-    parser.add_argument(
-        "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
-    )
     parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
     args = parser.parse_args()
 
@@ -72,8 +69,7 @@ if __name__ == "__main__":  # noqa: C901
         "--n-envs",
         str(n_envs),
         "--seed",
-        str(seed),
-        "--no-render",
+        str(seed)
     ]
     if deterministic is not None:
         args_final_model.append("--deterministic")
