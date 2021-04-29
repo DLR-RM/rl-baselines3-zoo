@@ -15,6 +15,7 @@
 - Added `is_bullet()` to `ExperimentManager`
 - Simplify `close()` for the enjoy script
 - Updated docker image to include latest black version
+- Updated TD3 Walker2D model (thanks @modanesh)
 
 ## Release 1.0 (2021-03-17)
 
