@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import subprocess
+from copy import deepcopy
 
 from utils.utils import ALGOS, get_latest_run_id
 
@@ -125,20 +126,25 @@ if __name__ == "__main__":  # noqa: C901
         return text
 
     episode_videos_names = list(map(get_text_from_video_filename, episode_videos_names))
+
+    # In some cases, ffmpeg needs a tmp file
+    # https://stackoverflow.com/questions/28877049/issue-with-overwriting-file-while-using-ffmpeg-for-converting
+    tmp_videos_path = deepcopy(episode_videos_path)
+    tmp_videos_path = [path_[:-4] + "_with_text" + ".mp4" for path_ in tmp_videos_path]
+
     for i in range(len(episode_videos_path)):
         ffmpeg_command_to_add_text = (
             f'ffmpeg -i {episode_videos_path[i]} -vf drawtext="'
             f"text='{episode_videos_names[i]}': fontcolor=white: fontsize=24: box=1: boxcolor=black@0.5:"
-            f'boxborderw=5: x=(w-text_w)/2: y=12" -codec:a copy {episode_videos_path[i]} -y -hide_banner -loglevel error'
+            f'boxborderw=5: x=(w-text_w)/2: y=12" -codec:a copy {tmp_videos_path[i]} -y -hide_banner -loglevel error'
         )
-
         os.system(ffmpeg_command_to_add_text)
 
     # join videos together and convert to gif if needed
     ffmpeg_text_file = os.path.join(video_folder, "tmp.txt")
     with open(ffmpeg_text_file, "a") as file:
-        for evp in episode_videos_path:
-            file.write(f"file {evp}\n")
+        for video_path in tmp_videos_path:
+            file.write(f"file {video_path}\n")
 
     final_video_path = os.path.abspath(os.path.join(video_folder, "training.mp4"))
     os.system(f"ffmpeg -f concat -safe 0 -i {ffmpeg_text_file} -c copy {final_video_path} -hide_banner -loglevel error")
@@ -149,3 +155,7 @@ if __name__ == "__main__":  # noqa: C901
         final_gif_path = os.path.abspath(os.path.join(video_folder, "training.gif"))
         os.system(f"ffmpeg -i {final_video_path} -vf fps=10 {final_gif_path} -hide_banner -loglevel error")
         print(f"Saving gif to {final_gif_path}")
+
+    # Remove tmp video files
+    for video_path in tmp_videos_path:
+        os.remove(video_path)
