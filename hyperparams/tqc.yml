@@ -278,7 +278,6 @@ FetchPickAndPlace-v1:
 parking-v0:
   n_timesteps: !!float 1e5
   policy: 'MultiInputPolicy'
-  max_episode_length: 100
   buffer_size: 1000000
   batch_size: 1024
   gamma: 0.95
@@ -288,6 +287,7 @@ parking-v0:
   replay_buffer_kwargs: "dict(
     online_sampling=True,
     goal_selection_strategy='future',
-    n_sampled_goal=4
+    n_sampled_goal=4,
+    max_episode_length=100
   )"
   policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
