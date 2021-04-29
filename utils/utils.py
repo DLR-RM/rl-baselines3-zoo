@@ -291,8 +291,8 @@ def get_latest_run_id(log_path: str, env_id: str) -> int:
     :return: latest run number
     """
     max_run_id = 0
-    for path in glob.glob(log_path + f"/{env_id}_[0-9]*"):
-        file_name = path.split("/")[-1]
+    for path in glob.glob(os.path.join(log_path, env_id + "_[0-9]*")):
+        file_name = os.path.basename(path)
         ext = file_name.split("_")[-1]
         if env_id == "_".join(file_name.split("_")[:-1]) and ext.isdigit() and int(ext) > max_run_id:
             max_run_id = int(ext)
