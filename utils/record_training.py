@@ -69,7 +69,7 @@ if __name__ == "__main__":  # noqa: C901
         "--n-envs",
         str(n_envs),
         "--seed",
-        str(seed)
+        str(seed),
     ]
     if deterministic is not None:
         args_final_model.append("--deterministic")
