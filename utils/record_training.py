@@ -70,6 +70,8 @@ if __name__ == "__main__":  # noqa: C901
         str(n_envs),
         "--seed",
         str(seed),
+        # Disable rendering to generate videos faster
+        "--no-render",
     ]
     if deterministic is not None:
         args_final_model.append("--deterministic")
