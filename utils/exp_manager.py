@@ -16,6 +16,7 @@ from optuna.samplers import BaseSampler, RandomSampler, TPESampler
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
@@ -477,6 +478,7 @@ class ExperimentManager(object):
 
     def create_envs(self, n_envs: int, eval_env: bool = False, no_log: bool = False) -> VecEnv:
 
+        
         env = pistonball_v4.parallel_env(time_penalty=-1, n_pistons=10)
         env = ss.color_reduction_v0(env, mode='B')
         env = ss.resize_v0(env, x_size=84, y_size=84, linear_interp=True)
@@ -484,6 +486,7 @@ class ExperimentManager(object):
         env = ss.pettingzoo_env_to_vec_env_v0(env)
         print(n_envs)
         env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=4, base_class='stable_baselines3')
+        env = Monitor(env)
 
         env = self._maybe_normalize(env, eval_env)
 
