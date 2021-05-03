@@ -10,7 +10,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
-    parser.add_argument("-o", "--output-folder", help="Output folder", type=str, default="logs/videos/")
+    parser.add_argument("-o", "--output-folder", help="Output folder", type=str)
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
     parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
@@ -54,11 +54,14 @@ if __name__ == "__main__":
 
     if load_best:
         model_path = os.path.join(log_path, "best_model.zip")
+        name_prefix = f"best-model-{algo}-{env_id}"
     elif load_checkpoint is None:
         # Default: load latest model
         model_path = os.path.join(log_path, f"{env_id}.zip")
+        name_prefix = f"final-model-{algo}-{env_id}"
     else:
         model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
+        name_prefix = f"checkpoint-{args.load_checkpoint}-{algo}-{env_id}"
 
     found = os.path.isfile(model_path)
     if not found:
@@ -83,13 +86,16 @@ if __name__ == "__main__":
 
     obs = env.reset()
 
+    if video_folder is None:
+        video_folder = os.path.join(log_path, "videos")
+
     # Note: apparently it renders by default
     env = VecVideoRecorder(
         env,
         video_folder,
         record_video_trigger=lambda x: x == 0,
         video_length=video_length,
-        name_prefix=f"{algo}-{env_id}",
+        name_prefix=name_prefix,
     )
 
     env.reset()

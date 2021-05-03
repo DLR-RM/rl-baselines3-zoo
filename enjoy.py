@@ -48,7 +48,7 @@ def main():  # noqa: C901
         type=str,
         nargs="+",
         default=[],
-        help="Additional external Gym environemnt package modules to import (e.g. gym_minigrid)",
+        help="Additional external Gym environment package modules to import (e.g. gym_minigrid)",
     )
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
