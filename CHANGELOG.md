@@ -1,6 +1,8 @@
-## Release 1.1.0a5 (WIP)
+## Release 1.1.0a6 (WIP)
 
 ### Breaking Changes
+- Removed `PlotNoiseRatioCallback`
+- Removed `PlotActionWrapper`
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
