@@ -8,7 +8,6 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from torch import nn as nn
 
 from utils import linear_schedule
-from stable_baselines3.ppo import CnnPolicy
 
 def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
@@ -71,7 +70,7 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
         "max_grad_norm": max_grad_norm,
         "vf_coef": vf_coef,
         # "sde_sample_freq": sde_sample_freq,
-        "policy": CnnPolicy
+        "policy": "CnnPolicy"
     }
 
 
