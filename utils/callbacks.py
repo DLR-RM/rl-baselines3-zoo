@@ -1,11 +1,14 @@
 import os
+import tempfile
+from copy import deepcopy
+from threading import Thread
 from typing import Optional
 
-import numpy as np
 import optuna
-from matplotlib import pyplot as plt
+from sb3_contrib import TQC
+from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
-from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv
+from stable_baselines3.common.vec_env import VecEnv
 
 
 class TrialEvalCallback(EvalCallback):
@@ -80,3 +83,57 @@ class SaveVecNormalizeCallback(BaseCallback):
                 if self.verbose > 1:
                     print(f"Saving VecNormalize to {path}")
         return True
+
+
+class ParallelTrainCallback(BaseCallback):
+    def __init__(self, gradient_steps: int = 100, verbose: int = 0):
+        super(ParallelTrainCallback, self).__init__(verbose)
+        self.gradient_steps = 0
+        self.batch_size = 0
+        self._model_ready = True
+        self._model = None
+        self.gradient_steps = gradient_steps
+        self.process = None
+        self.model_class = None
+
+    def _init_callback(self) -> None:
+        temp_file = tempfile.TemporaryFile()
+        self.model.save(temp_file)
+        # TODO: add support for other algorithms
+        for model_class in [SAC, TQC]:
+            if isinstance(self.model, model_class):
+                self.model_class = model_class
+                break
+
+        assert self.model_class is not None
+        self._model = self.model_class.load(temp_file)
+
+        self.batch_size = self._model.batch_size
+        # TODO: update SB3 and check train freq instead
+        # of gradient_steps > 0
+        self.model.gradient_steps = 1
+        self.model.tau = 0.0
+        self.model.learning_rate = 0.0
+        self.model.batch_size = 1
+
+    def train(self) -> None:
+        self._model_ready = False
+        self.process = Thread(target=self._train_thread, daemon=True)
+        self.process.start()
+
+    def _train_thread(self) -> None:
+        self._model.train(gradient_steps=self.gradient_steps, batch_size=self.batch_size)
+        self._model_ready = True
+        self.logger.record("train/n_updates_real", self._model._n_updates, exclude="tensorboard")
+
+    def _on_step(self) -> bool:
+        return True
+
+    def _on_rollout_end(self) -> None:
+        if self._model_ready:
+            self._model.replay_buffer = deepcopy(self.model.replay_buffer)
+            self.model.set_parameters(self._model.get_parameters())
+            self.model.actor = self.model.policy.actor
+            self.train()
+            # Do not wait for the training loop to finish
+            # self.process.join()

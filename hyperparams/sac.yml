@@ -15,6 +15,8 @@ MountainCarContinuous-v0:
   policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64])"
 
 Pendulum-v0:
+  callback:
+    - utils.callbacks.ParallelTrainCallback
   n_timesteps: 20000
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-3
