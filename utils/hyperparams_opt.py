@@ -8,7 +8,7 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from torch import nn as nn
 
 from utils import linear_schedule
-
+from stable_baselines3.ppo import CnnPolicy
 
 def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
@@ -99,19 +99,20 @@ def sample_a2c_params(trial: optuna.Trial) -> Dict[str, Any]:
     # Uncomment for gSDE (continuous actions)
     # log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
     ortho_init = trial.suggest_categorical("ortho_init", [False, True])
-    net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
+    # net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
     # sde_net_arch = trial.suggest_categorical("sde_net_arch", [None, "tiny", "small"])
     # full_std = trial.suggest_categorical("full_std", [False, True])
     # activation_fn = trial.suggest_categorical('activation_fn', ['tanh', 'relu', 'elu', 'leaky_relu'])
-    activation_fn = trial.suggest_categorical("activation_fn", ["tanh", "relu"])
+    # activation_fn = trial.suggest_categorical("activation_fn", ["tanh", "relu"])
 
     if lr_schedule == "linear":
         learning_rate = linear_schedule(learning_rate)
-
+    """
     net_arch = {
         "small": [dict(pi=[64, 64], vf=[64, 64])],
         "medium": [dict(pi=[256, 256], vf=[256, 256])],
     }[net_arch]
+    """
 
     # sde_net_arch = {
     #     None: None,
@@ -119,7 +120,7 @@ def sample_a2c_params(trial: optuna.Trial) -> Dict[str, Any]:
     #     "small": [64, 64],
     # }[sde_net_arch]
 
-    activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
+    # activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
 
     return {
         "n_steps": n_steps,
@@ -131,14 +132,7 @@ def sample_a2c_params(trial: optuna.Trial) -> Dict[str, Any]:
         "max_grad_norm": max_grad_norm,
         "use_rms_prop": use_rms_prop,
         "vf_coef": vf_coef,
-        "policy_kwargs": dict(
-            # log_std_init=log_std_init,
-            net_arch=net_arch,
-            # full_std=full_std,
-            activation_fn=activation_fn,
-            # sde_net_arch=sde_net_arch,
-            ortho_init=ortho_init,
-        ),
+        "poliyc": CnnPolicy,
     }
 
 
