@@ -1,5 +1,6 @@
 import os
 import tempfile
+import time
 from copy import deepcopy
 from threading import Thread
 from typing import Optional
@@ -86,7 +87,7 @@ class SaveVecNormalizeCallback(BaseCallback):
 
 
 class ParallelTrainCallback(BaseCallback):
-    def __init__(self, gradient_steps: int = 100, verbose: int = 0):
+    def __init__(self, gradient_steps: int = 100, verbose: int = 0, sleep_time: float = 0.0):
         super(ParallelTrainCallback, self).__init__(verbose)
         self.batch_size = 0
         self._model_ready = True
@@ -94,6 +95,7 @@ class ParallelTrainCallback(BaseCallback):
         self.gradient_steps = gradient_steps
         self.process = None
         self.model_class = None
+        self.sleep_time = sleep_time
 
     def _init_callback(self) -> None:
         temp_file = tempfile.TemporaryFile()
@@ -126,12 +128,14 @@ class ParallelTrainCallback(BaseCallback):
         self.logger.record("train/n_updates_real", self._model._n_updates, exclude="tensorboard")
 
     def _on_step(self) -> bool:
+        if self.sleep_time > 0:
+            time.sleep(self.sleep_time)
         return True
 
     def _on_rollout_end(self) -> None:
         if self._model_ready:
             self._model.replay_buffer = deepcopy(self.model.replay_buffer)
-            self.model.set_parameters(self._model.get_parameters())
+            self.model.set_parameters(deepcopy(self._model.get_parameters()))
             self.model.actor = self.model.policy.actor
             self.train()
             # Do not wait for the training loop to finish
