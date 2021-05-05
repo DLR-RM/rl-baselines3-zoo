@@ -12,7 +12,6 @@ import optuna
 import yaml
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
-from optuna.samplers import BaseSampler, RandomSampler, TPESampler
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -479,7 +478,7 @@ class ExperimentManager(object):
     def create_envs(self, n_envs: int, eval_env: bool = False, no_log: bool = False) -> VecEnv:
 
         
-        env = pistonball_v4.parallel_env(time_penalty=-1, n_pistons=10)
+        env = pistonball_v4.parallel_env(time_penalty=-.1)
         env = ss.color_reduction_v0(env, mode='B')
         env = ss.resize_v0(env, x_size=84, y_size=84, linear_interp=True)
         env = ss.frame_stack_v1(env, 3)
