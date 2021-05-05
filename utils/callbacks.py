@@ -88,7 +88,6 @@ class SaveVecNormalizeCallback(BaseCallback):
 class ParallelTrainCallback(BaseCallback):
     def __init__(self, gradient_steps: int = 100, verbose: int = 0):
         super(ParallelTrainCallback, self).__init__(verbose)
-        self.gradient_steps = 0
         self.batch_size = 0
         self._model_ready = True
         self._model = None
@@ -132,6 +131,7 @@ class ParallelTrainCallback(BaseCallback):
     def _on_rollout_end(self) -> None:
         if self._model_ready:
             self._model.replay_buffer = deepcopy(self.model.replay_buffer)
+            # TODO: check that nothing is passed by reference
             self.model.set_parameters(self._model.get_parameters())
             self.model.actor = self.model.policy.actor
             self.train()

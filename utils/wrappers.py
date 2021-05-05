@@ -3,6 +3,7 @@ from typing import Optional
 
 import gym
 import numpy as np
+import torch as th
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from scipy.signal import iirfilter, sosfilt, zpk2sos
 from stable_baselines3 import SAC
