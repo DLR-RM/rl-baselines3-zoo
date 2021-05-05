@@ -104,7 +104,7 @@ class ParallelTrainCallback(BaseCallback):
                 self.model_class = model_class
                 break
 
-        assert self.model_class is not None
+        assert self.model_class is not None, f"{self.model} is not supported for parallel training"
         self._model = self.model_class.load(temp_file)
 
         self.batch_size = self._model.batch_size
