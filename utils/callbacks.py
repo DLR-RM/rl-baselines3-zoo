@@ -106,14 +106,16 @@ class ParallelTrainCallback(BaseCallback):
 
         assert self.model_class is not None, f"{self.model} is not supported for parallel training"
         self._model = self.model_class.load(temp_file)
+        self._model._n_updates = 0
 
         self.batch_size = self._model.batch_size
-        # TODO: update SB3 and check train freq instead
-        # of gradient_steps > 0
-        self.model.gradient_steps = 1
-        self.model.tau = 0.0
-        self.model.learning_rate = 0.0
-        self.model.batch_size = 1
+        # TODO: save and put back original values (otherwise may cause issues for retraining)
+        # NOTE: when using gSDE, we can simply set learning_starts to very high value
+        if self.model.use_sde and self.model.use_sde_at_warmup:
+            self.model.learning_starts = int(1e60)
+        else:
+            self.model.gradient_steps = 1
+            self.model.batch_size = 1
 
     def train(self) -> None:
         self._model_ready = False
@@ -124,6 +126,8 @@ class ParallelTrainCallback(BaseCallback):
         self._model.train(gradient_steps=self.gradient_steps, batch_size=self.batch_size)
         self._model_ready = True
         self.logger.record("train/n_updates_real", self._model._n_updates, exclude="tensorboard")
+        if self.verbose > 1:
+            print("Model Ready")
 
     def _on_step(self) -> bool:
         return True
