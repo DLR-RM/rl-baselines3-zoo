@@ -88,7 +88,6 @@ class SaveVecNormalizeCallback(BaseCallback):
 class ParallelTrainCallback(BaseCallback):
     def __init__(self, gradient_steps: int = 100, verbose: int = 0):
         super(ParallelTrainCallback, self).__init__(verbose)
-        self.gradient_steps = 0
         self.batch_size = 0
         self._model_ready = True
         self._model = None
@@ -105,7 +104,7 @@ class ParallelTrainCallback(BaseCallback):
                 self.model_class = model_class
                 break
 
-        assert self.model_class is not None
+        assert self.model_class is not None, f"{self.model} is not supported for parallel training"
         self._model = self.model_class.load(temp_file)
 
         self.batch_size = self._model.batch_size
