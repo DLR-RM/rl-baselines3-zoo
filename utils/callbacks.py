@@ -137,6 +137,7 @@ class ParallelTrainCallback(BaseCallback):
             self._model.replay_buffer = deepcopy(self.model.replay_buffer)
             self.model.set_parameters(deepcopy(self._model.get_parameters()))
             self.model.actor = self.model.policy.actor
-            self.train()
+            if self.num_timesteps >= self._model.learning_starts:
+                self.train()
             # Do not wait for the training loop to finish
             # self.process.join()
