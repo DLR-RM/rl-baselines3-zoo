@@ -1,6 +1,5 @@
 import gym
 import numpy as np
-from matplotlib import pyplot as plt
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from scipy.signal import iirfilter, sosfilt, zpk2sos
 
@@ -306,61 +305,3 @@ class HistoryWrapperObsDict(gym.Wrapper):
         obs_dict["observation"] = self._create_obs_from_history()
 
         return obs_dict, reward, done, info
-
-
-class PlotActionWrapper(gym.Wrapper):
-    """
-    Wrapper for plotting the taken actions.
-    Only works with 1D actions for now.
-    Optionally, it can be used to plot the observations too.
-
-    :param env: (gym.Env)
-    :param plot_freq: (int) Plot every `plot_freq` episodes
-    """
-
-    def __init__(self, env, plot_freq=5):
-        super(PlotActionWrapper, self).__init__(env)
-        self.plot_freq = plot_freq
-        self.current_episode = 0
-        # Observation buffer (Optional)
-        # self.observations = []
-        # Action buffer
-        self.actions = []
-
-    def reset(self):
-        self.current_episode += 1
-        if self.current_episode % self.plot_freq == 0:
-            self.plot()
-            # Reset
-            self.actions = []
-        obs = self.env.reset()
-        self.actions.append([])
-        # self.observations.append(obs)
-        return obs
-
-    def step(self, action):
-        obs, reward, done, info = self.env.step(action)
-
-        self.actions[-1].append(action)
-        # self.observations.append(obs)
-
-        return obs, reward, done, info
-
-    def plot(self):
-        actions = self.actions
-        x = np.arange(sum([len(episode) for episode in actions]))
-        plt.figure("Actions")
-        plt.title("Actions during exploration", fontsize=14)
-        plt.xlabel("Timesteps", fontsize=14)
-        plt.ylabel("Action", fontsize=14)
-
-        start = 0
-        for i in range(len(self.actions)):
-            end = start + len(self.actions[i])
-            plt.plot(x[start:end], self.actions[i])
-            # Clipped actions: real behavior, note that it is between [-2, 2] for the Pendulum
-            # plt.scatter(x[start:end], np.clip(self.actions[i], -1, 1), s=1)
-            # plt.scatter(x[start:end], self.actions[i], s=1)
-            start = end
-
-        plt.show()
