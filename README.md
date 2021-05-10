@@ -216,19 +216,35 @@ Note: if you want to pass a string, you need to escape it like that: `my_string:
 Record 1000 steps with the latest saved model:
 
 ```
-python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000
+python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000
 ```
 
 Use the best saved model instead:
 
 ```
-python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000 --load-best
+python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000 --load-best
 ```
 
 Record a video of a checkpoint saved during training (here the checkpoint name is `rl_model_10000_steps.zip`):
 
 ```
-python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000 --load-checkpoint 10000
+python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000 --load-checkpoint 10000
+```
+
+## Record a Video of a Training Experiment
+
+Apart from recording videos of specific saved models, it is also possible to record a video of a training experiment where checkpoints have been saved.
+
+Record 1000 steps for each checkpoint, latest and best saved models:
+
+```
+python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic
+```
+
+The previous command will create a `mp4` file. To convert this file to `gif` format as well:
+
+```
+python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
 ```
 
 ## Current Collection: 100+ Trained Agents!

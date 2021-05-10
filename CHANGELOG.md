@@ -4,6 +4,7 @@
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
+- Add support for recording videos of training experiments (@mcres)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
@@ -15,6 +16,7 @@
 - Added `is_bullet()` to `ExperimentManager`
 - Simplify `close()` for the enjoy script
 - Updated docker image to include latest black version
+- Updated TD3 Walker2D model (thanks @modanesh)
 
 ## Release 1.0 (2021-03-17)
 
