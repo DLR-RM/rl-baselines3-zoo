@@ -208,13 +208,13 @@ InvertedPendulumSwingupBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 # Space Engineers envs
-
 SpaceEngineers-WalkingRobot-IK-v0:
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
-    - utils.wrappers.TimeFeatureWrapper:
-        test_mode: False
+  callback:
+    - utils.callbacks.ParallelTrainCallback:
+        gradient_steps: 256
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -230,5 +230,5 @@ SpaceEngineers-WalkingRobot-IK-v0:
   use_sde: True
   sde_sample_freq: 4
   # TODO: try with different value:
-  # top_quantiles_to_drop_per_net: 5
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], n_critics=2)"
+  top_quantiles_to_drop_per_net: 5
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=1)"
