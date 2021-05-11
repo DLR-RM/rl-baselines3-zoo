@@ -60,7 +60,6 @@ BipedalWalkerHardcore-v3:
 
 # Tuned
 HalfCheetahBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -75,7 +74,6 @@ HalfCheetahBulletEnv-v0:
 
 # Tuned
 AntBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -90,7 +88,6 @@ AntBulletEnv-v0:
 
 # Tuned
 HopperBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -106,7 +103,6 @@ HopperBulletEnv-v0:
 
 # Tuned
 Walker2DBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -123,7 +119,6 @@ Walker2DBulletEnv-v0:
 
 # TO BE tested
 HumanoidBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -138,7 +133,6 @@ HumanoidBulletEnv-v0:
 
 # Tuned
 ReacherBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -152,7 +146,6 @@ ReacherBulletEnv-v0:
 
 # To be tuned
 InvertedDoublePendulumBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -167,7 +160,6 @@ InvertedDoublePendulumBulletEnv-v0:
 
 # To be tuned
 InvertedPendulumSwingupBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   gamma: 0.98

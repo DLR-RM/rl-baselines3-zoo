@@ -72,7 +72,6 @@ BipedalWalkerHardcore-v3:
 
 # Tuned
 HalfCheetahBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -89,7 +88,6 @@ HalfCheetahBulletEnv-v0:
 
 # Tuned
 AntBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -106,7 +104,6 @@ AntBulletEnv-v0:
 
 # Tuned
 HopperBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -124,7 +121,6 @@ HopperBulletEnv-v0:
 
 # Tuned
 Walker2DBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -141,7 +137,6 @@ Walker2DBulletEnv-v0:
 
 
 ReacherBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -159,7 +154,6 @@ ReacherBulletEnv-v0:
 
 # Almost tuned
 HumanoidBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -176,7 +170,6 @@ HumanoidBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 InvertedDoublePendulumBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -192,7 +185,6 @@ InvertedDoublePendulumBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 InvertedPendulumSwingupBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
