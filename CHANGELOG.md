@@ -17,6 +17,7 @@
 - Simplify `close()` for the enjoy script
 - Updated docker image to include latest black version
 - Updated TD3 Walker2D model (thanks @modanesh)
+- Fixed typo in plot title (@scottemmons)
 
 ## Release 1.0 (2021-03-17)
 
