@@ -76,7 +76,6 @@ LunarLanderContinuous-v2:
 
 # Tuned
 MountainCarContinuous-v0:
-  # env_wrapper: utils.wrappers.PlotActionWrapper
   normalize: true
   n_envs: 4
   n_steps: 100

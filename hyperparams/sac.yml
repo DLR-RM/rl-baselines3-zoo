@@ -1,6 +1,5 @@
 # Tuned
 MountainCarContinuous-v0:
-  # env_wrapper: utils.wrappers.PlotActionWrapper
   n_timesteps: !!float 50000
   policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
@@ -14,29 +13,10 @@ MountainCarContinuous-v0:
   learning_starts: 0
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64])"
-# Note: the hyperparams for HalfCheetah also work:
-# MountainCarContinuous-v0:
-#   # env_wrapper:
-#   #   - utils.wrappers.PlotActionWrapper:
-#   #       plot_freq: 1 # Every 1 episode
-#   callback:
-#     - utils.callbacks.PlotNoiseRatioCallback:
-#         display_freq: 500
-#   n_timesteps: !!float 50000
-#   policy: 'MlpPolicy'
-#   learning_rate: !!float 7.3e-4
-#   buffer_size: 300000
-#   batch_size: 256
-#   ent_coef: 'auto'
-#   gamma: 0.98
-#   tau: 0.02
-#   train_freq: 64
-#   gradient_steps: 64
-#   learning_starts: 0
-#   use_sde: True
-#   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 Pendulum-v0:
+  # callback:
+  #   - utils.callbacks.ParallelTrainCallback
   n_timesteps: 20000
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-3
@@ -102,7 +82,7 @@ HalfCheetahBulletEnv-v0:
   #       delay: 10
   #   - utils.wrappers.HistoryWrapper:
   #       horizon: 10
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  # env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -114,12 +94,12 @@ HalfCheetahBulletEnv-v0:
   train_freq: 64
   gradient_steps: 64
   learning_starts: 10000
+  replay_buffer_kwargs: "dict(handle_timeout_termination=True)"
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 # Tuned
 AntBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -135,7 +115,6 @@ AntBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 HopperBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -151,7 +130,6 @@ HopperBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 Walker2DBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -169,7 +147,6 @@ Walker2DBulletEnv-v0:
 
 # Tuned
 ReacherBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -198,7 +175,6 @@ HumanoidBulletEnv-v0:
 
 # Tuned
 InvertedDoublePendulumBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -215,7 +191,6 @@ InvertedDoublePendulumBulletEnv-v0:
 
 # Tuned
 InvertedPendulumSwingupBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -285,6 +260,26 @@ CarRacing-v0:
   use_sde_at_warmup: True
   policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
 
+# === HER Robotics GoalEnvs ===
+
+FetchReach-v1:
+  n_timesteps: !!float 20000
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  batch_size: 256
+  gamma: 0.95
+  learning_rate: 0.001
+  learning_starts: 1000
+  normalize: True
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4
+  )"
+  policy_kwargs: "dict(net_arch=[64, 64])"
+
 # ==== Custom Envs ===
 
 donkey-generated-track-v0:
@@ -293,7 +288,6 @@ donkey-generated-track-v0:
         max_episode_steps: 500
     - utils.wrappers.HistoryWrapper:
         horizon: 5
-    - sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -317,8 +311,6 @@ NeckEnvRelative-v2:
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
-    - sb3_contrib.common.wrappers.TimeFeatureWrapper:
-        test_mode: False
     # - utils.wrappers.LowPassFilterWrapper:
     #     freq: 2.0
     #     df: 25.0
