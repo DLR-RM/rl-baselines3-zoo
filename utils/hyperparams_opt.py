@@ -2,8 +2,6 @@ from typing import Any, Dict
 
 import numpy as np
 import optuna
-from sb3_contrib import TQC
-from stable_baselines3 import DDPG, DQN, SAC, TD3
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from torch import nn as nn
 
@@ -182,7 +180,7 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
     #     # target_entropy = trial.suggest_categorical('target_entropy', ['auto', 5, 1, 0, -1, -5, -10, -20, -50])
     #     target_entropy = trial.suggest_uniform('target_entropy', -10, 10)
 
-    return {
+    hyperparams = {
         "gamma": gamma,
         "learning_rate": learning_rate,
         "batch_size": batch_size,
@@ -195,6 +193,11 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
         "target_entropy": target_entropy,
         "policy_kwargs": dict(log_std_init=log_std_init, net_arch=net_arch),
     }
+
+    if trial.using_her_replay_buffer:
+        hyperparams = sample_her_params(trial, hyperparams)
+
+    return hyperparams
 
 
 def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
@@ -250,6 +253,9 @@ def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
         hyperparams["action_noise"] = OrnsteinUhlenbeckActionNoise(
             mean=np.zeros(trial.n_actions), sigma=noise_std * np.ones(trial.n_actions)
         )
+
+    if trial.using_her_replay_buffer:
+        hyperparams = sample_her_params(trial, hyperparams)
 
     return hyperparams
 
@@ -309,6 +315,9 @@ def sample_ddpg_params(trial: optuna.Trial) -> Dict[str, Any]:
             mean=np.zeros(trial.n_actions), sigma=noise_std * np.ones(trial.n_actions)
         )
 
+    if trial.using_her_replay_buffer:
+        hyperparams = sample_her_params(trial, hyperparams)
+
     return hyperparams
 
 
@@ -350,32 +359,27 @@ def sample_dqn_params(trial: optuna.Trial) -> Dict[str, Any]:
         "policy_kwargs": dict(net_arch=net_arch),
     }
 
+    if trial.using_her_replay_buffer:
+        hyperparams = sample_her_params(trial, hyperparams)
+
     return hyperparams
 
 
-def sample_her_params(trial: optuna.Trial) -> Dict[str, Any]:
+def sample_her_params(trial: optuna.Trial, hyperparams: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Sampler for HER hyperparams.
+    Sampler for HerReplayBuffer hyperparams.
 
     :param trial:
+    :parma hyperparams:
     :return:
     """
-    model_class_str = {
-        SAC: "sac",
-        DDPG: "ddpg",
-        DQN: "dqn",
-        TD3: "td3",
-        TQC: "tqc",
-    }[trial.model_class]
-
-    hyperparams = HYPERPARAMS_SAMPLER[model_class_str](trial)
-
-    hyperparams["n_sampled_goal"] = trial.suggest_int("n_sampled_goal", 1, 5)
-    hyperparams["goal_selection_strategy"] = trial.suggest_categorical(
+    her_kwargs = trial.her_kwargs.copy()
+    her_kwargs["n_sampled_goal"] = trial.suggest_int("n_sampled_goal", 1, 5)
+    her_kwargs["goal_selection_strategy"] = trial.suggest_categorical(
         "goal_selection_strategy", ["final", "episode", "future"]
     )
-    hyperparams["online_sampling"] = trial.suggest_categorical("online_sampling", [True, False])
-
+    her_kwargs["online_sampling"] = trial.suggest_categorical("online_sampling", [True, False])
+    hyperparams["replay_buffer_kwargs"] = her_kwargs
     return hyperparams
 
 
@@ -419,7 +423,6 @@ HYPERPARAMS_SAMPLER = {
     "ddpg": sample_ddpg_params,
     "dqn": sample_dqn_params,
     "qrdqn": sample_qrdqn_params,
-    "her": sample_her_params,
     "sac": sample_sac_params,
     "tqc": sample_tqc_params,
     "ppo": sample_ppo_params,

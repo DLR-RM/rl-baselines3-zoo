@@ -43,6 +43,8 @@ def test_optimize(tmp_path, sampler, pruner, experiment):
     args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id, "-params", 'policy_kwargs:"dict(net_arch=[32])"', "n_envs:1"]
     args += ["n_steps:10"] if algo == "ppo" else []
     args += [
+        "--seed",
+        "14",
         "--log-folder",
         tmp_path,
         "--n-trials",
