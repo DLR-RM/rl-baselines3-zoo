@@ -193,6 +193,16 @@ env_wrapper:
 
 Note that you can easily specify parameters too.
 
+## Callbacks
+
+Following the same syntax as env wrappers, you can also add custom callbacks to use during training.
+
+```yaml
+callback:
+  - utils.callbacks.ParallelTrainCallback:
+      gradient_steps: 256
+```
+
 ## Env keyword arguments
 
 You can specify keyword arguments to pass to the env constructor in the command line, using `--env-kwargs`:
