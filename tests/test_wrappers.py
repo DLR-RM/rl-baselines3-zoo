@@ -8,7 +8,7 @@ from utils.wrappers import ActionNoiseWrapper, DelayedRewardWrapper, HistoryWrap
 
 
 def test_wrappers():
-    env = gym.make("HalfCheetahBulletEnv-v0")
+    env = gym.make("AntBulletEnv-v0")
     env = DelayedRewardWrapper(env)
     env = ActionNoiseWrapper(env)
     env = HistoryWrapper(env)
@@ -25,7 +25,7 @@ def test_wrappers():
     ],
 )
 def test_get_wrapper(env_wrapper):
-    env = gym.make("HalfCheetahBulletEnv-v0")
+    env = gym.make("AntBulletEnv-v0")
     hyperparams = {"env_wrapper": env_wrapper}
     wrapper_class = get_wrapper_class(hyperparams)
     if env_wrapper is not None:
