@@ -83,3 +83,21 @@ def test_save_load_replay_buffer(tmp_path):
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
+
+
+def test_parallel_train(tmp_path):
+    args = [
+        "-n",
+        str(1000),
+        "--algo",
+        "sac",
+        "--env",
+        "Pendulum-v0",
+        "--log-folder",
+        tmp_path,
+        "-params",
+        "callback:'utils.callbacks.ParallelTrainCallback'",
+    ]
+
+    return_code = subprocess.call(["python", "train.py"] + args)
+    _assert_eq(return_code, 0)
