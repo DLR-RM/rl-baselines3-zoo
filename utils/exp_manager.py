@@ -574,6 +574,10 @@ class ExperimentManager(object):
 
         # Hack to use DDPG/TD3 noise sampler
         trial.n_actions = self.n_actions
+        # Hack when using HerReplayBuffer
+        trial.using_her_replay_buffer = kwargs.get("replay_buffer_class") == HerReplayBuffer
+        if trial.using_her_replay_buffer:
+            trial.her_kwargs = kwargs.get("replay_buffer_kwargs", {})
         # Sample candidate hyperparameters
         kwargs.update(HYPERPARAMS_SAMPLER[self.algo](trial))
 
