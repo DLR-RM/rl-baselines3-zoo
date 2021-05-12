@@ -47,7 +47,7 @@ if args.labels is None:
 
 for env in args.env:  # noqa: C901
     plt.figure(f"Results {env}")
-    plt.title(f"{env}BulletEnv-v0", fontsize=14)
+    plt.title(f"{env}", fontsize=14)
 
     x_label_suffix = "" if args.no_million else "(in Million)"
     plt.xlabel(f"Timesteps {x_label_suffix}", fontsize=14)
