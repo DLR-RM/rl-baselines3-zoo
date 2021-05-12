@@ -13,6 +13,9 @@ import yaml
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
+
+# For using HER with GoalEnv
+from stable_baselines3 import HerReplayBuffer  # noqa: F401
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -21,7 +24,6 @@ from stable_baselines3.common.preprocessing import is_image_space, is_image_spac
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import constant_fn
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize, VecTransposeImage
-from stable_baselines3.common.vec_env.obs_dict_wrapper import ObsDictWrapper
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401
@@ -323,11 +325,11 @@ class ExperimentManager(object):
         # Pre-process normalize config
         hyperparams = self._preprocess_normalization(hyperparams)
 
-        # Pre-process policy keyword arguments
-        if "policy_kwargs" in hyperparams.keys():
-            # Convert to python object if needed
-            if isinstance(hyperparams["policy_kwargs"], str):
-                hyperparams["policy_kwargs"] = eval(hyperparams["policy_kwargs"])
+        # Pre-process policy/buffer keyword arguments
+        # Convert to python object if needed
+        for kwargs_key in {"policy_kwargs", "replay_buffer_class", "replay_buffer_kwargs"}:
+            if kwargs_key in hyperparams.keys() and isinstance(hyperparams[kwargs_key], str):
+                hyperparams[kwargs_key] = eval(hyperparams[kwargs_key])
 
         # Delete keys so the dict can be pass to the model constructor
         if "n_envs" in hyperparams.keys():
@@ -521,12 +523,6 @@ class ExperimentManager(object):
             if self.verbose > 0:
                 print("Wrapping into a VecTransposeImage")
             env = VecTransposeImage(env)
-
-        # check if wrapper for dict support is needed
-        if self.algo == "her":
-            if self.verbose > 0:
-                print("Wrapping into a ObsDictWrapper")
-            env = ObsDictWrapper(env)
 
         return env
 

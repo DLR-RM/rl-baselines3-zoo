@@ -25,7 +25,7 @@ experiments["sac-Pendulum-v0"] = ("sac", "Pendulum-v0")
 # Test for TD3
 experiments["td3-Pendulum-v0"] = ("td3", "Pendulum-v0")
 # Test for HER
-experiments["her-parking-v0"] = ("her", "parking-v0")
+experiments["tqc-parking-v0"] = ("tqc", "parking-v0")
 # Test for TQC
 experiments["tqc-Pendulum-v0"] = ("tqc", "Pendulum-v0")
 
