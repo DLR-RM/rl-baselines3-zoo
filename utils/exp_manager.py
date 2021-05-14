@@ -10,6 +10,7 @@ import gym
 import numpy as np
 import optuna
 import yaml
+import zmq
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
@@ -183,7 +184,7 @@ class ExperimentManager(object):
 
         try:
             model.learn(self.n_timesteps, **kwargs)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, zmq.error.ZMQError):
             # this allows to save the model when interrupting training
             pass
         finally:
