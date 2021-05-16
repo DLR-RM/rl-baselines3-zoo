@@ -291,7 +291,7 @@ SpaceEngineers-WalkingRobot-IK-v0:
         horizon: 2
   callback:
     - utils.callbacks.ParallelTrainCallback:
-        gradient_steps: 100
+        gradient_steps: 200
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -302,7 +302,7 @@ SpaceEngineers-WalkingRobot-IK-v0:
   tau: 0.01
   train_freq: [1, "episode"]
   gradient_steps: -1
-  learning_starts: 500
+  learning_starts: 400
   use_sde_at_warmup: True
   use_sde: True
   sde_sample_freq: 4
