@@ -117,7 +117,14 @@ class ParallelTrainCallback(BaseCallback):
 
     def _init_callback(self) -> None:
         temp_file = tempfile.TemporaryFile()
+
+        # Windows TemporaryFile is not a io Buffer
+        # we save the model in the logs/ folder
+        if os.name == "nt":
+            temp_file = os.path.join("logs", "model_tmp.zip")
+
         self.model.save(temp_file)
+
         # TODO: add support for other algorithms
         for model_class in [SAC, TQC]:
             if isinstance(self.model, model_class):
