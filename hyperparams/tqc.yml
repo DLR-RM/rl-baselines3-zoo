@@ -307,4 +307,4 @@ SpaceEngineers-WalkingRobot-IK-v0:
   use_sde: True
   sde_sample_freq: 4
   top_quantiles_to_drop_per_net: 2
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[1024, 1024], n_critics=2)"
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=2)"
