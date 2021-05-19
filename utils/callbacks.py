@@ -136,6 +136,9 @@ class ParallelTrainCallback(BaseCallback):
         self.model.learning_rate = 0.0
         self.model.lr_schedule = lambda _: 0.0
         self.model.batch_size = 1
+        # Deactivate logger (TODO(toni): fix this when configuring logger works)
+        self.model.log_interval = 1000000
+        # TODO: change learning starts when using gSDE
 
         # Hack: Re-add correct values at save time
         def patch_save(function):
