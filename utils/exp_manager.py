@@ -462,6 +462,7 @@ class ExperimentManager(object):
         elif self.normalize:
             # Copy to avoid changing default values by reference
             local_normalize_kwargs = self.normalize_kwargs.copy()
+            print(local_normalize_kwargs)
             # Do not normalize reward for env used for evaluation
             if eval_env:
                 if len(local_normalize_kwargs) > 0:
