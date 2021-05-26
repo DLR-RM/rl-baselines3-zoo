@@ -8,3 +8,4 @@ pytablewriter
 seaborn
 pyyaml>=5.1
 sb3-contrib>=1.1.0a7
+cloudpickle>=1.5.0
