@@ -26,6 +26,8 @@
 - Updated docker image to include latest black version
 - Updated TD3 Walker2D model (thanks @modanesh)
 - Fixed typo in plot title (@scottemmons)
+- Minimum cloudpickle version added to `requirements.txt` (@amy12xx)
+- Fixed atari-py version (ROM missing in newest release)
 
 ## Release 1.0 (2021-03-17)
 
