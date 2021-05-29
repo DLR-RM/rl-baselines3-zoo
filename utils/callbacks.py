@@ -87,6 +87,23 @@ class SaveVecNormalizeCallback(BaseCallback):
 
 
 class ParallelTrainCallback(BaseCallback):
+    """
+    Callback to explore (collect experience) and train (do gradient steps)
+    at the same time using two separate threads.
+    Normally used with off-policy algorithms and `train_freq=(1, "episode")`.
+
+    TODO:
+    - blocking mode: wait for the model to finish updating the policy before collecting new experience
+        at the end of a rollout
+    - force sync mode: stop training to update to the latest policy for collecting
+        new experience
+
+    :param gradient_steps: Number of gradient steps to do before
+        sending the new policy
+    :param verbose: Verbosity level
+    :param sleep_time: Limit the fps in the thread collecting experience.
+    """
+
     def __init__(self, gradient_steps: int = 100, verbose: int = 0, sleep_time: float = 0.0):
         super(ParallelTrainCallback, self).__init__(verbose)
         self.batch_size = 0
@@ -108,16 +125,14 @@ class ParallelTrainCallback(BaseCallback):
 
         assert self.model_class is not None, f"{self.model} is not supported for parallel training"
         self._model = self.model_class.load(temp_file)
-        self._model._n_updates = 0
 
         self.batch_size = self._model.batch_size
-        # TODO: save and put back original values (otherwise may cause issues for retraining)
-        # NOTE: when using gSDE, we can simply set learning_starts to very high value
-        if self.model.use_sde and self.model.use_sde_at_warmup:
-            self.model.learning_starts = int(1e60)
-        else:
-            self.model.gradient_steps = 1
-            self.model.batch_size = 1
+        # TODO: update SB3 and check train freq instead
+        # of gradient_steps > 0
+        self.model.gradient_steps = 1
+        self.model.tau = 0.0
+        self.model.learning_rate = 0.0
+        self.model.batch_size = 1
 
     def train(self) -> None:
         self._model_ready = False
@@ -128,8 +143,6 @@ class ParallelTrainCallback(BaseCallback):
         self._model.train(gradient_steps=self.gradient_steps, batch_size=self.batch_size)
         self._model_ready = True
         self.logger.record("train/n_updates_real", self._model._n_updates, exclude="tensorboard")
-        if self.verbose > 1:
-            print("Model Ready")
 
     def _on_step(self) -> bool:
         if self.sleep_time > 0:
@@ -145,3 +158,10 @@ class ParallelTrainCallback(BaseCallback):
                 self.train()
             # Do not wait for the training loop to finish
             # self.process.join()
+
+    def _on_training_end(self) -> None:
+        # Wait for the thread to terminate
+        if self.process is not None:
+            if self.verbose > 0:
+                print("Waiting for training thread to terminate")
+            self.process.join()

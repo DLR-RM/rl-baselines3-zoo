@@ -22,6 +22,10 @@ def test_trained_agents(trained_model):
     algo, env_id = trained_models[trained_model]
     args = ["-n", str(N_STEPS), "-f", FOLDER, "--algo", algo, "--env", env_id, "--no-render"]
 
+    # Since SB3 >= 1.1.0, HER is no more an algorithm but a replay buffer class
+    if algo == "her":
+        return
+
     # Skip mujoco envs
     if "Fetch" in trained_model:
         return

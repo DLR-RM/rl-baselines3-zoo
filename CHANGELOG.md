@@ -1,12 +1,18 @@
 ## Release 1.1.0a6 (WIP)
 
 ### Breaking Changes
+- Upgrade to SB3 >= 1.1.0a6
+- Upgrade to sb3-contrib >= 1.1.0a6
+- Add timeout handling (cf SB3 doc)
+- `HER` is now a replay buffer class and no more an algorithm
 - Removed `PlotNoiseRatioCallback`
 - Removed `PlotActionWrapper`
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
 - Add support for recording videos of training experiments (@mcres)
+- Add support for dictionary observations
+- Added experimental parallel training (with `utils.callbacks.ParallelTrainCallback`)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
@@ -19,6 +25,7 @@
 - Simplify `close()` for the enjoy script
 - Updated docker image to include latest black version
 - Updated TD3 Walker2D model (thanks @modanesh)
+- Fixed typo in plot title (@scottemmons)
 
 ## Release 1.0 (2021-03-17)
 

@@ -13,6 +13,9 @@ import yaml
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
+
+# For using HER with GoalEnv
+from stable_baselines3 import HerReplayBuffer  # noqa: F401
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -21,7 +24,6 @@ from stable_baselines3.common.preprocessing import is_image_space, is_image_spac
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import constant_fn
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize, VecTransposeImage
-from stable_baselines3.common.vec_env.obs_dict_wrapper import ObsDictWrapper
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401
@@ -288,15 +290,6 @@ class ExperimentManager(object):
             del hyperparams["normalize"]
         return hyperparams
 
-    def _preprocess_her_model_class(self, hyperparams: Dict[str, Any]) -> Dict[str, Any]:
-        # HER is only a wrapper around an algo
-        if self.algo == "her":
-            model_class = hyperparams["model_class"]
-            assert model_class in {"sac", "ddpg", "dqn", "td3", "tqc"}, f"{model_class} is not compatible with HER"
-            # Retrieve the model class
-            hyperparams["model_class"] = ALGOS[hyperparams["model_class"]]
-        return hyperparams
-
     def _preprocess_hyperparams(
         self, hyperparams: Dict[str, Any]
     ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback]]:
@@ -305,8 +298,7 @@ class ExperimentManager(object):
         if self.verbose > 0:
             print(f"Using {self.n_envs} environments")
 
-        # Convert model class string to an object if needed (when using HER)
-        hyperparams = self._preprocess_her_model_class(hyperparams)
+        # Convert schedule strings to objects
         hyperparams = self._preprocess_schedules(hyperparams)
 
         # Pre-process train_freq
@@ -323,11 +315,11 @@ class ExperimentManager(object):
         # Pre-process normalize config
         hyperparams = self._preprocess_normalization(hyperparams)
 
-        # Pre-process policy keyword arguments
-        if "policy_kwargs" in hyperparams.keys():
-            # Convert to python object if needed
-            if isinstance(hyperparams["policy_kwargs"], str):
-                hyperparams["policy_kwargs"] = eval(hyperparams["policy_kwargs"])
+        # Pre-process policy/buffer keyword arguments
+        # Convert to python object if needed
+        for kwargs_key in {"policy_kwargs", "replay_buffer_class", "replay_buffer_kwargs"}:
+            if kwargs_key in hyperparams.keys() and isinstance(hyperparams[kwargs_key], str):
+                hyperparams[kwargs_key] = eval(hyperparams[kwargs_key])
 
         # Delete keys so the dict can be pass to the model constructor
         if "n_envs" in hyperparams.keys():
@@ -353,10 +345,8 @@ class ExperimentManager(object):
     def _preprocess_action_noise(
         self, hyperparams: Dict[str, Any], saved_hyperparams: Dict[str, Any], env: VecEnv
     ) -> Dict[str, Any]:
-        # Special case for HER
-        algo = saved_hyperparams["model_class"] if self.algo == "her" else self.algo
         # Parse noise string
-        if algo in ["ddpg", "sac", "td3", "tqc"] and hyperparams.get("noise_type") is not None:
+        if self.algo in ["ddpg", "sac", "td3", "tqc"] and hyperparams.get("noise_type") is not None:
             noise_type = hyperparams["noise_type"].strip()
             noise_std = hyperparams["noise_std"]
 
@@ -522,12 +512,6 @@ class ExperimentManager(object):
                 print("Wrapping into a VecTransposeImage")
             env = VecTransposeImage(env)
 
-        # check if wrapper for dict support is needed
-        if self.algo == "her":
-            if self.verbose > 0:
-                print("Wrapping into a ObsDictWrapper")
-            env = ObsDictWrapper(env)
-
         return env
 
     def _load_pretrained_agent(self, hyperparams: Dict[str, Any], env: VecEnv) -> BaseAlgorithm:
@@ -552,11 +536,8 @@ class ExperimentManager(object):
 
         if os.path.exists(replay_buffer_path):
             print("Loading replay buffer")
-            if self.algo == "her":
-                # if we use HER we have to add an additional argument
-                model.load_replay_buffer(replay_buffer_path, self.truncate_last_trajectory)
-            else:
-                model.load_replay_buffer(replay_buffer_path)
+            # `truncate_last_traj` will be taken into account only if we use HER replay buffer
+            model.load_replay_buffer(replay_buffer_path, truncate_last_traj=self.truncate_last_trajectory)
         return model
 
     def _create_sampler(self, sampler_method: str) -> BaseSampler:
@@ -591,12 +572,12 @@ class ExperimentManager(object):
 
         kwargs = self._hyperparams.copy()
 
-        trial.model_class = None
-        if self.algo == "her":
-            trial.model_class = self._hyperparams.get("model_class", None)
-
         # Hack to use DDPG/TD3 noise sampler
         trial.n_actions = self.n_actions
+        # Hack when using HerReplayBuffer
+        trial.using_her_replay_buffer = kwargs.get("replay_buffer_class") == HerReplayBuffer
+        if trial.using_her_replay_buffer:
+            trial.her_kwargs = kwargs.get("replay_buffer_kwargs", {})
         # Sample candidate hyperparameters
         kwargs.update(HYPERPARAMS_SAMPLER[self.algo](trial))
 
