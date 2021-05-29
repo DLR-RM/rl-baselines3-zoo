@@ -32,3 +32,8 @@ try:
     import rl_racing.envs  # pytype: disable=import-error
 except ImportError:
     rl_racing = None
+
+try:
+    import gym_space_engineers  # pytype: disable=import-error
+except ImportError:
+    gym_space_engineers = None

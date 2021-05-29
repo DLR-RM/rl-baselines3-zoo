@@ -2,6 +2,7 @@ import os
 import tempfile
 import time
 from copy import deepcopy
+from functools import wraps
 from threading import Thread
 from typing import Optional
 
@@ -116,7 +117,14 @@ class ParallelTrainCallback(BaseCallback):
 
     def _init_callback(self) -> None:
         temp_file = tempfile.TemporaryFile()
+
+        # Windows TemporaryFile is not a io Buffer
+        # we save the model in the logs/ folder
+        if os.name == "nt":
+            temp_file = os.path.join("logs", "model_tmp.zip")
+
         self.model.save(temp_file)
+
         # TODO: add support for other algorithms
         for model_class in [SAC, TQC]:
             if isinstance(self.model, model_class):
@@ -127,15 +135,31 @@ class ParallelTrainCallback(BaseCallback):
         self._model = self.model_class.load(temp_file)
 
         self.batch_size = self._model.batch_size
+
         # TODO: update SB3 and check train freq instead
         # of gradient_steps > 0
         self.model.gradient_steps = 1
         self.model.tau = 0.0
         self.model.learning_rate = 0.0
+        self.model.lr_schedule = lambda _: 0.0
         self.model.batch_size = 1
+        # Deactivate logger (TODO(toni): fix this when configuring logger works)
+        self.model.log_interval = 1000000
+        # TODO: change learning starts when using gSDE
+
+        # Hack: Re-add correct values at save time
+        def patch_save(function):
+            @wraps(function)
+            def wrapper(*args, **kwargs):
+                self._model.save(*args, **kwargs)
+
+            return wrapper
+
+        self.model.save = patch_save(self.model.save)
 
     def train(self) -> None:
         self._model_ready = False
+
         self.process = Thread(target=self._train_thread, daemon=True)
         self.process.start()
 
