@@ -37,6 +37,7 @@ if __name__ == "__main__":  # noqa: C901
         "--eval-freq", help="Evaluate the agent every n steps (if negative, no evaluation)", default=10000, type=int
     )
     parser.add_argument("--eval-episodes", help="Number of episodes to use for evaluation", default=5, type=int)
+    parser.add_argument("--n-eval-envs", help="Number of environments for evaluation", default=1, type=int)
     parser.add_argument("--save-freq", help="Save the model every n steps (if negative, no checkpoint)", default=-1, type=int)
     parser.add_argument(
         "--save-replay-buffer", help="Save the replay buffer too (when applicable)", action="store_true", default=False
@@ -157,6 +158,7 @@ if __name__ == "__main__":  # noqa: C901
         save_replay_buffer=args.save_replay_buffer,
         verbose=args.verbose,
         vec_env_type=args.vec_env,
+        n_eval_envs=args.n_eval_envs,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed

@@ -1,4 +1,4 @@
-stable-baselines3[extra,tests,docs]>=1.1.0a7
+git+https://github.com/DLR-RM/stable-baselines3#egg=stable-baselines3[extra,tests,docs]
 box2d-py==2.3.8
 pybullet
 gym-minigrid
