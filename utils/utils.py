@@ -22,11 +22,6 @@ except ImportError:
     HumanTeleop = None
 
 try:
-    from utils.cmaes.cmaes import CMAES
-except ImportError:
-    CMAES = None
-
-try:
     from rl_racing.utils.teleop import HumanTeleop as Teleop
 except ImportError:
     Teleop = None
@@ -42,7 +37,6 @@ ALGOS = {
     "sac": SAC,
     "td3": TD3,
     "human": HumanTeleop,
-    "cmaes": CMAES,
     "teleop": Teleop,
     # SB3 Contrib,
     "qrdqn": QRDQN,
