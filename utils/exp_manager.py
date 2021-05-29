@@ -73,6 +73,7 @@ class ExperimentManager(object):
         save_replay_buffer: bool = False,
         verbose: int = 1,
         vec_env_type: str = "dummy",
+        n_eval_envs: int = 1,
     ):
         super(ExperimentManager, self).__init__()
         self.algo = algo
@@ -97,6 +98,7 @@ class ExperimentManager(object):
         self.save_freq = save_freq
         self.eval_freq = eval_freq
         self.n_eval_episodes = n_eval_episodes
+        self.n_eval_envs = n_eval_envs
 
         self.n_envs = 1  # it will be updated when reading hyperparams
         self.n_actions = None  # For DDPG/TD3 action noise objects
@@ -400,7 +402,7 @@ class ExperimentManager(object):
 
             save_vec_normalize = SaveVecNormalizeCallback(save_freq=1, save_path=self.params_path)
             eval_callback = EvalCallback(
-                self.create_envs(1, eval_env=True),
+                self.create_envs(self.n_eval_envs, eval_env=True),
                 callback_on_new_best=save_vec_normalize,
                 best_model_save_path=self.save_path,
                 n_eval_episodes=self.n_eval_episodes,
