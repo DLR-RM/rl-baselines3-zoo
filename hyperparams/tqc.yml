@@ -203,8 +203,8 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 donkey-generated-track-v0:
   env_wrapper:
-    - gym.wrappers.time_limit.TimeLimit:
-        max_episode_steps: 1200
+    # - gym.wrappers.time_limit.TimeLimit:
+    #     max_episode_steps: 1200
     - utils.wrappers.HistoryWrapper:
         horizon: 2
     # - utils.wrappers.ResidualExpertWrapper:
@@ -214,11 +214,11 @@ donkey-generated-track-v0:
     #     expert_scale: 1.0
     #- utils.wrappers.TimeFeatureWrapper:
     #    test_mode: False
-    - stable_baselines3.common.monitor.Monitor:
-        filename: None
+    # - stable_baselines3.common.monitor.Monitor:
+    #     filename: None
   callback:
     - utils.callbacks.ParallelTrainCallback:
-        gradient_steps: 256
+        gradient_steps: 200
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -228,14 +228,15 @@ donkey-generated-track-v0:
   ent_coef: 'auto'
   gamma: 0.98
   tau: 0.02
-  train_freq: [1, "episode"]
+  # train_freq: [1, "episode"]
+  train_freq: 200
   # gradient_steps: -1
   gradient_steps: 256
   learning_starts: 5000
   use_sde_at_warmup: True
   use_sde: True
-  sde_sample_freq: 64
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=1)"
+  sde_sample_freq: 16
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=2)"
 
 # === HER Robotics GoalEnvs ===
 
