@@ -203,8 +203,8 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 donkey-generated-track-v0:
   env_wrapper:
-    # - gym.wrappers.time_limit.TimeLimit:
-    #     max_episode_steps: 1200
+    - gym.wrappers.time_limit.TimeLimit:
+        max_episode_steps: 10000
     - utils.wrappers.HistoryWrapper:
         horizon: 2
     # - utils.wrappers.ResidualExpertWrapper:
