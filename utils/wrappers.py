@@ -5,6 +5,7 @@ import numpy as np
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from scipy.signal import iirfilter, sosfilt, zpk2sos
 from stable_baselines3.common.vec_env.base_vec_env import VecEnv, VecEnvObs, VecEnvStepReturn, VecEnvWrapper
+from stable_baselines3.common.vec_env.subproc_vec_env import SubprocVecEnv, _flatten_obs
 
 
 class VecForceResetWrapper(VecEnvWrapper):
@@ -17,11 +18,15 @@ class VecForceResetWrapper(VecEnvWrapper):
 
     def __init__(self, venv: VecEnv):
         super().__init__(venv=venv)
+        self.use_subproc = isinstance(venv, SubprocVecEnv)
 
     def reset(self) -> VecEnvObs:
         return self.venv.reset()
 
     def step_wait(self) -> VecEnvStepReturn:
+        if self.use_subproc:
+            return self._subproc_step_wait()
+
         for env_idx in range(self.num_envs):
             obs, self.buf_rews[env_idx], self.buf_dones[env_idx], self.buf_infos[env_idx] = self.envs[env_idx].step(
                 self.actions[env_idx]
@@ -43,6 +48,26 @@ class VecForceResetWrapper(VecEnvWrapper):
             np.copy(self.buf_dones),
             deepcopy(self.buf_infos),
         )
+
+    def _subproc_step_wait(self) -> VecEnvStepReturn:
+        results = [remote.recv() for remote in self.remotes]
+        self.waiting = False
+        obs, rewards, dones, infos = zip(*results)
+        dones = np.stack(dones)
+        obs = list(obs)
+        updated_remotes = []
+        if np.array(dones).any():
+            for idx, remote in enumerate(self.remotes):
+                if not dones[idx]:
+                    infos[idx]["terminal_observation"] = obs[idx]
+                    infos[idx]["TimeLimit.truncated"] = True
+                    dones[idx] = True
+                    remote.send(("reset", None))
+                    updated_remotes.append((idx, remote))
+
+        for idx, remote in updated_remotes:
+            obs[idx] = remote.recv()
+        return _flatten_obs(obs, self.observation_space), np.stack(rewards), dones, infos
 
 
 class DoneOnSuccessWrapper(gym.Wrapper):
