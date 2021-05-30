@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 from typing import Optional
 
 import gym
@@ -7,6 +8,45 @@ import torch as th
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from scipy.signal import iirfilter, sosfilt, zpk2sos
 from stable_baselines3 import SAC
+from stable_baselines3.common.vec_env.base_vec_env import VecEnv, VecEnvObs, VecEnvStepReturn, VecEnvWrapper
+
+
+class VecForceResetWrapper(VecEnvWrapper):
+    """
+    For all environments to reset at once,
+    and tell the agent the trajectory was truncated.
+
+    :param venv: The vectorized environment
+    """
+
+    def __init__(self, venv: VecEnv):
+        super().__init__(venv=venv)
+
+    def reset(self) -> VecEnvObs:
+        return self.venv.reset()
+
+    def step_wait(self) -> VecEnvStepReturn:
+        for env_idx in range(self.num_envs):
+            obs, self.buf_rews[env_idx], self.buf_dones[env_idx], self.buf_infos[env_idx] = self.envs[
+                env_idx
+            ].step(self.actions[env_idx])
+            self._save_obs(env_idx, obs)
+
+        if self.buf_dones.any():
+            for env_idx in range(self.num_envs):
+                self.buf_infos[env_idx]["terminal_observation"] = self.buf_obs[None][env_idx]
+                if not self.buf_dones[env_idx]:
+                    self.buf_infos[env_idx]["TimeLimit.truncated"] = True
+                self.buf_dones[env_idx] = True
+                obs = self.envs[env_idx].reset()
+                self._save_obs(env_idx, obs)
+
+        return (
+            self._obs_from_buf(),
+            np.copy(self.buf_rews),
+            np.copy(self.buf_dones),
+            deepcopy(self.buf_infos),
+        )
 
 
 class DoneOnSuccessWrapper(gym.Wrapper):
