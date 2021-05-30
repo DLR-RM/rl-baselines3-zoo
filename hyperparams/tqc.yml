@@ -214,11 +214,13 @@ donkey-generated-track-v0:
     #     expert_scale: 1.0
     #- utils.wrappers.TimeFeatureWrapper:
     #    test_mode: False
-    - stable_baselines3.common.monitor.Monitor:
-        filename: None
+    # - stable_baselines3.common.monitor.Monitor:
+    #     filename: None
   callback:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 200
+  # vec_env_wrapper:
+  #   - utils.wrappers.VecForceResetWrapper
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
