@@ -480,7 +480,6 @@ class ExperimentManager(object):
 
     def create_envs(self, n_envs: int, eval_env: bool = False, no_log: bool = False) -> VecEnv:
 
-        
         env = pistonball_v4.parallel_env(time_penalty=-.1)
         env = ss.color_reduction_v0(env, mode='B')
         env = ss.resize_v0(env, x_size=84, y_size=84, linear_interp=True)
