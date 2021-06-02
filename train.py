@@ -161,6 +161,8 @@ if __name__ == "__main__":  # noqa: C901
         n_eval_envs=args.n_eval_envs,
     )
 
+    print("Default hyperparameters for environment (ones being tuned will be overridden):")
+
     # Prepare experiment and launch hyperparameter optimization if needed
     model = exp_manager.setup_experiment()
 
