@@ -38,9 +38,9 @@ For example (with tensorboard support):
 python train.py --algo ppo --env CartPole-v1 --tensorboard-log /tmp/stable-baselines/
 ```
 
-Evaluate the agent every 10000 steps using 10 episodes for evaluation:
+Evaluate the agent every 10000 steps using 10 episodes for evaluation (using only one evaluation env):
 ```
-python train.py --algo sac --env HalfCheetahBulletEnv-v0 --eval-freq 10000 --eval-episodes 10
+python train.py --algo sac --env HalfCheetahBulletEnv-v0 --eval-freq 10000 --eval-episodes 10 --n-eval-envs 1
 ```
 
 Save a checkpoint of the agent every 100000 steps:
