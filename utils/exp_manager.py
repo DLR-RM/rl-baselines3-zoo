@@ -583,7 +583,7 @@ class ExperimentManager(object):
 
         eval_freq = int(self.n_timesteps / self.n_evaluations)
         # Account for parallel envs
-        eval_freq_ = max(eval_freq // model.get_env().num_envs, 1)
+        eval_freq_ = max(eval_freq // (20 * 4), 1)
         # Use non-deterministic eval for Atari
         eval_callback = TrialEvalCallback(
             eval_env,
