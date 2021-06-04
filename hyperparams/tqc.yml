@@ -294,6 +294,9 @@ SpaceEngineers-WalkingRobot-IK-v0:
   callback:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 400
+    - utils.callbacks.StopTrainingOnMeanRewardThreshold:
+        reward_threshold: 150
+        verbose: 1
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
