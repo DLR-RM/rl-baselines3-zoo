@@ -289,9 +289,6 @@ SpaceEngineers-WalkingRobot-IK-v0:
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
-    - utils.wrappers.PhaseWrapper:
-        period: 40
-        n_components: 4
   vec_env_wrapper:
     - utils.wrappers.VecForceResetWrapper
   callback:

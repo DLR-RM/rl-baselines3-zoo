@@ -378,12 +378,15 @@ class HistoryWrapperObsDict(gym.Wrapper):
 class PhaseWrapper(gym.Wrapper):
     """Add phase as input"""
 
-    def __init__(self, env: gym.Env, period: int = 40, n_components: int = 4):
+    def __init__(self, env: gym.Env, period: int = 40, n_components: int = 4, phase_only: bool = False):
         obs_space = env.observation_space
 
         assert len(obs_space.shape) == 1, "Only 1D observation spaces are supported"
 
         low, high = obs_space.low, obs_space.high
+
+        if phase_only:
+            low, high = [], []
         low, high = np.concatenate((low, [-1.0] * 2 * n_components)), np.concatenate((high, [1.0] * 2 * n_components))
 
         env.observation_space = gym.spaces.Box(low=low, high=high, dtype=np.float32)
@@ -392,6 +395,7 @@ class PhaseWrapper(gym.Wrapper):
         self._current_step = 0
         self._n_components = n_components
         self._period = period
+        self._phase_only = phase_only
 
     def reset(self) -> GymObs:
         self._current_step = 0
@@ -411,5 +415,8 @@ class PhaseWrapper(gym.Wrapper):
         for i in range(1, self._n_components + 1):
             phase_feature.append(np.cos(i * k * self._current_step))
             phase_feature.append(np.sin(i * k * self._current_step))
+
+        if self._phase_only:
+            return np.array(phase_feature)
 
         return np.append(obs, phase_feature)
