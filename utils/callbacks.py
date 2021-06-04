@@ -10,6 +10,7 @@ import optuna
 from sb3_contrib import TQC
 from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
+from stable_baselines3.common.utils import safe_mean
 from stable_baselines3.common.vec_env import VecEnv
 
 
@@ -189,3 +190,31 @@ class ParallelTrainCallback(BaseCallback):
             if self.verbose > 0:
                 print("Waiting for training thread to terminate")
             self.process.join()
+
+
+class StopTrainingOnMeanRewardThreshold(BaseCallback):
+    """
+    Stop the training once a threshold in mean episodic reward
+    has been reached (i.e. when the model is good enough).
+
+    :param reward_threshold:  Minimum expected reward per episode
+        to stop training.
+    :param verbose:
+    """
+
+    def __init__(self, reward_threshold: float, verbose: int = 0):
+        super().__init__(verbose=verbose)
+        self.reward_threshold = reward_threshold
+
+    def _on_step(self) -> bool:
+        continue_training = True
+        if len(self.model.ep_info_buffer) > 0 and len(self.model.ep_info_buffer[0]) > 0:
+            mean_reward = safe_mean([ep_info["r"] for ep_info in self.model.ep_info_buffer])
+            # Convert np.bool_ to bool, otherwise callback() is False won't work
+            continue_training = bool(mean_reward < self.reward_threshold)
+            if self.verbose > 0 and not continue_training:
+                print(
+                    f"Stopping training because the mean reward {mean_reward:.2f} "
+                    f" is above the threshold {self.reward_threshold}"
+                )
+        return continue_training
