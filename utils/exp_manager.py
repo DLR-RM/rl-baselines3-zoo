@@ -348,7 +348,8 @@ class ExperimentManager(object):
         self, hyperparams: Dict[str, Any], saved_hyperparams: Dict[str, Any], env: VecEnv
     ) -> Dict[str, Any]:
         # Parse noise string
-        if self.algo in ["ddpg", "sac", "td3", "tqc"] and hyperparams.get("noise_type") is not None:
+        # Note: only off-policy algorithms are supported
+        if hyperparams.get("noise_type") is not None:
             noise_type = hyperparams["noise_type"].strip()
             noise_std = hyperparams["noise_std"]
 
