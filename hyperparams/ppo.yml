@@ -328,8 +328,10 @@ InvertedPendulumSwingupBulletEnv-v0:
   clip_range: 0.2
 
 # Following https://github.com/lcswillems/rl-starter-files
+# requires --gym-packages gym_minigrid
 MiniGrid-DoorKey-5x5-v0:
-  env_wrapper: gym_minigrid.wrappers.FlatObsWrapper # requires --gym-packages gym_minigrid
+  # Dict Observations are now supported
+  # env_wrapper: gym_minigrid.wrappers.FlatObsWrapper
   normalize: true
   n_envs: 8 # number of environment copies running in parallel
   n_timesteps: !!float 1e5
@@ -343,8 +345,8 @@ MiniGrid-DoorKey-5x5-v0:
   learning_rate: 2.5e-4 # The learning rate, it can be a function
   clip_range: 0.2 # Clipping parameter, it can be a function
 
+# requires --gym-packages gym_minigrid
 MiniGrid-FourRooms-v0:
-  env_wrapper: gym_minigrid.wrappers.FlatObsWrapper # requires --gym-packages gym_minigrid
   normalize: true
   n_envs: 8
   n_timesteps: !!float 4e6
