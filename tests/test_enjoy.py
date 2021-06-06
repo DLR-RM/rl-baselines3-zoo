@@ -75,6 +75,10 @@ def test_load(tmp_path):
     return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-checkpoint", str(500)])
     _assert_eq(return_code, 0)
 
+    # Load last checkpoint
+    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-last-checkpoint"])
+    _assert_eq(return_code, 0)
+
 
 def test_record_video(tmp_path):
     args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v0", "-o", str(tmp_path)]

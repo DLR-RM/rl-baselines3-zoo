@@ -14,12 +14,14 @@
 - Add support for dictionary observations
 - Added experimental parallel training (with `utils.callbacks.ParallelTrainCallback`)
 - Added support for using multiple envs for evaluation
+- Added `--load-last-checkpoint` option for the enjoy script
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
 - Fixed `get_latest_run_id()` so it works in Windows too (@NicolasHaeffner)
 
 ### Documentation
+- Updated README (dict obs are now supported)
 
 ### Other
 - Added `is_bullet()` to `ExperimentManager`
