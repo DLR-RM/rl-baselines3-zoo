@@ -51,9 +51,24 @@ class HumanTeleop(BaseAlgorithm):
         _init_setup_model: bool = False,
         forward_controller_path: str = os.environ.get("FORWARD_CONTROLLER_PATH"),  # noqa: B008
         backward_controller_path: str = os.environ.get("BACKWARD_CONTROLLER_PATH"),  # noqa: B008
-        turn_controller_path: str = os.environ.get("TURN_CONTROLLER_PATH"),  # noqa: B008
+        turn_left_controller_path: str = os.environ.get("TURN_LEFT_CONTROLLER_PATH"),  # noqa: B008
+        turn_right_controller_path: str = os.environ.get("TURN_RIGHT_CONTROLLER_PATH"),  # noqa: B008
         deterministic: bool = True,
     ):
+        assert forward_controller_path is not None
+        assert backward_controller_path is not None
+        assert turn_left_controller_path is not None
+        assert turn_right_controller_path is not None
+        # Pretrained model
+        # set BACKWARD_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_41\rl_model_90000_steps.zip
+        # set FORWARD_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_57\SpaceEngineers-WalkingRobot-IK-v0.zip
+        # set TURN_LEFT_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_74\rl_model_40000_steps.zip
+        # set TURN_RIGHT_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_42\SpaceEngineers-WalkingRobot-IK-v0.zip
+        self.forward_controller = TQC.load(forward_controller_path)
+        self.backward_controller = TQC.load(backward_controller_path)
+        self.turn_left_controller = TQC.load(turn_left_controller_path)
+        self.turn_right_controller = TQC.load(turn_right_controller_path)
+
         super(HumanTeleop, self).__init__(
             policy=None, env=env, policy_base=None, learning_rate=0.0, verbose=verbose, seed=seed
         )
@@ -66,16 +81,6 @@ class HumanTeleop(BaseAlgorithm):
         self.window = None
         self.max_speed = 0.0
 
-        # Pretrained model
-        # set BACKWARD_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_41\rl_model_90000_steps.zip
-        # set FORWARD_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_57\SpaceEngineers-WalkingRobot-IK-v0.zip
-         # set TURN_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_42\SpaceEngineers-WalkingRobot-IK-v0.zip
-        assert forward_controller_path is not None
-        assert backward_controller_path is not None
-        assert turn_controller_path is not None
-        self.forward_controller = TQC.load(forward_controller_path)
-        self.backward_controller = TQC.load(backward_controller_path)
-        self.turn_controller = TQC.load(turn_controller_path)
         self.deterministic = deterministic
 
     def _excluded_save_params(self) -> List[str]:
@@ -177,8 +182,8 @@ class HumanTeleop(BaseAlgorithm):
                 controller = {
                     Task.FORWARD: self.forward_controller,
                     Task.BACKWARD: self.backward_controller,
-                    Task.TURN_LEFT: self.turn_controller,
-                    Task.TURN_RIGHT: self.turn_controller,
+                    Task.TURN_LEFT: self.turn_left_controller,
+                    Task.TURN_RIGHT: self.turn_right_controller,
                 }[task]
 
                 action = controller.predict(self._last_obs, deterministic=self.deterministic)
@@ -252,8 +257,6 @@ class HumanTeleop(BaseAlgorithm):
         reset_num_timesteps=True,
     ) -> "HumanTeleop":
         self._last_obs = self.env.reset()
-        # Wait for teleop process
-        # time.sleep(3)
         self.main_loop(total_timesteps)
 
         return self
