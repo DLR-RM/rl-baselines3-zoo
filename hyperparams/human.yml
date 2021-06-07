@@ -1,0 +1,7 @@
+# Space Engineers envs
+SpaceEngineers-WalkingRobot-IK-v1:
+  env_wrapper:
+    - utils.wrappers.HistoryWrapper:
+        horizon: 2
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
