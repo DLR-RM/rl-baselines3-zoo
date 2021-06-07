@@ -50,6 +50,7 @@ class HumanTeleop(BaseAlgorithm):
         device=None,
         _init_setup_model: bool = False,
         forward_controller_path: str = os.environ.get("FORWARD_CONTROLLER_PATH"),  # noqa: B008
+        backward_controller_path: str = os.environ.get("BACKWARD_CONTROLLER_PATH"),  # noqa: B008
         turn_controller_path: str = os.environ.get("TURN_CONTROLLER_PATH"),  # noqa: B008
         deterministic: bool = True,
     ):
@@ -66,7 +67,14 @@ class HumanTeleop(BaseAlgorithm):
         self.max_speed = 0.0
 
         # Pretrained model
+        # set BACKWARD_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_41\rl_model_90000_steps.zip
+        # set FORWARD_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_57\SpaceEngineers-WalkingRobot-IK-v0.zip
+         # set TURN_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_42\SpaceEngineers-WalkingRobot-IK-v0.zip
+        assert forward_controller_path is not None
+        assert backward_controller_path is not None
+        assert turn_controller_path is not None
         self.forward_controller = TQC.load(forward_controller_path)
+        self.backward_controller = TQC.load(backward_controller_path)
         self.turn_controller = TQC.load(turn_controller_path)
         self.deterministic = deterministic
 
@@ -124,7 +132,7 @@ class HumanTeleop(BaseAlgorithm):
         """
         pygame.init()
         # Create a pygame window
-        self.window = pygame.display.set_mode((800, 500), RESIZABLE)  # pytype: disable=name-error
+        self.window = pygame.display.set_mode((200, 200), RESIZABLE)  # pytype: disable=name-error
 
         # Init values and fill the screen
         move, task = "stay", None
@@ -132,7 +140,7 @@ class HumanTeleop(BaseAlgorithm):
         self.update_screen(move)
 
         n_steps = 0
-        action = np.array([[0.0, 0.0]])
+        action = np.array([self.env.action_space.sample()]) * 0.0
         self.max_speed = self.env.get_attr("max_speed")
 
         while not self.exit_thread:
@@ -151,9 +159,9 @@ class HumanTeleop(BaseAlgorithm):
                 move = "forward"
             elif x < 0:
                 move = "backward"
-            elif theta > 0:
-                move = "turn_right"
             elif theta < 0:
+                move = "turn_right"
+            elif theta > 0:
                 move = "turn_left"
             else:
                 move = "stay"
@@ -166,10 +174,14 @@ class HumanTeleop(BaseAlgorithm):
                 # TODO: update for the frame stack by stepping fast in the env?
                 # self._last_obs = self.env.env_method("change_task", task)
 
-                if task in [Task.FORWARD, Task.BACKWARD]:
-                    action = self.forward_controller.predict(self._last_obs, deterministic=self.deterministic)
-                else:
-                    action = self.turn_controller.predict(self._last_obs, deterministic=self.deterministic)
+                controller = {
+                    Task.FORWARD: self.forward_controller,
+                    Task.BACKWARD: self.backward_controller,
+                    Task.TURN_LEFT: self.turn_controller,
+                    Task.TURN_RIGHT: self.turn_controller,
+                }[task]
+
+                action = controller.predict(self._last_obs, deterministic=self.deterministic)
             else:
                 task = None
                 self.env.set_attr("max_speed", 0.0)
@@ -214,7 +226,7 @@ class HumanTeleop(BaseAlgorithm):
         :param action:
         """
         self.clear()
-        self.write_text(f"Task: {move}", 20, 0, FONT, WHITE)
+        self.write_text(f"Task: {move}", 50, 50, FONT, WHITE)
 
     def _get_torch_save_params(self) -> Tuple[List[str], List[str]]:
         """
