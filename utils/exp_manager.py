@@ -24,7 +24,7 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import constant_fn
-from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize, VecTransposeImage
+from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecEnvWrapper, VecFrameStack, VecNormalize, VecTransposeImage
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401
@@ -193,6 +193,12 @@ class ExperimentManager(object):
         finally:
             # Release resources
             try:
+                # Hack for zmq on Windows to allow early termination
+                env_tmp = model.env
+                while isinstance(env_tmp, VecEnvWrapper):
+                    env_tmp = env_tmp.venv
+                env_tmp.waiting = False
+
                 model.env.close()
             except EOFError:
                 pass
