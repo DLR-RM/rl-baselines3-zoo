@@ -584,7 +584,8 @@ class ExperimentManager(object):
         if trial.using_her_replay_buffer:
             trial.her_kwargs = kwargs.get("replay_buffer_kwargs", {})
         # Sample candidate hyperparameters
-        kwargs.update(HYPERPARAMS_SAMPLER[self.algo](trial))
+        sampled_hyperparams = HYPERPARAMS_SAMPLER[self.algo](trial)
+        kwargs.update(sampled_hyperparams)
 
         model = ALGOS[self.algo](
             env=self.create_envs(self.n_envs, no_log=True),
@@ -616,13 +617,16 @@ class ExperimentManager(object):
             # Free memory
             model.env.close()
             eval_env.close()
-        except AssertionError as e:
+        except (AssertionError, ValueError) as e:
             # Sometimes, random hyperparams can generate NaN
             # Free memory
             model.env.close()
             eval_env.close()
             # Prune hyperparams that generate NaNs
             print(e)
+            print("============")
+            print("Sampled hyperparams:")
+            pprint(sampled_hyperparams)
             raise optuna.exceptions.TrialPruned()
         is_pruned = eval_callback.is_pruned
         reward = eval_callback.last_mean_reward
