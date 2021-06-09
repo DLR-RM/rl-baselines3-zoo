@@ -15,6 +15,7 @@
 - Added experimental parallel training (with `utils.callbacks.ParallelTrainCallback`)
 - Added support for using multiple envs for evaluation
 - Added `--load-last-checkpoint` option for the enjoy script
+- Save Optuna study object at the end of hyperparameter optimization and plot the results (`plotly` package required)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
