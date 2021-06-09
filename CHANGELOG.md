@@ -1,18 +1,36 @@
-## Release 1.1.0a0 (WIP)
+## Release 1.1.0a10 (WIP)
 
 ### Breaking Changes
+- Upgrade to SB3 >= 1.1.0a10 (master version)
+- Upgrade to sb3-contrib >= 1.1.0a6
+- Add timeout handling (cf SB3 doc)
+- `HER` is now a replay buffer class and no more an algorithm
+- Removed `PlotNoiseRatioCallback`
+- Removed `PlotActionWrapper`
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
+- Add support for recording videos of training experiments (@mcres)
+- Add support for dictionary observations
+- Added experimental parallel training (with `utils.callbacks.ParallelTrainCallback`)
+- Added support for using multiple envs for evaluation
+- Added `--load-last-checkpoint` option for the enjoy script
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
+- Fixed `get_latest_run_id()` so it works in Windows too (@NicolasHaeffner)
 
 ### Documentation
+- Updated README (dict obs are now supported)
 
 ### Other
 - Added `is_bullet()` to `ExperimentManager`
 - Simplify `close()` for the enjoy script
+- Updated docker image to include latest black version
+- Updated TD3 Walker2D model (thanks @modanesh)
+- Fixed typo in plot title (@scottemmons)
+- Minimum cloudpickle version added to `requirements.txt` (@amy12xx)
+- Fixed atari-py version (ROM missing in newest release)
 
 ## Release 1.0 (2021-03-17)
 

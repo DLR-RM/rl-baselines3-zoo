@@ -1,4 +1,5 @@
 import argparse
+import glob
 import importlib
 import os
 import sys
@@ -37,6 +38,12 @@ def main():  # noqa: C901
         help="Load checkpoint instead of last model if available, "
         "you must pass the number of timesteps corresponding to it",
     )
+    parser.add_argument(
+        "--load-last-checkpoint",
+        action="store_true",
+        default=False,
+        help="Load last checkpoint instead of last model if available",
+    )
     parser.add_argument("--stochastic", action="store_true", default=False, help="Use stochastic actions")
     parser.add_argument(
         "--norm-reward", action="store_true", default=False, help="Normalize reward if applicable (trained with VecNormalize)"
@@ -48,7 +55,7 @@ def main():  # noqa: C901
         type=str,
         nargs="+",
         default=[],
-        help="Additional external Gym environemnt package modules to import (e.g. gym_minigrid)",
+        help="Additional external Gym environment package modules to import (e.g. gym_minigrid)",
     )
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
@@ -90,9 +97,19 @@ def main():  # noqa: C901
         model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
         found = os.path.isfile(model_path)
 
+    if args.load_last_checkpoint:
+        checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
+        if len(checkpoints) == 0:
+            raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
+        model_path = checkpoints[-1]
+        found = True
+
     if not found:
         raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
 
+    print(f"Loading {model_path}")
+
+    # Off-policy algorithm only support one env for now
     off_policy_algos = ["qrdqn", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
 
     if algo in off_policy_algos:

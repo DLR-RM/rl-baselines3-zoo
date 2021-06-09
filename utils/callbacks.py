@@ -1,11 +1,15 @@
 import os
+import tempfile
+import time
+from copy import deepcopy
+from threading import Thread
 from typing import Optional
 
-import numpy as np
 import optuna
-from matplotlib import pyplot as plt
+from sb3_contrib import TQC
+from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
-from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv
+from stable_baselines3.common.vec_env import VecEnv
 
 
 class TrialEvalCallback(EvalCallback):
@@ -82,56 +86,82 @@ class SaveVecNormalizeCallback(BaseCallback):
         return True
 
 
-class PlotNoiseRatioCallback(BaseCallback):
+class ParallelTrainCallback(BaseCallback):
     """
-    Callback for plotting noise contribution to the exploration.
-    Warning: it only works with 1D action space env for now (like MountainCarContinuous)
+    Callback to explore (collect experience) and train (do gradient steps)
+    at the same time using two separate threads.
+    Normally used with off-policy algorithms and `train_freq=(1, "episode")`.
 
-    :param display_freq: (int) Display the plot every ``display_freq`` steps.
-    :param verbose: (int)
+    TODO:
+    - blocking mode: wait for the model to finish updating the policy before collecting new experience
+        at the end of a rollout
+    - force sync mode: stop training to update to the latest policy for collecting
+        new experience
+
+    :param gradient_steps: Number of gradient steps to do before
+        sending the new policy
+    :param verbose: Verbosity level
+    :param sleep_time: Limit the fps in the thread collecting experience.
     """
 
-    def __init__(self, display_freq: int = 1000, verbose: int = 0):
-        super(PlotNoiseRatioCallback, self).__init__(verbose)
-        self.display_freq = display_freq
-        # Action buffers
-        self.deterministic_actions = []
-        self.noisy_actions = []
-        self.noises = []
+    def __init__(self, gradient_steps: int = 100, verbose: int = 0, sleep_time: float = 0.0):
+        super(ParallelTrainCallback, self).__init__(verbose)
+        self.batch_size = 0
+        self._model_ready = True
+        self._model = None
+        self.gradient_steps = gradient_steps
+        self.process = None
+        self.model_class = None
+        self.sleep_time = sleep_time
+
+    def _init_callback(self) -> None:
+        temp_file = tempfile.TemporaryFile()
+        self.model.save(temp_file)
+        # TODO: add support for other algorithms
+        for model_class in [SAC, TQC]:
+            if isinstance(self.model, model_class):
+                self.model_class = model_class
+                break
+
+        assert self.model_class is not None, f"{self.model} is not supported for parallel training"
+        self._model = self.model_class.load(temp_file)
+
+        self.batch_size = self._model.batch_size
+        # TODO: update SB3 and check train freq instead
+        # of gradient_steps > 0
+        self.model.gradient_steps = 1
+        self.model.tau = 0.0
+        self.model.learning_rate = 0.0
+        self.model.batch_size = 1
+
+    def train(self) -> None:
+        self._model_ready = False
+        self.process = Thread(target=self._train_thread, daemon=True)
+        self.process.start()
+
+    def _train_thread(self) -> None:
+        self._model.train(gradient_steps=self.gradient_steps, batch_size=self.batch_size)
+        self._model_ready = True
+        self.logger.record("train/n_updates_real", self._model._n_updates, exclude="tensorboard")
 
     def _on_step(self) -> bool:
-        # We assume this is a DummyVecEnv
-        assert isinstance(self.training_env, DummyVecEnv)
-        # Retrieve last observation
-        obs = self.training_env._obs_from_buf()
-        # Retrieve stochastic and deterministic action
-        # we can extract the noise contribution from those two
-        noisy_action = self.model.predict(obs, deterministic=False)[0].flatten()
-        deterministic_action = self.model.predict(obs, deterministic=True)[0].flatten()
-        noise = noisy_action - deterministic_action
-
-        self.deterministic_actions.append(deterministic_action)
-        self.noisy_actions.append(noisy_action)
-        self.noises.append(noise)
-
-        if self.n_calls % self.display_freq == 0:
-            x = np.arange(len(self.noisy_actions))
-
-            self.deterministic_actions = np.array(self.deterministic_actions)
-            self.noises = np.array(self.noises)
-
-            plt.figure("Deterministic action and noise during exploration", figsize=(6.4, 4.8))
-            # plt.title('Deterministic action and noise during exploration', fontsize=14)
-            plt.xlabel("Timesteps", fontsize=14)
-            plt.xticks(fontsize=13)
-            plt.ylabel("Action", fontsize=14)
-            plt.plot(x, self.deterministic_actions, label="deterministic action", linewidth=2)
-            plt.plot(x, self.noises, label="exploration noise", linewidth=2)
-            plt.plot(x, self.noisy_actions, label="noisy action", linewidth=2)
-            plt.legend(fontsize=13)
-            plt.show()
-            # Reset
-            self.noisy_actions = []
-            self.deterministic_actions = []
-            self.noises = []
+        if self.sleep_time > 0:
+            time.sleep(self.sleep_time)
         return True
+
+    def _on_rollout_end(self) -> None:
+        if self._model_ready:
+            self._model.replay_buffer = deepcopy(self.model.replay_buffer)
+            self.model.set_parameters(deepcopy(self._model.get_parameters()))
+            self.model.actor = self.model.policy.actor
+            if self.num_timesteps >= self._model.learning_starts:
+                self.train()
+            # Do not wait for the training loop to finish
+            # self.process.join()
+
+    def _on_training_end(self) -> None:
+        # Wait for the thread to terminate
+        if self.process is not None:
+            if self.verbose > 0:
+                print("Waiting for training thread to terminate")
+            self.process.join()

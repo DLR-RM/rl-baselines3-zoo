@@ -72,7 +72,6 @@ BipedalWalkerHardcore-v3:
 
 # Tuned
 HalfCheetahBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -89,7 +88,6 @@ HalfCheetahBulletEnv-v0:
 
 # Tuned
 AntBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -106,7 +104,6 @@ AntBulletEnv-v0:
 
 # Tuned
 HopperBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -124,7 +121,6 @@ HopperBulletEnv-v0:
 
 # Tuned
 Walker2DBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -141,7 +137,6 @@ Walker2DBulletEnv-v0:
 
 
 ReacherBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -159,7 +154,6 @@ ReacherBulletEnv-v0:
 
 # Almost tuned
 HumanoidBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
@@ -176,7 +170,6 @@ HumanoidBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 InvertedDoublePendulumBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -192,7 +185,6 @@ InvertedDoublePendulumBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 InvertedPendulumSwingupBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -206,3 +198,88 @@ InvertedPendulumSwingupBulletEnv-v0:
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+
+# === HER Robotics GoalEnvs ===
+
+FetchReach-v1:
+  n_timesteps: !!float 20000
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  batch_size: 256
+  gamma: 0.95
+  learning_rate: 0.001
+  learning_starts: 1000
+  normalize: True
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4
+  )"
+  policy_kwargs: "dict(net_arch=[64, 64], n_critics=1)"
+
+FetchPush-v1:
+  n_timesteps: !!float 1e6
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  batch_size: 2048
+  gamma: 0.95
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4
+  )"
+  policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
+
+FetchSlide-v1:
+  n_timesteps: !!float 3e6
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  batch_size: 2048
+  gamma: 0.95
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4
+  )"
+  policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
+
+FetchPickAndPlace-v1:
+  n_timesteps: !!float 1e6
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  batch_size: 1024
+  gamma: 0.95
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4
+  )"
+  policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
+
+parking-v0:
+  n_timesteps: !!float 1e5
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  batch_size: 1024
+  gamma: 0.95
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4,
+    max_episode_length=100
+  )"
+  policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"

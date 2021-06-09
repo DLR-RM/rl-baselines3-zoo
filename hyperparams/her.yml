@@ -1,19 +1,8 @@
-# DDPG hyperparams
-# parking-v0:
-#  n_timesteps: !!float 1e5
-#  policy: 'MlpPolicy'
-#  model_class: 'ddpg'
-#  n_sampled_goal: 4
-#  goal_selection_strategy: 'future'
-#  buffer_size: 1000000
-#  batch_size: 1024
-#  gamma: 0.95
-#  learning_rate: !!float 1e-3
-#  noise_type: 'normal'
-#  noise_std: 0.2
-#  policy_kwargs: "dict(net_arch=[512, 512, 512])"
-#  online_sampling: True
-#  max_episode_length: 100
+############################################################
+# NOTE: STARTING WITH SB3 >= 1.1.0, because HER is now HerReplayBuffer,
+# this file is no longer used.
+# It is only here as a reference.
+#############################################################
 
 parking-v0:
   n_timesteps: !!float 1e5

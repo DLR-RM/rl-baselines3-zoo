@@ -24,6 +24,10 @@ RUN \
     pip install git+https://github.com/eleurent/highway-env && \
     rm -rf $HOME/.cache/pip
 
+# tmp fix: current pypi gym package is out of date
+# and create empty video files
+RUN pip install gym==0.17.3
+
 ENV PATH=$VENV/bin:$PATH
 
 COPY docker/entrypoint.sh /tmp/

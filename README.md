@@ -38,9 +38,9 @@ For example (with tensorboard support):
 python train.py --algo ppo --env CartPole-v1 --tensorboard-log /tmp/stable-baselines/
 ```
 
-Evaluate the agent every 10000 steps using 10 episodes for evaluation:
+Evaluate the agent every 10000 steps using 10 episodes for evaluation (using only one evaluation env):
 ```
-python train.py --algo sac --env HalfCheetahBulletEnv-v0 --eval-freq 10000 --eval-episodes 10
+python train.py --algo sac --env HalfCheetahBulletEnv-v0 --eval-freq 10000 --eval-episodes 10 --n-eval-envs 1
 ```
 
 Save a checkpoint of the agent every 100000 steps:
@@ -112,6 +112,11 @@ python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-best
 To load a checkpoint (here the checkpoint name is `rl_model_10000_steps.zip`):
 ```
 python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-checkpoint 10000
+```
+
+To load the latest checkpoint:
+```
+python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-last-checkpoint
 ```
 
 ## Hyperparameter yaml syntax
@@ -193,6 +198,16 @@ env_wrapper:
 
 Note that you can easily specify parameters too.
 
+## Callbacks
+
+Following the same syntax as env wrappers, you can also add custom callbacks to use during training.
+
+```yaml
+callback:
+  - utils.callbacks.ParallelTrainCallback:
+      gradient_steps: 256
+```
+
 ## Env keyword arguments
 
 You can specify keyword arguments to pass to the env constructor in the command line, using `--env-kwargs`:
@@ -216,19 +231,35 @@ Note: if you want to pass a string, you need to escape it like that: `my_string:
 Record 1000 steps with the latest saved model:
 
 ```
-python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000
+python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000
 ```
 
 Use the best saved model instead:
 
 ```
-python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000 --load-best
+python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000 --load-best
 ```
 
 Record a video of a checkpoint saved during training (here the checkpoint name is `rl_model_10000_steps.zip`):
 
 ```
-python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v2 -n 1000 --load-checkpoint 10000
+python -m utils.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000 --load-checkpoint 10000
+```
+
+## Record a Video of a Training Experiment
+
+Apart from recording videos of specific saved models, it is also possible to record a video of a training experiment where checkpoints have been saved.
+
+Record 1000 steps for each checkpoint, latest and best saved models:
+
+```
+python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic
+```
+
+The previous command will create a `mp4` file. To convert this file to `gif` format as well:
+
+```
+python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
 ```
 
 ## Current Collection: 100+ Trained Agents!
@@ -290,7 +321,7 @@ Additional Atari Games (to be completed):
 See https://github.com/bulletphysics/bullet3/tree/master/examples/pybullet/gym/pybullet_envs.
 Similar to [MuJoCo Envs](https://gym.openai.com/envs/#mujoco) but with a free simulator: pybullet. We are using `BulletEnv-v0` version.
 
-Note: those environments are derived from [Roboschool](https://github.com/openai/roboschool) and are much harder than the Mujoco version (see [Pybullet issue](https://github.com/bulletphysics/bullet3/issues/1718#issuecomment-393198883))
+Note: those environments are derived from [Roboschool](https://github.com/openai/roboschool) and are harder than the Mujoco version (see [Pybullet issue](https://github.com/bulletphysics/bullet3/issues/1718#issuecomment-393198883))
 
 |  RL Algo |  Walker2D | HalfCheetah | Ant | Reacher |  Hopper | Humanoid |
 |----------|-----------|-------------|-----|---------|---------|----------|
@@ -356,13 +387,6 @@ This does the same thing as:
 import gym_minigrid
 ```
 
-Also, you may need to specify a Gym environment wrapper in hyperparameters, as MiniGrid environments have Dict observation space, which is not supported by StableBaselines for now.
-
-```
-MiniGrid-DoorKey-5x5-v0:
-  env_wrapper: gym_minigrid.wrappers.FlatObsWrapper
-```
-
 
 ## Colab Notebook: Try it Online!
 
@@ -372,15 +396,14 @@ You can train agents online using [colab notebook](https://colab.research.google
 
 ### Stable-Baselines3 PyPi Package
 
-Min version: stable-baselines3[extra] >= 1.0
-and sb3_contrib >= 1.0
+We recommend using stable-baselines3 and sb3_contrib master versions.
 
 ```
 apt-get install swig cmake ffmpeg
 pip install -r requirements.txt
 ```
 
-Please see [Stable Baselines3 README](https://github.com/DLR-RM/stable-baselines3) for alternatives.
+Please see [Stable Baselines3 documentation](https://stable-baselines3.readthedocs.io/en/master/) for alternatives.
 
 ### Docker Images
 
@@ -440,8 +463,8 @@ To cite this repository in publications:
 
 ## Contributing
 
-If you trained an agent that is not present in the rl zoo, please submit a Pull Request (containing the hyperparameters and the score too).
+If you trained an agent that is not present in the RL Zoo, please submit a Pull Request (containing the hyperparameters and the score too).
 
 ## Contributors
 
-We would like to thanks our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5)
+We would like to thanks our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres)
