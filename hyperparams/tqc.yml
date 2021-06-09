@@ -285,7 +285,7 @@ parking-v0:
   policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
 
 # Space Engineers envs
-SE-WalkingSymmetric-IK-v0:
+SE-Symmetric-v0:
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
@@ -295,7 +295,7 @@ SE-WalkingSymmetric-IK-v0:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 400
     - utils.callbacks.StopTrainingOnMeanRewardThreshold:
-        reward_threshold: 250
+        reward_threshold: 2500
         verbose: 1
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
