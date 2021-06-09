@@ -1,5 +1,6 @@
 import argparse
 import os
+import pickle as pkl
 import time
 import warnings
 from collections import OrderedDict
@@ -13,6 +14,7 @@ import yaml
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
+from optuna.visualization import plot_optimization_history, plot_param_importances
 
 # For using HER with GoalEnv
 from stable_baselines3 import HerReplayBuffer  # noqa: F401
@@ -595,7 +597,7 @@ class ExperimentManager(object):
 
         model.trial = trial
 
-        eval_env = self.create_envs(n_envs=1, eval_env=True)
+        eval_env = self.create_envs(n_envs=self.n_eval_envs, eval_env=True)
 
         eval_freq = int(self.n_timesteps / self.n_evaluations)
         # Account for parallel envs
@@ -683,7 +685,7 @@ class ExperimentManager(object):
 
         report_name = (
             f"report_{self.env_id}_{self.n_trials}-trials-{self.n_timesteps}"
-            f"-{self.sampler}-{self.pruner}_{int(time.time())}.csv"
+            f"-{self.sampler}-{self.pruner}_{int(time.time())}"
         )
 
         log_path = os.path.join(self.log_folder, self.algo, report_name)
@@ -693,4 +695,18 @@ class ExperimentManager(object):
 
         # Write report
         os.makedirs(os.path.dirname(log_path), exist_ok=True)
-        study.trials_dataframe().to_csv(log_path)
+        study.trials_dataframe().to_csv(f"{log_path}.csv")
+
+        # Save python object to inspect/re-use it later
+        with open(f"{log_path}.pkl", "wb+") as f:
+            pkl.dump(study, f)
+
+        # Plot optimization result
+        try:
+            fig1 = plot_optimization_history(study)
+            fig2 = plot_param_importances(study)
+
+            fig1.show()
+            fig2.show()
+        except (ValueError, ImportError, RuntimeError):
+            pass
