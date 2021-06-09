@@ -285,7 +285,7 @@ parking-v0:
   policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
 
 # Space Engineers envs
-SpaceEngineers-WalkingRobot-IK-v0:
+SE-WalkingSymmetric-IK-v0:
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
@@ -295,7 +295,7 @@ SpaceEngineers-WalkingRobot-IK-v0:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 400
     - utils.callbacks.StopTrainingOnMeanRewardThreshold:
-        reward_threshold: 150
+        reward_threshold: 250
         verbose: 1
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
@@ -304,7 +304,7 @@ SpaceEngineers-WalkingRobot-IK-v0:
   batch_size: 256
   ent_coef: 'auto'
   gamma: 0.98
-  tau: 0.02
+  tau: 0.05
   # train_freq: [1, "episode"]
   train_freq: 100
   n_envs: 4
