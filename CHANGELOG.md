@@ -32,6 +32,7 @@
 - Fixed typo in plot title (@scottemmons)
 - Minimum cloudpickle version added to `requirements.txt` (@amy12xx)
 - Fixed atari-py version (ROM missing in newest release)
+- Updated `SAC` and `TD3` search spaces
 
 ## Release 1.0 (2021-03-17)
 

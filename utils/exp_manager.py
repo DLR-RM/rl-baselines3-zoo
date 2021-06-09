@@ -702,8 +702,11 @@ class ExperimentManager(object):
             pkl.dump(study, f)
 
         # Plot optimization result
-        fig1 = plot_optimization_history(study)
-        fig2 = plot_param_importances(study)
+        try:
+            fig1 = plot_optimization_history(study)
+            fig2 = plot_param_importances(study)
 
-        fig1.show()
-        fig2.show()
+            fig1.show()
+            fig2.show()
+        except (ValueError, ImportError, RuntimeError):
+            pass
