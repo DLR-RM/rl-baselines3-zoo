@@ -25,7 +25,7 @@ experiments["sac-Pendulum-v0"] = ("sac", "Pendulum-v0")
 # Test for TD3
 experiments["td3-Pendulum-v0"] = ("td3", "Pendulum-v0")
 # Test for HER
-experiments["her-parking-v0"] = ("her", "parking-v0")
+experiments["tqc-parking-v0"] = ("tqc", "parking-v0")
 # Test for TQC
 experiments["tqc-Pendulum-v0"] = ("tqc", "Pendulum-v0")
 
@@ -43,6 +43,8 @@ def test_optimize(tmp_path, sampler, pruner, experiment):
     args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id, "-params", 'policy_kwargs:"dict(net_arch=[32])"', "n_envs:1"]
     args += ["n_steps:10"] if algo == "ppo" else []
     args += [
+        "--seed",
+        "14",
         "--log-folder",
         tmp_path,
         "--n-trials",
