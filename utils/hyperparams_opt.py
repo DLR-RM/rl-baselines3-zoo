@@ -164,7 +164,7 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
     # You can comment that out when not using gSDE
     log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
     # NOTE: Add "verybig" to net_arch when tuning HER
-    net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
+    net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big", "large", "verybig"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
     net_arch = {
@@ -172,8 +172,8 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
         "medium": [256, 256],
         "big": [400, 300],
         # Uncomment for tuning HER
-        # "large": [256, 256, 256],
-        # "verybig": [512, 512, 512],
+        "large": [256, 256, 256],
+        "verybig": [512, 512, 512],
     }[net_arch]
 
     target_entropy = "auto"
