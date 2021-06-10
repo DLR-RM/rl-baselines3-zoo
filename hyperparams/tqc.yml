@@ -285,7 +285,7 @@ parking-v0:
   policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
 
 # Space Engineers envs
-SE-Symmetric-v0:
+SE-Symmetric-v1: &defaults
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
@@ -295,7 +295,7 @@ SE-Symmetric-v0:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 400
     - utils.callbacks.StopTrainingOnMeanRewardThreshold:
-        reward_threshold: 2500
+        reward_threshold: 250
         verbose: 1
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
@@ -313,6 +313,15 @@ SE-Symmetric-v0:
   use_sde: False
   top_quantiles_to_drop_per_net: 2
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], n_critics=2)"
+
+SE-TurnLeft-v1:
+  <<: *defaults
+  callback:
+    - utils.callbacks.ParallelTrainCallback:
+        gradient_steps: 400
+    - utils.callbacks.StopTrainingOnMeanRewardThreshold:
+        reward_threshold: 2500
+        verbose: 1
 
 # ======== Real Robot envs ============
 
