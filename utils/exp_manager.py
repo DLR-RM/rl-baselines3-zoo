@@ -638,9 +638,30 @@ class ExperimentManager(object):
         try:
             model.learn(self.n_timesteps, callback=eval_callback)
             # Free memory
+            env_tmp = model.env
+            while isinstance(env_tmp, VecEnvWrapper):
+                env_tmp = env_tmp.venv
+            env_tmp.waiting = False
+
+            env_tmp = eval_env
+            while isinstance(env_tmp, VecEnvWrapper):
+                env_tmp = env_tmp.venv
+            env_tmp.waiting = False
+
             model.env.close()
             eval_env.close()
         except (AssertionError, ValueError) as e:
+            # Hack for zmq on Windows to allow early termination
+            env_tmp = model.env
+            while isinstance(env_tmp, VecEnvWrapper):
+                env_tmp = env_tmp.venv
+            env_tmp.waiting = False
+
+            env_tmp = eval_env
+            while isinstance(env_tmp, VecEnvWrapper):
+                env_tmp = env_tmp.venv
+            env_tmp.waiting = False
+
             # Sometimes, random hyperparams can generate NaN
             # Free memory
             model.env.close()
