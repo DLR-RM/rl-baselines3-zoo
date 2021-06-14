@@ -386,22 +386,24 @@ CarRacing-v0:
                        ortho_init=False,
                        )"
 
-SpaceEngineers-WalkingRobot-IK-v0:
+SE-Symmetric-v1:
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
     - sb3_contrib.common.wrappers.TimeFeatureWrapper
+  vec_env_wrapper:
+    - utils.wrappers.VecForceResetWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   batch_size: 128
-  n_steps: 256
+  n_steps: 128
   gamma: 0.99
   gae_lambda: 0.9
   n_epochs: 20
   ent_coef: 0.0
-  sde_sample_freq: 4
+  sde_sample_freq: 2
   max_grad_norm: 0.5
   vf_coef: 0.5
   learning_rate: !!float 3e-5
