@@ -393,7 +393,7 @@ def sample_tqc_params(trial: optuna.Trial) -> Dict[str, Any]:
     # n_quantiles = trial.suggest_int("n_quantiles", 5, 50)
     n_quantiles = trial.suggest_categorical("n_quantiles", [15, 25, 50])
     top_quantiles_to_drop_per_net = trial.suggest_int("top_quantiles_to_drop_per_net", 0, 10)
-    n_critics = trial.suggest_int("n_quantiles", 1, 2)
+    n_critics = trial.suggest_int("n_critics", 1, 2)
 
     hyperparams["policy_kwargs"].update({"n_quantiles": n_quantiles, "n_critics": n_critics})
     hyperparams["top_quantiles_to_drop_per_net"] = top_quantiles_to_drop_per_net
