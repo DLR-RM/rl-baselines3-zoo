@@ -65,7 +65,7 @@ if __name__ == "__main__":  # noqa: C901
         choices=["halving", "median", "none"],
     )
     parser.add_argument("--n-startup-trials", help="Number of trials before using optuna sampler", type=int, default=10)
-    parser.add_argument("--n-evaluations", help="Maximum number of training timesteps for each set of hyperparameters during optimization", type=int, default=20)
+    parser.add_argument("--n-evaluations", help="Training policies are evaluated every n-timesteps // n-evaluations steps", type=int, default=20)
     parser.add_argument(
         "--storage", help="Database storage path if distributed optimization should be used", type=str, default=None
     )
