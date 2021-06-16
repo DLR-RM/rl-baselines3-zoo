@@ -15,6 +15,7 @@
 - Added experimental parallel training (with `utils.callbacks.ParallelTrainCallback`)
 - Added support for using multiple envs for evaluation
 - Added `--load-last-checkpoint` option for the enjoy script
+- Save Optuna study object at the end of hyperparameter optimization and plot the results (`plotly` package required)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
@@ -31,6 +32,7 @@
 - Fixed typo in plot title (@scottemmons)
 - Minimum cloudpickle version added to `requirements.txt` (@amy12xx)
 - Fixed atari-py version (ROM missing in newest release)
+- Updated `SAC` and `TD3` search spaces
 
 ## Release 1.0 (2021-03-17)
 
