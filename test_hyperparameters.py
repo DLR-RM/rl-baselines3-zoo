@@ -48,15 +48,16 @@ eval_freq = max(eval_freq // (n_envs * n_agents), 1)
 all_mean_rewards = []
 for i in range(10):
     model = PPO("CnnPolicy", env, verbose=3, **params)
-    eval_callback = EvalCallback(eval_env, best_model_save_path='./logs/', log_path='./logs/', eval_freq=eval_freq, deterministic=True, render=False)
+    eval_callback = EvalCallback(eval_env, best_model_save_path='./logs/' + num + '/', log_path='./logs/' + num + '/' , eval_freq=eval_freq, deterministic=True, render=False)
     model.learn(total_timesteps=n_timesteps, callback=eval_callback) 
-    model = PPO.load("policy_optimal")
+    model = PPO.load('./logs/' + num + '/' + 'best_model')
     mean_reward, std_reward = evaluate_policy(model, eval_env, deterministic=True, n_eval_episodes=25)
+    print(mean_reward)
+    print(std_reward)
     all_mean_rewards.append(mean_reward)
 
 print(all_mean_rewards / len(all_mean_rewards))
 
 # make sure optimal policy saving isn't clobbering, load optimal policy
-
 
 
