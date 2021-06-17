@@ -22,6 +22,8 @@ for i in range(len(values)):
 
 for i in range(16):
     params = study.trials[ordered_indices[i]].params
+    params["learning_rate"] = params["lr"]
+    del params["lr"]
     text = json.dumps(params)
     jsonFile = open(str(i) + ".json", "w+")
     jsonFile.write(text)
@@ -31,8 +33,6 @@ for i in range(16):
 #     print(values[i])
 
 # pick max element, put its index in new list, set its value to -200, repeat for length of list
-
-
 
 # get max indices
 
