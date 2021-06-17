@@ -1,8 +1,10 @@
 import optuna
-study = optuna.create_study(study_name='pistonball18', storage='mysql://root:dummy@10.128.0.28/pistonball18', load_if_exists=True, direction="maximize")
+study = optuna.create_study(study_name='pistonball21', storage='mysql://root:dummy@10.128.0.28/pistonball21', load_if_exists=True, direction="maximize")
 print(study.best_trial)
 for i in study.trials:
     print(i.value)
+
+# get max indices
 
 # print(study.trials)
 
