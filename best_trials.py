@@ -10,6 +10,7 @@ ordered_indices = []
 scratch_values = values.copy()
 
 scratch_values = list(filter(None.__ne__,scratch_values))
+print(scratch_values)
 
 for i in range(len(values)):
     index = scratch_values.index(max(values))
