@@ -9,9 +9,9 @@ for i in study.trials:
 ordered_indices = []
 scratch_values = values.copy()
 
-scratch_values = list(filter(None.__ne__,scratch_values))
+scratch_values = list(filter(None.__ne__,scratch_values))  # allegedly removes Nones
 
-for i in range(len(values)):
+for i in range(len(scratch_values)):
     index = scratch_values.index(max(scratch_values))
     ordered_indices.append(index)
     scratch_values[index] = -200
