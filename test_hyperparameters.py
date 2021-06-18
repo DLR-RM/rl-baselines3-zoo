@@ -56,8 +56,4 @@ for i in range(10):
     print(std_reward)
     all_mean_rewards.append(mean_reward)
 
-print(all_mean_rewards / len(all_mean_rewards))
-
-# make sure optimal policy saving isn't clobbering, load optimal policy
-
-
+print(sum(all_mean_rewards) / len(all_mean_rewards))
