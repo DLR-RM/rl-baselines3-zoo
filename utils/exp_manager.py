@@ -652,6 +652,7 @@ class ExperimentManager(object):
         r = RandomWords()
         wordsList = r.get_random_words()
         name = wordsList[0] + '_' + wordsList[1] + '_' + wordsList[2]
+        print(name)
 
         try:
             study.optimize(self.objective(name), n_trials=self.n_trials, n_jobs=self.n_jobs)
