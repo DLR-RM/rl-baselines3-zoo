@@ -91,6 +91,8 @@
 - Do not wrap channel-first image env (now natively supported by SB3)
 - Removed hack to log success rate
 - Simplify plot script
+- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
+- Clarify n_evaluations help text (@justinkterry)
 
 ## Pre-Release 0.10.0 (2020-10-28)
 
