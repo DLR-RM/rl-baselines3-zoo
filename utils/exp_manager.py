@@ -6,6 +6,7 @@ import warnings
 from collections import OrderedDict
 from pprint import pprint
 from typing import Any, Callable, Dict, List, Optional, Tuple
+from random_word import RandomWords
 
 import gym
 import numpy as np
@@ -547,7 +548,7 @@ class ExperimentManager(object):
             raise ValueError(f"Unknown pruner: {pruner_method}")
         return pruner
 
-    def objective(self, trial: optuna.Trial) -> float:
+    def objective(self, log_name, trial: optuna.Trial) -> float:
 
         kwargs = self._hyperparams.copy()
 
@@ -584,6 +585,8 @@ class ExperimentManager(object):
             n_eval_episodes=self.n_eval_episodes,
             eval_freq=eval_freq_,
             deterministic=self.deterministic_eval,
+            best_model_save_path='./logs/' + log_name + '/',
+            log_path='./logs/' + log_name + '/',
         )
 
         try:
@@ -646,8 +649,12 @@ class ExperimentManager(object):
             direction="maximize",
         )
 
+        r = RandomWords()
+        wordsList = r.get_random_words()
+        name = wordsList[0] + '_' + wordsList[1] + '_' + wordsList[2]
+
         try:
-            study.optimize(self.objective, n_trials=self.n_trials, n_jobs=self.n_jobs)
+            study.optimize(self.objective(name), n_trials=self.n_trials, n_jobs=self.n_jobs)
         except KeyboardInterrupt:
             pass
 

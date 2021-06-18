@@ -18,7 +18,7 @@ for i, value in enumerate(scratch_values):
 for i in range(len(values)):
     index = scratch_values.index(max(scratch_values))
     ordered_indices.append(index)
-    scratch_values[index] = -200
+    scratch_values[index] = -201
 
 for i in range(16):
     params = study.trials[ordered_indices[i]].params
