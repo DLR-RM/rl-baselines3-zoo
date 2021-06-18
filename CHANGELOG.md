@@ -7,6 +7,7 @@
 - `HER` is now a replay buffer class and no more an algorithm
 - Removed `PlotNoiseRatioCallback`
 - Removed `PlotActionWrapper`
+- Changed `'lr'` key in Optuna param dict to `'learning_rate'` so the dict can be directly passed to SB3 methods 
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
