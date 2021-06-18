@@ -7,7 +7,6 @@
 - `HER` is now a replay buffer class and no more an algorithm
 - Removed `PlotNoiseRatioCallback`
 - Removed `PlotActionWrapper`
-- Changed `'lr'` key in Optuna param dict to `'learning_rate'` so the dict can be directly passed to SB3 methods (@justinkterry)
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
@@ -34,6 +33,7 @@
 - Minimum cloudpickle version added to `requirements.txt` (@amy12xx)
 - Fixed atari-py version (ROM missing in newest release)
 - Updated `SAC` and `TD3` search spaces
+- Cleanup eval_freq documentation and variable name changes (@justinkterry)
 
 ## Release 1.0 (2021-03-17)
 
