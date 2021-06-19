@@ -38,7 +38,7 @@ if __name__ == "__main__":  # noqa: C901
         help="""Evaluate the agent every n steps (if negative, no evaluation). 
         During hyperparameter optimization n-evaluations is used instead""",
         default=10000,
-        type=int
+        type=int,
     )
     parser.add_argument("--eval-episodes", help="Number of episodes to use for evaluation", default=5, type=int)
     parser.add_argument("--n-eval-envs", help="Number of environments for evaluation", default=1, type=int)
