@@ -14,17 +14,16 @@ os.environ["SDL_VIDEODRIVER"] = "dummy"
 num = sys.argv[1]
 
 
-def image_transpose(env):
-    if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):
-        env = VecTransposeImage(env)
-    return env
+# def image_transpose(env):
+#     if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):
+#         env = VecTransposeImage(env)
+#     return env
 
 
 env = pistonball_v4.env()
 env = ss.color_reduction_v0(env, mode='B')
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
-env = image_transpose(env)
 
 model = PPO.load("./logs/" + num + '/' + "best_model.zip")
 
