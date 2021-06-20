@@ -33,6 +33,7 @@
 - Minimum cloudpickle version added to `requirements.txt` (@amy12xx)
 - Fixed atari-py version (ROM missing in newest release)
 - Updated `SAC` and `TD3` search spaces
+- Cleanup eval_freq documentation and variable name changes (@justinkterry)
 
 ## Release 1.0 (2021-03-17)
 
