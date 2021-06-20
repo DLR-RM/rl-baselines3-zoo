@@ -44,4 +44,4 @@ while True:
     break
 
 print('writing gif')
-write_gif(obs_list, "./logs/" + num + '/' + num + '.gif', fps=15)
+write_gif(obs_list, "./gifs/" + num + '.gif', fps=15)
