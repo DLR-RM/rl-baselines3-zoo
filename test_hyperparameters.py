@@ -17,6 +17,8 @@ n_timesteps = 2000000
 with open(num + '.json') as f:
     params = json.load(f)
 
+print(params)
+
 
 def image_transpose(env):
     if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):

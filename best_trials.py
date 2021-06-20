@@ -1,5 +1,6 @@
 import optuna
 import json
+import numpy as np
 
 study = optuna.create_study(study_name='pistonball21', storage='mysql://root:dummy@10.128.0.28/pistonball21', load_if_exists=True, direction="maximize")
 # print(study.best_trial)
@@ -8,17 +9,8 @@ for i in study.trials:
     # print(i.value)
     values.append(i.value)
 
-ordered_indices = []
-scratch_values = values.copy()
-
-for i, value in enumerate(scratch_values):
-    if value is None:
-        scratch_values[i] = -200
-
-for i in range(len(values)):
-    index = scratch_values.index(max(scratch_values))
-    ordered_indices.append(index)
-    scratch_values[index] = -201
+scratch_values = [-np.inf if i is None else i for i in values]
+ordered_indices = np.argsort(scratch_values)[::-1]
 
 for i in range(16):
     params = study.trials[ordered_indices[i]].params
@@ -28,6 +20,8 @@ for i in range(16):
     jsonFile = open(str(i) + ".json", "w+")
     jsonFile.write(text)
     jsonFile.close()
+
+# print([values[i] for i in ordered_indices])
 
 # for i in ordered_indices:
 #     print(values[i])
