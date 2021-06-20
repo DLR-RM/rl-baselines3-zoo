@@ -280,6 +280,25 @@ FetchReach-v1:
   )"
   policy_kwargs: "dict(net_arch=[64, 64])"
 
+
+PandaReach-v1:
+  n_timesteps: !!float 20000
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  batch_size: 256
+  gamma: 0.95
+  learning_rate: 0.001
+  learning_starts: 1000
+  normalize: True
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4
+  )"
+  policy_kwargs: "dict(net_arch=[64, 64])"
+
 # ==== Custom Envs ===
 
 donkey-generated-track-v0:
