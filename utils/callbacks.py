@@ -144,6 +144,7 @@ class ParallelTrainCallback(BaseCallback):
                 return
 
             return wrapper
+
         # Add logger for parallel training
         self._model.set_logger(self.model.logger)
         self.model.train = patch_train(self.model.train)
