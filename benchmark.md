@@ -66,8 +66,8 @@ and also allow users to have access to pretrained agents.*
 |her  |FetchPush-v1               |    -10.526|     8.916|1M         |        150000|         3000|
 |her  |FetchReach-v1              |     -1.677|     1.069|20k        |        150000|         3000|
 |her  |FetchSlide-v1              |    -23.162|    10.625|2M         |        150000|         3000|
-|her  |PandaPickAndPlace-v1       |           |          |1M         |        150000|         3000|
-|her  |PandaPush-v1               |           |          |1M         |        150000|         3000|
+|her  |PandaPickAndPlace-v1       |     -33.80|     20.14|1M         |        150000|         3000|
+|her  |PandaPush-v1               |      -6.40|      2.33|1M         |        150000|         3000|
 |her  |PandaReach-v1              |      -1.80|      0.40|20k        |        150000|         3000|
 |her  |PandaSlide-v1              |           |          |2M         |        150000|         3000|
 |her  |PandaStack-v1              |           |          |2M         |        150000|         3000|

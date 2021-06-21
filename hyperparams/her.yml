@@ -147,6 +147,26 @@ PandaPickAndPlace-v1:
   policy_kwargs: "dict(n_critics=2, net_arch=[512, 512, 512])"
   online_sampling: True
 
+PandaStack-v1:
+  env_wrapper:
+    - sb3_contrib.common.wrappers.TimeFeatureWrapper
+    # - utils.wrappers.DoneOnSuccessWrapper:
+    #     reward_offset: 0
+    #     n_successes: 4
+    # - stable_baselines3.common.monitor.Monitor
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  model_class: 'tqc'
+  n_sampled_goal: 4
+  goal_selection_strategy: 'future'
+  buffer_size: 1000000
+  batch_size: 1024
+  gamma: 0.95
+  learning_rate: !!float 1e-3
+  tau: 0.05
+  policy_kwargs: "dict(n_critics=2, net_arch=[512, 512, 512])"
+  online_sampling: True
+
 # SAC hyperparams
 PandaReach-v1:
   n_timesteps: !!float 20000
