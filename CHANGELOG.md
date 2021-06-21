@@ -35,6 +35,8 @@
 - Fixed atari-py version (ROM missing in newest release)
 - Updated `SAC` and `TD3` search spaces
 - Cleanup eval_freq documentation and variable name changes (@justinkterry)
+- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
+- Clarify n_evaluations help text (@justinkterry)
 
 ## Release 1.0 (2021-03-17)
 
@@ -56,8 +58,6 @@
 
 ### Other
 - Updated `HER` hyperparameters
-- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
-- Clarify n_evaluations and eval_freq help text (@justinkterry)
 
 ## Pre-Release 0.11.1 (2021-02-27)
 
