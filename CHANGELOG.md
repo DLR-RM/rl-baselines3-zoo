@@ -55,6 +55,8 @@
 
 ### Other
 - Updated `HER` hyperparameters
+- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
+- Clarify n_evaluations and eval_freq help text (@justinkterry)
 
 ## Pre-Release 0.11.1 (2021-02-27)
 
@@ -92,8 +94,6 @@
 - Do not wrap channel-first image env (now natively supported by SB3)
 - Removed hack to log success rate
 - Simplify plot script
-- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
-- Clarify n_evaluations help text (@justinkterry)
 
 ## Pre-Release 0.10.0 (2020-10-28)
 
