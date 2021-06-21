@@ -123,7 +123,7 @@ BipedalWalkerHardcore-v3:
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
 # Tuned
-HalfCheetahBulletEnv-v0:
+HalfCheetahBulletEnv-v0: &pybullet-defaults
   env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
@@ -141,95 +141,21 @@ HalfCheetahBulletEnv-v0:
   learning_rate: lin_0.00096
   # learning_rate: !!float 3e-4
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-2, ortho_init=False, full_std=True)"
-
-Walker2DBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
-  normalize: true
-  n_envs: 4
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  ent_coef: 0.0
-  max_grad_norm: 0.5
-  n_steps: 8
-  gae_lambda: 0.9
-  vf_coef: 0.4
-  gamma: 0.99
-  use_rms_prop: True
-  normalize_advantage: False
-  learning_rate: lin_0.00096
-  use_sde: True
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
-# normalize: true
-# n_envs: 4
-# n_timesteps: !!float 2e6
-# policy: 'MlpPolicy'
-# ent_coef: 0.0
-# max_grad_norm: 0.5
-# n_steps: 32
-# gae_lambda: 0.9
-# vf_coef: 0.4
-# gamma: 0.99
-# use_rms_prop: True
-# normalize_advantage: False
-# learning_rate: 0.0002
-# use_sde: True
-# policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+Walker2DBulletEnv-v0:
+  <<: *pybullet-defaults
 
 # Tuned
 AntBulletEnv-v0:
-  normalize: true
-  n_envs: 4
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  ent_coef: 0.0
-  max_grad_norm: 0.5
-  n_steps: 8
-  gae_lambda: 0.9
-  vf_coef: 0.4
-  gamma: 0.99
-  use_rms_prop: True
-  normalize_advantage: False
-  learning_rate: lin_0.00096
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+  <<: *pybullet-defaults
 
 # Tuned
 HopperBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
-  normalize: true
-  n_envs: 4
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  ent_coef: 0.0
-  max_grad_norm: 0.5
-  n_steps: 8
-  gae_lambda: 0.9
-  vf_coef: 0.4
-  gamma: 0.99
-  use_rms_prop: True
-  normalize_advantage: False
-  learning_rate: lin_0.00096
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+  <<: *pybullet-defaults
 
 # Tuned but unstable
 # Not working without SDE?
 ReacherBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
-  normalize: true
-  n_envs: 4
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  ent_coef: 0.0
-  max_grad_norm: 0.5
-  n_steps: 8
-  gae_lambda: 0.9
-  vf_coef: 0.4
-  gamma: 0.99
-  use_rms_prop: True
-  normalize_advantage: False
+  <<: *pybullet-defaults
   learning_rate: lin_0.0008
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
