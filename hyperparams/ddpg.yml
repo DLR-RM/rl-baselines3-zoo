@@ -59,7 +59,7 @@ BipedalWalkerHardcore-v3:
   policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
-HalfCheetahBulletEnv-v0:
+HalfCheetahBulletEnv-v0: &pybullet-defaults
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   gamma: 0.98
@@ -67,55 +67,30 @@ HalfCheetahBulletEnv-v0:
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
+  gradient_steps: 1
+  train_freq: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
 AntBulletEnv-v0:
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
+  <<: *pybullet-defaults
   learning_rate: !!float 7e-4
   policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
 HopperBulletEnv-v0:
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 1000000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
+  <<: *pybullet-defaults
   train_freq: 64
   gradient_steps: 64
   batch_size: 256
   learning_rate: !!float 7e-4
-  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
 Walker2DBulletEnv-v0:
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 1000000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
+  <<: *pybullet-defaults
   batch_size: 256
   learning_rate: !!float 7e-4
-  policy_kwargs: "dict(net_arch=[400, 300])"
-
 
 # TO BE tested
 HumanoidBulletEnv-v0:
@@ -133,41 +108,16 @@ HumanoidBulletEnv-v0:
 
 # Tuned
 ReacherBulletEnv-v0:
+  <<: *pybullet-defaults
   n_timesteps: !!float 3e5
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  train_freq: 1
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
+
 
 # To be tuned
 InvertedDoublePendulumBulletEnv-v0:
+  <<: *pybullet-defaults
   n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # To be tuned
 InvertedPendulumSwingupBulletEnv-v0:
+  <<: *pybullet-defaults
   n_timesteps: !!float 3e5
-  policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
-  learning_starts: 10000
-  noise_type: 'normal'
-  noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
-  learning_rate: !!float 1e-3
-  policy_kwargs: "dict(net_arch=[400, 300])"
