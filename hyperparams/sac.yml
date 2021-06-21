@@ -96,20 +96,20 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
 
 # Tuned
 AntBulletEnv-v0:
-  <<: *pybullet-default
+  <<: *pybullet-defaults
 
 HopperBulletEnv-v0:
-  <<: *pybullet-default
+  <<: *pybullet-defaults
   learning_rate: lin_7.3e-4
 
 Walker2DBulletEnv-v0:
-  <<: *pybullet-default
+  <<: *pybullet-defaults
   learning_rate: lin_7.3e-4
 
 
 # Tuned
 ReacherBulletEnv-v0:
-  <<: *pybullet-default
+  <<: *pybullet-defaults
   n_timesteps: !!float 3e5
 
 HumanoidBulletEnv-v0:
@@ -126,13 +126,13 @@ HumanoidBulletEnv-v0:
 
 # Tuned
 InvertedDoublePendulumBulletEnv-v0:
-  <<: *pybullet-default
+  <<: *pybullet-defaults
   n_timesteps: !!float 5e5
 
 
 # Tuned
 InvertedPendulumSwingupBulletEnv-v0:
-  <<: *pybullet-default
+  <<: *pybullet-defaults
   n_timesteps: !!float 3e5
 
 # To be tuned
@@ -235,7 +235,7 @@ donkey-generated-track-v0:
 
 # === Real Robot envs
 NeckEnvRelative-v2:
-  <<: *pybullet-default
+  <<: *pybullet-defaults
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
