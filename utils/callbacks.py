@@ -136,22 +136,23 @@ class ParallelTrainCallback(BaseCallback):
 
         self.batch_size = self._model.batch_size
 
-        # TODO: update SB3 and check train freq instead
-        # of gradient_steps > 0
-        self.model.gradient_steps = 1
-        self.model.tau = 0.0
-        self.model.learning_rate = 0.0
-        self.model.lr_schedule = lambda _: 0.0
-        self.model.batch_size = 1
-        # Deactivate logger (TODO(toni): fix this when configuring logger works)
-        self.model.log_interval = 1000000
-        # TODO: change learning starts when using gSDE
+        # Disable train method
+        def patch_train(function):
+            @wraps(function)
+            def wrapper(*args, **kwargs):
+                return
+
+            return wrapper
+
+        # Add logger for parallel training
+        self._model.set_logger(self.model.logger)
+        self.model.train = patch_train(self.model.train)
 
         # Hack: Re-add correct values at save time
         def patch_save(function):
             @wraps(function)
             def wrapper(*args, **kwargs):
-                self._model.save(*args, **kwargs)
+                return self._model.save(*args, **kwargs)
 
             return wrapper
 
@@ -166,7 +167,6 @@ class ParallelTrainCallback(BaseCallback):
     def _train_thread(self) -> None:
         self._model.train(gradient_steps=self.gradient_steps, batch_size=self.batch_size)
         self._model_ready = True
-        self.logger.record("train/n_updates_real", self._model._n_updates, exclude="tensorboard")
 
     def _on_step(self) -> bool:
         if self.sleep_time > 0:

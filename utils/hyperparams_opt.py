@@ -153,9 +153,9 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
     buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(1e5), int(1e6)])
     learning_starts = trial.suggest_categorical("learning_starts", [0, 1000, 10000, 20000])
     # train_freq = trial.suggest_categorical('train_freq', [1, 10, 100, 300])
-    train_freq = trial.suggest_categorical("train_freq", [8, 16, 32, 64, 128, 256, 512])
+    train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512])
     # Polyak coeff
-    tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02, 0.05])
+    tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02, 0.05, 0.08])
     # gradient_steps takes too much time
     # gradient_steps = trial.suggest_categorical('gradient_steps', [1, 100, 300])
     gradient_steps = train_freq
@@ -172,7 +172,8 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
         "medium": [256, 256],
         "big": [400, 300],
         # Uncomment for tuning HER
-        # "verybig": [256, 256, 256],
+        # "large": [256, 256, 256],
+        # "verybig": [512, 512, 512],
     }[net_arch]
 
     target_entropy = "auto"
@@ -211,14 +212,11 @@ def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
     learning_rate = trial.suggest_loguniform("lr", 1e-5, 1)
     batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 100, 128, 256, 512, 1024, 2048])
     buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(1e5), int(1e6)])
+    # Polyak coeff
+    tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02, 0.05, 0.08])
 
-    episodic = trial.suggest_categorical("episodic", [True, False])
-
-    if episodic:
-        train_freq, gradient_steps = (1, "episode"), -1
-    else:
-        train_freq = trial.suggest_categorical("train_freq", [1, 16, 128, 256, 1000, 2000])
-        gradient_steps = train_freq
+    train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512])
+    gradient_steps = train_freq
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
     noise_std = trial.suggest_uniform("noise_std", 0, 1)
@@ -243,6 +241,7 @@ def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
         "train_freq": train_freq,
         "gradient_steps": gradient_steps,
         "policy_kwargs": dict(net_arch=net_arch),
+        "tau": tau,
     }
 
     if noise_type == "normal":
@@ -272,15 +271,10 @@ def sample_ddpg_params(trial: optuna.Trial) -> Dict[str, Any]:
     batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 100, 128, 256, 512, 1024, 2048])
     buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(1e5), int(1e6)])
     # Polyak coeff
-    tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02])
+    tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02, 0.05, 0.08])
 
-    episodic = trial.suggest_categorical("episodic", [True, False])
-
-    if episodic:
-        train_freq, gradient_steps = (1, "episode"), -1
-    else:
-        train_freq = trial.suggest_categorical("train_freq", [1, 16, 128, 256, 1000, 2000])
-        gradient_steps = train_freq
+    train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512])
+    gradient_steps = train_freq
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
     noise_std = trial.suggest_uniform("noise_std", 0, 1)
