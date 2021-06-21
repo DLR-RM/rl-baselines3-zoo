@@ -34,7 +34,11 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
     parser.add_argument("--log-interval", help="Override log interval (default: -1, no change)", default=-1, type=int)
     parser.add_argument(
-        "--eval-freq", help="Evaluate the agent every n steps (if negative, no evaluation)", default=10000, type=int
+        "--eval-freq",
+        help="""Evaluate the agent every n steps (if negative, no evaluation). 
+        During hyperparameter optimization n-evaluations is used instead""",
+        default=10000,
+        type=int,
     )
     parser.add_argument("--eval-episodes", help="Number of episodes to use for evaluation", default=5, type=int)
     parser.add_argument("--n-eval-envs", help="Number of environments for evaluation", default=1, type=int)
