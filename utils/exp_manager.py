@@ -253,6 +253,7 @@ class ExperimentManager(object):
         saved_hyperparams = OrderedDict([(key, hyperparams[key]) for key in sorted(hyperparams.keys())])
 
         if self.verbose > 0:
+            print("Default hyperparameters for environment (ones being tuned will be overridden):")
             pprint(saved_hyperparams)
 
         return hyperparams, saved_hyperparams
@@ -602,15 +603,15 @@ class ExperimentManager(object):
 
         eval_env = self.create_envs(n_envs=self.n_eval_envs, eval_env=True)
 
-        eval_freq = int(self.n_timesteps / self.n_evaluations)
+        optuna_eval_freq = int(self.n_timesteps / self.n_evaluations)
         # Account for parallel envs
-        eval_freq_ = max(eval_freq // model.get_env().num_envs, 1)
+        optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
         # Use non-deterministic eval for Atari
         eval_callback = TrialEvalCallback(
             eval_env,
             trial,
             n_eval_episodes=self.n_eval_episodes,
-            eval_freq=eval_freq_,
+            eval_freq=optuna_eval_freq,
             deterministic=self.deterministic_eval,
         )
 
