@@ -20,10 +20,7 @@ Pendulum-v0:
   n_timesteps: 20000
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-3
-  use_sde: True
-  train_freq: [1, "episode"]
-  gradient_steps: -1
-  policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
+
 
 LunarLanderContinuous-v2:
   n_timesteps: !!float 5e5
@@ -75,14 +72,13 @@ BipedalWalkerHardcore-v3:
 # === Bullet envs ===
 
 # Tuned
-HalfCheetahBulletEnv-v0:
+HalfCheetahBulletEnv-v0: &pybullet-defaults
   # env_wrapper:
   #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
   #   - utils.wrappers.DelayedRewardWrapper:
   #       delay: 10
   #   - utils.wrappers.HistoryWrapper:
   #       horizon: 10
-  # env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
@@ -91,75 +87,30 @@ HalfCheetahBulletEnv-v0:
   ent_coef: 'auto'
   gamma: 0.98
   tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
+  train_freq: 8
+  gradient_steps: 8
   learning_starts: 10000
-  replay_buffer_kwargs: "dict(handle_timeout_termination=True)"
+  # replay_buffer_kwargs: "dict(handle_timeout_termination=True)"
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 # Tuned
 AntBulletEnv-v0:
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  <<: *pybullet-defaults
 
 HopperBulletEnv-v0:
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
+  <<: *pybullet-defaults
   learning_rate: lin_7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 Walker2DBulletEnv-v0:
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
+  <<: *pybullet-defaults
   learning_rate: lin_7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 
 # Tuned
 ReacherBulletEnv-v0:
+  <<: *pybullet-defaults
   n_timesteps: !!float 3e5
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 HumanoidBulletEnv-v0:
   normalize: "{'norm_obs': True, 'norm_reward': False}"
@@ -175,62 +126,38 @@ HumanoidBulletEnv-v0:
 
 # Tuned
 InvertedDoublePendulumBulletEnv-v0:
+  <<: *pybullet-defaults
   n_timesteps: !!float 5e5
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+
 
 # Tuned
 InvertedPendulumSwingupBulletEnv-v0:
+  <<: *pybullet-defaults
   n_timesteps: !!float 3e5
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.98
-  tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
-  learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
 # To be tuned
 MinitaurBulletEnv-v0:
-  normalize: "{'norm_obs': True, 'norm_reward': False}"
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  learning_rate: lin_3e-4
-  buffer_size: 1000000
-  batch_size: 64
-  ent_coef: 'auto'
-  # ent_coef: 0.0003
-  train_freq: 1
-  gradient_steps: 1
-  learning_starts: 1000
-
-# To be tuned
-MinitaurBulletDuckEnv-v0:
-  # normalize: "{'norm_obs': True, 'norm_reward': False}"
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  learning_rate: lin_3e-4
+  learning_rate: !!float 3e-4
   buffer_size: 1000000
   batch_size: 256
   ent_coef: 'auto'
   train_freq: 1
   gradient_steps: 1
-  learning_starts: 1000
+  learning_starts: 10000
+
+# To be tuned
+MinitaurBulletDuckEnv-v0:
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 3e-4
+  buffer_size: 1000000
+  batch_size: 256
+  ent_coef: 'auto'
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 10000
 
 # To be tuned
 CarRacing-v0:
@@ -308,6 +235,7 @@ donkey-generated-track-v0:
 
 # === Real Robot envs
 NeckEnvRelative-v2:
+  <<: *pybullet-defaults
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
@@ -315,13 +243,8 @@ NeckEnvRelative-v2:
     #     freq: 2.0
     #     df: 25.0
   n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
   buffer_size: 100000
-  batch_size: 256
-  ent_coef: 'auto'
   gamma: 0.99
-  tau: 0.02
   train_freq: [1, "episode"]
   gradient_steps: -1
   # 10 episodes of warm-up
