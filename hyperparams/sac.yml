@@ -137,15 +137,30 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 # To be tuned
 MinitaurBulletEnv-v0:
+# MinitaurBulletEnv-v0:
+#   n_timesteps: !!float 1e6
+#   policy: 'MlpPolicy'
+#   learning_rate: !!float 3e-4
+#   buffer_size: 100000
+#   batch_size: 256
+#   ent_coef: 'auto'
+#   # ent_coef: 0.0003
+#   train_freq: 1
+#   gradient_steps: 1
+#   learning_starts: 10000
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
   buffer_size: 1000000
   batch_size: 256
   ent_coef: 'auto'
-  train_freq: 1
-  gradient_steps: 1
+  gamma: 0.99
+  train_freq: 4
+  gradient_steps: 4
   learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3)"
+
 
 # To be tuned
 MinitaurBulletDuckEnv-v0:
@@ -212,18 +227,40 @@ parking-v0:
   n_timesteps: !!float 1e5
   policy: 'MultiInputPolicy'
   buffer_size: 1000000
-  batch_size: 1024
-  gamma: 0.95
-  learning_rate: !!float 1e-3
-  tau: 0.05
+  batch_size: 512
+  gamma: 0.9
+  learning_rate: !!float 3e-3
+  tau: 0.01
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
     online_sampling=True,
     goal_selection_strategy='future',
-    n_sampled_goal=4,
+    n_sampled_goal=5,
     max_episode_length=100
   )"
-  policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
+  train_freq: 8
+  gradient_steps: 8
+  # use_sde: True
+  policy_kwargs: "dict(log_std_init=-1.6, net_arch=[256, 256, 256], n_critics=2)"
+
+
+  # n_timesteps: !!float 1e5
+  # policy: 'MultiInputPolicy'
+  # buffer_size: 1000000
+  # batch_size: 1024
+  # gamma: 0.95
+  # learning_rate: !!float 1e-3
+  # tau: 0.05
+  # replay_buffer_class: HerReplayBuffer
+  # replay_buffer_kwargs: "dict(
+  #   online_sampling=True,
+  #   goal_selection_strategy='future',
+  #   n_sampled_goal=4,
+  #   max_episode_length=100
+  # )"
+  # policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
+
+
 
 # ==== Custom Envs ===
 
