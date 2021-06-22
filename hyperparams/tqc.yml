@@ -91,6 +91,7 @@ AntBulletEnv-v0:
 HopperBulletEnv-v0:
   <<: *pybullet-defaults
   learning_rate: lin_7.3e-4
+  top_quantiles_to_drop_per_net: 5
 
 # Tuned
 Walker2DBulletEnv-v0:
