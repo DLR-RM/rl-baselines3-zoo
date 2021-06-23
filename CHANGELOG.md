@@ -1,12 +1,13 @@
-## Release 1.1.0a10 (WIP)
+## Release 1.1.0a11 (WIP)
 
 ### Breaking Changes
-- Upgrade to SB3 >= 1.1.0a10 (master version)
-- Upgrade to sb3-contrib >= 1.1.0a6
+- Upgrade to SB3 >= 1.1.0a11 (master version)
+- Upgrade to sb3-contrib >= 1.1.011
 - Add timeout handling (cf SB3 doc)
 - `HER` is now a replay buffer class and no more an algorithm
 - Removed `PlotNoiseRatioCallback`
 - Removed `PlotActionWrapper`
+- Changed `'lr'` key in Optuna param dict to `'learning_rate'` so the dict can be directly passed to SB3 methods (@justinkterry)
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
@@ -16,6 +17,7 @@
 - Added support for using multiple envs for evaluation
 - Added `--load-last-checkpoint` option for the enjoy script
 - Save Optuna study object at the end of hyperparameter optimization and plot the results (`plotly` package required)
+- Allow to pass multiple folders to `scripts/plot_train.py`
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
@@ -34,6 +36,9 @@
 - Fixed atari-py version (ROM missing in newest release)
 - Updated `SAC` and `TD3` search spaces
 - Cleanup eval_freq documentation and variable name changes (@justinkterry)
+- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
+- Clarify n_evaluations help text (@justinkterry)
+- Simplified hyperparameters files making use of defaults
 
 ## Release 1.0 (2021-03-17)
 
@@ -92,8 +97,6 @@
 - Do not wrap channel-first image env (now natively supported by SB3)
 - Removed hack to log success rate
 - Simplify plot script
-- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
-- Clarify n_evaluations help text (@justinkterry)
 
 ## Pre-Release 0.10.0 (2020-10-28)
 
