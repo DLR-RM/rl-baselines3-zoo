@@ -358,6 +358,18 @@ We used the v1 environments.
 | HER+TQC  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
+### Panda robot Environments
+
+See https://github.com/qgallouedec/panda-gym/.
+
+Similar to [MuJoCo Robotics Envs](https://gym.openai.com/envs/#robotics) but with a free simulator: pybullet.
+
+We used the v1 environments.
+
+|  RL Algo |  PandaReach | PandaPickAndPlace | PandaPush | PandaSlide | PandaStack |
+|----------|-------------|-------------------|-----------|------------|------------|
+| HER+TQC  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+
 
 ### MiniGrid Envs
 
