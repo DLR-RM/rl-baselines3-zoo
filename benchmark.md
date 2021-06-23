@@ -66,11 +66,11 @@ and also allow users to have access to pretrained agents.*
 |her  |FetchPush-v1               |    -10.526|     8.916|1M         |        150000|         3000|
 |her  |FetchReach-v1              |     -1.677|     1.069|20k        |        150000|         3000|
 |her  |FetchSlide-v1              |    -23.162|    10.625|2M         |        150000|         3000|
-|her  |PandaPickAndPlace-v1       |     -33.80|     20.14|1M         |        150000|         3000|
-|her  |PandaPush-v1               |      -6.40|      2.33|1M         |        150000|         3000|
-|her  |PandaReach-v1              |      -1.80|      0.40|20k        |        150000|         3000|
-|her  |PandaSlide-v1              |           |          |2M         |        150000|         3000|
-|her  |PandaStack-v1              |           |          |2M         |        150000|         3000|
+|her  |PandaPickAndPlace-v1       |     -7.499|     4.811|1M         |        150000|         3000|
+|her  |PandaPush-v1               |     -6.491|     6.731|1M         |        150000|         3000|
+|her  |PandaReach-v1              |     -1.689|      0.81|20k        |        150000|         3000|
+|her  |PandaSlide-v1              |    -26.469|     12.00|2M         |        150000|         3000|
+|her  |PandaStack-v1              |    -97.573|     15.30|2M         |        150000|         1500|
 |her  |parking-v0                 |     -6.970|     2.970|200k       |        149980|         7106|
 |ppo  |Acrobot-v1                 |    -73.506|    18.201|1M         |        149979|         2013|
 |ppo  |AntBulletEnv-v0            |   2865.922|    56.468|2M         |        150000|          150|
