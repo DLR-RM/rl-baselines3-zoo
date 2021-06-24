@@ -31,4 +31,4 @@ except ImportError:
 try:
     import panda_gym  # pytype: disable=import-error
 except ImportError:
-    gym_donkeycar = None
+    panda_gym = None
