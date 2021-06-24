@@ -77,8 +77,8 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   ent_coef: 'auto'
   gamma: 0.98
   tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
+  train_freq: 8
+  gradient_steps: 8
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
@@ -91,6 +91,7 @@ AntBulletEnv-v0:
 HopperBulletEnv-v0:
   <<: *pybullet-defaults
   learning_rate: lin_7.3e-4
+  top_quantiles_to_drop_per_net: 5
 
 # Tuned
 Walker2DBulletEnv-v0:
@@ -113,8 +114,8 @@ HumanoidBulletEnv-v0:
   ent_coef: 'auto'
   gamma: 0.98
   tau: 0.02
-  train_freq: 64
-  gradient_steps: 64
+  train_freq: 8
+  gradient_steps: 8
   learning_starts: 10000
   top_quantiles_to_drop_per_net: 5
   use_sde: True
@@ -127,6 +128,19 @@ InvertedDoublePendulumBulletEnv-v0:
 InvertedPendulumSwingupBulletEnv-v0:
   <<: *pybullet-defaults
   n_timesteps: !!float 3e5
+
+MinitaurBulletEnv-v0:
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 3e-4
+  buffer_size: 100000
+  batch_size: 256
+  ent_coef: 'auto'
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 10000
+  # top_quantiles_to_drop_per_net: 5
+
 
 
 # === HER Robotics GoalEnvs ===

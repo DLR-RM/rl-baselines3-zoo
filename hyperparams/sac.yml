@@ -137,29 +137,28 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 # To be tuned
 MinitaurBulletEnv-v0:
-# MinitaurBulletEnv-v0:
-#   n_timesteps: !!float 1e6
-#   policy: 'MlpPolicy'
-#   learning_rate: !!float 3e-4
-#   buffer_size: 100000
-#   batch_size: 256
-#   ent_coef: 'auto'
-#   # ent_coef: 0.0003
-#   train_freq: 1
-#   gradient_steps: 1
-#   learning_starts: 10000
+  normalize: "{'norm_obs': True, 'norm_reward': False}"
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
-  buffer_size: 1000000
+  buffer_size: 100000
   batch_size: 256
   ent_coef: 'auto'
-  gamma: 0.99
-  train_freq: 4
-  gradient_steps: 4
+  train_freq: 1
+  gradient_steps: 1
   learning_starts: 10000
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-3)"
+  # n_timesteps: !!float 1e6
+  # policy: 'MlpPolicy'
+  # learning_rate: !!float 3e-4
+  # buffer_size: 1000000
+  # batch_size: 256
+  # ent_coef: 'auto'
+  # gamma: 0.99
+  # train_freq: 4
+  # gradient_steps: 4
+  # learning_starts: 10000
+  # use_sde: True
+  # policy_kwargs: "dict(log_std_init=-3)"
 
 
 # To be tuned
