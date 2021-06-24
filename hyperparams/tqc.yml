@@ -165,7 +165,7 @@ FetchReach-v1:
   policy_kwargs: "dict(net_arch=[64, 64], n_critics=1)"
 
 FetchPush-v1: &her-defaults
-  # env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MultiInputPolicy'
   buffer_size: 1000000

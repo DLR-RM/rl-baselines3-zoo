@@ -137,7 +137,7 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 # To be tuned
 MinitaurBulletEnv-v0:
-  normalize: "{'norm_obs': True, 'norm_reward': False}"
+  # normalize: "{'norm_obs': True, 'norm_reward': False}"
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
