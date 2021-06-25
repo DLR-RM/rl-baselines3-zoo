@@ -185,6 +185,7 @@ FetchPickAndPlace-v1:
   <<: *her-defaults
 
 PandaReach-v1:
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 20000
   policy: 'MultiInputPolicy'
   buffer_size: 1000000
@@ -204,18 +205,20 @@ PandaReach-v1:
 
 PandaPush-v1:
   <<: *her-defaults
+  policy_kwargs: "dict(net_arch=[256, 256, 256], n_critics=2)"
 
 PandaSlide-v1:
   <<: *her-defaults
   n_timesteps: !!float 3e6
+  policy_kwargs: "dict(net_arch=[256, 256, 256], n_critics=2)"
 
 PandaPickAndPlace-v1:
   <<: *her-defaults
-  batch_size: 1024
+  policy_kwargs: "dict(net_arch=[256, 256, 256], n_critics=2)"
 
 PandaStack-v1:
   <<: *her-defaults
-  batch_size: 1024
+  policy_kwargs: "dict(net_arch=[256, 256, 256], n_critics=2)"
 
 parking-v0:
   <<: *her-defaults
