@@ -19,7 +19,6 @@ Pendulum-v0:
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-3
 
-
 LunarLanderContinuous-v2:
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
@@ -98,11 +97,9 @@ Walker2DBulletEnv-v0:
   <<: *pybullet-defaults
   learning_rate: lin_7.3e-4
 
-
 ReacherBulletEnv-v0:
   <<: *pybullet-defaults
   n_timesteps: !!float 3e5
-
 
 # Almost tuned
 HumanoidBulletEnv-v0:
@@ -142,9 +139,7 @@ MinitaurBulletEnv-v0:
   # top_quantiles_to_drop_per_net: 5
 
 
-
 # === HER Robotics GoalEnvs ===
-
 FetchReach-v1:
   env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 20000
@@ -182,14 +177,12 @@ FetchPush-v1: &her-defaults
   )"
   policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
 
-
 FetchSlide-v1:
   <<: *her-defaults
   n_timesteps: !!float 3e6
 
 FetchPickAndPlace-v1:
   <<: *her-defaults
-
 
 parking-v0:
   <<: *her-defaults
