@@ -36,6 +36,7 @@
 - Updated `SAC` and `TD3` search spaces
 - Cleanup eval_freq documentation and variable name changes (@justinkterry)
 - Simplified hyperparameters files making use of defaults
+- Added new TQC+HER agents
 
 ## Release 1.0 (2021-03-17)
 
