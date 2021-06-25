@@ -39,6 +39,7 @@
 - Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
 - Clarify n_evaluations help text (@justinkterry)
 - Simplified hyperparameters files making use of defaults
+- Added new TQC+HER agents
 
 ## Release 1.0 (2021-03-17)
 

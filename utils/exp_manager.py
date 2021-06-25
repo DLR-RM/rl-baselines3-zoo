@@ -76,6 +76,7 @@ class ExperimentManager(object):
         verbose: int = 1,
         vec_env_type: str = "dummy",
         n_eval_envs: int = 1,
+        no_optim_plots: bool = False,
     ):
         super(ExperimentManager, self).__init__()
         self.algo = algo
@@ -115,6 +116,7 @@ class ExperimentManager(object):
         self.optimize_hyperparameters = optimize_hyperparameters
         self.storage = storage
         self.study_name = study_name
+        self.no_optim_plots = no_optim_plots
         # maximum number of trials for finding the best hyperparams
         self.n_trials = n_trials
         # number of parallel jobs when doing hyperparameter search
@@ -705,6 +707,10 @@ class ExperimentManager(object):
         # Save python object to inspect/re-use it later
         with open(f"{log_path}.pkl", "wb+") as f:
             pkl.dump(study, f)
+
+        # Skip plots
+        if self.no_optim_plots:
+            return
 
         # Plot optimization result
         try:

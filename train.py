@@ -53,6 +53,9 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument(
         "-optimize", "--optimize-hyperparameters", action="store_true", default=False, help="Run hyperparameters search"
     )
+    parser.add_argument(
+        "--no-optim-plots", action="store_true", default=False, help="Disable hyperparameter optimization plots"
+    )
     parser.add_argument("--n-jobs", help="Number of parallel jobs when optimizing hyperparameters", type=int, default=1)
     parser.add_argument(
         "--sampler",
@@ -168,6 +171,7 @@ if __name__ == "__main__":  # noqa: C901
         verbose=args.verbose,
         vec_env_type=args.vec_env,
         n_eval_envs=args.n_eval_envs,
+        no_optim_plots=args.no_optim_plots,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
