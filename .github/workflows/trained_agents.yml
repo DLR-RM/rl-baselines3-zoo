@@ -37,6 +37,8 @@ jobs:
         pip install opencv-python-headless
         # install parking-env to test HER
         pip install git+https://github.com/eleurent/highway-env
+        # Add support for pickle5 protocol
+        pip install pickle5
     - name: Check trained agents
       run: |
         make check-trained-agents
