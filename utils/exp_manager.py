@@ -614,7 +614,7 @@ class ExperimentManager(object):
                 eval_env,
                 trial,
                 best_model_save_path=self.logging + str(trial.number) + "/",
-                log_path=self.logging + +str(trial.number) + "/",
+                log_path=self.logging + str(trial.number) + "/",
                 n_eval_episodes=self.n_eval_episodes,
                 eval_freq=optuna_eval_freq,
                 deterministic=self.deterministic_eval,
