@@ -26,8 +26,8 @@ class TrialEvalCallback(EvalCallback):
         eval_freq: int = 10000,
         deterministic: bool = True,
         verbose: int = 0,
-        best_model_save_path: str = "",
-        log_path: str = "",
+        best_model_save_path: str = None,
+        log_path: str = None,
     ):
 
         super(TrialEvalCallback, self).__init__(
