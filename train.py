@@ -40,6 +40,12 @@ if __name__ == "__main__":  # noqa: C901
         default=10000,
         type=int,
     )
+    parser.add_argument(
+        "--logging",
+        help="Path to save the evaluation log and optimal policy for each hyperparameter tried during optimization",
+        default="",
+        type=str,
+    )
     parser.add_argument("--eval-episodes", help="Number of episodes to use for evaluation", default=5, type=int)
     parser.add_argument("--n-eval-envs", help="Number of environments for evaluation", default=1, type=int)
     parser.add_argument("--save-freq", help="Save the model every n steps (if negative, no checkpoint)", default=-1, type=int)
@@ -158,6 +164,7 @@ if __name__ == "__main__":  # noqa: C901
         args.n_jobs,
         args.sampler,
         args.pruner,
+        args.logging,
         n_startup_trials=args.n_startup_trials,
         n_evaluations=args.n_evaluations,
         truncate_last_trajectory=args.truncate_last_trajectory,

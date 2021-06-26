@@ -72,6 +72,7 @@ class ExperimentManager(object):
         uuid_str: str = "",
         seed: int = 0,
         log_interval: int = 0,
+        logging: str = "",
         save_replay_buffer: bool = False,
         verbose: int = 1,
         vec_env_type: str = "dummy",
@@ -89,6 +90,7 @@ class ExperimentManager(object):
         self.env_wrapper = None
         self.frame_stack = None
         self.seed = seed
+        self.logging = logging
 
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
 
@@ -605,13 +607,24 @@ class ExperimentManager(object):
         # Account for parallel envs
         optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
         # Use non-deterministic eval for Atari
-        eval_callback = TrialEvalCallback(
-            eval_env,
-            trial,
-            n_eval_episodes=self.n_eval_episodes,
-            eval_freq=optuna_eval_freq,
-            deterministic=self.deterministic_eval,
-        )
+        if self.logging != "":
+            eval_callback = TrialEvalCallback(
+                eval_env,
+                trial,
+                best_model_save_path=self.logging + str(trial.number) + "/",
+                log_path=self.logging + +str(trial.number) + "/",
+                n_eval_episodes=self.n_eval_episodes,
+                eval_freq=optuna_eval_freq,
+                deterministic=self.deterministic_eval,
+            )
+        else:
+            eval_callback = TrialEvalCallback(
+                eval_env,
+                trial,
+                n_eval_episodes=self.n_eval_episodes,
+                eval_freq=optuna_eval_freq,
+                deterministic=self.deterministic_eval,
+            )
 
         try:
             model.learn(self.n_timesteps, callback=eval_callback)

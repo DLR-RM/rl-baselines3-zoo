@@ -18,6 +18,7 @@
 - Added `--load-last-checkpoint` option for the enjoy script
 - Save Optuna study object at the end of hyperparameter optimization and plot the results (`plotly` package required)
 - Allow to pass multiple folders to `scripts/plot_train.py`
+- Flag to save logs and optimal policies from each training run (@justinkterry)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
