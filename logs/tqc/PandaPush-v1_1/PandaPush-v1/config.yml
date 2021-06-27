@@ -1,0 +1,24 @@
+!!python/object/apply:collections.OrderedDict
+- - - batch_size
+    - 512
+  - - buffer_size
+    - 1000000
+  - - env_wrapper
+    - sb3_contrib.common.wrappers.TimeFeatureWrapper
+  - - gamma
+    - 0.98
+  - - learning_rate
+    - 0.001
+  - - n_timesteps
+    - 1000000.0
+  - - policy
+    - MultiInputPolicy
+  - - policy_kwargs
+    - dict(net_arch=[512, 512, 512], n_critics=2)
+  - - replay_buffer_class
+    - HerReplayBuffer
+  - - replay_buffer_kwargs
+    - dict( online_sampling=True, goal_selection_strategy='future', n_sampled_goal=4,
+      max_episode_length=100 )
+  - - tau
+    - 0.005

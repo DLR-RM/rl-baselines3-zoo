@@ -1,0 +1,63 @@
+!!python/object/apply:collections.OrderedDict
+- - - algo
+    - tqc
+  - - env
+    - PandaReach-v1
+  - - env_kwargs
+    - null
+  - - eval_episodes
+    - 5
+  - - eval_freq
+    - 10000
+  - - gym_packages
+    - []
+  - - hyperparams
+    - null
+  - - log_folder
+    - logs
+  - - log_interval
+    - -1
+  - - n_eval_envs
+    - 1
+  - - n_evaluations
+    - 20
+  - - n_jobs
+    - 1
+  - - n_startup_trials
+    - 10
+  - - n_timesteps
+    - -1
+  - - n_trials
+    - 10
+  - - no_optim_plots
+    - false
+  - - num_threads
+    - -1
+  - - optimize_hyperparameters
+    - false
+  - - pruner
+    - median
+  - - sampler
+    - tpe
+  - - save_freq
+    - -1
+  - - save_replay_buffer
+    - false
+  - - seed
+    - 1022305742
+  - - storage
+    - null
+  - - study_name
+    - null
+  - - tensorboard_log
+    - ''
+  - - trained_agent
+    - ''
+  - - truncate_last_trajectory
+    - true
+  - - uuid
+    - false
+  - - vec_env
+    - dummy
+  - - verbose
+    - 1
