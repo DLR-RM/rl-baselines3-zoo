@@ -164,16 +164,15 @@ FetchPush-v1: &her-defaults
   n_timesteps: !!float 1e6
   policy: 'MultiInputPolicy'
   buffer_size: 1000000
-  batch_size: 512
-  gamma: 0.98
+  batch_size: 2048
+  gamma: 0.95
   learning_rate: !!float 1e-3
-  tau: 0.005
+  tau: 0.05
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
     online_sampling=True,
     goal_selection_strategy='future',
     n_sampled_goal=4,
-    max_episode_length=100
   )"
   policy_kwargs: "dict(net_arch=[512, 512, 512], n_critics=2)"
 
