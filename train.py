@@ -41,8 +41,8 @@ if __name__ == "__main__":  # noqa: C901
         type=int,
     )
     parser.add_argument(
-        "--logging",
-        help="Path to save the evaluation log and optimal policy for each hyperparameter tried during optimization",
+        "--optimization-log-path",
+        help="Path to save the evaluation log and optimal policy for each hyperparameter tried during optimization. Disabled if no argument is passed.",
         default="",
         type=str,
     )
@@ -167,7 +167,7 @@ if __name__ == "__main__":  # noqa: C901
         args.n_jobs,
         args.sampler,
         args.pruner,
-        args.logging,
+        args.optimization_log_path,
         n_startup_trials=args.n_startup_trials,
         n_evaluations=args.n_evaluations,
         truncate_last_trajectory=args.truncate_last_trajectory,

@@ -66,7 +66,7 @@ class ExperimentManager(object):
         n_jobs: int = 1,
         sampler: str = "tpe",
         pruner: str = "median",
-        logging: str = "",
+        optimization_log_path: str = "",
         n_startup_trials: int = 0,
         n_evaluations: int = 1,
         truncate_last_trajectory: bool = False,
@@ -91,7 +91,7 @@ class ExperimentManager(object):
         self.env_wrapper = None
         self.frame_stack = None
         self.seed = seed
-        self.logging = logging
+        self.optimization_log_path = optimization_log_path
 
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
 
@@ -609,24 +609,18 @@ class ExperimentManager(object):
         # Account for parallel envs
         optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
         # Use non-deterministic eval for Atari
-        if self.logging != "":
-            eval_callback = TrialEvalCallback(
-                eval_env,
-                trial,
-                best_model_save_path=self.logging + str(trial.number) + "/",
-                log_path=self.logging + str(trial.number) + "/",
-                n_eval_episodes=self.n_eval_episodes,
-                eval_freq=optuna_eval_freq,
-                deterministic=self.deterministic_eval,
-            )
-        else:
-            eval_callback = TrialEvalCallback(
-                eval_env,
-                trial,
-                n_eval_episodes=self.n_eval_episodes,
-                eval_freq=optuna_eval_freq,
-                deterministic=self.deterministic_eval,
-            )
+        path = None
+        if self.optimization_log_path != "":
+            path = self.logging + str(trial.number) + "/"
+        eval_callback = TrialEvalCallback(
+            eval_env,
+            trial,
+            best_model_save_path=path,
+            log_path=path,
+            n_eval_episodes=self.n_eval_episodes,
+            eval_freq=optuna_eval_freq,
+            deterministic=self.deterministic_eval,
+        )
 
         try:
             model.learn(self.n_timesteps, callback=eval_callback)
