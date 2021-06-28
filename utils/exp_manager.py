@@ -611,7 +611,7 @@ class ExperimentManager(object):
         # Use non-deterministic eval for Atari
         path = None
         if self.optimization_log_path != "":
-            path = self.logging + str(trial.number) + "/"
+            path = self.optimization_log_path + str(trial.number) + "/"
         eval_callback = TrialEvalCallback(
             eval_env,
             trial,
