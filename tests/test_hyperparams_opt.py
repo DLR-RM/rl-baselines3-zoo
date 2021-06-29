@@ -60,7 +60,7 @@ def test_optimize(tmp_path, sampler, pruner, experiment):
         "--n-startup-trials",
         str(1),
         "--optimization-log-path",
-        "./logs/"
+        "./logs/",
         "-optimize",
     ]
 
