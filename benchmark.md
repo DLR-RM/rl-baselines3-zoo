@@ -62,11 +62,6 @@ and also allow users to have access to pretrained agents.*
 |dqn  |RoadRunnerNoFrameskip-v4   |  40396.350|  7069.131|10M        |        603257|          137|
 |dqn  |SeaquestNoFrameskip-v4     |   2000.290|   606.644|10M        |        599505|           69|
 |dqn  |SpaceInvadersNoFrameskip-v4|    622.742|   201.564|10M        |        604311|          155|
-|her  |FetchPickAndPlace-v1       |     -8.921|     6.509|1M         |        150000|         3000|
-|her  |FetchPush-v1               |    -10.526|     8.916|1M         |        150000|         3000|
-|her  |FetchReach-v1              |     -1.677|     1.069|20k        |        150000|         3000|
-|her  |FetchSlide-v1              |    -23.162|    10.625|2M         |        150000|         3000|
-|her  |parking-v0                 |     -6.970|     2.970|200k       |        149980|         7106|
 |ppo  |Acrobot-v1                 |    -73.506|    18.201|1M         |        149979|         2013|
 |ppo  |AntBulletEnv-v0            |   2865.922|    56.468|2M         |        150000|          150|
 |ppo  |AsteroidsNoFrameskip-v4    |   2156.174|   744.640|10M        |        602092|          149|
@@ -126,6 +121,10 @@ and also allow users to have access to pretrained agents.*
 |tqc  |AntBulletEnv-v0            |   3456.717|   248.733|1M         |        150000|          150|
 |tqc  |BipedalWalker-v3           |    329.808|    45.083|500k       |        149682|          254|
 |tqc  |BipedalWalkerHardcore-v3   |    235.226|   110.569|2M         |        149032|          131|
+|tqc  |FetchPickAndPlace-v1       |     -9.331|     6.850|1M         |        150000|         3000|
+|tqc  |FetchPush-v1               |     -8.799|     5.438|1M         |        150000|         3000|
+|tqc  |FetchReach-v1              |     -1.659|     0.873|20k        |        150000|         3000|
+|tqc  |FetchSlide-v1              |    -29.210|    11.387|3M         |        150000|         3000|
 |tqc  |HalfCheetahBulletEnv-v0    |   3675.299|    17.681|1M         |        150000|          150|
 |tqc  |HopperBulletEnv-v0         |   2662.373|   206.210|1M         |        149881|          151|
 |tqc  |LunarLanderContinuous-v2   |    277.956|    25.466|500k       |        149928|          706|
@@ -133,3 +132,4 @@ and also allow users to have access to pretrained agents.*
 |tqc  |Pendulum-v0                |   -151.340|    87.893|20k        |        150000|          750|
 |tqc  |ReacherBulletEnv-v0        |     18.255|     9.543|300k       |        150000|         1000|
 |tqc  |Walker2DBulletEnv-v0       |   2508.934|   614.624|1M         |        149572|          159|
+|tqc  |parking-v0                 |     -6.762|     2.690|100k       |        149983|         7528|
