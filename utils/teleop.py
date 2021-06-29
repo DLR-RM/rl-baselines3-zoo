@@ -370,7 +370,7 @@ class HumanTeleop(BaseAlgorithm):
         assert self.replay_buffer is not None, "The replay buffer is not defined"
         save_to_pkl(path, self.replay_buffer, self.verbose)
 
-    def load_replay_buffer(self, path) -> None:
+    def load_replay_buffer(self, path, truncate_last_traj=False) -> None:
         """
         Load a replay buffer from a pickle file.
 
