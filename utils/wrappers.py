@@ -27,9 +27,9 @@ class VecForceResetWrapper(VecEnvWrapper):
 
     def step_wait(self) -> VecEnvStepReturn:
         for env_idx in range(self.num_envs):
-            obs, self.buf_rews[env_idx], self.buf_dones[env_idx], self.buf_infos[env_idx] = self.envs[
-                env_idx
-            ].step(self.actions[env_idx])
+            obs, self.buf_rews[env_idx], self.buf_dones[env_idx], self.buf_infos[env_idx] = self.envs[env_idx].step(
+                self.actions[env_idx]
+            )
             self._save_obs(env_idx, obs)
 
         if self.buf_dones.any():

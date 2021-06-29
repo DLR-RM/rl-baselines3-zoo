@@ -23,7 +23,7 @@ try:
         bear=BEAR,
         cql=CQL,
         crr=CRR,
-        td3bc=TD3PlusBC
+        td3bc=TD3PlusBC,
     )
 except ImportError:
     offline_algos = {}
@@ -235,7 +235,7 @@ if __name__ == "__main__":  # noqa: C901
             "add_to_buffer",
             "deterministic",
             "net_arch",
-            "scaler"
+            "scaler",
         }:
             if arg_name in args.pretrain_params:
                 del args.pretrain_params[arg_name]
