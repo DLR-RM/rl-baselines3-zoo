@@ -251,7 +251,11 @@ class HumanTeleop(BaseAlgorithm):
 
             new_obs, reward, done, infos = self.env.step(action)
 
-            self.replay_buffer.add(self._last_obs, new_obs, buffer_action, reward, done)
+            next_obs = new_obs
+            if done and infos[0].get("terminal_observation") is not None:
+                next_obs = infos[0]["terminal_observation"]
+
+            self.replay_buffer.add(self._last_obs, next_obs, buffer_action, reward, done, infos)
 
             self._last_obs = new_obs
 

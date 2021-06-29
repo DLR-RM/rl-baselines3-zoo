@@ -418,7 +418,7 @@ def evaluate_policy_add_to_buffer(
 
         while not done:
             action, state = model.predict(obs, state=state, deterministic=deterministic)
-            new_obs, reward, done, _info = env.step(action)
+            new_obs, reward, done, info = env.step(action)
             episode_reward += reward
             if callback is not None:
                 callback(locals(), globals())
@@ -426,7 +426,7 @@ def evaluate_policy_add_to_buffer(
             if replay_buffer is not None:
                 # We assume actions are normalized but not observation/reward
                 buffer_action = action
-                replay_buffer.add(obs, new_obs, buffer_action, reward, done)
+                replay_buffer.add(obs, new_obs, buffer_action, reward, done, info)
             obs = new_obs
             if render:
                 env.render()

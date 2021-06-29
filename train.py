@@ -11,7 +11,7 @@ import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
 try:
-    from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL, CRR
+    from d3rlpy.algos import AWAC, AWR, BC, BCQ, BEAR, CQL, CRR, TD3PlusBC
     from d3rlpy.models.encoders import VectorEncoderFactory
     from d3rlpy.wrappers.sb3 import SB3Wrapper, to_mdp_dataset
 
@@ -23,6 +23,7 @@ try:
         bear=BEAR,
         cql=CQL,
         crr=CRR,
+        td3bc=TD3PlusBC
     )
 except ImportError:
     offline_algos = {}
@@ -223,6 +224,7 @@ if __name__ == "__main__":  # noqa: C901
         add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
         deterministic = args.pretrain_params.get("deterministic", True)
         net_arch = args.pretrain_params.get("net_arch", [256, 256])
+        scaler = args.pretrain_params.get("scaler", "standard")
         encoder_factory = VectorEncoderFactory(hidden_units=net_arch)
         for arg_name in {
             "n_iterations",
@@ -233,6 +235,7 @@ if __name__ == "__main__":  # noqa: C901
             "add_to_buffer",
             "deterministic",
             "net_arch",
+            "scaler"
         }:
             if arg_name in args.pretrain_params:
                 del args.pretrain_params[arg_name]
@@ -253,7 +256,7 @@ if __name__ == "__main__":  # noqa: C901
 
             for i in range(n_iterations):
                 dataset = to_mdp_dataset(model.replay_buffer)
-                offline_model.fit(dataset.episodes, n_epochs=n_epochs, save_metrics=False, tensorboard=False)
+                offline_model.fit(dataset.episodes, n_epochs=n_epochs, save_metrics=False)
 
                 mean_reward, std_reward = evaluate_policy_add_to_buffer(
                     offline_model,
