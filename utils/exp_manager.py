@@ -66,7 +66,7 @@ class ExperimentManager(object):
         n_jobs: int = 1,
         sampler: str = "tpe",
         pruner: str = "median",
-        optimization_log_path: str = "",
+        optimization_log_path: Optional[str] = None,
         n_startup_trials: int = 0,
         n_evaluations: int = 1,
         truncate_last_trajectory: bool = False,
@@ -610,8 +610,8 @@ class ExperimentManager(object):
         optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
         # Use non-deterministic eval for Atari
         path = None
-        if self.optimization_log_path != "":
-            path = self.optimization_log_path + str(trial.number) + "/"
+        if self.optimization_log_path is not None:
+            path = os.path.join(self.optimization_log_path, f"trial_{str(trial.number)}")
         eval_callback = TrialEvalCallback(
             eval_env,
             trial,
