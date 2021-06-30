@@ -35,10 +35,16 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--log-interval", help="Override log interval (default: -1, no change)", default=-1, type=int)
     parser.add_argument(
         "--eval-freq",
-        help="""Evaluate the agent every n steps (if negative, no evaluation).
-        During hyperparameter optimization n-evaluations is used instead""",
+        help="Evaluate the agent every n steps (if negative, no evaluation). "
+        "During hyperparameter optimization n-evaluations is used instead",
         default=10000,
         type=int,
+    )
+    parser.add_argument(
+        "--optimization-log-path",
+        help="Path to save the evaluation log and optimal policy for each hyperparameter tried during optimization. "
+        "Disabled if no argument is passed.",
+        type=str,
     )
     parser.add_argument("--eval-episodes", help="Number of episodes to use for evaluation", default=5, type=int)
     parser.add_argument("--n-eval-envs", help="Number of environments for evaluation", default=1, type=int)
@@ -161,6 +167,7 @@ if __name__ == "__main__":  # noqa: C901
         args.n_jobs,
         args.sampler,
         args.pruner,
+        args.optimization_log_path,
         n_startup_trials=args.n_startup_trials,
         n_evaluations=args.n_evaluations,
         truncate_last_trajectory=args.truncate_last_trajectory,
