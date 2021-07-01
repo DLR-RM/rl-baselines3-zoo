@@ -12,3 +12,4 @@ cloudpickle>=1.5.0
 # tmp fix: ROM missing in newest release
 atari-py==0.2.6
 plotly
+panda-gym

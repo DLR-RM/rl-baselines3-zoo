@@ -183,6 +183,38 @@ FetchSlide-v1:
 FetchPickAndPlace-v1:
   <<: *her-defaults
 
+PandaReach-v1:
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  n_timesteps: !!float 20000
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  batch_size: 256
+  gamma: 0.95
+  learning_rate: 0.001
+  learning_starts: 1000
+  normalize: True
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4
+  )"
+  policy_kwargs: "dict(net_arch=[64, 64], n_critics=1)"
+
+PandaPush-v1:
+  <<: *her-defaults
+
+PandaSlide-v1:
+  <<: *her-defaults
+  n_timesteps: !!float 3e6
+
+PandaPickAndPlace-v1:
+  <<: *her-defaults
+
+PandaStack-v1:
+  <<: *her-defaults
+
 parking-v0:
   <<: *her-defaults
   n_timesteps: !!float 1e5

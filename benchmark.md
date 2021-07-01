@@ -129,6 +129,11 @@ and also allow users to have access to pretrained agents.*
 |tqc  |HopperBulletEnv-v0         |   2662.373|   206.210|1M         |        149881|          151|
 |tqc  |LunarLanderContinuous-v2   |    277.956|    25.466|500k       |        149928|          706|
 |tqc  |MountainCarContinuous-v0   |     63.641|    45.259|50k        |        149796|          186|
+|tqc  |PandaPickAndPlace-v1       |     -8.024|     6.674|1M         |        150000|         3000|
+|tqc  |PandaPush-v1               |     -6.405|     6.400|1M         |        150000|         3000|
+|tqc  |PandaReach-v1              |     -1.768|     0.858|20k        |        150000|         3000|
+|tqc  |PandaSlide-v1              |    -27.497|     9.868|3M         |        150000|         3000|
+|tqc  |PandaStack-v1              |    -96.915|    17.240|1M         |        150000|         1500|
 |tqc  |Pendulum-v0                |   -151.340|    87.893|20k        |        150000|          750|
 |tqc  |ReacherBulletEnv-v0        |     18.255|     9.543|300k       |        150000|         1000|
 |tqc  |Walker2DBulletEnv-v0       |   2508.934|   614.624|1M         |        149572|          159|
