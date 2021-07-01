@@ -23,6 +23,7 @@
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
 - Fixed `get_latest_run_id()` so it works in Windows too (@NicolasHaeffner)
+- Fixed video record when using `HER` replay buffer
 
 ### Documentation
 - Updated README (dict obs are now supported)
