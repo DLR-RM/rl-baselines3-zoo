@@ -431,7 +431,8 @@ class ExperimentManager(object):
 
     @staticmethod
     def is_robotics_env(env_id: str) -> bool:
-        return "gym.envs.robotics" in gym.envs.registry.env_specs[env_id].entry_point
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point
+        return "gym.envs.robotics" in entry_point or "panda_gym.envs" in entry_point
 
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """
