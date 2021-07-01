@@ -4,7 +4,7 @@
 
 # RL Baselines3 Zoo: A Training Framework for Stable Baselines3 Reinforcement Learning Agents
 
-<!-- <img src="images/BipedalWalkerHardcorePPO.gif" align="right" width="35%"/> -->
+<img src="images/panda_pick.gif" align="right" width="35%"/>
 
 RL Baselines3 Zoo is a training framework for Reinforcement Learning (RL), using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
 
