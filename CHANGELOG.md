@@ -1,8 +1,8 @@
-## Release 1.1.0a11 (WIP)
+## Release 1.1.0 (2021-07-01)
 
 ### Breaking Changes
-- Upgrade to SB3 >= 1.1.0a11 (master version)
-- Upgrade to sb3-contrib >= 1.1.011
+- Upgrade to Stable-Baselines3 (SB3) >= 1.1.0
+- Upgrade to sb3-contrib >= 1.1.0
 - Add timeout handling (cf SB3 doc)
 - `HER` is now a replay buffer class and no more an algorithm
 - Removed `PlotNoiseRatioCallback`
