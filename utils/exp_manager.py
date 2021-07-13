@@ -75,6 +75,7 @@ class ExperimentManager(object):
         n_jobs: int = 1,
         sampler: str = "tpe",
         pruner: str = "median",
+        optimization_log_path: Optional[str] = None,
         n_startup_trials: int = 0,
         n_evaluations: int = 1,
         truncate_last_trajectory: bool = False,
@@ -85,6 +86,7 @@ class ExperimentManager(object):
         verbose: int = 1,
         vec_env_type: str = "dummy",
         n_eval_envs: int = 1,
+        no_optim_plots: bool = False,
     ):
         super(ExperimentManager, self).__init__()
         self.algo = algo
@@ -99,6 +101,7 @@ class ExperimentManager(object):
         self.frame_stack = None
         self.seed = seed
         self.vec_env_wrapper = None
+        self.optimization_log_path = optimization_log_path
 
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
 
@@ -125,6 +128,7 @@ class ExperimentManager(object):
         self.optimize_hyperparameters = optimize_hyperparameters
         self.storage = storage
         self.study_name = study_name
+        self.no_optim_plots = no_optim_plots
         # maximum number of trials for finding the best hyperparams
         self.n_trials = n_trials
         # number of parallel jobs when doing hyperparameter search
@@ -447,7 +451,8 @@ class ExperimentManager(object):
 
     @staticmethod
     def is_robotics_env(env_id: str) -> bool:
-        return "gym.envs.robotics" in gym.envs.registry.env_specs[env_id].entry_point
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point
+        return "gym.envs.robotics" in entry_point or "panda_gym.envs" in entry_point
 
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """
@@ -628,9 +633,14 @@ class ExperimentManager(object):
         # Account for parallel envs
         optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
         # Use non-deterministic eval for Atari
+        path = None
+        if self.optimization_log_path is not None:
+            path = os.path.join(self.optimization_log_path, f"trial_{str(trial.number)}")
         eval_callback = TrialEvalCallback(
             eval_env,
             trial,
+            best_model_save_path=path,
+            log_path=path,
             n_eval_episodes=self.n_eval_episodes,
             eval_freq=optuna_eval_freq,
             deterministic=self.deterministic_eval,
@@ -749,6 +759,10 @@ class ExperimentManager(object):
         # Save python object to inspect/re-use it later
         with open(f"{log_path}.pkl", "wb+") as f:
             pkl.dump(study, f)
+
+        # Skip plots
+        if self.no_optim_plots:
+            return
 
         # Plot optimization result
         try:

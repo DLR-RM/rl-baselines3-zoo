@@ -13,3 +13,4 @@ cloudpickle>=1.5.0
 atari-py==0.2.6
 plotly
 pygame
+panda-gym

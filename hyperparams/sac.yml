@@ -137,15 +137,17 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 # To be tuned
 MinitaurBulletEnv-v0:
+  # normalize: "{'norm_obs': True, 'norm_reward': False}"
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_rate: !!float 3e-4
-  buffer_size: 1000000
+  buffer_size: 100000
   batch_size: 256
   ent_coef: 'auto'
   train_freq: 1
   gradient_steps: 1
   learning_starts: 10000
+
 
 # To be tuned
 MinitaurBulletDuckEnv-v0:
@@ -206,6 +208,7 @@ FetchReach-v1:
     n_sampled_goal=4
   )"
   policy_kwargs: "dict(net_arch=[64, 64])"
+
 
 # ==== Custom Envs ===
 
