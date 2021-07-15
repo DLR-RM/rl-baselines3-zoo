@@ -60,6 +60,7 @@ BipedalWalkerHardcore-v3:
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4
   buffer_size: 1000000
+  replay_buffer_kwargs: "dict(n_steps=5)"
   batch_size: 256
   ent_coef: 0.005
   gamma: 0.99
@@ -90,7 +91,7 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   train_freq: 8
   gradient_steps: 8
   learning_starts: 10000
-  # replay_buffer_kwargs: "dict(handle_timeout_termination=True)"
+  replay_buffer_kwargs: "dict(n_steps=5)"
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
 
