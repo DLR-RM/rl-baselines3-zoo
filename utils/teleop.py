@@ -60,10 +60,10 @@ class HumanTeleop(BaseAlgorithm):
         assert turn_left_controller_path is not None
         assert turn_right_controller_path is not None
         # Pretrained model
-        # set BACKWARD_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_41\rl_model_90000_steps.zip
-        # set FORWARD_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_57\SpaceEngineers-WalkingRobot-IK-v0.zip
-        # set TURN_LEFT_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_74\rl_model_40000_steps.zip
-        # set TURN_RIGHT_CONTROLLER_PATH=logs\tqc\SpaceEngineers-WalkingRobot-IK-v0_42\SpaceEngineers-WalkingRobot-IK-v0.zip
+        # set BACKWARD_CONTROLLER_PATH=logs\pretrained-tqc\SE-Symmetric-v1_2\SE-Symmetric-v1.zip
+        # set FORWARD_CONTROLLER_PATH=logs\pretrained-tqc\SE-Symmetric-v1_1\SE-Symmetric-v1.zip
+        # set TURN_LEFT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_1\SE-TurnLeft-v1.zip
+        # set TURN_RIGHT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_2\SE-TurnLeft-v1.zip
         self.forward_controller = TQC.load(forward_controller_path)
         self.backward_controller = TQC.load(backward_controller_path)
         self.turn_left_controller = TQC.load(turn_left_controller_path)

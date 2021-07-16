@@ -50,6 +50,9 @@ class MixtureActor(BasePolicy):
         features_dim: int,
         activation_fn: Type[nn.Module] = nn.ReLU,
         normalize_images: bool = True,
+        # ignore
+        *_args,
+        **_kwargs,
     ):
         super().__init__(
             observation_space,
@@ -75,6 +78,7 @@ class MixtureActor(BasePolicy):
         gating_net += [nn.Softmax(1)]
         self.gating_net = nn.Sequential(*gating_net)
         self.action_dim = get_action_dim(self.action_space)
+        self.action_dist = self.experts[0].action_dist
 
     def get_action_dist_params(self, obs: th.Tensor) -> Tuple[th.Tensor, th.Tensor, Dict[str, th.Tensor]]:
         """
@@ -92,12 +96,12 @@ class MixtureActor(BasePolicy):
             latent_pi = self.experts[i].latent_pi(features)
             expert_means[:, i, :] = self.experts[i].mu(latent_pi)
             # Unstructured exploration (Original implementation)
-            log_std = self.log_std(latent_pi)
+            log_std = self.experts[i].log_std(latent_pi)
             # Original Implementation to cap the standard deviation
             expert_stds[:, i, :] = th.clamp(log_std, LOG_STD_MIN, LOG_STD_MAX)
 
         # gates: [batch_size, num_experts]
-        gates = self.gating_net(features)
+        gates = self.gating_net(features).unsqueeze(-1)
 
         # expert_means: [batch_size, num_experts, action_dim]
         # mean_actions: [batch_size, action_dim]
