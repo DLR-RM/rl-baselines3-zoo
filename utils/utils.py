@@ -20,6 +20,9 @@ from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
 
 from utils.teleop import HumanTeleop
 
+# Register Additional policies
+import utils.networks  # noqa: F401
+
 ALGOS = {
     "a2c": A2C,
     "ddpg": DDPG,
