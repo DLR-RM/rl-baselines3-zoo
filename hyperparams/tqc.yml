@@ -273,9 +273,15 @@ SE-TurnLeft-v1:
 SE-MultiTask-v1:
   <<: *defaults
   policy: 'MixtureMlpPolicy'
+  learning_rate: !!float 7.3e-4
+  gamma: 0.98
+  tau: 0.05
+  buffer_size: 200000
   callback:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 400
+  policy_kwargs: "dict(net_arch=[400, 300], n_critics=2, n_additional_experts=1)"
+
 
 # ======== Real Robot envs ============
 

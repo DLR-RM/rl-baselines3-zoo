@@ -50,6 +50,7 @@ class MixtureActor(BasePolicy):
         features_dim: int,
         activation_fn: Type[nn.Module] = nn.ReLU,
         normalize_images: bool = True,
+        n_additional_experts: int = 0,
         # ignore
         *_args,
         **_kwargs,
@@ -64,9 +65,17 @@ class MixtureActor(BasePolicy):
 
         expert_paths = ["FORWARD", "BACKWARD", "TURN_LEFT", "TURN_RIGHT"]
         self.num_experts = len(expert_paths)
+        self.n_additional_experts = n_additional_experts
+        print(f"{n_additional_experts} additional experts")
+        self.num_experts += self.n_additional_experts
         self.experts = []
         for path in expert_paths:
             actor = TQC.load(os.environ[f"{path}_CONTROLLER_PATH"]).actor
+            self.experts.append(actor)
+
+        # Add additional experts
+        for _ in range(self.n_additional_experts):
+            actor = TQC.load(os.environ[f"{expert_paths[0]}_CONTROLLER_PATH"]).actor
             self.experts.append(actor)
 
         features_dim = self.experts[0].features_dim
@@ -93,15 +102,20 @@ class MixtureActor(BasePolicy):
         expert_stds = th.zeros(obs.shape[0], self.num_experts, self.action_dim).to(obs.device)
 
         for i in range(self.num_experts):
-            latent_pi = self.experts[i].latent_pi(features)
-            expert_means[:, i, :] = self.experts[i].mu(latent_pi)
-            # Unstructured exploration (Original implementation)
-            log_std = self.experts[i].log_std(latent_pi)
-            # Original Implementation to cap the standard deviation
-            expert_stds[:, i, :] = th.clamp(log_std, LOG_STD_MIN, LOG_STD_MAX)
+            # Allow grad for one expert only
+            with th.set_grad_enabled(i >= self.num_experts - self.n_additional_experts):
+                latent_pi = self.experts[i].latent_pi(features)
+                expert_means[:, i, :] = self.experts[i].mu(latent_pi)
+                # Unstructured exploration (Original implementation)
+                log_std = self.experts[i].log_std(latent_pi)
+                # Original Implementation to cap the standard deviation
+                expert_stds[:, i, :] = th.clamp(log_std, LOG_STD_MIN, LOG_STD_MAX)
 
         # gates: [batch_size, num_experts]
-        gates = self.gating_net(features).unsqueeze(-1)
+        input_commands = features.clone()
+        # TODO: extract task features only?
+        # input_commands[:-2] = 0.0
+        gates = self.gating_net(input_commands).unsqueeze(-1)
 
         # expert_means: [batch_size, num_experts, action_dim]
         # mean_actions: [batch_size, action_dim]
@@ -156,7 +170,8 @@ class MixtureMlpPolicy(TQCPolicy):
         between the actor and the critic (this saves computation time)
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, n_additional_experts: int = 0, **kwargs):
+        self.n_additional_experts = n_additional_experts
         super(MixtureMlpPolicy, self).__init__(
             *args,
             **kwargs,
@@ -164,7 +179,7 @@ class MixtureMlpPolicy(TQCPolicy):
 
     def make_actor(self, features_extractor: Optional[BaseFeaturesExtractor] = None) -> MixtureActor:
         actor_kwargs = self._update_features_extractor(self.actor_kwargs, features_extractor)
-        return MixtureActor(**actor_kwargs).to(self.device)
+        return MixtureActor(n_additional_experts=self.n_additional_experts, **actor_kwargs).to(self.device)
 
 
 register_policy("MixtureMlpPolicy", MixtureMlpPolicy)
