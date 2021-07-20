@@ -77,7 +77,6 @@ class HumanTeleop(BaseAlgorithm):
             self.turn_left_controller = self.forward_controller
             self.turn_right_controller = self.forward_controller
 
-
         super(HumanTeleop, self).__init__(
             policy=None, env=env, policy_base=None, learning_rate=0.0, verbose=verbose, seed=seed
         )
