@@ -63,11 +63,20 @@ class MixtureActor(BasePolicy):
             squash_output=True,
         )
 
-        expert_paths = ["FORWARD", "BACKWARD", "TURN_LEFT", "TURN_RIGHT"]
+        # Pretrained model
+        # set BACKWARD_CONTROLLER_PATH=logs\pretrained-tqc\SE-Symmetric-v1_2\SE-Symmetric-v1.zip
+        # set FORWARD_CONTROLLER_PATH=logs\pretrained-tqc\SE-Symmetric-v1_1\SE-Symmetric-v1.zip
+        # set TURN_LEFT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_1\SE-TurnLeft-v1.zip
+        # set TURN_RIGHT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_2\SE-TurnLeft-v1.zip
+        # set RANDOM_CONTROLLER_PATH=logs\pretrained-tqc\SE-Random-small\SE-TurnLeft-v1.zip
+
+        # expert_paths = ["FORWARD", "BACKWARD", "TURN_LEFT", "TURN_RIGHT"]
+        expert_paths = []
         self.num_experts = len(expert_paths)
         self.n_additional_experts = n_additional_experts
         print(f"{n_additional_experts} additional experts")
         self.num_experts += self.n_additional_experts
+
         self.experts = []
         for path in expert_paths:
             actor = TQC.load(os.environ[f"{path}_CONTROLLER_PATH"]).actor
@@ -75,7 +84,7 @@ class MixtureActor(BasePolicy):
 
         # Add additional experts
         for _ in range(self.n_additional_experts):
-            actor = TQC.load(os.environ[f"{expert_paths[0]}_CONTROLLER_PATH"]).actor
+            actor = TQC.load(os.environ["RANDOM_CONTROLLER_PATH"]).actor
             self.experts.append(actor)
 
         features_dim = self.experts[0].features_dim

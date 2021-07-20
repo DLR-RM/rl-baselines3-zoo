@@ -259,7 +259,7 @@ SE-Symmetric-v1: &defaults
   learning_starts: 800
   use_sde: False
   top_quantiles_to_drop_per_net: 2
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], n_critics=2)"
+  policy_kwargs: "dict(net_arch=[256, 256], n_critics=2)"
 
 SE-TurnLeft-v1:
   <<: *defaults
@@ -267,7 +267,7 @@ SE-TurnLeft-v1:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 400
     - utils.callbacks.StopTrainingOnMeanRewardThreshold:
-        reward_threshold: 2500
+        reward_threshold: 250
         verbose: 1
 
 SE-MultiTask-v1:
@@ -280,7 +280,7 @@ SE-MultiTask-v1:
   callback:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 400
-  policy_kwargs: "dict(net_arch=[400, 300], n_critics=2, n_additional_experts=1)"
+  policy_kwargs: "dict(net_arch=[400, 300], n_critics=2, n_additional_experts=4)"
 
 
 # ======== Real Robot envs ============

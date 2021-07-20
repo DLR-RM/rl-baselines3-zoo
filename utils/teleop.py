@@ -53,21 +53,30 @@ class HumanTeleop(BaseAlgorithm):
         backward_controller_path: str = os.environ.get("BACKWARD_CONTROLLER_PATH"),  # noqa: B008
         turn_left_controller_path: str = os.environ.get("TURN_LEFT_CONTROLLER_PATH"),  # noqa: B008
         turn_right_controller_path: str = os.environ.get("TURN_RIGHT_CONTROLLER_PATH"),  # noqa: B008
+        multi_controller_path: str = os.environ.get("MULTI_CONTROLLER_PATH"),  # noqa: B008
         deterministic: bool = True,
     ):
-        assert forward_controller_path is not None
-        assert backward_controller_path is not None
-        assert turn_left_controller_path is not None
-        assert turn_right_controller_path is not None
-        # Pretrained model
-        # set BACKWARD_CONTROLLER_PATH=logs\pretrained-tqc\SE-Symmetric-v1_2\SE-Symmetric-v1.zip
-        # set FORWARD_CONTROLLER_PATH=logs\pretrained-tqc\SE-Symmetric-v1_1\SE-Symmetric-v1.zip
-        # set TURN_LEFT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_1\SE-TurnLeft-v1.zip
-        # set TURN_RIGHT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_2\SE-TurnLeft-v1.zip
-        self.forward_controller = TQC.load(forward_controller_path)
-        self.backward_controller = TQC.load(backward_controller_path)
-        self.turn_left_controller = TQC.load(turn_left_controller_path)
-        self.turn_right_controller = TQC.load(turn_right_controller_path)
+        self.multi_controller_path = multi_controller_path
+        if multi_controller_path is None:
+            assert forward_controller_path is not None
+            assert backward_controller_path is not None
+            assert turn_left_controller_path is not None
+            assert turn_right_controller_path is not None
+            # Pretrained model
+            # set BACKWARD_CONTROLLER_PATH=logs\pretrained-tqc\SE-Symmetric-v1_2\SE-Symmetric-v1.zip
+            # set FORWARD_CONTROLLER_PATH=logs\pretrained-tqc\SE-Symmetric-v1_1\SE-Symmetric-v1.zip
+            # set TURN_LEFT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_1\SE-TurnLeft-v1.zip
+            # set TURN_RIGHT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_2\SE-TurnLeft-v1.zip
+            self.forward_controller = TQC.load(forward_controller_path)
+            self.backward_controller = TQC.load(backward_controller_path)
+            self.turn_left_controller = TQC.load(turn_left_controller_path)
+            self.turn_right_controller = TQC.load(turn_right_controller_path)
+        else:
+            self.forward_controller = TQC.load(multi_controller_path)
+            self.backward_controller = self.forward_controller
+            self.turn_left_controller = self.forward_controller
+            self.turn_right_controller = self.forward_controller
+
 
         super(HumanTeleop, self).__init__(
             policy=None, env=env, policy_base=None, learning_rate=0.0, verbose=verbose, seed=seed
@@ -187,6 +196,7 @@ class HumanTeleop(BaseAlgorithm):
                 }[task]
 
                 action = controller.predict(self._last_obs, deterministic=self.deterministic)
+                # TODO for multi policy: display proba for each expert
             else:
                 task = None
                 self.env.set_attr("max_speed", 0.0)
