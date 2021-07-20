@@ -72,6 +72,7 @@ class HumanTeleop(BaseAlgorithm):
             self.turn_left_controller = TQC.load(turn_left_controller_path)
             self.turn_right_controller = TQC.load(turn_right_controller_path)
         else:
+            # set MULTI_CONTROLLER_PATH=logs\pretrained-tqc\SE-MultiTask-v1_9/rl_model_250000_steps.zip
             self.forward_controller = TQC.load(multi_controller_path)
             self.backward_controller = self.forward_controller
             self.turn_left_controller = self.forward_controller
