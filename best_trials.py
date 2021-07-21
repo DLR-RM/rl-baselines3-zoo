@@ -14,8 +14,6 @@ ordered_indices = np.argsort(scratch_values)[::-1]
 
 for i in range(16):
     params = study.trials[ordered_indices[i]].params
-    params["learning_rate"] = params["lr"]
-    del params["lr"]
     text = json.dumps(params)
     jsonFile = open(str(i) + ".json", "w+")
     jsonFile.write(text)
