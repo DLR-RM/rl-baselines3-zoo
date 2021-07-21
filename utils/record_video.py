@@ -82,7 +82,7 @@ if __name__ == "__main__":
         hyperparams=hyperparams,
     )
 
-    model = ALGOS[algo].load(model_path)
+    model = ALGOS[algo].load(model_path, env=env)
 
     obs = env.reset()
 

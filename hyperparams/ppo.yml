@@ -132,7 +132,7 @@ LunarLanderContinuous-v2:
   ent_coef: 0.01
 
 # Tuned
-HalfCheetahBulletEnv-v0:
+HalfCheetahBulletEnv-v0: &pybullet-defaults
   env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 16
@@ -158,23 +158,9 @@ HalfCheetahBulletEnv-v0:
 
 # Tuned
 AntBulletEnv-v0:
+  <<: *pybullet-defaults
   env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
-  normalize: true
-  n_envs: 16
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  batch_size: 128
-  n_steps: 512
-  gamma: 0.99
-  gae_lambda: 0.9
-  n_epochs: 20
-  ent_coef: 0.0
-  sde_sample_freq: 4
-  max_grad_norm: 0.5
-  vf_coef: 0.5
   learning_rate: !!float 3e-5
-  use_sde: True
-  clip_range: 0.4
   policy_kwargs: "dict(log_std_init=-1,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
@@ -183,22 +169,8 @@ AntBulletEnv-v0:
 
 # Tuned
 Walker2DBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
-  normalize: true
-  n_envs: 16
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  batch_size: 128
-  n_steps: 512
-  gamma: 0.99
-  gae_lambda: 0.92
-  n_epochs: 20
-  ent_coef: 0.0
-  sde_sample_freq: 4
-  max_grad_norm: 0.5
-  vf_coef: 0.5
+  <<: *pybullet-defaults
   learning_rate: !!float 3e-5
-  use_sde: True
   clip_range: lin_0.4
   policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
@@ -208,22 +180,8 @@ Walker2DBulletEnv-v0:
 
 # Tuned
 HopperBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
-  normalize: true
-  n_envs: 16
-  n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
-  batch_size: 128
-  n_steps: 512
-  gamma: 0.99
-  gae_lambda: 0.92
-  n_epochs: 20
-  ent_coef: 0.0
-  sde_sample_freq: 4
-  max_grad_norm: 0.5
-  vf_coef: 0.5
+  <<: *pybullet-defaults
   learning_rate: !!float 3e-5
-  use_sde: True
   clip_range: lin_0.4
   policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
