@@ -1,0 +1,4 @@
+Easily take in new environments
+Able to turn on logging
+
+Add hyperparameter testing and rendering
