@@ -16,4 +16,4 @@ WORKDIR /rl-baselines3-zoo
 COPY . /rl-baselines3-zoo
 
 
-CMD ["./run.sh"]
+CMD ["./run.sh", "pistonball22"]
