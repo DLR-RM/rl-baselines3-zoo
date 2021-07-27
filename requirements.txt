@@ -1,15 +1,11 @@
-stable-baselines3[extra,tests,docs]>=1.1.0a11
-box2d-py==2.3.8
-pybullet
-gym-minigrid
+PettingZoo
+supersuit==2.6.6
+git+https://github.com/DLR-RM/stable-baselines3.git@master
+pygame==2.0.0
+pymunk==6.0.0
+array2gif
 scikit-optimize
 optuna
 pytablewriter
-seaborn
 pyyaml>=5.1
-sb3-contrib>=1.1.0a11
 cloudpickle>=1.5.0
-# tmp fix: ROM missing in newest release
-atari-py==0.2.6
-plotly
-panda-gym
