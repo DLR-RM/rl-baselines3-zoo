@@ -11,9 +11,9 @@ RUN DEBIAN_FRONTEND="noninteractive" apt install -y python3-opencv
 RUN pip3 install torch==1.9.0+cu111  -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip3 install -r /requirements.txt
 
-WORKDIR /rl_scratch
+WORKDIR /rl-baselines3-zoo
 
-COPY . /rl_scratch
+COPY . /rl-baselines3-zoo
 
 
 CMD ["./run.sh"]
