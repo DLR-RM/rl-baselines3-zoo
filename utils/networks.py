@@ -70,8 +70,9 @@ class MixtureActor(BasePolicy):
         # set TURN_RIGHT_CONTROLLER_PATH=logs\pretrained-tqc\SE-TurnLeft-v1_2\SE-TurnLeft-v1.zip
         # set RANDOM_CONTROLLER_PATH=logs\pretrained-tqc\SE-Random-small\SE-TurnLeft-v1.zip
 
-        # expert_paths = ["FORWARD", "BACKWARD", "TURN_LEFT", "TURN_RIGHT"]
-        expert_paths = []
+        expert_paths = ["FORWARD", "BACKWARD", "TURN_LEFT", "TURN_RIGHT"]
+        # Uncomment to start without experts
+        # expert_paths = []
         self.num_experts = len(expert_paths)
         self.n_additional_experts = n_additional_experts
         print(f"{n_additional_experts} additional experts")

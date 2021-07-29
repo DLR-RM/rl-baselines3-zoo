@@ -36,7 +36,7 @@ moveBindingsGame = {K_UP: UP, K_LEFT: LEFT, K_RIGHT: RIGHT, K_DOWN: DOWN}  # noq
 pygame.font.init()
 FONT = pygame.font.SysFont("Open Sans", 25)
 SMALL_FONT = pygame.font.SysFont("Open Sans", 20)
-KEY_MIN_DELAY = 0.4
+KEY_MIN_DELAY = 0.1
 
 
 class HumanTeleop(BaseAlgorithm):
@@ -72,7 +72,8 @@ class HumanTeleop(BaseAlgorithm):
             self.turn_left_controller = TQC.load(turn_left_controller_path)
             self.turn_right_controller = TQC.load(turn_right_controller_path)
         else:
-            # set MULTI_CONTROLLER_PATH=logs\pretrained-tqc\SE-MultiTask-v1_9/rl_model_250000_steps.zip
+            # set MULTI_CONTROLLER_PATH=logs\multi-task-save\SE-MultiTask-v1_9/rl_model_250000_steps.zip
+            # set MULTI_CONTROLLER_PATH=logs\multi-task-save\SE-MultiTask-v1_10/rl_model_749925_steps.zip
             self.forward_controller = TQC.load(multi_controller_path)
             self.backward_controller = self.forward_controller
             self.turn_left_controller = self.forward_controller
