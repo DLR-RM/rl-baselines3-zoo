@@ -2,7 +2,6 @@ import argparse
 import glob
 import importlib
 import os
-import re
 import sys
 
 import numpy as np
@@ -103,11 +102,11 @@ def main():  # noqa: C901
         if len(checkpoints) == 0:
             raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
 
-        def natsort(s):
-            # we need to sort the list in natural order, but there is no standard python function for it
-            return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", s)]
+        def step_count(s):
+            # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
+            return int(s.split("_")[-2])
 
-        checkpoints = sorted(checkpoints, key=natsort)
+        checkpoints = sorted(checkpoints, key=step_count)
         model_path = checkpoints[-1]
         found = True
 
