@@ -101,6 +101,12 @@ def main():  # noqa: C901
         checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
         if len(checkpoints) == 0:
             raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
+
+        def step_count(checkpoint_path: str) -> int:
+            # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
+            return int(checkpoint_path.split("_")[-2])
+
+        checkpoints = sorted(checkpoints, key=step_count)
         model_path = checkpoints[-1]
         found = True
 
