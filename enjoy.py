@@ -2,8 +2,8 @@ import argparse
 import glob
 import importlib
 import os
-import sys
 import re
+import sys
 
 import numpy as np
 import torch as th
@@ -102,9 +102,11 @@ def main():  # noqa: C901
         checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
         if len(checkpoints) == 0:
             raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
-        model_path = checkpoints[-1]
-        # we need to sort the list in natural order, but there is no standard python function for it
-        natsort = lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split('(\d+)', s)]
+
+        def natsort(s):
+            # we need to sort the list in natural order, but there is no standard python function for it
+            return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", s)]
+
         checkpoints = sorted(checkpoints, key=natsort)
         model_path = checkpoints[-1]
         found = True
