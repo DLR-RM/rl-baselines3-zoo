@@ -109,17 +109,6 @@ BipedalWalkerHardcore-v3:
   learning_rate: lin_2.5e-4
   clip_range: lin_0.2
 
-LunarLander-v2:
-  n_envs: 16
-  n_timesteps: !!float 1e6
-  policy: 'MlpPolicy'
-  n_steps: 1024
-  batch_size: 64
-  gae_lambda: 0.98
-  gamma: 0.999
-  n_epochs: 4
-  ent_coef: 0.01
-
 LunarLanderContinuous-v2:
   n_envs: 16
   n_timesteps: !!float 1e6
@@ -130,6 +119,19 @@ LunarLanderContinuous-v2:
   gamma: 0.999
   n_epochs: 4
   ent_coef: 0.01
+  env_wrapper:
+    - utils.wrappers.DiscreteActionSpaceWrapper
+
+#LunarLanderContinuous-v2:
+#  n_envs: 16
+#  n_timesteps: !!float 1e6
+#  policy: 'MlpPolicy'
+#  n_steps: 1024
+#  batch_size: 64
+#  gae_lambda: 0.98
+#  gamma: 0.999
+#  n_epochs: 4
+#  ent_coef: 0.01
 
 # Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults

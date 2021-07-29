@@ -15,7 +15,7 @@ CartPole-v1:
   policy: 'MlpPolicy'
   ent_coef: 0.0
 
-LunarLander-v2:
+LunarLanderContinuous-v2:
   n_envs: 8
   n_timesteps: !!float 2e5
   policy: 'MlpPolicy'
@@ -23,6 +23,8 @@ LunarLander-v2:
   n_steps: 5
   learning_rate: lin_0.00083
   ent_coef: 0.00001
+  env_wrapper:
+    - utils.wrappers.DiscreteActionSpaceWrapper
 
 MountainCar-v0:
   normalize: true
@@ -57,22 +59,24 @@ Pendulum-v0:
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
 # Tuned
-LunarLanderContinuous-v2:
-  normalize: true
-  n_envs: 4
-  n_timesteps: !!float 5e6
-  policy: 'MlpPolicy'
-  ent_coef: 0.0
-  max_grad_norm: 0.5
-  n_steps: 8
-  gae_lambda: 0.9
-  vf_coef: 0.4
-  gamma: 0.99
-  use_rms_prop: True
-  normalize_advantage: False
-  learning_rate: lin_7e-4
-  use_sde: True
-  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+#LunarLanderContinuous-v2:
+#  normalize: true
+#  n_envs: 4
+#  n_timesteps: !!float 5e6
+#  policy: 'MlpPolicy'
+#  ent_coef: 0.0
+#  max_grad_norm: 0.5
+#  n_steps: 8
+#  gae_lambda: 0.9
+#  vf_coef: 0.4
+#  gamma: 0.99
+#  use_rms_prop: True
+#  normalize_advantage: False
+#  learning_rate: lin_7e-4
+#  use_sde: True
+#  policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
+#  env_wrapper:
+#    - utils.wrappers.DiscreteActionSpaceWrapper
 
 # Tuned
 MountainCarContinuous-v0:

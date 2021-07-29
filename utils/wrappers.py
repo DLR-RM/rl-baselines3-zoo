@@ -4,6 +4,30 @@ from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backwa
 from scipy.signal import iirfilter, sosfilt, zpk2sos
 
 
+class DiscreteActionSpaceWrapper(gym.Wrapper):
+    def __init__(self, env):
+        action_space = env.action_space
+        assert isinstance(action_space, gym.spaces.Box)
+
+        env.action_space = gym.spaces.Discrete(4)
+        super(DiscreteActionSpaceWrapper, self).__init__(env)
+
+    def step(self, discrete_action):
+        continuous_action = {
+            0: np.array([-1, 0]),
+            # 1: np.array([0.2, 0]),  # main 60%
+            # 2: np.array([0.6, 0]),  # main 80%
+            1: np.array([1, 0]),  # main 100%
+            # 4: np.array([-1, -0.75]),  # left 75%
+            2: np.array([-1, -1]),  # left 100%
+            # 6: np.array([-1, 0.75]),  # right 75%
+            3: np.array([-1, 1])  # right 100%
+        }[discrete_action]
+
+        obs, reward, done, info = self.env.step(continuous_action)
+        return obs, reward, done, info
+
+
 class DoneOnSuccessWrapper(gym.Wrapper):
     """
     Reset on success and offsets the reward.
