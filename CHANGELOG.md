@@ -1,3 +1,16 @@
+## Release 1.2.0a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+- Fix `--load-last-checkpoint` (@SammyRamone)
+
+### Documentation
+
+### Other
+
 ## Release 1.1.0 (2021-07-01)
 
 ### Breaking Changes
