@@ -14,7 +14,7 @@ n_agents = 20
 n_envs = 4
 n_timesteps = 2000000
 
-with open(num + '.json') as f:
+with open('./hyperparameter_jsons/' + 'hyperparameters_' + num + ".json") as f:
     params = json.load(f)
 
 print(params)
@@ -50,15 +50,15 @@ eval_freq = max(eval_freq // (n_envs * n_agents), 1)
 all_mean_rewards = []
 for i in range(10):
     model = PPO("CnnPolicy", env, verbose=3, **params)
-    eval_callback = EvalCallback(eval_env, best_model_save_path='./logs/' + num + '/', log_path='./logs/' + num + '/' , eval_freq=eval_freq, deterministic=True, render=False)
+    eval_callback = EvalCallback(eval_env, best_model_save_path='./eval_logs/' + num + '/', log_path='./eval_logs/' + num + '/' , eval_freq=eval_freq, deterministic=True, render=False)
     model.learn(total_timesteps=n_timesteps, callback=eval_callback) 
-    model = PPO.load('./logs/' + num + '/' + 'best_model')
+    model = PPO.load('./eval_logs/' + num + '/' + 'best_model')
     mean_reward, std_reward = evaluate_policy(model, eval_env, deterministic=True, n_eval_episodes=25)
     print(mean_reward)
     print(std_reward)
     all_mean_rewards.append(mean_reward)
     if mean_reward > 90:
-        model.save('./mature_policies/' + '/' + str(num) + '/' + str(i) + '/')
+        model.save('./mature_policies/' + str(num) + '/' + str(i) + '/')
 
 
 print(sum(all_mean_rewards) / len(all_mean_rewards))

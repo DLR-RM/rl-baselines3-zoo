@@ -2,9 +2,11 @@ pistonball23
 
 ./run_optimze.sh [name] # run on each to get parameters in DB
 
-python3 best_trials.py --study-name [name] --storage mysql://root:dummy@10.128.0.28/[name] --save-n-best-hyperparameters 16 # generate jsons
+mkdir -p json
 
-./run_eval[n].sh [name] # save mature policies and print hyperparameters with best performance
+python3 best_hyperparameters.py --study-name [name] --storage mysql://root:dummy@10.128.0.28/[name] --save-n-best-hyperparameters 16 # generate jsons
+
+./run_eval[n].sh # save mature policies and print hyperparameters with best performance
 
 ./run_render[n].sh # generate saved gifs
 
@@ -12,11 +14,9 @@ python3 best_trials.py --study-name [name] --storage mysql://root:dummy@10.128.0
 
 Todo:
 Fix rendering logic
-Fix json dump folder pathing
-Deal with pathing for rl saving in eval scripts
-
 
 For new runs:
 Change DB name
 Change mature saving treshhold
 Change env in evaluation, rendering and training files
+Change neural networks (bird flocking)
