@@ -8,7 +8,8 @@ Run run_render1.sh and run_render2.sh to generate saved gifs
 
 
 Todo:
-Newest pettingzoo and supersuit versions
+Clone
+Change DB name
 Fix rendering logic
 
 
