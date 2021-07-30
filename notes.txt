@@ -1,18 +1,22 @@
-run_optimze.sh [name] # run on each to get parameters in DB
+pistonball23
 
-python3 best_trials.py --study-name [name] --storage mysql://root:dummy@10.128.0.28/[name] --save-n-best-hyperparameters 16
+./run_optimze.sh [name] # run on each to get parameters in DB
 
-run_eval[n].sh [name] and run_eval2.sh [name] # save mature policies and print hyperparameters with best performance
+python3 best_trials.py --study-name [name] --storage mysql://root:dummy@10.128.0.28/[name] --save-n-best-hyperparameters 16 # generate jsons
 
-Run run_render1.sh and run_render2.sh to generate saved gifs
+./run_eval[n].sh [name] # save mature policies and print hyperparameters with best performance
+
+./run_render[n].sh # generate saved gifs
+
 
 
 Todo:
-Clone
-Change DB name
 Fix rendering logic
+Fix json dump folder pathing
+Deal with pathing for rl saving in eval scripts
 
 
+For new runs:
 Change DB name
 Change mature saving treshhold
 Change env in evaluation, rendering and training files
