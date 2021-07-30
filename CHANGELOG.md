@@ -10,6 +10,7 @@
 ### Documentation
 
 ### Other
+- Added python 3.9 to Github CI
 
 ## Release 1.1.0 (2021-07-01)
 
