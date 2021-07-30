@@ -28,23 +28,3 @@ for i in range(args.save_n_best_hyperparameters):
     jsonFile = open(str(i) + ".json", "w+")
     jsonFile.write(text)
     jsonFile.close()
-
-# print([values[i] for i in ordered_indices])
-
-# for i in ordered_indices:
-#     print(values[i])
-
-# pick max element, put its index in new list, set its value to -200, repeat for length of list
-
-# get max indices
-
-# print(study.trials)
-
-
-# trial = study.best_trial
-
-# optuna.study.StudySummary(study)
-# summary = optuna.study.get_all_study_summaries('mysql://root:dummy@10.128.0.28/pistonball18')
-
-# for i in study.trials:
-#     print(i.value)

@@ -1,0 +1,17 @@
+Run run.sh [name] twice to get parameters in DB
+
+Run python3 best_trials.py --study-name [name] --storage mysql://root:dummy@10.128.0.28/[name] --save-n-best-hyperparameters 16
+
+Run run_test1.sh [name] and run_test2.sh [name] to get copies of good saved policies and print best hyperparameters and performance
+
+Run run_render1.sh and run_render2.sh to generate saved gifs
+
+
+Todo:
+Newest pettingzoo and supersuit versions
+Fix rendering logic
+
+
+Change DB name
+Change mature saving treshhold
+Change env in evaluation, rendering and training files
