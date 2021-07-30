@@ -1,8 +1,8 @@
-Run run.sh [name] twice to get parameters in DB
+run_optimze.sh [name] # run on each to get parameters in DB
 
-Run python3 best_trials.py --study-name [name] --storage mysql://root:dummy@10.128.0.28/[name] --save-n-best-hyperparameters 16
+python3 best_trials.py --study-name [name] --storage mysql://root:dummy@10.128.0.28/[name] --save-n-best-hyperparameters 16
 
-Run run_test1.sh [name] and run_test2.sh [name] to get copies of good saved policies and print best hyperparameters and performance
+run_eval[n].sh [name] and run_eval2.sh [name] # save mature policies and print hyperparameters with best performance
 
 Run run_render1.sh and run_render2.sh to generate saved gifs
 
