@@ -121,6 +121,8 @@ LunarLanderContinuous-v2:
   ent_coef: 0.01
   env_wrapper:
     - utils.wrappers.DiscreteActionSpaceWrapper
+  callback:
+    - utils.callback.StopTrainingOnMeanRewardOverLastEpisodes
 
 #LunarLanderContinuous-v2:
 #  n_envs: 16

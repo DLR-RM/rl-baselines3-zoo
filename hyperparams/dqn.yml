@@ -64,6 +64,8 @@ LunarLanderContinuous-v2:
   policy_kwargs: "dict(net_arch=[256, 256])"
   env_wrapper:
     - utils.wrappers.DiscreteActionSpaceWrapper
+  callback:
+    - utils.callback.StopTrainingOnMeanRewardOverLastEpisodes
 
 # Tuned
 Acrobot-v1:

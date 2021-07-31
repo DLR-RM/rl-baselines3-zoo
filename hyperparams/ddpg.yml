@@ -30,6 +30,10 @@ LunarLanderContinuous-v2:
   train_freq: [1, "episode"]
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
+  env_wrapper:
+    - utils.wrappers.DiscreteActionSpaceWrapper
+  callback:
+    - utils.callback.StopTrainingOnMeanRewardOverLastEpisodes
 
 BipedalWalker-v3:
   n_timesteps: !!float 1e6

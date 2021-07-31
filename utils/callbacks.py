@@ -1,6 +1,7 @@
 import os
 import tempfile
 import time
+import numpy as np
 from copy import deepcopy
 from functools import wraps
 from threading import Thread
@@ -11,6 +12,36 @@ from sb3_contrib import TQC
 from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
 from stable_baselines3.common.vec_env import VecEnv
+from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
+
+
+class StopTrainingOnMeanRewardOverLastEpisodes(BaseCallback):
+    """
+    Callback used for stopping the training after achieving mean reward over last episodes
+    """
+    def __init__(self, check_freq: int = 300, log_dir: str = "logs/", verbose: int = 1, n_episodes: int = 100, mean_reward: int = 200):
+        super(StopTrainingOnMeanRewardOverLastEpisodes, self).__init__(verbose)
+        self.check_freq = check_freq
+        self.log_dir = log_dir
+        self.verbose = verbose
+        self.n_episodes = n_episodes
+        self.mean_reward = mean_reward
+
+    def _on_step(self) -> bool:
+        if self.n_calls % self.check_freq == 0:  # perform reading from files every check_freq steps only
+
+            # Retrieve training reward
+            x, y = ts2xy(load_results(self.log_dir), 'episodes')
+            if len(x) > 0:
+                # Mean training reward over the last 100 episodes
+                mean_reward_over_episodes = np.mean(y[-self.n_episodes:])
+                if mean_reward_over_episodes > self.mean_reward:
+                    if self.verbose > 0:
+                        print(f"Mean reward over {self.n_episodes} is {mean_reward_over_episodes:.2f} bigger than configured mean reward threshold {self.mean_reward:.2f}, aborting training.")
+                        print(f"Number of episodes for training: {len(x)}, Number of env steps for training: {self.num_timesteps}")
+                    return False  # abort training
+
+        return True  # continue training
 
 
 class TrialEvalCallback(EvalCallback):
