@@ -15,8 +15,19 @@ python3 best_hyperparameters.py --study-name [name] --storage mysql://root:dummy
 Todo:
 Fix rendering logic
 
+
 For new runs:
 Change DB name
 Change mature saving treshhold
 Change env in evaluation, rendering and training files
 Change neural networks (bird flocking)
+Change number of steps
+
+Weekly match: top left, with table on left and other shit on right. Only left thing scrolls
+
+
+Leaderboard: 2x4 page of top 8 games that show you the match against player 1 and 2 of that game last week as gifs and link to specific leaderboard pages
+
+
+
+OMP_NUM_THREADS=1 python3 train.py --algo ppo --env LunarLanderContinuous-v2 -n 2000000 -optimize --n-trials 150 --sampler tpe --pruner median --study-name pistonball23 --storage mysql://root:dummy@10.128.0.28/pistonball23

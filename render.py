@@ -25,23 +25,26 @@ env = ss.color_reduction_v0(env, mode='B')
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
 
-model = PPO.load("./logs/" + num + '/' + "best_model.zip")
+policies = os.listdir('./mature_policies/' + str(num) + '/')
 
-obs_list = []
-i = 0
-env.reset()
+for policy in policies:
+    model = PPO.load('./mature_policies/' + str(num) + '/' + policy)
 
-while True:
-    for agent in env.agent_iter():
-        observation, _, done, _ = env.last()
-        action = model.predict(observation, deterministic=True)[0] if not done else None
+    obs_list = []
+    i = 0
+    env.reset()
 
-        env.step(action)
-        i += 1
-        if i % (len(env.possible_agents) + 1) == 0:
-            obs_list.append(np.transpose(env.render(mode='rgb_array'), axes=(1, 0, 2)))
-    env.close()
-    break
+    while True:
+        for agent in env.agent_iter():
+            observation, _, done, _ = env.last()
+            action = model.predict(observation, deterministic=True)[0] if not done else None
 
-print('writing gif')
-write_gif(obs_list, "./gifs/" + num + '.gif', fps=15)
+            env.step(action)
+            i += 1
+            if i % (len(env.possible_agents) + 1) == 0:
+                obs_list.append(np.transpose(env.render(mode='rgb_array'), axes=(1, 0, 2)))
+        env.close()
+        break
+
+    print('writing gif')
+    write_gif(obs_list, "./mature_gifs/" + num + '_' + policy + '.gif', fps=15)
