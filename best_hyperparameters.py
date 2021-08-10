@@ -15,6 +15,7 @@ study = optuna.create_study(study_name=args.study_name, storage=args.storage, lo
 
 values = []
 for i in study.trials:
+    print(i)
     if i < args.print_n_best_trials:
         print(i.value)
     values.append(i.value)

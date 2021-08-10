@@ -1,10 +1,12 @@
-pistonball23
+pistonball24
 
-./run_optimze.sh [name] # run on each to get parameters in DB
+./run_optimize.sh [name] # run on each to get parameters in DB
 
 mkdir -p json
 
 python3 best_hyperparameters.py --study-name [name] --storage mysql://root:dummy@10.128.0.28/[name] --save-n-best-hyperparameters 16 # generate jsons
+
+python3 best_hyperparameters.py --study-name pistonball24 --storage mysql://root:dummy@10.128.0.28/pistonball24 --save-n-best-hyperparameters 16
 
 ./run_eval[n].sh # save mature policies and print hyperparameters with best performance
 
@@ -27,6 +29,10 @@ Weekly match: top left, with table on left and other shit on right. Only left th
 
 
 Leaderboard: 2x4 page of top 8 games that show you the match against player 1 and 2 of that game last week as gifs and link to specific leaderboard pages
+
+
+
+OMP_NUM_THREADS=1 python3 train.py --algo ppo --env LunarLanderContinuous-v2 -n 2000000 -optimize --n-trials 150 --sampler tpe --pruner median --study-name pistonball23 --storage mysql://root:dummy@10.128.0.28/pistonball23
 
 
 
