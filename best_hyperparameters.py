@@ -15,7 +15,6 @@ study = optuna.create_study(study_name=args.study_name, storage=args.storage, lo
 
 values = []
 for i in study.trials:
-    print(i)
     if i.number < args.print_n_best_trials:
         print(i.value)
     values.append(i.value)
@@ -26,6 +25,6 @@ ordered_indices = np.argsort(scratch_values)[::-1]
 for i in range(args.save_n_best_hyperparameters):
     params = study.trials[ordered_indices[i]].params
     text = json.dumps(params)
-    jsonFile = open('./hyperparameter_jsons/' + 'hyperparameters_' + str(i) + ".json", "w+")
+    jsonFile = open('hyperparameter_jsons/' + 'hyperparameters_' + str(i) + ".json", "w+")
     jsonFile.write(text)
     jsonFile.close()
