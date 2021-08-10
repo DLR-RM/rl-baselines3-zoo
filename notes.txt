@@ -2,7 +2,7 @@ pistonball24
 
 ./run_optimize.sh [name] # run on each to get parameters in DB
 
-./ run_best_hyperparameters.sh [name] # generate jsons
+./run_best_hyperparameters.sh [name] # generate jsons
 
 ./run_eval[n].sh # save mature policies and print hyperparameters with best performance
 
