@@ -1,5 +1,7 @@
 mkdir -p ./eval_logs
 mkdir -p ./mature_policies
+rm -rf eval_logs/*
+rm -rf mature_policies/*
 
 CUDA_VISIBLE_DEVICES=0 OMP_NUM_THREADS=1 nohup python3 eval_hyperparameters.py 0 &> ./eval_logs/eval_0.out &
 sleep 3

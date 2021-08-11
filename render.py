@@ -47,4 +47,4 @@ for policy in policies:
         break
 
     print('writing gif')
-    write_gif(obs_list, "./mature_gifs/" + num + '_' + policy + '.gif', fps=15)
+    write_gif(obs_list, "./mature_gifs/" + policy.split('.')[0] + '.gif', fps=15)
