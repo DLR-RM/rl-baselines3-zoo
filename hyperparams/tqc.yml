@@ -261,6 +261,15 @@ SE-Symmetric-v1: &defaults
   top_quantiles_to_drop_per_net: 2
   policy_kwargs: "dict(net_arch=[256, 256], n_critics=2)"
 
+SE-ForwardLeft-v1:
+  <<: *defaults
+  callback:
+    - utils.callbacks.ParallelTrainCallback:
+        gradient_steps: 400
+    # - utils.callbacks.StopTrainingOnMeanRewardThreshold:
+    #     reward_threshold: 250
+    #     verbose: 1
+
 SE-TurnLeft-v1:
   <<: *defaults
   callback:
