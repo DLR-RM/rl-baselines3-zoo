@@ -598,7 +598,6 @@ class ExperimentManager(object):
         )
 
         try:
-            print('learning')
             model.learn(self.n_timesteps, callback=eval_callback)
             # Free memory
             model.env.close()
