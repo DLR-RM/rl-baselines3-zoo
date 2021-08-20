@@ -1,3 +1,18 @@
+## Release 1.2.0a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+- Fix `--load-last-checkpoint` (@SammyRamone)
+
+### Documentation
+
+### Other
+- Added python 3.9 to Github CI
+- Increased DQN replay buffer size for Atari games (@nikhilrayaprolu)
+
 ## Release 1.1.0 (2021-07-01)
 
 ### Breaking Changes
