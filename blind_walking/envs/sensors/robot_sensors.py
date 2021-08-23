@@ -114,6 +114,42 @@ class MotorVelocitySensor(sensor.BoxSpaceSensor):
       motor_velocities = self._robot.GetTrueMotorVelocities()
     return motor_velocities
 
+class MotorTorqueSensor(sensor.BoxSpaceSensor):
+  """A sensor that reads motor torques from the robot."""
+
+  def __init__(self,
+               num_motors: int,
+               noisy_reading: bool = True,
+               lower_bound: _FLOAT_OR_ARRAY = 100,
+               upper_bound: _FLOAT_OR_ARRAY = -100,
+               name: typing.Text = "MotorTorque",
+               dtype: typing.Type[typing.Any] = np.float64) -> None:
+    """Constructs MotorTorqueSensor.
+
+    Args:
+      num_motors: the number of motors in the robot
+      noisy_reading: whether values are true observations
+      lower_bound: the lower bound of the motor velocity
+      upper_bound: the upper bound of the motor velocity
+      name: the name of the sensor
+      dtype: data type of sensor value
+    """
+    self._num_motors = num_motors
+    self._noisy_reading = noisy_reading
+    super(MotorTorqueSensor, self).__init__(
+      name=name,
+      shape=(self._num_motors,),
+      lower_bound=lower_bound,
+      upper_bound=upper_bound,
+      dtype=dtype)
+
+  def _get_observation(self) -> _ARRAY:
+    if self._noisy_reading:
+      motor_torques = self._robot.GetMotorTorques()
+    else:
+      motor_torques = self._robot.GetTrueMotorTorques()
+    return motor_torques
+
 class FootContactSensor(sensor.BoxSpaceSensor):
   """A sensor that reads motor velocities from the robot."""
 
