@@ -427,7 +427,8 @@ class ExperimentManager(object):
 
     @staticmethod
     def is_bullet(env_id: str) -> bool:
-        return "pybullet_envs" in gym.envs.registry.env_specs[env_id].entry_point
+        return "pybullet_envs" in gym.envs.registry.env_specs[env_id].entry_point \
+            or 'A1GymEnv' in gym.envs.registry.env_specs[env_id].entry_point
 
     @staticmethod
     def is_robotics_env(env_id: str) -> bool:

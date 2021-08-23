@@ -33,7 +33,7 @@ class A1GymEnv(gym.Env):
     self._env.close()
 
   def render(self, mode):
-    return self._env.render('rgb_array')
+    return self._env.render(mode)
 
   def __getattr__(self, attr):
     return getattr(self._env, attr)
