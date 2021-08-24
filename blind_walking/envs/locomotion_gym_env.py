@@ -379,14 +379,16 @@ class LocomotionGymEnv(gym.Env):
         aspect=float(self._render_width) / self._render_height,
         nearVal=0.1,
         farVal=100.0)
-    (_, _, px, _, _) = self._pybullet_client.getCameraImage(
+    (w, h, px, _, _) = self._pybullet_client.getCameraImage(
         width=self._render_width,
         height=self._render_height,
         renderer=self._pybullet_client.ER_BULLET_HARDWARE_OPENGL,
         viewMatrix=view_matrix,
         projectionMatrix=proj_matrix)
+    
     rgb_array = np.array(px)
-    rgb_array = rgb_array[:, :, :3]
+    rgb_array = rgb_array.reshape(h,w,4)
+    rgb_array = rgb_array.astype(np.uint8)
     return rgb_array
 
   def get_ground(self):
