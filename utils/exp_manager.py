@@ -99,6 +99,7 @@ class ExperimentManager(object):
         # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
 
         # Callbacks
+        self.specified_callbacks = []
         self.callbacks = []
         self.save_freq = save_freq
         self.eval_freq = eval_freq
@@ -347,6 +348,7 @@ class ExperimentManager(object):
 
         callbacks = get_callback_list(hyperparams)
         if "callback" in hyperparams.keys():
+            self.specified_callbacks = hyperparams["callback"]
             del hyperparams["callback"]
 
         return hyperparams, env_wrapper, callbacks
@@ -615,6 +617,7 @@ class ExperimentManager(object):
         path = None
         if self.optimization_log_path is not None:
             path = os.path.join(self.optimization_log_path, f"trial_{str(trial.number)}")
+        callbacks = get_callback_list({"callback": self.specified_callbacks})
         eval_callback = TrialEvalCallback(
             eval_env,
             trial,
@@ -624,9 +627,10 @@ class ExperimentManager(object):
             eval_freq=optuna_eval_freq,
             deterministic=self.deterministic_eval,
         )
+        callbacks.append(eval_callback)
 
         try:
-            model.learn(self.n_timesteps, callback=eval_callback)
+            model.learn(self.n_timesteps, callback=callbacks)
             # Free memory
             model.env.close()
             eval_env.close()
