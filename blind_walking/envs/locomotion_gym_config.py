@@ -48,6 +48,7 @@ class SimulationParameters(object):
   height_field_iters = attr.ib(type=int, default=1)
   height_field_friction = attr.ib(type=float, default=1.0)
   height_field_perturbation_range = attr.ib(type=float, default=0.08)
+  collapsible_platform = attr.ib(type=bool, default=False)
   carry_mass = attr.ib(type=float, default=0)
   carry_mass_pos = attr.ib(type=list, default=[0,0,0])
 

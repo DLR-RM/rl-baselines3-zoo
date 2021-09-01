@@ -27,6 +27,7 @@ from blind_walking.robots import robot_config
 from blind_walking.envs.sensors import sensor
 from blind_walking.envs.sensors import space_utils
 from blind_walking.envs.env_wrappers.heightfield import HeightField
+from blind_walking.envs.env_wrappers.collapsibleplatform import CollapsiblePlatform
 from blind_walking.envs.env_wrappers.carrymass import CarryMass
 
 _ACTION_EPS = 0.01
@@ -128,10 +129,11 @@ class LocomotionGymEnv(gym.Env):
 
     # Only update after height field has been generated
     self.height_field = False
+    # Set the default collapsible platform options
+    self.collapsible_platform = gym_config.simulation_parameters.collapsible_platform
 
     self._hard_reset = True
     self.reset()
-
     self._hard_reset = gym_config.simulation_parameters.enable_hard_reset
 
     # Construct the observation space from the list of sensors. Note that we
@@ -163,6 +165,12 @@ class LocomotionGymEnv(gym.Env):
       self.cm._generate_mass(self,
                              mass = self.carry_mass,
                              mass_pos = self.carry_mass_pos)
+
+    # Generate collapsible platform or not
+    self.cp = CollapsiblePlatform()
+    if self.collapsible_platform:
+      self.cp._generate_field(self)
+      # self.cp._generate_soft_env(self)
 
   def _build_action_space(self):
     """Builds action space based on motor control mode."""
@@ -240,7 +248,10 @@ class LocomotionGymEnv(gym.Env):
 
     # Clear the simulation world and rebuild the robot interface.
     if self._hard_reset:
-      self._pybullet_client.resetSimulation()
+      if self.collapsible_platform:
+        self._pybullet_client.resetSimulation(self._pybullet_client.RESET_USE_DEFORMABLE_WORLD)
+      else:
+        self._pybullet_client.resetSimulation()
       self._pybullet_client.setPhysicsEngineParameter(
           numSolverIterations=self._num_bullet_solver_iterations)
       self._pybullet_client.setTimeStep(self._sim_time_step)
