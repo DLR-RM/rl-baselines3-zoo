@@ -7,6 +7,7 @@
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)
 - Fix `TypeError` for `gym.Env` class entry points in `ExperimentManager` (@schuderer)
+- Fix usage of callbacks during hyperparameter optimization (@SammyRamone)
 
 ### Documentation
 
