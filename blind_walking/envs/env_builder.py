@@ -18,7 +18,6 @@ from blind_walking.envs import locomotion_gym_config
 from blind_walking.envs.env_wrappers import observation_dictionary_to_array_wrapper as obs_dict_to_array_wrapper
 from blind_walking.envs.env_wrappers import trajectory_generator_wrapper_env
 from blind_walking.envs.env_wrappers import simple_openloop
-from blind_walking.envs.env_wrappers import simple_forward_task
 from blind_walking.envs.env_wrappers import forward_task
 from blind_walking.envs.sensors import robot_sensors
 from blind_walking.robots import a1
@@ -39,22 +38,21 @@ def build_regular_env(robot_class,
   sim_params.reset_time = 2
   sim_params.num_action_repeat = 10
   sim_params.enable_action_interpolation = False
-  sim_params.enable_action_filter = False
-  sim_params.enable_clip_motor_commands = False
+  sim_params.enable_action_filter = True
+  sim_params.enable_clip_motor_commands = True
   sim_params.robot_on_rack = on_rack
 
   gym_config = locomotion_gym_config.LocomotionGymConfig(
       simulation_parameters=sim_params)
 
   sensors = [
-    robot_sensors.BaseDisplacementSensor(),
     robot_sensors.BaseVelocitySensor(),
     robot_sensors.IMUSensor(channels=['R', 'P', 'Y', 'dR', 'dP', 'dY']),
     robot_sensors.MotorAngleSensor(num_motors=a1.NUM_MOTORS),
     robot_sensors.MotorVelocitySensor(num_motors=a1.NUM_MOTORS)
   ]
 
-  task = simple_forward_task.SimpleForwardTask()
+  task = forward_task.ForwardTask()
 
   env = locomotion_gym_env.LocomotionGymEnv(gym_config=gym_config,
                                             robot_class=robot_class,
