@@ -56,7 +56,7 @@ class CollapsiblePlatform():
         }
 
     def _reset_field_collapsible(self, env):
-        for index, blockId in self.damping_platform:
+        for index, blockId in enumerate(self.damping_platform):
             env.pybullet_client.resetBasePositionAndOrientation(
                         blockId, damping_tile_pos[index], [0, 0, 0, 1])
             env.pybullet_client.resetBaseVelocity(blockId, [0, 0, 0], [0, 0, 0])
@@ -69,7 +69,7 @@ class CollapsiblePlatform():
             elif self.color == 'R':
                 env.pybullet_client.changeVisualShape(blockId, -1, rgbaColor=[1,0.25,0,1], flags=0)
                 env.pybullet_client.changeDynamics(blockId, -1, mass=0.07)
-        for index, blockId in self.collapsible_platform:
+        for index, blockId in enumerate(self.collapsible_platform):
             env.pybullet_client.removeBody(blockId)
             del self.collapsible_platform[index]
             regenerated_body = env.pybullet_client.loadSoftBody("cube.obj", basePosition = collapsible_tile_pos[index], scale = 0.25, mass = 1., 
@@ -370,7 +370,7 @@ class CollapsiblePlatform():
 
         # Assign color
         if case in [1,2]:
-            for index, blockId in damping_platform:
+            for index, blockId in enumerate(damping_platform):
                 if texture:
                     env.pybullet_client.changeVisualShape(blockId, -1, textureUniqueId=self.textureId)
                     env.pybullet_client.changeDynamics(blockId, -1, mass=0.07)
@@ -380,7 +380,7 @@ class CollapsiblePlatform():
                 elif self.color == 'R':
                     env.pybullet_client.changeVisualShape(blockId, -1, rgbaColor=[1,0.25,0,1], flags=0)
                     env.pybullet_client.changeDynamics(blockId, -1, mass=0.07)
-            for index, blockId in collapsible_platform:
+            for index, blockId in enumerate(collapsible_platform):
                 if texture:
                     env.pybullet_client.changeVisualShape(blockId, -1, textureUniqueId=self.textureId)
                 elif self.color == 'O':
@@ -398,10 +398,10 @@ class CollapsiblePlatform():
             env.pybullet_client.COV_ENABLE_RENDERING, 1)
 
         self.platform = platform
-        self.damping_platform = self.damping_platform
-        self.collapsible_platform = self.collapsible_platform
-        self.damping_tile_pos = self.damping_tile_pos
-        self.collapsible_tile_pos = self.collapsible_tile_pos
+        self.damping_platform = damping_platform
+        self.collapsible_platform = collapsible_platform
+        self.damping_tile_pos = damping_tile_pos
+        self.collapsible_tile_pos = collapsible_tile_pos
         # return platform # list of platform id
         # For case 1 & 2: the last id is the soft platform, the 2nd last is the platform on the soft tile)
 
