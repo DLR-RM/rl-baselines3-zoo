@@ -11,7 +11,7 @@ class A1GymEnv(gym.Env):
   metadata = {'render.modes': ['rgb_array']}
 
   def __init__(self,
-               action_limit=(0.75, 0.75, 0.75),
+               action_limit=(0.5, 0.5, 0.5),
                render=False,
                on_rack=False):
     self._env = env_builder.build_regular_env(

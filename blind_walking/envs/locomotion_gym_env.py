@@ -28,7 +28,6 @@ from blind_walking.envs.sensors import sensor
 from blind_walking.envs.sensors import space_utils
 from blind_walking.envs.env_wrappers.heightfield import HeightField
 from blind_walking.envs.env_wrappers.collapsibleplatform import CollapsiblePlatform
-from blind_walking.envs.env_wrappers.carrymass import CarryMass
 
 _ACTION_EPS = 0.01
 _NUM_SIMULATION_ITERATION_STEPS = 300
@@ -155,16 +154,6 @@ class LocomotionGymEnv(gym.Env):
         self.hf._generate_field(self,
                                 friction=self.height_field_friction,
                                 heightPerturbationRange=self.height_field_perturbation_range)
-
-    # Set the default additional carry mass options.
-    self.carry_mass = gym_config.simulation_parameters.carry_mass
-    self.carry_mass_pos = gym_config.simulation_parameters.carry_mass_pos
-    self.cm = CarryMass()
-    # Generate carry mass if needed
-    if self.carry_mass > 0:
-      self.cm._generate_mass(self,
-                             mass = self.carry_mass,
-                             mass_pos = self.carry_mass_pos)
 
     # Generate collapsible platform or not
     self.cp = CollapsiblePlatform()
