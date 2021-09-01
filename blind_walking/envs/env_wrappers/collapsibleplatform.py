@@ -58,7 +58,7 @@ class CollapsiblePlatform():
     def _reset_field_collapsible(self, env):
         for index, blockId in enumerate(self.damping_platform):
             env.pybullet_client.resetBasePositionAndOrientation(
-                        blockId, damping_tile_pos[index], [0, 0, 0, 1])
+                blockId, self.damping_tile_pos[index], [0, 0, 0, 1])
             env.pybullet_client.resetBaseVelocity(blockId, [0, 0, 0], [0, 0, 0])
             if self.textureId:
                 env.pybullet_client.changeVisualShape(blockId, -1, textureUniqueId=self.textureId)
@@ -70,13 +70,15 @@ class CollapsiblePlatform():
                 env.pybullet_client.changeVisualShape(blockId, -1, rgbaColor=[1,0.25,0,1], flags=0)
                 env.pybullet_client.changeDynamics(blockId, -1, mass=0.07)
         for index, blockId in enumerate(self.collapsible_platform):
+            print(f'{index}, {blockId}')
             env.pybullet_client.removeBody(blockId)
             del self.collapsible_platform[index]
-            regenerated_body = env.pybullet_client.loadSoftBody("cube.obj", basePosition = collapsible_tile_pos[index], scale = 0.25, mass = 1., 
-                                        useNeoHookean = 0, useBendingSprings=1,useMassSpring=1, 
-                                        springElasticStiffness=sElasticStiffness, springDampingStiffness=sDampingStiffness,
-                                        springDampingAllDirections = 1, collisionMargin=0.01, 
-                                        useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1)
+            regenerated_body = env.pybullet_client.loadSoftBody(
+                "cube.obj", basePosition = self.collapsible_tile_pos[index], scale = 0.25, mass = 1.,
+                useNeoHookean = 0, useBendingSprings=1,useMassSpring=1,
+                springElasticStiffness=self.sElasticStiffness, springDampingStiffness=self.sDampingStiffness,
+                springDampingAllDirections = 1, collisionMargin=0.01,
+                useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1)
             self.collapsible_platform = np.insert(self.collapsible_platform, index, regenerated_body, axis=0)
             if self.textureId:
                 env.pybullet_client.changeVisualShape(regenerated_body, -1, textureUniqueId=self.textureId)
@@ -85,7 +87,8 @@ class CollapsiblePlatform():
             elif self.color == 'R':
                 env.pybullet_client.changeVisualShape(regenerated_body, -1, rgbaColor=[1,0.25,0,1], flags=0)
             # Anchor Soft Body at the bottom 4 corners
-            env.pybullet_client.createSoftBodyAnchor(regenerated_body, 4, -1, -1) # ground anchor on vertices 4,5,6,7. 
+            # ground anchor on vertices 4,5,6,7.
+            env.pybullet_client.createSoftBodyAnchor(regenerated_body, 4, -1, -1)
             env.pybullet_client.createSoftBodyAnchor(regenerated_body, 5, -1, -1)
             env.pybullet_client.createSoftBodyAnchor(regenerated_body, 6, -1, -1)
             env.pybullet_client.createSoftBodyAnchor(regenerated_body, 7, -1, -1)
@@ -94,11 +97,6 @@ class CollapsiblePlatform():
         # env.pybullet_client.setAdditionalSearchPath(pd.getDataPath())
         # env.pybullet_client.configureDebugVisualizer(
         #     env.pybullet_client.COV_ENABLE_RENDERING, 0)
-
-        # planeShape = env.pybullet_client.createCollisionShape(shapeType=env.pybullet_client.GEOM_PLANE)
-        # ground_id = env.pybullet_client.createMultiBody(0, planeShape)
-        # env.pybullet_client.resetBasePositionAndOrientation(ground_id, [0, 0, 0], [0, 0, 0, 1])
-        # env.pybullet_client.changeDynamics(ground_id, -1, lateralFriction=1.0)
         platform = []
         damping_platform = []
         collapsible_platform = []
@@ -421,11 +419,11 @@ class CollapsiblePlatform():
       #                                               green (G): N/A
       # recommended minimum_testing_area_x = 5.0 metres
       # recommended minimum_testing_area_y = 3.0 metres
-      # recommended resolution = 0.2 metre 
+      # recommended resolution = 0.2 metre
       # recommended clearance_area_x = 2.0 metre
       # recommended probability of solid ground (not counting clearance area) = 0.6
       # recommended probability of collapsible ground = 0.2
-      
+
       # Calculate probability of soft floor (2 types) in map
       p_other_floor = (1 - p_solid_floor - p_collapse_floor)
       max_body_limit = 32000
@@ -462,7 +460,8 @@ class CollapsiblePlatform():
               map_mat['color'][x].append('G')
             else: # assign 
               map_mat['color'][x].append(np.random.choice(
-                  [str(key) for key in color_count], 1, p=[p_collapse_floor, p_other_floor, p_solid_floor])[0])
+                  [str(key) for key in color_count], 1,
+                  p=[p_collapse_floor, p_other_floor, p_solid_floor])[0])
             color_count[map_mat['color'][x][y]] += 1
         map_mat['color'][-1][-1] = 'FG'
         # Check if sufficient collapsible ground
