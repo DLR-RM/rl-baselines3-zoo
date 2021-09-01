@@ -1,5 +1,3 @@
-
-
 import pybullet as p
 import pybullet_data as pd
 
@@ -46,8 +44,10 @@ class CollapsiblePlatform():
         # Store simulation environment tiles id
         self.platform = []
         # Generate map matrix information structure (for generate_soft_env)
-        self.map_mat = {'obj_id':[],'color':[],'basePosition':[],'mass':[],'sElasticStiff':[],'sDampingStiff':[], 'collapsibility':[]}
-
+        self.map_mat = {
+            'obj_id':[],'color':[],'basePosition':[],'mass':[],
+            'sElasticStiff':[],'sDampingStiff':[], 'collapsibility':[]
+        }
 
     def _generate_field(self, env, case=1, sElasticStiffness=8, sDampingStiffness=1, texture=None):
         env.pybullet_client.setAdditionalSearchPath(pd.getDataPath())
@@ -71,168 +71,261 @@ class CollapsiblePlatform():
             # collapsibility = 0.50
 
         if texture:
-            self.textureId = env.pybullet_client.loadTexture('collapsible_platform/%s.png' %texture)
+            self.textureId = env.pybullet_client.loadTexture(
+                'blind_walking/envs/env_wrappers/collapsible_platform/%s.png' %texture)
 
         if case == 1: # front right feet soft platform
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.125,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.125,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.125,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.125,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.375,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.365,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,0.135,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.875,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.885,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[1.125,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[1.125,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.125,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.125,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.125,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.125,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.375,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.365,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,0.135,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.875,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.885,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [1.125,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [1.125,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
 
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.5,-0.25,0.0],
-                            globalScaling = 1.0,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.5,0.25,0.0],
-                            globalScaling = 1.0,
-                            useMaximalCoordinates = True))
-            
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.250,-0.50,0.250],
-                            globalScaling = 0.5,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[1,-0.50,0.250],
-                            globalScaling = 0.5,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.250,0.50,0.250],
-                            globalScaling = 0.5,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[1,0.50,0.250],
-                            globalScaling = 0.5,
-                            useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.5,-0.25,0.0],
+                globalScaling = 1.0,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.5,0.25,0.0],
+                globalScaling = 1.0,
+                useMaximalCoordinates = True))
 
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,0.625,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,0.375,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,-0.625,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,-0.385,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.250,-0.50,0.250],
+                globalScaling = 0.5,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [1,-0.50,0.250],
+                globalScaling = 0.5,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.250,0.50,0.250],
+                globalScaling = 0.5,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [1,0.50,0.250],
+                globalScaling = 0.5,
+                useMaximalCoordinates = True))
+
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,0.625,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,0.375,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,-0.625,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,-0.385,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
 
             # Damping Platform
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_tile.urdf',[0.625,-0.125,0.3875],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadSoftBody("cube.obj", basePosition = [0.625,-0.125,0.150], scale = 0.25, mass = 1., 
-                                            useNeoHookean = 0, useBendingSprings=1,useMassSpring=1, 
-                                            springElasticStiffness=sElasticStiffness, springDampingStiffness=sDampingStiffness,
-                                            springDampingAllDirections = 1, collisionMargin=0.01, 
-                                            useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_tile.urdf',
+                [0.625,-0.125,0.3875],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadSoftBody(
+                "cube.obj", basePosition = [0.625,-0.125,0.150], scale = 0.25, mass = 1., 
+                useNeoHookean = 0, useBendingSprings=1,useMassSpring=1, 
+                springElasticStiffness=sElasticStiffness, springDampingStiffness=sDampingStiffness,
+                springDampingAllDirections = 1, collisionMargin=0.01, 
+                useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1))
 
         if case == 2: # front left feet soft platform
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.125,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.125,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.125,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.125,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.365,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.375,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,-0.135,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.885,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.875,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[1.125,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[1.125,-0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.125,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.125,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.125,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.125,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.365,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.375,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,-0.135,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.885,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.875,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [1.125,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [1.125,-0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
 
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.5,-0.25,0.0],
-                            globalScaling = 1.0,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.5,0.25,0.0],
-                            globalScaling = 1.0,
-                            useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.5,-0.25,0.0],
+                globalScaling = 1.0,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.5,0.25,0.0],
+                globalScaling = 1.0,
+                useMaximalCoordinates = True))
             
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.250,-0.50,0.250],
-                            globalScaling = 0.5,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[1,-0.50,0.250],
-                            globalScaling = 0.5,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.250,0.50,0.250],
-                            globalScaling = 0.5,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[1,0.50,0.250],
-                            globalScaling = 0.5,
-                            useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.250,-0.50,0.250],
+                globalScaling = 0.5,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [1,-0.50,0.250],
+                globalScaling = 0.5,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.250,0.50,0.250],
+                globalScaling = 0.5,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [1,0.50,0.250],
+                globalScaling = 0.5,
+                useMaximalCoordinates = True))
 
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,0.625,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,0.385,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,-0.625,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[0.625,-0.375,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,0.625,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,0.385,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,-0.625,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [0.625,-0.375,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
 
             # Damping Platform
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_tile.urdf',[0.625,0.125,0.3875],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
-            platform.append(env.pybullet_client.loadSoftBody("cube.obj", basePosition = [0.625,0.125,0.150], scale = 0.25, mass = 1., 
-                                            useNeoHookean = 0, useBendingSprings=1,useMassSpring=1, 
-                                            springElasticStiffness=sElasticStiffness, springDampingStiffness=sDampingStiffness,
-                                            springDampingAllDirections = 1, collisionMargin=0.01, 
-                                            useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_tile.urdf',
+                [0.625,0.125,0.3875],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadSoftBody(
+                "cube.obj", basePosition = [0.625,0.125,0.150], scale = 0.25, mass = 1., 
+                useNeoHookean = 0, useBendingSprings=1,useMassSpring=1, 
+                springElasticStiffness=sElasticStiffness, springDampingStiffness=sDampingStiffness,
+                springDampingAllDirections = 1, collisionMargin=0.01, 
+                useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1))
 
         if case == 3: # deformable, random soft platforms
-            platform.append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',[-0.125,0.125,0.375],
-                            globalScaling = 0.25,
-                            useMaximalCoordinates = True))
+            platform.append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                [-0.125,0.125,0.375],
+                globalScaling = 0.25,
+                useMaximalCoordinates = True))
 
         # Assign color
         if case in [1,2]:
@@ -240,11 +333,11 @@ class CollapsiblePlatform():
                 env.pybullet_client.changeVisualShape(platform[-1], -1, textureUniqueId=self.textureId)
                 env.pybullet_client.changeVisualShape(platform[-2], -1, textureUniqueId=self.textureId)
                 env.pybullet_client.changeDynamics(platform[-2], -1, mass=0.07)
-            elif color == 'O':
+            elif self.color == 'O':
                 env.pybullet_client.changeVisualShape(platform[-1], -1, rgbaColor=[1,0.5,0,1], flags=0)
                 env.pybullet_client.changeVisualShape(platform[-2], -1, rgbaColor=[1,0.5,0,1], flags=0)
                 env.pybullet_client.changeDynamics(platform[-2], -1, mass=0.25)
-            elif color == 'R':
+            elif self.color == 'R':
                 env.pybullet_client.changeVisualShape(platform[-1], -1, rgbaColor=[1,0.25,0,1], flags=0)
                 env.pybullet_client.changeVisualShape(platform[-2], -1, rgbaColor=[1,0.25,0,1], flags=0)
                 env.pybullet_client.changeDynamics(platform[-2], -1, mass=0.07)
@@ -263,8 +356,10 @@ class CollapsiblePlatform():
         # return platform # list of platform id
         # For case 1 & 2: the last id is the soft platform, the 2nd last is the platform on the soft tile)
 
-
-    def _generate_soft_env(self, env, testing_area_x=5, testing_area_y=3, resolution=0.2, clearance_area_x=2, p_solid_floor=0.6, p_collapse_floor=0.2):
+    def _generate_soft_env(self, env,
+                           testing_area_x=5, testing_area_y=3,
+                           resolution=0.2, clearance_area_x=2,
+                           p_solid_floor=0.6, p_collapse_floor=0.2):
       # map_colour_matrix -  __  TOP VIEW
       #                     |       -----> +y (robot left)
       #                             |           number of tiles in x-direction = testing_area_x / 0.2
@@ -303,7 +398,8 @@ class CollapsiblePlatform():
           print("Invalid input. Please check recommended testing area size and resolution.")
       
       # Generate map matrix information structure
-      map_mat = {'obj_id':[],'color':[],'basePosition':[],'mass':[],'sElasticStiff':[],'sDampingStiff':[], 'collapsibility':[]}
+      map_mat = {'obj_id':[],'color':[],'basePosition':[],'mass':[],
+                 'sElasticStiff':[],'sDampingStiff':[], 'collapsibility':[]}
       
       # Generate colour map matrix
       while True:
@@ -316,7 +412,8 @@ class CollapsiblePlatform():
             if x+1 <= n_x_clear_grid: # check if still within clearance area
               map_mat['color'][x].append('G')
             else: # assign 
-              map_mat['color'][x].append(np.random.choice([str(key) for key in color_count], 1, p=[p_collapse_floor, p_other_floor, p_solid_floor])[0])
+              map_mat['color'][x].append(np.random.choice(
+                  [str(key) for key in color_count], 1, p=[p_collapse_floor, p_other_floor, p_solid_floor])[0])
             color_count[map_mat['color'][x][y]] += 1
         map_mat['color'][-1][-1] = 'FG'
         # Check if sufficient collapsible ground
@@ -373,54 +470,61 @@ class CollapsiblePlatform():
             map_mat['mass'][x].append(0) # static
             map_mat['sElasticStiff'][x].append(520.5)
             map_mat['sDampingStiff'][x].append(520.5)
-            map_mat['obj_id'][x].append(env.pybullet_client.loadURDF('collapsible_platform/cube_platform.urdf',map_mat['basePosition'][x][y],
-                                                    globalScaling = resolution,
-                                                    useMaximalCoordinates = True))
+            map_mat['obj_id'][x].append(env.pybullet_client.loadURDF(
+                'blind_walking/envs/env_wrappers/collapsible_platform/cube_platform.urdf',
+                map_mat['basePosition'][x][y],
+                globalScaling = resolution,
+                useMaximalCoordinates = True))
           elif map_mat['color'][x][y] == 'Y':
             map_mat['mass'][x].append(np.random.uniform(1,2))
             map_mat['sElasticStiff'][x].append(np.random.randint(100,500))
             map_mat['sDampingStiff'][x].append(np.random.randint(100,500))
-            map_mat['obj_id'][x].append(env.pybullet_client.loadSoftBody("cube.obj", basePosition = map_mat['basePosition'][x][y], 
-                                      scale = resolution, mass = map_mat['mass'][x][y], 
-                                      useNeoHookean = 0, useBendingSprings=1, useMassSpring=1, 
-                                      springElasticStiffness=map_mat['sElasticStiff'][x][y], 
-                                      springDampingStiffness=map_mat['sDampingStiff'][x][y], 
-                                      springDampingAllDirections = 1, collisionMargin=0.01, 
-                                      useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1)
-                                      )
-            env.pybullet_client.changeVisualShape(map_mat['obj_id'][x][y], -1, rgbaColor=[1,1,0,1], flags=0) # yellow - Y
+            map_mat['obj_id'][x].append(env.pybullet_client.loadSoftBody(
+                "cube.obj", basePosition = map_mat['basePosition'][x][y], 
+                scale = resolution, mass = map_mat['mass'][x][y], 
+                useNeoHookean = 0, useBendingSprings=1, useMassSpring=1, 
+                springElasticStiffness=map_mat['sElasticStiff'][x][y], 
+                springDampingStiffness=map_mat['sDampingStiff'][x][y], 
+                springDampingAllDirections = 1, collisionMargin=0.01, 
+                useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1))
+            env.pybullet_client.changeVisualShape(
+                map_mat['obj_id'][x][y], -1, rgbaColor=[1,1,0,1], flags=0) # yellow - Y
           elif map_mat['color'][x][y] == 'O':
             map_mat['mass'][x].append(1)
             map_mat['sElasticStiff'][x].append(np.random.randint(41,99))
             map_mat['sDampingStiff'][x].append(np.random.randint(10,80))
-            map_mat['obj_id'][x].append(env.pybullet_client.loadSoftBody("cube.obj", basePosition = map_mat['basePosition'][x][y], 
-                                      scale = resolution, mass = map_mat['mass'][x][y], 
-                                      useNeoHookean = 0, useBendingSprings=1, useMassSpring=1, 
-                                      springElasticStiffness=map_mat['sElasticStiff'][x][y], 
-                                      springDampingStiffness=map_mat['sDampingStiff'][x][y], 
-                                      springDampingAllDirections = 1, collisionMargin=0.01, 
-                                      useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1)
-                                      )
-            env.pybullet_client.changeVisualShape(map_mat['obj_id'][x][y], -1, rgbaColor=[1,0.5,0,1], flags=0) # orange - O
+            map_mat['obj_id'][x].append(env.pybullet_client.loadSoftBody(
+                "cube.obj", basePosition = map_mat['basePosition'][x][y], 
+                scale = resolution, mass = map_mat['mass'][x][y], 
+                useNeoHookean = 0, useBendingSprings=1, useMassSpring=1, 
+                springElasticStiffness=map_mat['sElasticStiff'][x][y], 
+                springDampingStiffness=map_mat['sDampingStiff'][x][y], 
+                springDampingAllDirections = 1, collisionMargin=0.01, 
+                useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1))
+            env.pybullet_client.changeVisualShape(
+                map_mat['obj_id'][x][y], -1, rgbaColor=[1,0.5,0,1], flags=0) # orange - O
           elif map_mat['color'][x][y] == 'R':
             map_mat['mass'][x].append(1)
             map_mat['sElasticStiff'][x].append(40)
             map_mat['sDampingStiff'][x].append(1)
-            map_mat['obj_id'][x].append(env.pybullet_client.loadSoftBody("cube.obj", basePosition = map_mat['basePosition'][x][y], 
-                                      scale = resolution, mass = map_mat['mass'][x][y], 
-                                      useNeoHookean = 0, useBendingSprings=1, useMassSpring=1, 
-                                      springElasticStiffness=map_mat['sElasticStiff'][x][y], 
-                                      springDampingStiffness=map_mat['sDampingStiff'][x][y], 
-                                      springDampingAllDirections = 1, collisionMargin=0.01, 
-                                      useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1)
-                                      )
-            env.pybullet_client.changeVisualShape(map_mat['obj_id'][x][y], -1, rgbaColor=[1,0.25,0,1], flags=0) # red - R
+            map_mat['obj_id'][x].append(env.pybullet_client.loadSoftBody(
+                "cube.obj", basePosition = map_mat['basePosition'][x][y], 
+                scale = resolution, mass = map_mat['mass'][x][y], 
+                useNeoHookean = 0, useBendingSprings=1, useMassSpring=1, 
+                springElasticStiffness=map_mat['sElasticStiff'][x][y], 
+                springDampingStiffness=map_mat['sDampingStiff'][x][y], 
+                springDampingAllDirections = 1, collisionMargin=0.01, 
+                useSelfCollision = 1, frictionCoeff = .5, useFaceContact=1))
+            env.pybullet_client.changeVisualShape(
+                map_mat['obj_id'][x][y], -1, rgbaColor=[1,0.25,0,1], flags=0) # red - R
           if map_mat['color'][x][y] != 'G':
-            env.pybullet_client.createSoftBodyAnchor(map_mat['obj_id'][x][y], 4, -1, -1) # ground anchor on vertices 4,5,6,7. 
+            # ground anchor on vertices 4,5,6,7. 
+            env.pybullet_client.createSoftBodyAnchor(map_mat['obj_id'][x][y], 4, -1, -1)
             env.pybullet_client.createSoftBodyAnchor(map_mat['obj_id'][x][y], 5, -1, -1)
             env.pybullet_client.createSoftBodyAnchor(map_mat['obj_id'][x][y], 6, -1, -1)
             env.pybullet_client.createSoftBodyAnchor(map_mat['obj_id'][x][y], 7, -1, -1)
-          map_mat['collapsibility'][x].append(1041 - (map_mat['sElasticStiff'][x][y] + map_mat['sDampingStiff'][x][y]))
+          map_mat['collapsibility'][x].append(
+              1041 - (map_mat['sElasticStiff'][x][y] + map_mat['sDampingStiff'][x][y]))
           pos_y += resolution
         pos_x += resolution
         pos_y = start_base_pos_y
@@ -429,4 +533,3 @@ class CollapsiblePlatform():
       print("TERRAIN TYPE: Collapsible Platform - Random")
       self.map_mat = map_mat
       # return map_mat
-
