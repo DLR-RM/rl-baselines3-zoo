@@ -29,6 +29,7 @@ from blind_walking.envs.sensors import space_utils
 from blind_walking.envs.env_wrappers.heightfield import HeightField
 from blind_walking.envs.env_wrappers.collapsibleplatform import CollapsiblePlatform
 
+
 _ACTION_EPS = 0.01
 _NUM_SIMULATION_ITERATION_STEPS = 300
 _LOG_BUFFER_LENGTH = 5000

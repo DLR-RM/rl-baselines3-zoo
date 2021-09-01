@@ -46,7 +46,7 @@ class ForwardTask(object):
         self.current_motor_torques = env.robot.GetMotorTorques()
         self.last_base_orientation = self.current_base_orientation
         self.current_base_orientation = env.robot.GetBaseOrientation()
-        self.Last_foot_contacts = self.current_foot_contacts
+        self.last_foot_contacts = self.current_foot_contacts
         self.current_foot_contacts = env.robot.GetFootContacts()
 
     def done(self, env):
