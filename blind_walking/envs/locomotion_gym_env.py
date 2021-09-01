@@ -126,10 +126,9 @@ class LocomotionGymEnv(gym.Env):
     self._render_width = gym_config.simulation_parameters.render_width
     self._render_height = gym_config.simulation_parameters.render_height
 
-    # Set terrain type
-    self.terrain_type = gym_config.simulation_parameters.terrain_type
-    self.height_field = self.terrain_type == 1
-    self.collapsible_platform = self.terrain_type == 2
+    self.height_field = False
+    self.collapsible_tile = False
+    self.collapsible_platform = False
 
     self._hard_reset = True
     self.reset()
@@ -141,24 +140,33 @@ class LocomotionGymEnv(gym.Env):
         space_utils.convert_sensors_to_gym_space_dictionary(
             self.all_sensors()))
 
+    # Set terrain type
+    self.terrain_type = gym_config.simulation_parameters.terrain_type
+    self.height_field = self.terrain_type == 1
+    self.collapsible_tile = self.terrain_type == 2
+    self.collapsible_platform = self.terrain_type == 3
+    # Terrain generators
+    self.hf = HeightField()
+    self.cp = CollapsiblePlatform()
+
     # Set the default height field options.
     self.height_field_iters = gym_config.simulation_parameters.height_field_iters
     self.height_field_friction = gym_config.simulation_parameters.height_field_friction
     self.height_field_perturbation_range = gym_config.simulation_parameters.height_field_perturbation_range
-    # Generate height field or not
-    self.hf = HeightField()
+    # Generate terrain
     if self.height_field:
       # Extra roughness generated with each iteration
       for _ in range(self.height_field_iters):
         self.hf._generate_field(self,
                                 friction=self.height_field_friction,
                                 heightPerturbationRange=self.height_field_perturbation_range)
-
-    # Generate collapsible platform or not
-    self.cp = CollapsiblePlatform()
-    if self.collapsible_platform:
+    # If collapsible tile or platform, enable hard reset
+    elif self.collapsible_tile:
       self.cp._generate_field(self)
-      # self.cp._generate_soft_env(self)
+      self._hard_reset = True
+    elif self.collapsible_platform:
+      self.cp._generate_soft_env(self)
+      self._hard_reset = True
 
   def _build_action_space(self):
     """Builds action space based on motor control mode."""
@@ -236,7 +244,7 @@ class LocomotionGymEnv(gym.Env):
 
     # Clear the simulation world and rebuild the robot interface.
     if self._hard_reset:
-      if self.collapsible_platform:
+      if self.collapsible_tile or self.collapsible_platform:
         self._pybullet_client.resetSimulation(self._pybullet_client.RESET_USE_DEFORMABLE_WORLD)
       else:
         self._pybullet_client.resetSimulation()
@@ -250,8 +258,15 @@ class LocomotionGymEnv(gym.Env):
           "ground": self._pybullet_client.loadURDF("plane_implicit.urdf")
       }
 
+      adjust_position = [0, 0, 0]
       # Adjust position if there is a collapsible platform
-      adjust_position = [0, 0, 0.5] if self.collapsible_platform else [0, 0, 0]
+      # Generate collapsible platform
+      if self.collapsible_tile:
+        adjust_position = [0, 0, 0.5]
+        self.cp._generate_field(self)
+      elif self.collapsible_platform:
+        adjust_position = [0, 0, 0.15]
+        self.cp._generate_soft_env(self)
 
       # Rebuild the robot
       self._robot = self._robot_class(
