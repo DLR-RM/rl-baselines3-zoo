@@ -51,9 +51,6 @@ class CollapsiblePlatform():
 
     def _generate_field(self, env, case=1, sElasticStiffness=8, sDampingStiffness=1, texture=None):
         env.pybullet_client.setAdditionalSearchPath(pd.getDataPath())
-        env.pybullet_client.resetSimulation(env.pybullet_client.RESET_USE_DEFORMABLE_WORLD)
-        env.pybullet_client.setGravity(0, 0, -9.81)
-
         env.pybullet_client.configureDebugVisualizer(
             env.pybullet_client.COV_ENABLE_RENDERING, 0)
 

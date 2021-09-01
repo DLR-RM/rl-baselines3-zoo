@@ -126,10 +126,10 @@ class LocomotionGymEnv(gym.Env):
     self._render_width = gym_config.simulation_parameters.render_width
     self._render_height = gym_config.simulation_parameters.render_height
 
-    # Only update after height field has been generated
-    self.height_field = False
-    # Set the default collapsible platform options
-    self.collapsible_platform = gym_config.simulation_parameters.collapsible_platform
+    # Set terrain type
+    self.terrain_type = gym_config.simulation_parameters.terrain_type
+    self.height_field = self.terrain_type == 1
+    self.collapsible_platform = self.terrain_type == 2
 
     self._hard_reset = True
     self.reset()
@@ -142,7 +142,6 @@ class LocomotionGymEnv(gym.Env):
             self.all_sensors()))
 
     # Set the default height field options.
-    self.height_field = gym_config.simulation_parameters.height_field
     self.height_field_iters = gym_config.simulation_parameters.height_field_iters
     self.height_field_friction = gym_config.simulation_parameters.height_field_friction
     self.height_field_perturbation_range = gym_config.simulation_parameters.height_field_perturbation_range
@@ -251,6 +250,9 @@ class LocomotionGymEnv(gym.Env):
           "ground": self._pybullet_client.loadURDF("plane_implicit.urdf")
       }
 
+      # Adjust position if there is a collapsible platform
+      adjust_position = [0, 0, 0.5] if self.collapsible_platform else [0, 0, 0]
+
       # Rebuild the robot
       self._robot = self._robot_class(
           pybullet_client=self._pybullet_client,
@@ -268,7 +270,8 @@ class LocomotionGymEnv(gym.Env):
           enable_action_interpolation=self._gym_config.simulation_parameters.
           enable_action_interpolation,
           allow_knee_contact=self._gym_config.simulation_parameters.
-          allow_knee_contact)
+          allow_knee_contact,
+          adjust_position=adjust_position)
 
     # Reset the pose of the robot.
     self._robot.Reset(reload_urdf=False,
