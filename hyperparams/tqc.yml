@@ -101,7 +101,7 @@ ReacherBulletEnv-v0:
   <<: *pybullet-defaults
   n_timesteps: !!float 3e5
 
-rocketlander-v0:
+RocketLander-v0:
   <<: *pybullet-defaults
   n_timesteps: !!float 1e6
 
