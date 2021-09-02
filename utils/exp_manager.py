@@ -561,7 +561,7 @@ class ExperimentManager(object):
             sampler = RandomSampler(seed=self.seed)
         elif sampler_method == "tpe":
             # TODO: try with multivariate=True
-            sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed)
+            sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed, multivariate=True)
         elif sampler_method == "skopt":
             # cf https://scikit-optimize.github.io/#skopt.Optimizer
             # GP: gaussian process
