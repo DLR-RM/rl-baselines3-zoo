@@ -422,7 +422,7 @@ def sample_reinforce_params(trial: optuna.Trial) -> Dict[str, Any]:
     nb_rollouts = trial.suggest_categorical("nb_rollouts", [1, 5, 10, 20])
     gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
-    gradient_name = trial.suggest_categorical("gradient_name", ["sum", "discounted", "gae", "beta", "n step"])
+    gradient_name = trial.suggest_categorical("gradient_name", ["sum", "discount", "gae", "beta", "n step"])
     critic_estim_method = trial.suggest_categorical("critic_estim_method", ["td", "gae", "mc"])
 
     # ent_coef = trial.suggest_loguniform("ent_coef", 0.00000001, 0.1)
@@ -461,5 +461,5 @@ HYPERPARAMS_SAMPLER = {
     "tqc": sample_tqc_params,
     "ppo": sample_ppo_params,
     "td3": sample_td3_params,
-    "reinfoce": sample_reinforce_params,
+    "reinforce": sample_reinforce_params,
 }
