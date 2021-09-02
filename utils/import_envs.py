@@ -39,6 +39,6 @@ except ImportError:
     my_gym = None
 
 try:
-    import gym_rocketlander  # pytype: disable=import-error
+    import rocket_lander_gym  # pytype: disable=import-error
 except ImportError:
-    gym_rocketlander = None
+    rocket_lander_gym = None

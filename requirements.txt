@@ -13,4 +13,4 @@ cloudpickle>=1.5.0
 atari-py==0.2.6
 plotly
 panda-gym
-git+https://github.com/EmbersArc/gym-rocketlander.git
+git+https://github.com/sdsubhajitdas/Rocket_Lander_Gym
