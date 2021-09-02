@@ -1,17 +1,29 @@
 CartPole-v1:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
-  critic_estim_method: "mc"
   gradient_name: "discount"
+  critic_estim_method: "mc"
 
+# Tuned
 CartPoleContinuous-v0:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
+  nb_rollouts: 1
+  gamma: 0.9
+  learning_rate: !!float 1.4e-3
+  gradient_name: "discount"
   critic_estim_method: "mc"
-  gradient_name: "discount"
+  n_critic_epochs: 10
+  max_grad_norm: 5
 
+# Tuned
 Pendulum-v0:
-  n_timesteps: !!float 1e5
+  n_timesteps: !!float 2e5
   policy: 'MlpPolicy'
+  nb_rollouts: 1
+  gamma: 0.9
+  learning_rate: !!float 1.4e-3
   gradient_name: "discount"
-  critic_estim_method: "gae"
+  critic_estim_method: "mc"
+  n_critic_epochs: 10
+  max_grad_norm: 5
