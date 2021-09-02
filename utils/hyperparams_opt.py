@@ -412,6 +412,46 @@ def sample_qrdqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     return hyperparams
 
 
+def sample_reinforce_params(trial: optuna.Trial) -> Dict[str, Any]:
+    """
+    Sampler for REINFORCE hyperparams.
+
+    :param trial:
+    :return:
+    """
+    nb_rollouts = trial.suggest_categorical("nb_rollouts", [1, 5, 10, 20])
+    gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
+    learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
+    gradient_name = trial.suggest_categorical("gradient_name", ["sum", "discounted", "gae", "beta", "n step"])
+    critic_estim_method = trial.suggest_categorical("critic_estim_method", ["td", "gae", "mc"])
+
+    # ent_coef = trial.suggest_loguniform("ent_coef", 0.00000001, 0.1)
+    n_critic_epochs = trial.suggest_categorical("n_critic_epochs", [1, 5, 10, 20, 25])
+    # critic_batch_size = trial.suggest_categorical("batch_size", [-1, 32, 64, 128, 256, 512])
+
+    gae_lambda = trial.suggest_categorical("gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
+    max_grad_norm = trial.suggest_categorical("max_grad_norm", [0.3, 0.5, 0.8, 1, 2, 5, 10])
+    net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
+
+    # Independent networks usually work best
+    # when not working with images
+    net_arch = {
+        "small": dict(pi=[64, 64], vf=[64, 64]),
+        "medium": dict(pi=[256, 256], vf=[256, 256]),
+    }[net_arch]
+
+    return {
+        "nb_rollouts": nb_rollouts,
+        "gamma": gamma,
+        "learning_rate": learning_rate,
+        "n_critic_epochs": n_critic_epochs,
+        "gradient_name": gradient_name,
+        "gae_lambda": gae_lambda,
+        "max_grad_norm": max_grad_norm,
+        "policy_kwargs": dict(net_arch=net_arch),
+    }
+
+
 HYPERPARAMS_SAMPLER = {
     "a2c": sample_a2c_params,
     "ddpg": sample_ddpg_params,
@@ -421,4 +461,5 @@ HYPERPARAMS_SAMPLER = {
     "tqc": sample_tqc_params,
     "ppo": sample_ppo_params,
     "td3": sample_td3_params,
+    "reinfoce": sample_reinforce_params,
 }
