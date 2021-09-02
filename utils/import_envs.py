@@ -32,3 +32,13 @@ try:
     import panda_gym  # pytype: disable=import-error
 except ImportError:
     panda_gym = None
+
+try:
+    import my_gym  # pytype: disable=import-error
+except ImportError:
+    my_gym = None
+
+try:
+    import gym_rocketlander  # pytype: disable=import-error
+except ImportError:
+    gym_rocketlander = None
