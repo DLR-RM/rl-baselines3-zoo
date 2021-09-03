@@ -305,3 +305,37 @@ class HistoryWrapperObsDict(gym.Wrapper):
         obs_dict["observation"] = self._create_obs_from_history()
 
         return obs_dict, reward, done, info
+
+
+class FrameSkip(gym.Wrapper):
+    """
+    Return only every ``skip``-th frame (frameskipping)
+
+    :param env: the environment
+    :param skip: number of ``skip``-th frame
+    """
+
+    def __init__(self, env: gym.Env, skip: int = 4):
+        super().__init__(env)
+        self._skip = skip
+
+    def step(self, action: np.ndarray):
+        """
+        Step the environment with the given action
+        Repeat action, sum reward, and max over last observations.
+
+        :param action: the action
+        :return: observation, reward, done, information
+        """
+        total_reward = 0.0
+        done = None
+        for i in range(self._skip):
+            obs, reward, done, info = self.env.step(action)
+            total_reward += reward
+            if done:
+                break
+
+        return obs, total_reward, done, info
+
+    def reset(self):
+        return self.env.reset()

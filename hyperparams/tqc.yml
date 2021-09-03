@@ -101,10 +101,6 @@ ReacherBulletEnv-v0:
   <<: *pybullet-defaults
   n_timesteps: !!float 3e5
 
-RocketLander-v0:
-  <<: *pybullet-defaults
-  n_timesteps: !!float 1e6
-
 # Almost tuned
 HumanoidBulletEnv-v0:
   n_timesteps: !!float 1e7
@@ -234,3 +230,14 @@ parking-v0:
     n_sampled_goal=4,
     max_episode_length=100
   )"
+
+
+RocketLander-v0:
+  n_timesteps: !!float 3e6
+  policy: 'MlpPolicy'
+  env_wrapper:
+    - utils.wrappers.FrameSkip:
+        skip: 4
+    - utils.wrappers.HistoryWrapper:
+        horizon: 2
+  # top_quantiles_to_drop_per_net: 5

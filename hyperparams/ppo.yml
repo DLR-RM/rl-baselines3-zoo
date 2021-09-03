@@ -527,18 +527,24 @@ Walker2d-v2:
   vf_coef: 0.871923
 
 RocketLander-v0:
+  env_wrapper:
+    - utils.wrappers.FrameSkip:
+        skip: 4
+    - utils.wrappers.HistoryWrapper:
+        horizon: 2
+  # normalize: True
   n_envs: 16
   n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
   n_steps: 1024
-  batch_size: 64
-  gae_lambda: 0.98
+  batch_size: 128
+  gae_lambda: 0.95
   learning_rate: !!float 1e-4
-  gamma: 0.999
+  gamma: 0.99
   n_epochs: 5
   clip_range: 0.2
   max_grad_norm: 0.7
-  ent_coef: !!float 1e-5
+  ent_coef: !!float 1e-4
   policy_kwargs: "dict(
                     ortho_init=False,
                     activation_fn=nn.ReLU,
