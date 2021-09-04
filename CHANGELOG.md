@@ -6,10 +6,14 @@
 
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)
+- Fix `TypeError` for `gym.Env` class entry points in `ExperimentManager` (@schuderer)
+- Fix usage of callbacks during hyperparameter optimization (@SammyRamone)
 
 ### Documentation
 
 ### Other
+- Added python 3.9 to Github CI
+- Increased DQN replay buffer size for Atari games (@nikhilrayaprolu)
 
 ## Release 1.1.0 (2021-07-01)
 
