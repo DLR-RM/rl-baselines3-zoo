@@ -30,6 +30,6 @@ for i in trials:
 for i in range(args.save_n_best_hyperparameters):
     params = trials[i].params
     text = json.dumps(params)
-    jsonFile = open('hyperparameter_jsons/' + 'hyperparameters_' + str(i) + ".json", "w+")
-    jsonFile.write(text)
-    jsonFile.close()
+    json_file = open('hyperparameter_jsons/hyperparameters_' + str(i) + ".json", "w+")
+    json_file.write(text)
+    json_file.close()
