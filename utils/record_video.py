@@ -9,19 +9,46 @@ from utils.utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyp
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
-    parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
+    parser.add_argument(
+        "-f", "--folder", help="Log folder", type=str, default="rl-trained-agents"
+    )
     parser.add_argument("-o", "--output-folder", help="Output folder", type=str)
-    parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
-    parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
+    parser.add_argument(
+        "--algo",
+        help="RL Algorithm",
+        default="ppo",
+        type=str,
+        required=False,
+        choices=list(ALGOS.keys()),
+    )
+    parser.add_argument(
+        "-n", "--n-timesteps", help="number of timesteps", default=1000, type=int
+    )
     parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
-    parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
+    parser.add_argument(
+        "--deterministic",
+        action="store_true",
+        default=False,
+        help="Use deterministic actions",
+    )
     parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
     parser.add_argument(
-        "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
+        "--no-render",
+        action="store_true",
+        default=False,
+        help="Do not render the environment (useful for tests)",
     )
-    parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
     parser.add_argument(
-        "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
+        "--exp-id",
+        help="Experiment ID (default: 0: latest, -1: no exp folder)",
+        default=0,
+        type=int,
+    )
+    parser.add_argument(
+        "--load-best",
+        action="store_true",
+        default=False,
+        help="Load best model instead of last model if available",
     )
     parser.add_argument(
         "--load-checkpoint",
@@ -60,7 +87,9 @@ if __name__ == "__main__":
         model_path = os.path.join(log_path, f"{env_id}.zip")
         name_prefix = f"final-model-{algo}-{env_id}"
     else:
-        model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
+        model_path = os.path.join(
+            log_path, f"rl_model_{args.load_checkpoint}_steps.zip"
+        )
         name_prefix = f"checkpoint-{args.load_checkpoint}-{algo}-{env_id}"
 
     found = os.path.isfile(model_path)

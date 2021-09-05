@@ -2,7 +2,10 @@ from typing import Any, Dict
 
 import numpy as np
 import optuna
-from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
+from stable_baselines3.common.noise import (
+    NormalActionNoise,
+    OrnsteinUhlenbeckActionNoise,
+)
 from torch import nn as nn
 
 from utils import linear_schedule
@@ -16,8 +19,12 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
     :return:
     """
     batch_size = trial.suggest_categorical("batch_size", [8, 16, 32, 64, 128, 256, 512])
-    n_steps = trial.suggest_categorical("n_steps", [8, 16, 32, 64, 128, 256, 512, 1024, 2048])
-    gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
+    n_steps = trial.suggest_categorical(
+        "n_steps", [8, 16, 32, 64, 128, 256, 512, 1024, 2048]
+    )
+    gamma = trial.suggest_categorical(
+        "gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999]
+    )
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
     lr_schedule = "constant"
     # Uncomment to enable learning rate schedule
@@ -25,8 +32,12 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
     ent_coef = trial.suggest_loguniform("ent_coef", 0.00000001, 0.1)
     clip_range = trial.suggest_categorical("clip_range", [0.1, 0.2, 0.3, 0.4])
     n_epochs = trial.suggest_categorical("n_epochs", [1, 5, 10, 20])
-    gae_lambda = trial.suggest_categorical("gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
-    max_grad_norm = trial.suggest_categorical("max_grad_norm", [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5])
+    gae_lambda = trial.suggest_categorical(
+        "gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0]
+    )
+    max_grad_norm = trial.suggest_categorical(
+        "max_grad_norm", [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5]
+    )
     vf_coef = trial.suggest_uniform("vf_coef", 0, 1)
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
     # Uncomment for gSDE (continuous actions)
@@ -53,7 +64,12 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
         "medium": [dict(pi=[256, 256], vf=[256, 256])],
     }[net_arch]
 
-    activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
+    activation_fn = {
+        "tanh": nn.Tanh,
+        "relu": nn.ReLU,
+        "elu": nn.ELU,
+        "leaky_relu": nn.LeakyReLU,
+    }[activation_fn]
 
     return {
         "n_steps": n_steps,
@@ -83,13 +99,23 @@ def sample_a2c_params(trial: optuna.Trial) -> Dict[str, Any]:
     :param trial:
     :return:
     """
-    gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
-    normalize_advantage = trial.suggest_categorical("normalize_advantage", [False, True])
-    max_grad_norm = trial.suggest_categorical("max_grad_norm", [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5])
+    gamma = trial.suggest_categorical(
+        "gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999]
+    )
+    normalize_advantage = trial.suggest_categorical(
+        "normalize_advantage", [False, True]
+    )
+    max_grad_norm = trial.suggest_categorical(
+        "max_grad_norm", [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5]
+    )
     # Toggle PyTorch RMS Prop (different from TF one, cf doc)
     use_rms_prop = trial.suggest_categorical("use_rms_prop", [False, True])
-    gae_lambda = trial.suggest_categorical("gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
-    n_steps = trial.suggest_categorical("n_steps", [8, 16, 32, 64, 128, 256, 512, 1024, 2048])
+    gae_lambda = trial.suggest_categorical(
+        "gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0]
+    )
+    n_steps = trial.suggest_categorical(
+        "n_steps", [8, 16, 32, 64, 128, 256, 512, 1024, 2048]
+    )
     lr_schedule = trial.suggest_categorical("lr_schedule", ["linear", "constant"])
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
     ent_coef = trial.suggest_loguniform("ent_coef", 0.00000001, 0.1)
@@ -117,7 +143,12 @@ def sample_a2c_params(trial: optuna.Trial) -> Dict[str, Any]:
     #     "small": [64, 64],
     # }[sde_net_arch]
 
-    activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
+    activation_fn = {
+        "tanh": nn.Tanh,
+        "relu": nn.ReLU,
+        "elu": nn.ELU,
+        "leaky_relu": nn.LeakyReLU,
+    }[activation_fn]
 
     return {
         "n_steps": n_steps,
@@ -147,13 +178,23 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
     :param trial:
     :return:
     """
-    gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
+    gamma = trial.suggest_categorical(
+        "gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999]
+    )
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
-    batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 128, 256, 512, 1024, 2048])
-    buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(1e5), int(1e6)])
-    learning_starts = trial.suggest_categorical("learning_starts", [0, 1000, 10000, 20000])
+    batch_size = trial.suggest_categorical(
+        "batch_size", [16, 32, 64, 128, 256, 512, 1024, 2048]
+    )
+    buffer_size = trial.suggest_categorical(
+        "buffer_size", [int(1e4), int(1e5), int(1e6)]
+    )
+    learning_starts = trial.suggest_categorical(
+        "learning_starts", [0, 1000, 10000, 20000]
+    )
     # train_freq = trial.suggest_categorical('train_freq', [1, 10, 100, 300])
-    train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512])
+    train_freq = trial.suggest_categorical(
+        "train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512]
+    )
     # Polyak coeff
     tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02, 0.05, 0.08])
     # gradient_steps takes too much time
@@ -208,17 +249,27 @@ def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
     :param trial:
     :return:
     """
-    gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
+    gamma = trial.suggest_categorical(
+        "gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999]
+    )
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
-    batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 100, 128, 256, 512, 1024, 2048])
-    buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(1e5), int(1e6)])
+    batch_size = trial.suggest_categorical(
+        "batch_size", [16, 32, 64, 100, 128, 256, 512, 1024, 2048]
+    )
+    buffer_size = trial.suggest_categorical(
+        "buffer_size", [int(1e4), int(1e5), int(1e6)]
+    )
     # Polyak coeff
     tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02, 0.05, 0.08])
 
-    train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512])
+    train_freq = trial.suggest_categorical(
+        "train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512]
+    )
     gradient_steps = train_freq
 
-    noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
+    noise_type = trial.suggest_categorical(
+        "noise_type", ["ornstein-uhlenbeck", "normal", None]
+    )
     noise_std = trial.suggest_uniform("noise_std", 0, 1)
 
     # NOTE: Add "verybig" to net_arch when tuning HER
@@ -266,17 +317,27 @@ def sample_ddpg_params(trial: optuna.Trial) -> Dict[str, Any]:
     :param trial:
     :return:
     """
-    gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
+    gamma = trial.suggest_categorical(
+        "gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999]
+    )
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
-    batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 100, 128, 256, 512, 1024, 2048])
-    buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(1e5), int(1e6)])
+    batch_size = trial.suggest_categorical(
+        "batch_size", [16, 32, 64, 100, 128, 256, 512, 1024, 2048]
+    )
+    buffer_size = trial.suggest_categorical(
+        "buffer_size", [int(1e4), int(1e5), int(1e6)]
+    )
     # Polyak coeff
     tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02, 0.05, 0.08])
 
-    train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512])
+    train_freq = trial.suggest_categorical(
+        "train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512]
+    )
     gradient_steps = train_freq
 
-    noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
+    noise_type = trial.suggest_categorical(
+        "noise_type", ["ornstein-uhlenbeck", "normal", None]
+    )
     noise_std = trial.suggest_uniform("noise_std", 0, 1)
 
     # NOTE: Add "verybig" to net_arch when tuning HER (see TD3)
@@ -322,14 +383,24 @@ def sample_dqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     :param trial:
     :return:
     """
-    gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
+    gamma = trial.suggest_categorical(
+        "gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999]
+    )
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
-    batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 100, 128, 256, 512])
-    buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(5e4), int(1e5), int(1e6)])
+    batch_size = trial.suggest_categorical(
+        "batch_size", [16, 32, 64, 100, 128, 256, 512]
+    )
+    buffer_size = trial.suggest_categorical(
+        "buffer_size", [int(1e4), int(5e4), int(1e5), int(1e6)]
+    )
     exploration_final_eps = trial.suggest_uniform("exploration_final_eps", 0, 0.2)
     exploration_fraction = trial.suggest_uniform("exploration_fraction", 0, 0.5)
-    target_update_interval = trial.suggest_categorical("target_update_interval", [1, 1000, 5000, 10000, 15000, 20000])
-    learning_starts = trial.suggest_categorical("learning_starts", [0, 1000, 5000, 10000, 20000])
+    target_update_interval = trial.suggest_categorical(
+        "target_update_interval", [1, 1000, 5000, 10000, 15000, 20000]
+    )
+    learning_starts = trial.suggest_categorical(
+        "learning_starts", [0, 1000, 5000, 10000, 20000]
+    )
 
     train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 128, 256, 1000])
     subsample_steps = trial.suggest_categorical("subsample_steps", [1, 2, 4, 8])
@@ -359,7 +430,9 @@ def sample_dqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     return hyperparams
 
 
-def sample_her_params(trial: optuna.Trial, hyperparams: Dict[str, Any]) -> Dict[str, Any]:
+def sample_her_params(
+    trial: optuna.Trial, hyperparams: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Sampler for HerReplayBuffer hyperparams.
 
@@ -372,7 +445,9 @@ def sample_her_params(trial: optuna.Trial, hyperparams: Dict[str, Any]) -> Dict[
     her_kwargs["goal_selection_strategy"] = trial.suggest_categorical(
         "goal_selection_strategy", ["final", "episode", "future"]
     )
-    her_kwargs["online_sampling"] = trial.suggest_categorical("online_sampling", [True, False])
+    her_kwargs["online_sampling"] = trial.suggest_categorical(
+        "online_sampling", [True, False]
+    )
     hyperparams["replay_buffer_kwargs"] = her_kwargs
     return hyperparams
 
@@ -388,7 +463,9 @@ def sample_tqc_params(trial: optuna.Trial) -> Dict[str, Any]:
     hyperparams = sample_sac_params(trial)
 
     n_quantiles = trial.suggest_int("n_quantiles", 5, 50)
-    top_quantiles_to_drop_per_net = trial.suggest_int("top_quantiles_to_drop_per_net", 0, n_quantiles - 1)
+    top_quantiles_to_drop_per_net = trial.suggest_int(
+        "top_quantiles_to_drop_per_net", 0, n_quantiles - 1
+    )
 
     hyperparams["policy_kwargs"].update({"n_quantiles": n_quantiles})
     hyperparams["top_quantiles_to_drop_per_net"] = top_quantiles_to_drop_per_net

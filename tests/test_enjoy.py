@@ -20,7 +20,17 @@ trained_models = get_trained_models(FOLDER)
 @pytest.mark.slow
 def test_trained_agents(trained_model):
     algo, env_id = trained_models[trained_model]
-    args = ["-n", str(N_STEPS), "-f", FOLDER, "--algo", algo, "--env", env_id, "--no-render"]
+    args = [
+        "-n",
+        str(N_STEPS),
+        "-f",
+        FOLDER,
+        "--algo",
+        algo,
+        "--env",
+        env_id,
+        "--no-render",
+    ]
 
     # Since SB3 >= 1.1.0, HER is no more an algorithm but a replay buffer class
     if algo == "her":
@@ -67,16 +77,30 @@ def test_load(tmp_path):
     _assert_eq(return_code, 0)
 
     # Load best model
-    args = ["-n", str(N_STEPS), "-f", tmp_path, "--algo", algo, "--env", env_id, "--no-render"]
+    args = [
+        "-n",
+        str(N_STEPS),
+        "-f",
+        tmp_path,
+        "--algo",
+        algo,
+        "--env",
+        env_id,
+        "--no-render",
+    ]
     return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-best"])
     _assert_eq(return_code, 0)
 
     # Load checkpoint
-    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-checkpoint", str(500)])
+    return_code = subprocess.call(
+        ["python", "enjoy.py"] + args + ["--load-checkpoint", str(500)]
+    )
     _assert_eq(return_code, 0)
 
     # Load last checkpoint
-    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-last-checkpoint"])
+    return_code = subprocess.call(
+        ["python", "enjoy.py"] + args + ["--load-last-checkpoint"]
+    )
     _assert_eq(return_code, 0)
 
 
@@ -127,7 +151,9 @@ def test_record_training(tmp_path):
     return_code = subprocess.call(["python", "train.py"] + args_training)
     _assert_eq(return_code, 0)
 
-    return_code = subprocess.call(["python", "-m", "utils.record_training"] + args_recording)
+    return_code = subprocess.call(
+        ["python", "-m", "utils.record_training"] + args_recording
+    )
     _assert_eq(return_code, 0)
     mp4_path = str(videos_tmp_path / "training.mp4")
     gif_path = str(videos_tmp_path / "training.gif")
