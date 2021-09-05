@@ -4,7 +4,10 @@ import supersuit as ss
 from stable_baselines3.common.vec_env import VecMonitor, VecTransposeImage, VecNormalize
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import EvalCallback
-from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
+from stable_baselines3.common.preprocessing import (
+    is_image_space,
+    is_image_space_channels_first,
+)
 import numpy as np
 import os
 import sys
@@ -21,14 +24,14 @@ num = sys.argv[1]
 
 
 env = pistonball_v4.env(ball_mass=3.75)
-env = ss.color_reduction_v0(env, mode='B')
+env = ss.color_reduction_v0(env, mode="B")
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
 
-policies = os.listdir('./mature_policies/' + str(num) + '/')
+policies = os.listdir("./mature_policies/" + str(num) + "/")
 
 for policy in policies:
-    model = PPO.load('./mature_policies/' + str(num) + '/' + policy)
+    model = PPO.load("./mature_policies/" + str(num) + "/" + policy)
 
     obs_list = []
     i = 0
@@ -37,14 +40,20 @@ for policy in policies:
     while True:
         for agent in env.agent_iter():
             observation, _, done, _ = env.last()
-            action = model.predict(observation, deterministic=True)[0] if not done else None
+            action = (
+                model.predict(observation, deterministic=True)[0] if not done else None
+            )
 
             env.step(action)
             i += 1
             if i % (len(env.possible_agents) + 1) == 0:
-                obs_list.append(np.transpose(env.render(mode='rgb_array'), axes=(1, 0, 2)))
+                obs_list.append(
+                    np.transpose(env.render(mode="rgb_array"), axes=(1, 0, 2))
+                )
         env.close()
         break
 
-    print('writing gif')
-    write_gif(obs_list, "./mature_gifs/" + num + "_" + policy.split('.')[0] + '.gif', fps=15)
+    print("writing gif")
+    write_gif(
+        obs_list, "./mature_gifs/" + num + "_" + policy.split(".")[0] + ".gif", fps=15
+    )

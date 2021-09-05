@@ -12,8 +12,16 @@ from sb3_contrib import QRDQN, TQC
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
-from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize
+from stable_baselines3.common.sb2_compat.rmsprop_tf_like import (
+    RMSpropTFLike,
+)  # noqa: F401
+from stable_baselines3.common.vec_env import (
+    DummyVecEnv,
+    SubprocVecEnv,
+    VecEnv,
+    VecFrameStack,
+    VecNormalize,
+)
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
@@ -40,7 +48,9 @@ def flatten_dict_observations(env: gym.Env) -> gym.Env:
         return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
 
 
-def get_wrapper_class(hyperparams: Dict[str, Any]) -> Optional[Callable[[gym.Env], gym.Env]]:
+def get_wrapper_class(
+    hyperparams: Dict[str, Any]
+) -> Optional[Callable[[gym.Env], gym.Env]]:
     """
     Get one or more Gym environment wrapper class specified as a hyper parameter
     "env_wrapper".
@@ -293,7 +303,11 @@ def get_latest_run_id(log_path: str, env_id: str) -> int:
     for path in glob.glob(os.path.join(log_path, env_id + "_[0-9]*")):
         file_name = os.path.basename(path)
         ext = file_name.split("_")[-1]
-        if env_id == "_".join(file_name.split("_")[:-1]) and ext.isdigit() and int(ext) > max_run_id:
+        if (
+            env_id == "_".join(file_name.split("_")[:-1])
+            and ext.isdigit()
+            and int(ext) > max_run_id
+        ):
             max_run_id = int(ext)
     return max_run_id
 
@@ -317,7 +331,9 @@ def get_saved_hyperparams(
         if os.path.isfile(config_file):
             # Load saved hyperparameters
             with open(os.path.join(stats_path, "config.yml"), "r") as f:
-                hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+                hyperparams = yaml.load(
+                    f, Loader=yaml.UnsafeLoader
+                )  # pytype: disable=module-attr
             hyperparams["normalize"] = hyperparams.get("normalize", False)
         else:
             obs_rms_path = os.path.join(stats_path, "obs_rms.pkl")
@@ -330,7 +346,10 @@ def get_saved_hyperparams(
                 if test_mode:
                     normalize_kwargs["norm_reward"] = norm_reward
             else:
-                normalize_kwargs = {"norm_obs": hyperparams["normalize"], "norm_reward": norm_reward}
+                normalize_kwargs = {
+                    "norm_obs": hyperparams["normalize"],
+                    "norm_reward": norm_reward,
+                }
             hyperparams["normalize_kwargs"] = normalize_kwargs
     return hyperparams, stats_path
 

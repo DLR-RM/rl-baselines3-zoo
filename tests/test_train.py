@@ -33,7 +33,16 @@ experiments["ddpg-Pendulum-v0"] = ("ddpg", "Pendulum-v0")
 @pytest.mark.parametrize("experiment", experiments.keys())
 def test_train(tmp_path, experiment):
     algo, env_id = experiments[experiment]
-    args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id, "--log-folder", tmp_path]
+    args = [
+        "-n",
+        str(N_STEPS),
+        "--algo",
+        algo,
+        "--env",
+        env_id,
+        "--log-folder",
+        tmp_path,
+    ]
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)

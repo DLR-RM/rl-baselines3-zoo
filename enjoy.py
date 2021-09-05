@@ -18,19 +18,53 @@ from utils.utils import StoreDict
 def main():  # noqa: C901
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
-    parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
-    parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
-    parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
-    parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
-    parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
-    parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
-    parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
     parser.add_argument(
-        "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
+        "-f", "--folder", help="Log folder", type=str, default="rl-trained-agents"
     )
-    parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
     parser.add_argument(
-        "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
+        "--algo",
+        help="RL Algorithm",
+        default="ppo",
+        type=str,
+        required=False,
+        choices=list(ALGOS.keys()),
+    )
+    parser.add_argument(
+        "-n", "--n-timesteps", help="number of timesteps", default=1000, type=int
+    )
+    parser.add_argument(
+        "--num-threads",
+        help="Number of threads for PyTorch (-1 to use default)",
+        default=-1,
+        type=int,
+    )
+    parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
+    parser.add_argument(
+        "--exp-id",
+        help="Experiment ID (default: 0: latest, -1: no exp folder)",
+        default=0,
+        type=int,
+    )
+    parser.add_argument(
+        "--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int
+    )
+    parser.add_argument(
+        "--no-render",
+        action="store_true",
+        default=False,
+        help="Do not render the environment (useful for tests)",
+    )
+    parser.add_argument(
+        "--deterministic",
+        action="store_true",
+        default=False,
+        help="Use deterministic actions",
+    )
+    parser.add_argument(
+        "--load-best",
+        action="store_true",
+        default=False,
+        help="Load best model instead of last model if available",
     )
     parser.add_argument(
         "--load-checkpoint",
@@ -44,12 +78,22 @@ def main():  # noqa: C901
         default=False,
         help="Load last checkpoint instead of last model if available",
     )
-    parser.add_argument("--stochastic", action="store_true", default=False, help="Use stochastic actions")
     parser.add_argument(
-        "--norm-reward", action="store_true", default=False, help="Normalize reward if applicable (trained with VecNormalize)"
+        "--stochastic",
+        action="store_true",
+        default=False,
+        help="Use stochastic actions",
+    )
+    parser.add_argument(
+        "--norm-reward",
+        action="store_true",
+        default=False,
+        help="Normalize reward if applicable (trained with VecNormalize)",
     )
     parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
-    parser.add_argument("--reward-log", help="Where to log reward", default="", type=str)
+    parser.add_argument(
+        "--reward-log", help="Where to log reward", default="", type=str
+    )
     parser.add_argument(
         "--gym-packages",
         type=str,
@@ -58,7 +102,11 @@ def main():  # noqa: C901
         help="Additional external Gym environment package modules to import (e.g. gym_minigrid)",
     )
     parser.add_argument(
-        "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
+        "--env-kwargs",
+        type=str,
+        nargs="+",
+        action=StoreDict,
+        help="Optional keyword argument to pass to the env constructor",
     )
     args = parser.parse_args()
 
@@ -94,13 +142,17 @@ def main():  # noqa: C901
         found = os.path.isfile(model_path)
 
     if args.load_checkpoint is not None:
-        model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
+        model_path = os.path.join(
+            log_path, f"rl_model_{args.load_checkpoint}_steps.zip"
+        )
         found = os.path.isfile(model_path)
 
     if args.load_last_checkpoint:
         checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
         if len(checkpoints) == 0:
-            raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
+            raise ValueError(
+                f"No checkpoint found for {algo} on {env_id}, path: {log_path}"
+            )
 
         def step_count(checkpoint_path: str) -> int:
             # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
@@ -131,14 +183,18 @@ def main():  # noqa: C901
     is_atari = ExperimentManager.is_atari(env_id)
 
     stats_path = os.path.join(log_path, env_id)
-    hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
+    hyperparams, stats_path = get_saved_hyperparams(
+        stats_path, norm_reward=args.norm_reward, test_mode=True
+    )
 
     # load env_kwargs if existing
     env_kwargs = {}
     args_path = os.path.join(log_path, env_id, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path, "r") as f:
-            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+            loaded_args = yaml.load(
+                f, Loader=yaml.UnsafeLoader
+            )  # pytype: disable=module-attr
             if loaded_args["env_kwargs"] is not None:
                 env_kwargs = loaded_args["env_kwargs"]
     # overwrite with command line arguments
@@ -175,7 +231,9 @@ def main():  # noqa: C901
             "clip_range": lambda _: 0.0,
         }
 
-    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
+    model = ALGOS[algo].load(
+        model_path, env=env, custom_objects=custom_objects, **kwargs
+    )
 
     obs = env.reset()
 
@@ -236,10 +294,14 @@ def main():  # noqa: C901
 
     if args.verbose > 0 and len(episode_rewards) > 0:
         print(f"{len(episode_rewards)} Episodes")
-        print(f"Mean reward: {np.mean(episode_rewards):.2f} +/- {np.std(episode_rewards):.2f}")
+        print(
+            f"Mean reward: {np.mean(episode_rewards):.2f} +/- {np.std(episode_rewards):.2f}"
+        )
 
     if args.verbose > 0 and len(episode_lengths) > 0:
-        print(f"Mean episode length: {np.mean(episode_lengths):.2f} +/- {np.std(episode_lengths):.2f}")
+        print(
+            f"Mean episode length: {np.mean(episode_lengths):.2f} +/- {np.std(episode_lengths):.2f}"
+        )
 
     env.close()
 

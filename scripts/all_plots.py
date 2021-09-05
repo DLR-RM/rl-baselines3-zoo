@@ -12,7 +12,9 @@ from scipy.spatial import distance_matrix
 parser = argparse.ArgumentParser("Gather results, plot them and create table")
 parser.add_argument("-a", "--algos", help="Algorithms to include", nargs="+", type=str)
 parser.add_argument("-e", "--env", help="Environments to include", nargs="+", type=str)
-parser.add_argument("-f", "--exp-folders", help="Folders to include", nargs="+", type=str)
+parser.add_argument(
+    "-f", "--exp-folders", help="Folders to include", nargs="+", type=str
+)
 parser.add_argument("-l", "--labels", help="Label for each folder", nargs="+", type=str)
 parser.add_argument(
     "-k",
@@ -22,16 +24,48 @@ parser.add_argument(
     default="results",
     type=str,
 )
-parser.add_argument("-max", "--max-timesteps", help="Max number of timesteps to display", type=int, default=int(2e6))
-parser.add_argument("-min", "--min-timesteps", help="Min number of timesteps to keep a trial", type=int, default=-1)
-parser.add_argument("-o", "--output", help="Output filename (pickle file), where to save the post-processed data", type=str)
 parser.add_argument(
-    "-median", "--median", action="store_true", default=False, help="Display median instead of mean in the table"
+    "-max",
+    "--max-timesteps",
+    help="Max number of timesteps to display",
+    type=int,
+    default=int(2e6),
 )
-parser.add_argument("--no-million", action="store_true", default=False, help="Do not convert x-axis to million")
-parser.add_argument("--no-display", action="store_true", default=False, help="Do not show the plots")
 parser.add_argument(
-    "-print", "--print-n-trials", action="store_true", default=False, help="Print the number of trial for each result"
+    "-min",
+    "--min-timesteps",
+    help="Min number of timesteps to keep a trial",
+    type=int,
+    default=-1,
+)
+parser.add_argument(
+    "-o",
+    "--output",
+    help="Output filename (pickle file), where to save the post-processed data",
+    type=str,
+)
+parser.add_argument(
+    "-median",
+    "--median",
+    action="store_true",
+    default=False,
+    help="Display median instead of mean in the table",
+)
+parser.add_argument(
+    "--no-million",
+    action="store_true",
+    default=False,
+    help="Do not convert x-axis to million",
+)
+parser.add_argument(
+    "--no-display", action="store_true", default=False, help="Do not show the plots"
+)
+parser.add_argument(
+    "-print",
+    "--print-n-trials",
+    action="store_true",
+    default=False,
+    help="Print the number of trial for each result",
 )
 args = parser.parse_args()
 
@@ -131,12 +165,18 @@ for env in args.env:  # noqa: C901
                     else:
                         new_merged_results = []
                         # Nearest neighbour
-                        distance_mat = distance_matrix(n_timesteps.reshape(-1, 1), timesteps.reshape(-1, 1))
+                        distance_mat = distance_matrix(
+                            n_timesteps.reshape(-1, 1), timesteps.reshape(-1, 1)
+                        )
                         closest_indices = distance_mat.argmin(axis=0)
                         for closest_idx in closest_indices:
-                            new_merged_results.append(merged_results_[trial_idx][closest_idx])
+                            new_merged_results.append(
+                                merged_results_[trial_idx][closest_idx]
+                            )
                         merged_results[trial_idx] = new_merged_results
-                        last_eval[trial_idx] = merged_results_[trial_idx][closest_indices[-1]]
+                        last_eval[trial_idx] = merged_results_[trial_idx][
+                            closest_indices[-1]
+                        ]
 
             # Remove incomplete runs
             merged_results_tmp, last_eval_tmp = [], []
@@ -178,7 +218,9 @@ for env in args.env:  # noqa: C901
                 std_error_last_eval = std_last_eval / np.sqrt(n_trials)
 
                 if args.median:
-                    results[env][f"{algo}-{args.labels[folder_idx]}"] = f"{np.median(last_evals):.0f}"
+                    results[env][
+                        f"{algo}-{args.labels[folder_idx]}"
+                    ] = f"{np.median(last_evals):.0f}"
                 else:
                     results[env][
                         f"{algo}-{args.labels[folder_idx]}"
@@ -197,8 +239,15 @@ for env in args.env:  # noqa: C901
                     "std_error_last_eval": std_error_last_eval,
                 }
 
-                plt.plot(timesteps / divider, mean_, label=f"{algo}-{args.labels[folder_idx]}", linewidth=3)
-                plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
+                plt.plot(
+                    timesteps / divider,
+                    mean_,
+                    label=f"{algo}-{args.labels[folder_idx]}",
+                    linewidth=3,
+                )
+                plt.fill_between(
+                    timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5
+                )
 
     plt.legend()
 
@@ -231,7 +280,10 @@ for i, env in enumerate(args.env, start=1):
 writer.value_matrix = value_matrix
 writer.write_table()
 
-post_processed_results["results_table"] = {"headers": headers, "value_matrix": value_matrix}
+post_processed_results["results_table"] = {
+    "headers": headers,
+    "value_matrix": value_matrix,
+}
 
 if args.output is not None:
     print(f"Saving to {args.output}.pkl")
