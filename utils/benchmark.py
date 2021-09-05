@@ -12,19 +12,11 @@ from stable_baselines3.common.results_plotter import load_results, ts2xy
 from utils.utils import get_latest_run_id, get_saved_hyperparams, get_trained_models
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--log-dir", help="Root log folder", default="rl-trained-agents/", type=str
-)
-parser.add_argument(
-    "--benchmark-dir", help="Benchmark log folder", default="logs/benchmark/", type=str
-)
-parser.add_argument(
-    "-n", "--n-timesteps", help="number of timesteps", default=150000, type=int
-)
+parser.add_argument("--log-dir", help="Root log folder", default="rl-trained-agents/", type=str)
+parser.add_argument("--benchmark-dir", help="Benchmark log folder", default="logs/benchmark/", type=str)
+parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=150000, type=int)
 parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
-parser.add_argument(
-    "--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int
-)
+parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
 parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
 parser.add_argument(
     "--test-mode",
@@ -38,9 +30,7 @@ parser.add_argument(
     default=False,
     help="Run also MuJoCo envs (require a licence)",
 )
-parser.add_argument(
-    "--num-threads", help="Number of threads for PyTorch", default=2, type=int
-)
+parser.add_argument("--num-threads", help="Number of threads for PyTorch", default=2, type=int)
 args = parser.parse_args()
 
 trained_models = get_trained_models(args.log_dir)

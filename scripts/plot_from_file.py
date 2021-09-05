@@ -12,9 +12,7 @@ from matplotlib import pyplot as plt
 def restyle_boxplot(artist_dict, color, gray="#222222", linewidth=1, fliersize=5):
     """Take a drawn matplotlib boxplot and make it look nice."""
     for box in artist_dict["boxes"]:
-        box.update(
-            dict(facecolor=color, zorder=0.9, edgecolor=gray, linewidth=linewidth)
-        )
+        box.update(dict(facecolor=color, zorder=0.9, edgecolor=gray, linewidth=linewidth))
 
     for whisk in artist_dict["whiskers"]:
         whisk.update(dict(color=gray, linewidth=linewidth, linestyle="-"))
@@ -38,9 +36,7 @@ def restyle_boxplot(artist_dict, color, gray="#222222", linewidth=1, fliersize=5
 
 parser = argparse.ArgumentParser("Gather results, plot them and create table")
 parser.add_argument("-i", "--input", help="Input filename (numpy archive)", type=str)
-parser.add_argument(
-    "-skip", "--skip-envs", help="Environments to skip", nargs="+", default=[], type=str
-)
+parser.add_argument("-skip", "--skip-envs", help="Environments to skip", nargs="+", default=[], type=str)
 parser.add_argument("--keep-envs", help="Envs to keep", nargs="+", default=[], type=str)
 parser.add_argument("--skip-keys", help="Keys to skip", nargs="+", default=[], type=str)
 parser.add_argument("--keep-keys", help="Keys to keep", nargs="+", default=[], type=str)
@@ -58,9 +54,7 @@ parser.add_argument(
 )
 parser.add_argument("-o", "--output", help="Output filename (image)", type=str)
 parser.add_argument("--format", help="Output format", type=str, default="svg")
-parser.add_argument(
-    "-loc", "--legend-loc", help="The location of the legend.", type=str, default="best"
-)
+parser.add_argument("-loc", "--legend-loc", help="The location of the legend.", type=str, default="best")
 parser.add_argument(
     "--figsize",
     help="Figure size, width, height in inches.",
@@ -70,15 +64,9 @@ parser.add_argument(
 )
 parser.add_argument("--fontsize", help="Font size", type=int, default=14)
 parser.add_argument("-l", "--labels", help="Custom labels", type=str, nargs="+")
-parser.add_argument(
-    "-b", "--boxplot", help="Enable boxplot", action="store_true", default=False
-)
-parser.add_argument(
-    "-latex", "--latex", help="Enable latex support", action="store_true", default=False
-)
-parser.add_argument(
-    "--merge", help="Merge with other results files", nargs="+", default=[], type=str
-)
+parser.add_argument("-b", "--boxplot", help="Enable boxplot", action="store_true", default=False)
+parser.add_argument("-latex", "--latex", help="Enable latex support", action="store_true", default=False)
+parser.add_argument("--merge", help="Merge with other results files", nargs="+", default=[], type=str)
 
 args = parser.parse_args()
 
@@ -119,9 +107,7 @@ for filename in args.merge:
                     results[key][new_key] = results_2[key][new_key]
 
 
-keys = [
-    key for key in results[list(results.keys())[0]].keys() if key not in args.skip_keys
-]
+keys = [key for key in results[list(results.keys())[0]].keys() if key not in args.skip_keys]
 print(f"keys: {keys}")
 if len(args.keep_keys) > 0:
     keys = [key for key in keys if key in args.keep_keys]
@@ -162,9 +148,7 @@ if not args.skip_timesteps:
 
             plt.xticks(fontsize=13)
             plt.plot(timesteps / divider, mean_, label=labels[key], linewidth=3)
-            plt.fill_between(
-                timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5
-            )
+            plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
         plt.legend(fontsize=args.fontsize)
         plt.tight_layout()
@@ -184,9 +168,7 @@ for key in keys:
             envs_df.append(env)
             scores.append(score)
 
-data_frame = pd.DataFrame(
-    data=dict(Method=labels_df, Environment=envs_df, Score=scores)
-)
+data_frame = pd.DataFrame(data=dict(Method=labels_df, Environment=envs_df, Score=scores))
 
 # Plot final results with env as x axis
 plt.figure("Sensitivity plot", figsize=args.figsize)

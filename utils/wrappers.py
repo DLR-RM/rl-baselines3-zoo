@@ -50,9 +50,7 @@ class ActionNoiseWrapper(gym.Wrapper):
         self.noise_std = noise_std
 
     def step(self, action):
-        noise = np.random.normal(
-            np.zeros_like(action), np.ones_like(action) * self.noise_std
-        )
+        noise = np.random.normal(np.zeros_like(action), np.ones_like(action) * self.noise_std)
         noisy_action = action + noise
         return self.env.step(noisy_action)
 
@@ -82,10 +80,7 @@ def lowpass(data, freq, df, corners=4, zerophase=False):
     # raise for some bad scenarios
     if f > 1:
         f = 1.0
-        msg = (
-            "Selected corner frequency is above Nyquist. "
-            + "Setting Nyquist as high corner."
-        )
+        msg = "Selected corner frequency is above Nyquist. " + "Setting Nyquist as high corner."
         print(msg)
     z, p, k = iirfilter(corners, f, btype="lowpass", ftype="butter", output="zpk")
     sos = zpk2sos(z, p, k)
@@ -119,9 +114,7 @@ class LowPassFilterWrapper(gym.Wrapper):
         self.signal.append(action)
         filtered = np.zeros_like(action)
         for i in range(self.action_space.shape[0]):
-            smoothed_action = lowpass(
-                np.array(self.signal)[:, i], freq=self.freq, df=self.df
-            )
+            smoothed_action = lowpass(np.array(self.signal)[:, i], freq=self.freq, df=self.df)
             filtered[i] = smoothed_action[-1]
         return self.env.step(filtered)
 
@@ -150,10 +143,7 @@ class ActionSmoothingWrapper(gym.Wrapper):
     def step(self, action):
         if self.smoothed_action is None:
             self.smoothed_action = np.zeros_like(action)
-        self.smoothed_action = (
-            self.smoothing_coef * self.smoothed_action
-            + (1 - self.smoothing_coef) * action
-        )
+        self.smoothed_action = self.smoothing_coef * self.smoothed_action + (1 - self.smoothing_coef) * action
         return self.env.step(self.smoothed_action)
 
 
@@ -216,9 +206,7 @@ class HistoryWrapper(gym.Wrapper):
         high = np.concatenate((high_obs, high_action))
 
         # Overwrite the observation space
-        env.observation_space = gym.spaces.Box(
-            low=low, high=high, dtype=wrapped_obs_space.dtype
-        )
+        env.observation_space = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
 
         super(HistoryWrapper, self).__init__(env)
 
@@ -247,9 +235,7 @@ class HistoryWrapper(gym.Wrapper):
         self.obs_history = np.roll(self.obs_history, shift=-last_ax_size, axis=-1)
         self.obs_history[..., -obs.shape[-1] :] = obs
 
-        self.action_history = np.roll(
-            self.action_history, shift=-action.shape[-1], axis=-1
-        )
+        self.action_history = np.roll(self.action_history, shift=-action.shape[-1], axis=-1)
         self.action_history[..., -action.shape[-1] :] = action
         return self._create_obs_from_history(), reward, done, info
 
@@ -279,9 +265,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
         high = np.concatenate((high_obs, high_action))
 
         # Overwrite the observation space
-        env.observation_space.spaces["observation"] = gym.spaces.Box(
-            low=low, high=high, dtype=wrapped_obs_space.dtype
-        )
+        env.observation_space.spaces["observation"] = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
 
         super(HistoryWrapperObsDict, self).__init__(env)
 
@@ -315,9 +299,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
         self.obs_history = np.roll(self.obs_history, shift=-last_ax_size, axis=-1)
         self.obs_history[..., -obs.shape[-1] :] = obs
 
-        self.action_history = np.roll(
-            self.action_history, shift=-action.shape[-1], axis=-1
-        )
+        self.action_history = np.roll(self.action_history, shift=-action.shape[-1], axis=-1)
         self.action_history[..., -action.shape[-1] :] = action
 
         obs_dict["observation"] = self._create_obs_from_history()

@@ -28,9 +28,7 @@ if __name__ == "__main__":  # noqa: C901
         choices=list(ALGOS.keys()),
     )
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
-    parser.add_argument(
-        "-tb", "--tensorboard-log", help="Tensorboard log dir", default="", type=str
-    )
+    parser.add_argument("-tb", "--tensorboard-log", help="Tensorboard log dir", default="", type=str)
     parser.add_argument(
         "-i",
         "--trained-agent",
@@ -101,9 +99,7 @@ if __name__ == "__main__":  # noqa: C901
         action="store_true",
         default=False,
     )
-    parser.add_argument(
-        "-f", "--log-folder", help="Log folder", type=str, default="logs"
-    )
+    parser.add_argument("-f", "--log-folder", help="Log folder", type=str, default="logs")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=-1)
     parser.add_argument(
         "--vec-env",
@@ -175,9 +171,7 @@ if __name__ == "__main__":  # noqa: C901
         type=str,
         default=None,
     )
-    parser.add_argument(
-        "--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int
-    )
+    parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
     parser.add_argument(
         "--gym-packages",
         type=str,
@@ -214,9 +208,7 @@ if __name__ == "__main__":  # noqa: C901
         importlib.import_module(env_module)
 
     env_id = args.env
-    registered_envs = set(
-        gym.envs.registry.env_specs.keys()
-    )  # pytype: disable=module-attr
+    registered_envs = set(gym.envs.registry.env_specs.keys())  # pytype: disable=module-attr
 
     # If the environment is not found, suggest the closest match
     if env_id not in registered_envs:
@@ -224,9 +216,7 @@ if __name__ == "__main__":  # noqa: C901
             closest_match = difflib.get_close_matches(env_id, registered_envs, n=1)[0]
         except IndexError:
             closest_match = "'no close match found...'"
-        raise ValueError(
-            f"{env_id} not found in gym registry, you maybe meant {closest_match}?"
-        )
+        raise ValueError(f"{env_id} not found in gym registry, you maybe meant {closest_match}?")
 
     # Unique id to ensure there is no race condition for the folder creation
     uuid_str = f"_{uuid.uuid4()}" if args.uuid else ""

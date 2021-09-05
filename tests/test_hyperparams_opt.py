@@ -122,6 +122,4 @@ def test_optimize_log_path(tmp_path):
     assert os.path.isdir(optimization_log_path)
     # Log folder of the first trial
     assert os.path.isdir(os.path.join(optimization_log_path, "trial_1"))
-    assert os.path.isfile(
-        os.path.join(optimization_log_path, "trial_1", "evaluations.npz")
-    )
+    assert os.path.isfile(os.path.join(optimization_log_path, "trial_1", "evaluations.npz"))

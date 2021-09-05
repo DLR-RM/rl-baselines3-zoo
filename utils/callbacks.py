@@ -87,9 +87,7 @@ class SaveVecNormalizeCallback(BaseCallback):
     def _on_step(self) -> bool:
         if self.n_calls % self.save_freq == 0:
             if self.name_prefix is not None:
-                path = os.path.join(
-                    self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps.pkl"
-                )
+                path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps.pkl")
             else:
                 path = os.path.join(self.save_path, "vecnormalize.pkl")
             if self.model.get_vec_normalize_env() is not None:
@@ -117,9 +115,7 @@ class ParallelTrainCallback(BaseCallback):
     :param sleep_time: Limit the fps in the thread collecting experience.
     """
 
-    def __init__(
-        self, gradient_steps: int = 100, verbose: int = 0, sleep_time: float = 0.0
-    ):
+    def __init__(self, gradient_steps: int = 100, verbose: int = 0, sleep_time: float = 0.0):
         super(ParallelTrainCallback, self).__init__(verbose)
         self.batch_size = 0
         self._model_ready = True
@@ -145,9 +141,7 @@ class ParallelTrainCallback(BaseCallback):
                 self.model_class = model_class
                 break
 
-        assert (
-            self.model_class is not None
-        ), f"{self.model} is not supported for parallel training"
+        assert self.model_class is not None, f"{self.model} is not supported for parallel training"
         self._model = self.model_class.load(temp_file)
 
         self.batch_size = self._model.batch_size
@@ -181,9 +175,7 @@ class ParallelTrainCallback(BaseCallback):
         self.process.start()
 
     def _train_thread(self) -> None:
-        self._model.train(
-            gradient_steps=self.gradient_steps, batch_size=self.batch_size
-        )
+        self._model.train(gradient_steps=self.gradient_steps, batch_size=self.batch_size)
         self._model_ready = True
 
     def _on_step(self) -> bool:
