@@ -1,8 +1,6 @@
 import gym
 import numpy as np
-from sb3_contrib.common.wrappers import (
-    TimeFeatureWrapper,
-)  # noqa: F401 (backward compatibility)
+from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from scipy.signal import iirfilter, sosfilt, zpk2sos
 
 

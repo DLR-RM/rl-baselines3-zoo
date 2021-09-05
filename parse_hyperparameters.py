@@ -1,6 +1,7 @@
-import optuna
-import json
 import argparse
+import json
+
+import optuna
 
 
 def value_key(a):
