@@ -4,6 +4,7 @@ CartPole-v1:
   policy: 'MlpPolicy'
   pop_size: 10
   sigma: 0.2
+  n_envs: 1
   n_eval_episodes: 2
   policy_kwargs: "dict(net_arch=[32])"
 
@@ -13,6 +14,7 @@ CartPoleContinuous-v0:
   policy: 'MlpPolicy'
   pop_size: 10
   sigma: 0.2
+  n_envs: 10
   n_eval_episodes: 10
   policy_kwargs: "dict(net_arch=[32])"
 
@@ -21,19 +23,21 @@ Pendulum-v0:
   n_timesteps: !!float 2e5
   policy: 'MlpPolicy'
   pop_size: 20
+  n_envs: 1
   n_eval_episodes: 3
   sigma: 0.2
   policy_kwargs: "dict(net_arch=[32])"
 
 # TO BE Tuned
 RocketLander-v0:
-  env_wrapper:
-    - utils.wrappers.FrameSkip:
-        skip: 4
+  # env_wrapper:
+  #   - utils.wrappers.FrameSkip:
+  #       skip: 4
   n_timesteps: !!float 1e6
-  nb_iterations: 200
+  nb_iterations: 500
   policy: 'MlpPolicy'
   pop_size: 20
-  n_eval_episodes: 3
+  n_envs: 1
+  n_eval_episodes: 2
   sigma: 0.2
-  policy_kwargs: "dict(net_arch=[64])"
+  policy_kwargs: "dict(net_arch=[32])"

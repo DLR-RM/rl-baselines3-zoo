@@ -611,8 +611,13 @@ class ExperimentManager(object):
         eval_env = self.create_envs(n_envs=self.n_eval_envs, eval_env=True)
 
         optuna_eval_freq = int(self.n_timesteps / self.n_evaluations)
+
         # Account for parallel envs
         optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
+        # Special case for CEM, use nb_iterations
+        if self.algo == "cem":
+            optuna_eval_freq = max(int(model.nb_iterations / self.n_evaluations), 1)
+
         # Use non-deterministic eval for Atari
         path = None
         if self.optimization_log_path is not None:

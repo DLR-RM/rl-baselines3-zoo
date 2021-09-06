@@ -452,6 +452,38 @@ def sample_reinforce_params(trial: optuna.Trial) -> Dict[str, Any]:
     }
 
 
+def sample_cem_params(trial: optuna.Trial) -> Dict[str, Any]:
+    """
+    Sampler for CEM hyperparams.
+
+    :param trial:
+    :return:
+    """
+    n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [2, 5, 10])
+    pop_size = trial.suggest_categorical("pop_size", [5, 10, 15, 20, 25])
+    sigma = trial.suggest_categorical("sigma", [0.1, 0.2, 0.3, 0.4])
+    elit_frac_size = trial.suggest_categorical("elit_frac_size", [0.1, 0.2, 0.3, 0.4])
+    noise_multiplier = trial.suggest_categorical("noise_multiplier", [0.9, 0.99, 0.999, 0.9999])
+
+    net_arch = trial.suggest_categorical("net_arch", ["extra-tiny", "tiny", "small"])
+
+    net_arch = {
+        "extra-tiny": [16],
+        "tiny": [32],
+        "small": [64],
+        # "medium": [64, 64],
+    }[net_arch]
+
+    return {
+        "n_eval_episodes": n_eval_episodes,
+        "pop_size": pop_size,
+        "sigma": sigma,
+        "elit_frac_size": elit_frac_size,
+        "noise_multiplier": noise_multiplier,
+        "policy_kwargs": dict(net_arch=net_arch),
+    }
+
+
 HYPERPARAMS_SAMPLER = {
     "a2c": sample_a2c_params,
     "ddpg": sample_ddpg_params,
@@ -462,4 +494,5 @@ HYPERPARAMS_SAMPLER = {
     "ppo": sample_ppo_params,
     "td3": sample_td3_params,
     "reinforce": sample_reinforce_params,
+    "cem": sample_cem_params,
 }
