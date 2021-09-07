@@ -4,11 +4,12 @@ import json
 import optuna
 
 
-def value_key(a):
-    if a.value is None:
+def value_key(trial: optuna.trial.Trial):
+    # Returns value of trial object for sorting
+    if trial.value is None:
         return float("-inf")
     else:
-        return a.value
+        return trial.value
 
 
 parser = argparse.ArgumentParser()
@@ -56,6 +57,6 @@ for i in trials:
 for i in range(args.save_n_best_hyperparameters):
     params = trials[i].params
     text = json.dumps(params)
-    json_file = open("hyperparameter_jsons/hyperparameters_" + str(i) + ".json", "w+")
+    json_file = open(f"hyperparameter_jsons/hyperparameters_{i}.json" + ".json", "w+")
     json_file.write(text)
     json_file.close()
