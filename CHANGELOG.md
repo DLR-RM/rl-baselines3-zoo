@@ -1,6 +1,8 @@
-## Release 1.2.0a0 (WIP)
+## Release 1.2.0 (2021-09-08)
 
 ### Breaking Changes
+- Upgrade to Stable-Baselines3 (SB3) >= 1.2.0
+- Upgrade to sb3-contrib >= 1.2.0
 
 ### New Features
 
