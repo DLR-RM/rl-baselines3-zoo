@@ -1,0 +1,153 @@
+# To be tuned
+CartPole-v1:
+  n_envs: 8
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 32
+  batch_size: 256
+  gae_lambda: 0.8
+  gamma: 0.98
+  n_epochs: 20
+  learning_rate: lin_0.001
+
+
+# To be tuned
+HalfCheetahBulletEnv-v0: &pybullet-defaults
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  batch_size: 128
+  n_steps: 1000
+  gamma: 0.99
+  gae_lambda: 0.9
+  n_epochs: 20
+  sde_sample_freq: 4
+  max_grad_norm: 0.5
+  learning_rate: !!float 3e-5
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
+
+# To be tuned
+AntBulletEnv-v0:
+  <<: *pybullet-defaults
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  learning_rate: !!float 3e-5
+  policy_kwargs: "dict(log_std_init=-1,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
+
+# To be tuned
+Walker2DBulletEnv-v0:
+  <<: *pybullet-defaults
+  learning_rate: !!float 3e-5
+  policy_kwargs: "dict(log_std_init=-2,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
+
+# To be tuned
+HopperBulletEnv-v0:
+  <<: *pybullet-defaults
+  learning_rate: !!float 3e-5
+  policy_kwargs: "dict(log_std_init=-2,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
+
+# To be tuned
+ReacherBulletEnv-v0:
+  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  batch_size: 64
+  n_steps: 512
+  gamma: 0.99
+  gae_lambda: 0.9
+  n_epochs: 20
+  sde_sample_freq: 4
+  max_grad_norm: 0.5
+  learning_rate: !!float 3e-5
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-2.7,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
+
+# To be tuned
+MinitaurBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
+
+
+# To be tuned
+MinitaurBulletDuckEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
+
+# To be tuned
+HumanoidBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 1e7
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
+
+# To be tuned
+InvertedDoublePendulumBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
+
+# To be tuned
+InvertedPendulumSwingupBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
