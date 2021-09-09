@@ -444,6 +444,7 @@ def sample_reinforce_params(trial: optuna.Trial) -> Dict[str, Any]:
         "nb_rollouts": nb_rollouts,
         "gamma": gamma,
         "learning_rate": learning_rate,
+        "critic_estim_method": critic_estim_method,
         "n_critic_epochs": n_critic_epochs,
         "gradient_name": gradient_name,
         "gae_lambda": gae_lambda,
