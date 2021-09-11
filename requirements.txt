@@ -1,4 +1,4 @@
-stable-baselines3[extra,tests,docs]>=1.1.0a11
+stable-baselines3[extra,tests,docs]>=1.2.0
 box2d-py==2.3.8
 pybullet
 gym-minigrid
@@ -7,7 +7,7 @@ optuna
 pytablewriter
 seaborn
 pyyaml>=5.1
-sb3-contrib>=1.1.0a11
+sb3-contrib>=1.2.0
 cloudpickle>=1.5.0
 # tmp fix: ROM missing in newest release
 atari-py==0.2.6

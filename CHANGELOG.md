@@ -1,15 +1,21 @@
-## Release 1.2.0a0 (WIP)
+## Release 1.2.0 (2021-09-08)
 
 ### Breaking Changes
+- Upgrade to Stable-Baselines3 (SB3) >= 1.2.0
+- Upgrade to sb3-contrib >= 1.2.0
 
 ### New Features
 
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)
+- Fix `TypeError` for `gym.Env` class entry points in `ExperimentManager` (@schuderer)
+- Fix usage of callbacks during hyperparameter optimization (@SammyRamone)
 
 ### Documentation
 
 ### Other
+- Added python 3.9 to Github CI
+- Increased DQN replay buffer size for Atari games (@nikhilrayaprolu)
 
 ## Release 1.1.0 (2021-07-01)
 
