@@ -24,7 +24,14 @@ def restyle_boxplot(artist_dict, color, gray="#222222", linewidth=1, fliersize=5
         med.update(dict(color=gray, linewidth=linewidth))
 
     for fly in artist_dict["fliers"]:
-        fly.update(dict(markerfacecolor=gray, marker="d", markeredgecolor=gray, markersize=fliersize))
+        fly.update(
+            dict(
+                markerfacecolor=gray,
+                marker="d",
+                markeredgecolor=gray,
+                markersize=fliersize,
+            )
+        )
 
 
 parser = argparse.ArgumentParser("Gather results, plot them and create table")
@@ -33,12 +40,28 @@ parser.add_argument("-skip", "--skip-envs", help="Environments to skip", nargs="
 parser.add_argument("--keep-envs", help="Envs to keep", nargs="+", default=[], type=str)
 parser.add_argument("--skip-keys", help="Keys to skip", nargs="+", default=[], type=str)
 parser.add_argument("--keep-keys", help="Keys to keep", nargs="+", default=[], type=str)
-parser.add_argument("--no-million", action="store_true", default=False, help="Do not convert x-axis to million")
-parser.add_argument("--skip-timesteps", action="store_true", default=False, help="Do not display learning curves")
+parser.add_argument(
+    "--no-million",
+    action="store_true",
+    default=False,
+    help="Do not convert x-axis to million",
+)
+parser.add_argument(
+    "--skip-timesteps",
+    action="store_true",
+    default=False,
+    help="Do not display learning curves",
+)
 parser.add_argument("-o", "--output", help="Output filename (image)", type=str)
 parser.add_argument("--format", help="Output format", type=str, default="svg")
 parser.add_argument("-loc", "--legend-loc", help="The location of the legend.", type=str, default="best")
-parser.add_argument("--figsize", help="Figure size, width, height in inches.", nargs=2, type=int, default=[6.4, 4.8])
+parser.add_argument(
+    "--figsize",
+    help="Figure size, width, height in inches.",
+    nargs=2,
+    type=int,
+    default=[6.4, 4.8],
+)
 parser.add_argument("--fontsize", help="Font size", type=int, default=14)
 parser.add_argument("-l", "--labels", help="Custom labels", type=str, nargs="+")
 parser.add_argument("-b", "--boxplot", help="Enable boxplot", action="store_true", default=False)

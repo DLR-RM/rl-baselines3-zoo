@@ -18,8 +18,18 @@ parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1
 parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
 parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
 parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
-parser.add_argument("--test-mode", action="store_true", default=False, help="Do only one experiment (useful for testing)")
-parser.add_argument("--with-mujoco", action="store_true", default=False, help="Run also MuJoCo envs (require a licence)")
+parser.add_argument(
+    "--test-mode",
+    action="store_true",
+    default=False,
+    help="Do only one experiment (useful for testing)",
+)
+parser.add_argument(
+    "--with-mujoco",
+    action="store_true",
+    default=False,
+    help="Run also MuJoCo envs (require a licence)",
+)
 parser.add_argument("--num-threads", help="Number of threads for PyTorch", default=2, type=int)
 args = parser.parse_args()
 

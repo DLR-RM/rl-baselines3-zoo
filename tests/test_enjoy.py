@@ -20,7 +20,17 @@ trained_models = get_trained_models(FOLDER)
 @pytest.mark.slow
 def test_trained_agents(trained_model):
     algo, env_id = trained_models[trained_model]
-    args = ["-n", str(N_STEPS), "-f", FOLDER, "--algo", algo, "--env", env_id, "--no-render"]
+    args = [
+        "-n",
+        str(N_STEPS),
+        "-f",
+        FOLDER,
+        "--algo",
+        algo,
+        "--env",
+        env_id,
+        "--no-render",
+    ]
 
     # Since SB3 >= 1.1.0, HER is no more an algorithm but a replay buffer class
     if algo == "her":
@@ -67,7 +77,17 @@ def test_load(tmp_path):
     _assert_eq(return_code, 0)
 
     # Load best model
-    args = ["-n", str(N_STEPS), "-f", tmp_path, "--algo", algo, "--env", env_id, "--no-render"]
+    args = [
+        "-n",
+        str(N_STEPS),
+        "-f",
+        tmp_path,
+        "--algo",
+        algo,
+        "--env",
+        env_id,
+        "--no-render",
+    ]
     return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-best"])
     _assert_eq(return_code, 0)
 

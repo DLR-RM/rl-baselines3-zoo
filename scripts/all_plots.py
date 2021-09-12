@@ -22,16 +22,46 @@ parser.add_argument(
     default="results",
     type=str,
 )
-parser.add_argument("-max", "--max-timesteps", help="Max number of timesteps to display", type=int, default=int(2e6))
-parser.add_argument("-min", "--min-timesteps", help="Min number of timesteps to keep a trial", type=int, default=-1)
-parser.add_argument("-o", "--output", help="Output filename (pickle file), where to save the post-processed data", type=str)
 parser.add_argument(
-    "-median", "--median", action="store_true", default=False, help="Display median instead of mean in the table"
+    "-max",
+    "--max-timesteps",
+    help="Max number of timesteps to display",
+    type=int,
+    default=int(2e6),
 )
-parser.add_argument("--no-million", action="store_true", default=False, help="Do not convert x-axis to million")
+parser.add_argument(
+    "-min",
+    "--min-timesteps",
+    help="Min number of timesteps to keep a trial",
+    type=int,
+    default=-1,
+)
+parser.add_argument(
+    "-o",
+    "--output",
+    help="Output filename (pickle file), where to save the post-processed data",
+    type=str,
+)
+parser.add_argument(
+    "-median",
+    "--median",
+    action="store_true",
+    default=False,
+    help="Display median instead of mean in the table",
+)
+parser.add_argument(
+    "--no-million",
+    action="store_true",
+    default=False,
+    help="Do not convert x-axis to million",
+)
 parser.add_argument("--no-display", action="store_true", default=False, help="Do not show the plots")
 parser.add_argument(
-    "-print", "--print-n-trials", action="store_true", default=False, help="Print the number of trial for each result"
+    "-print",
+    "--print-n-trials",
+    action="store_true",
+    default=False,
+    help="Print the number of trial for each result",
 )
 args = parser.parse_args()
 
@@ -197,7 +227,12 @@ for env in args.env:  # noqa: C901
                     "std_error_last_eval": std_error_last_eval,
                 }
 
-                plt.plot(timesteps / divider, mean_, label=f"{algo}-{args.labels[folder_idx]}", linewidth=3)
+                plt.plot(
+                    timesteps / divider,
+                    mean_,
+                    label=f"{algo}-{args.labels[folder_idx]}",
+                    linewidth=3,
+                )
                 plt.fill_between(timesteps / divider, mean_ + std_error, mean_ - std_error, alpha=0.5)
 
     plt.legend()
@@ -231,7 +266,10 @@ for i, env in enumerate(args.env, start=1):
 writer.value_matrix = value_matrix
 writer.write_table()
 
-post_processed_results["results_table"] = {"headers": headers, "value_matrix": value_matrix}
+post_processed_results["results_table"] = {
+    "headers": headers,
+    "value_matrix": value_matrix,
+}
 
 if args.output is not None:
     print(f"Saving to {args.output}.pkl")

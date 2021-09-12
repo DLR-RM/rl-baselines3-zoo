@@ -330,7 +330,10 @@ def get_saved_hyperparams(
                 if test_mode:
                     normalize_kwargs["norm_reward"] = norm_reward
             else:
-                normalize_kwargs = {"norm_obs": hyperparams["normalize"], "norm_reward": norm_reward}
+                normalize_kwargs = {
+                    "norm_obs": hyperparams["normalize"],
+                    "norm_reward": norm_reward,
+                }
             hyperparams["normalize_kwargs"] = normalize_kwargs
     return hyperparams, stats_path
 

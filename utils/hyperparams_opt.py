@@ -53,7 +53,12 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
         "medium": [dict(pi=[256, 256], vf=[256, 256])],
     }[net_arch]
 
-    activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
+    activation_fn = {
+        "tanh": nn.Tanh,
+        "relu": nn.ReLU,
+        "elu": nn.ELU,
+        "leaky_relu": nn.LeakyReLU,
+    }[activation_fn]
 
     return {
         "n_steps": n_steps,
@@ -117,7 +122,12 @@ def sample_a2c_params(trial: optuna.Trial) -> Dict[str, Any]:
     #     "small": [64, 64],
     # }[sde_net_arch]
 
-    activation_fn = {"tanh": nn.Tanh, "relu": nn.ReLU, "elu": nn.ELU, "leaky_relu": nn.LeakyReLU}[activation_fn]
+    activation_fn = {
+        "tanh": nn.Tanh,
+        "relu": nn.ReLU,
+        "elu": nn.ELU,
+        "leaky_relu": nn.LeakyReLU,
+    }[activation_fn]
 
     return {
         "n_steps": n_steps,

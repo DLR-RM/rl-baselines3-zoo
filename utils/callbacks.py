@@ -67,7 +67,13 @@ class SaveVecNormalizeCallback(BaseCallback):
         only one file will be kept.
     """
 
-    def __init__(self, save_freq: int, save_path: str, name_prefix: Optional[str] = None, verbose: int = 0):
+    def __init__(
+        self,
+        save_freq: int,
+        save_path: str,
+        name_prefix: Optional[str] = None,
+        verbose: int = 0,
+    ):
         super(SaveVecNormalizeCallback, self).__init__(verbose)
         self.save_freq = save_freq
         self.save_path = save_path

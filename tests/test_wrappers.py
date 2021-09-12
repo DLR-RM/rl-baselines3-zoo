@@ -21,7 +21,10 @@ def test_wrappers():
     [
         None,
         {"utils.wrappers.HistoryWrapper": dict(horizon=2)},
-        [{"utils.wrappers.HistoryWrapper": dict(horizon=3)}, "utils.wrappers.TimeFeatureWrapper"],
+        [
+            {"utils.wrappers.HistoryWrapper": dict(horizon=3)},
+            "utils.wrappers.TimeFeatureWrapper",
+        ],
     ],
 )
 def test_get_wrapper(env_wrapper):
