@@ -1,6 +1,7 @@
-import optuna
-import json
 import argparse
+import json
+
+import optuna
 
 
 def value_key(trial: optuna.trial.Trial):
@@ -15,7 +16,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--study-name", help="Study name used during hyperparameter optimization", type=str, default=None)
 parser.add_argument("--storage", help="Database storage path used during hyperparameter optimization", type=str, default=None)
 parser.add_argument("--print-n-best-trials", help="Show final return values for n best trials", type=int, default=0)
-parser.add_argument("--save-n-best-hyperparameters", help="Save the hyperparameters for the n best trials that resulted in the best returns", type=int, default=0)
+parser.add_argument(
+    "--save-n-best-hyperparameters",
+    help="Save the hyperparameters for the n best trials that resulted in the best returns",
+    type=int,
+    default=0,
+)
 args = parser.parse_args()
 
 study = optuna.create_study(study_name=args.study_name, storage=args.storage, load_if_exists=True, direction="maximize")
