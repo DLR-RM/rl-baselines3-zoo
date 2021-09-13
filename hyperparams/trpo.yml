@@ -1,15 +1,47 @@
 # To be tuned
 CartPole-v1:
+  batch_size: 512
+  cg_damping: !!float 1e-3
+  gae_lambda: 0.98
+  gamma: 0.99
+  learning_rate: !!float 1e-3
+  n_critic_updates: 3
   n_envs: 8
-  n_timesteps: !!float 1e5
+  n_epochs: 1
+  n_steps: 64
+  n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  n_steps: 32
-  batch_size: 256
-  gae_lambda: 0.8
-  gamma: 0.98
-  n_epochs: 20
-  learning_rate: lin_0.001
+  target_kl: 0.001
 
+# To be tuned
+Pendulum-v0:
+  batch_size: 1024
+  cg_damping: 2.35e-05
+  gae_lambda: 0.9
+  gamma: 0.99
+  learning_rate: 0.01
+  n_critic_updates: 15
+  n_envs: 8
+  n_epochs: 1
+  n_steps: 128
+  n_timesteps: !!float 3e5
+  policy: 'MlpPolicy'
+  target_kl: 0.0002
+
+# To be tuned
+LunarLander-v2:
+  batch_size: 1024
+  cg_damping: 0.01
+  gae_lambda: 0.98
+  gamma: 0.99
+  learning_rate: !!float 1e-3
+  n_critic_updates: 5
+  n_envs: 8
+  n_epochs: 1
+  n_steps: 128
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  target_kl: 0.01
 
 # To be tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
