@@ -17,31 +17,11 @@ parser = argparse.ArgumentParser("Gather results, plot training reward/success")
 parser.add_argument("-a", "--algo", help="Algorithm to include", type=str, required=True)
 parser.add_argument("-e", "--env", help="Environment(s) to include", nargs="+", type=str, required=True)
 parser.add_argument("-f", "--exp-folder", help="Folders to include", type=str, required=True)
-parser.add_argument(
-    "--figsize",
-    help="Figure size, width, height in inches.",
-    nargs=2,
-    type=int,
-    default=[6.4, 4.8],
-)
+parser.add_argument("--figsize", help="Figure size, width, height in inches.", nargs=2, type=int, default=[6.4, 4.8])
 parser.add_argument("--fontsize", help="Font size", type=int, default=14)
 parser.add_argument("-max", "--max-timesteps", help="Max number of timesteps to display", type=int)
-parser.add_argument(
-    "-x",
-    "--x-axis",
-    help="X-axis",
-    choices=["steps", "episodes", "time"],
-    type=str,
-    default="steps",
-)
-parser.add_argument(
-    "-y",
-    "--y-axis",
-    help="Y-axis",
-    choices=["success", "reward"],
-    type=str,
-    default="reward",
-)
+parser.add_argument("-x", "--x-axis", help="X-axis", choices=["steps", "episodes", "time"], type=str, default="steps")
+parser.add_argument("-y", "--y-axis", help="Y-axis", choices=["success", "reward"], type=str, default="reward")
 parser.add_argument("-w", "--episode-window", help="Rolling window size", type=int, default=100)
 
 args = parser.parse_args()

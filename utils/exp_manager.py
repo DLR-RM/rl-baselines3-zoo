@@ -140,8 +140,7 @@ class ExperimentManager(object):
 
         self.log_path = f"{log_folder}/{self.algo}/"
         self.save_path = os.path.join(
-            self.log_path,
-            f"{self.env_id}_{get_latest_run_id(self.log_path, self.env_id) + 1}{uuid_str}",
+            self.log_path, f"{self.env_id}_{get_latest_run_id(self.log_path, self.env_id) + 1}{uuid_str}"
         )
         self.params_path = f"{self.save_path}/{self.env_id}"
 
@@ -328,11 +327,7 @@ class ExperimentManager(object):
 
         # Pre-process policy/buffer keyword arguments
         # Convert to python object if needed
-        for kwargs_key in {
-            "policy_kwargs",
-            "replay_buffer_class",
-            "replay_buffer_kwargs",
-        }:
+        for kwargs_key in {"policy_kwargs", "replay_buffer_class", "replay_buffer_kwargs"}:
             if kwargs_key in hyperparams.keys() and isinstance(hyperparams[kwargs_key], str):
                 hyperparams[kwargs_key] = eval(hyperparams[kwargs_key])
 
@@ -359,10 +354,7 @@ class ExperimentManager(object):
         return hyperparams, env_wrapper, callbacks
 
     def _preprocess_action_noise(
-        self,
-        hyperparams: Dict[str, Any],
-        saved_hyperparams: Dict[str, Any],
-        env: VecEnv,
+        self, hyperparams: Dict[str, Any], saved_hyperparams: Dict[str, Any], env: VecEnv
     ) -> Dict[str, Any]:
         # Parse noise string
         # Note: only off-policy algorithms are supported
@@ -583,10 +575,7 @@ class ExperimentManager(object):
         if pruner_method == "halving":
             pruner = SuccessiveHalvingPruner(min_resource=1, reduction_factor=4, min_early_stopping_rate=0)
         elif pruner_method == "median":
-            pruner = MedianPruner(
-                n_startup_trials=self.n_startup_trials,
-                n_warmup_steps=self.n_evaluations // 3,
-            )
+            pruner = MedianPruner(n_startup_trials=self.n_startup_trials, n_warmup_steps=self.n_evaluations // 3)
         elif pruner_method == "none":
             # Do not prune
             pruner = MedianPruner(n_startup_trials=self.n_trials, n_warmup_steps=self.n_evaluations)
