@@ -1,6 +1,7 @@
-import optuna
-import json
 import argparse
+import json
+
+import optuna
 
 
 def value_key(a):
@@ -11,24 +12,9 @@ def value_key(a):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--study-name",
-    help="Study name used during hyperparameter optimization",
-    type=str,
-    default=None,
-)
-parser.add_argument(
-    "--storage",
-    help="Database storage path used during hyperparameter optimization",
-    type=str,
-    default=None,
-)
-parser.add_argument(
-    "--print-n-best-trials",
-    help="Show final return values for n best trials",
-    type=int,
-    default=0,
-)
+parser.add_argument("--study-name", help="Study name used during hyperparameter optimization", type=str, default=None)
+parser.add_argument("--storage", help="Database storage path used during hyperparameter optimization", type=str, default=None)
+parser.add_argument("--print-n-best-trials", help="Show final return values for n best trials", type=int, default=0)
 parser.add_argument(
     "--save-n-best-hyperparameters",
     help="Save the hyperparameters for the n best trials that resulted in the best returns",
@@ -37,12 +23,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-study = optuna.create_study(
-    study_name=args.study_name,
-    storage=args.storage,
-    load_if_exists=True,
-    direction="maximize",
-)
+study = optuna.create_study(study_name=args.study_name, storage=args.storage, load_if_exists=True, direction="maximize")
 values = []
 trials = study.trials
 trials.sort(key=value_key, reverse=True)
@@ -55,8 +36,6 @@ for i in trials:
 for i in range(args.save_n_best_hyperparameters):
     params = trials[i].params
     text = json.dumps(params)
-    jsonFile = open(
-        "hyperparameter_jsons/" + "hyperparameters_" + str(i) + ".json", "w+"
-    )
+    jsonFile = open("hyperparameter_jsons/" + "hyperparameters_" + str(i) + ".json", "w+")
     jsonFile.write(text)
     jsonFile.close()
