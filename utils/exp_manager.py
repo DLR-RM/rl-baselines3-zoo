@@ -405,7 +405,9 @@ class ExperimentManager(object):
         # Create test env if needed, do not normalize reward
         if self.eval_freq > 0 and not self.optimize_hyperparameters:
             # Account for the number of parallel environments
-            self.eval_freq = max(self.eval_freq // self.n_envs, 1)
+            # Special Case for CEM
+            if self.algo != "cem":
+                self.eval_freq = max(self.eval_freq // self.n_envs, 1)
 
             if self.verbose > 0:
                 print("Creating test environment")
@@ -614,9 +616,10 @@ class ExperimentManager(object):
 
         # Account for parallel envs
         optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
-        # Special case for CEM, use nb_iterations
+        # Special case for CEM, use nb_epochs
         if self.algo == "cem":
-            optuna_eval_freq = max(int(model.nb_iterations / self.n_evaluations), 1)
+            assert model.nb_epochs is not None, "When using CEM, you must specify nb_epochs"
+            optuna_eval_freq = max(int(model.nb_epochs / self.n_evaluations), 1)
 
         # Use non-deterministic eval for Atari
         path = None

@@ -460,7 +460,7 @@ def sample_cem_params(trial: optuna.Trial) -> Dict[str, Any]:
     :param trial:
     :return:
     """
-    n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [2, 5, 10])
+    n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [2, 3, 5, 10])
     pop_size = trial.suggest_categorical("pop_size", [5, 10, 15, 20, 25])
     sigma = trial.suggest_categorical("sigma", [0.1, 0.2, 0.3, 0.4])
     elit_frac_size = trial.suggest_categorical("elit_frac_size", [0.1, 0.2, 0.3, 0.4])
