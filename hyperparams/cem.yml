@@ -28,6 +28,15 @@ Pendulum-v0:
   sigma: 0.2
   policy_kwargs: "dict(net_arch=[32])"
 
+LunarLander-v2:
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  pop_size: 10
+  n_envs: 4
+  n_eval_episodes: 4
+  sigma: 0.2
+  policy_kwargs: "dict(net_arch=[32])"
+
 # TO BE Tuned
 RocketLander-v0:
   # env_wrapper:
