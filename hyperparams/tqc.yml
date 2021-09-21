@@ -235,3 +235,9 @@ parking-v0:
 RocketLander-v0:
   n_timesteps: !!float 3e6
   policy: 'MlpPolicy'
+  env_wrapper:
+    - utils.wrappers.FrameSkip:
+        skip: 4
+    - utils.wrappers.HistoryWrapper:
+        horizon: 2
+  # top_quantiles_to_drop_per_net: 5
