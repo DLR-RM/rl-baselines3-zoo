@@ -1,3 +1,18 @@
+## Release 1.2.1a0 (WIP)
+
+### Breaking Changes
+- Upgrade to panda-gym 1.1.1
+
+### New Features
+
+### Bug fixes
+- Fix training with Dict obs and channel last images
+
+### Documentation
+
+### Other
+- Updated docker image
+
 ## Release 1.2.0 (2021-09-08)
 
 ### Breaking Changes
