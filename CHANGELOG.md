@@ -12,6 +12,7 @@
 
 ### Other
 - Updated docker image
+- constrained gym version: gym>=0.17,<0.20
 
 ## Release 1.2.0 (2021-09-08)
 
