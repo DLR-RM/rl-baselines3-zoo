@@ -1,3 +1,4 @@
+gym>=0.17,<0.20
 stable-baselines3[extra,tests,docs]>=1.2.0
 box2d-py==2.3.8
 pybullet
@@ -12,4 +13,4 @@ cloudpickle>=1.5.0
 # tmp fix: ROM missing in newest release
 atari-py==0.2.6
 plotly
-panda-gym
+panda-gym>=1.1.1
