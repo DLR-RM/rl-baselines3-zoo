@@ -50,7 +50,7 @@ python train.py --algo td3 --env HalfCheetahBulletEnv-v0 --save-freq 100000
 
 Continue training (here, load pretrained agent for Breakout and continue training for 5000 steps):
 ```
-python train.py --algo a2c --env BreakoutNoFrameskip-v4 -i rl-trained-agents/a2c/BreakoutNoFrameskip-v4_1/BreakoutNoFrameskip-v4.zip -n 5000
+python train.py --algo a2c --env BreakoutNoFrameskip-v4 -i logs/a2c/BreakoutNoFrameskip-v4_1/BreakoutNoFrameskip-v4.zip -n 5000
 ```
 
 When using off-policy algorithms, you can also save the replay buffer after training:
@@ -67,16 +67,16 @@ Plot scripts (to be documented, see "Results" sections in SB3 documentation):
 
 *Examples (on the current collection)*
 
-Plot training success (y-axis) w.r.t. timesteps (x-axis) with a moving window of 500 episodes for all the `Fetch` environment with `HER` algorithm:
+Plot training success (y-axis) w.r.t. timesteps (x-axis) for all the `Fetch` environment with `HER` algorithm:
 
 ```
-python scripts/plot_train.py -a her -e Fetch -y success -f rl-trained-agents/ -w 500 -x steps
+python scripts/plot_train.py -a her -e Fetch -y success -f logs/
 ```
 
 Plot evaluation reward curve for TQC, SAC and TD3 on the HalfCheetah and Ant PyBullet environments:
 
 ```
-python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f rl-trained-agents/
+python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f logs/
 ```
 
 ## Custom Environment
@@ -95,7 +95,7 @@ python enjoy.py --algo algo_name --env env_id
 
 For example, enjoy A2C on Breakout during 5000 timesteps:
 ```
-python enjoy.py --algo a2c --env BreakoutNoFrameskip-v4 --folder rl-trained-agents/ -n 5000
+python enjoy.py --algo a2c --env BreakoutNoFrameskip-v4 --folder logs/ -n 5000
 ```
 
 If you have trained an agent yourself, you need to do:
