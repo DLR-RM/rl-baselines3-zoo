@@ -48,12 +48,6 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
         n_envs = 1
         n_timesteps *= args.n_envs
 
-    # Comment out to benchmark HER robotics env
-    # this requires a mujoco licence
-    if "Fetch" in env_id and not args.with_mujoco:
-        print(f"Skipping mujoco env: {env_id}")
-        continue
-
     reward_log = os.path.join(args.benchmark_dir, trained_model)
     arguments = [
         "-n",
@@ -87,6 +81,13 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
             skip_eval = len(x) > 0
         except (json.JSONDecodeError, pd.errors.EmptyDataError, TypeError):
             pass
+
+    # Comment out to benchmark HER robotics env
+    # this requires a mujoco licence
+    if "Fetch" in env_id and not args.with_mujoco:
+        print(f"Skipping mujoco env: {env_id}")
+        if not skip_eval:
+            continue
 
     if skip_eval:
         print("Skipping eval...")

@@ -13,18 +13,20 @@ atari:
   vf_coef: 0.5
   ent_coef: 0.01
 
+# Tuned
 Pendulum-v0:
-  n_envs: 8
-  n_timesteps: !!float 2e6
+  n_envs: 4
+  n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
-  n_steps: 2048
-  batch_size: 64
+  n_steps: 1024
   gae_lambda: 0.95
-  gamma: 0.99
+  gamma: 0.9
   n_epochs: 10
   ent_coef: 0.0
-  learning_rate: !!float 3e-4
+  learning_rate: !!float 1e-3
   clip_range: 0.2
+  use_sde: True
+  sde_sample_freq: 4
 
 # Tuned
 CartPole-v1:

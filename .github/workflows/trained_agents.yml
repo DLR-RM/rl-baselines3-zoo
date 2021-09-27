@@ -30,8 +30,7 @@ jobs:
         python -m pip install --upgrade pip
         # cpu version of pytorch - faster to download
         pip install torch==1.8.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
-        # temp fix: use pybullet 3.0.8 (issue with numpy for 3.0.9)
-        pip install pybullet==3.0.8
+        pip install pybullet==3.1.9
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless

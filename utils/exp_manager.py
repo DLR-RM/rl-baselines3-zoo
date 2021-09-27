@@ -34,6 +34,7 @@ from stable_baselines3.common.vec_env import (
     VecFrameStack,
     VecNormalize,
     VecTransposeImage,
+    is_vecenv_wrapped,
 )
 
 # For custom activation fn
@@ -543,12 +544,25 @@ class ExperimentManager(object):
             if self.verbose > 0:
                 print(f"Stacking {n_stack} frames")
 
-        # Wrap if needed to re-order channels
-        # (switch from channel last to channel first convention)
-        if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):
-            if self.verbose > 0:
-                print("Wrapping into a VecTransposeImage")
-            env = VecTransposeImage(env)
+        if not is_vecenv_wrapped(env, VecTransposeImage):
+            wrap_with_vectranspose = False
+            if isinstance(env.observation_space, gym.spaces.Dict):
+                # If even one of the keys is a image-space in need of transpose, apply transpose
+                # If the image spaces are not consistent (for instance one is channel first,
+                # the other channel last), VecTransposeImage will throw an error
+                for space in env.observation_space.spaces.values():
+                    wrap_with_vectranspose = wrap_with_vectranspose or (
+                        is_image_space(space) and not is_image_space_channels_first(space)
+                    )
+            else:
+                wrap_with_vectranspose = is_image_space(env.observation_space) and not is_image_space_channels_first(
+                    env.observation_space
+                )
+
+            if wrap_with_vectranspose:
+                if self.verbose >= 1:
+                    print("Wrapping the env in a VecTransposeImage.")
+                env = VecTransposeImage(env)
 
         return env
 
