@@ -77,7 +77,7 @@ and also allow users to have access to pretrained agents.*
 |ppo  |LunarLanderContinuous-v2   |    270.863|    32.072|1M         |        149956|          526|
 |ppo  |MountainCar-v0             |   -110.423|    19.473|1M         |        149954|         1358|
 |ppo  |MountainCarContinuous-v0   |     88.343|     2.572|20k        |        149983|          633|
-|ppo  |Pendulum-v0                |   -169.887|   104.904|2M         |        150000|          750|
+|ppo  |Pendulum-v0                |   -172.225|   104.159|100k       |        150000|          750|
 |ppo  |PongNoFrameskip-v4         |     20.989|     0.105|10M        |        599902|           90|
 |ppo  |QbertNoFrameskip-v4        |  15627.108|  3313.538|10M        |        600248|           83|
 |ppo  |ReacherBulletEnv-v0        |     17.091|    11.048|1M         |        150000|         1000|

@@ -13,6 +13,7 @@
 ### Other
 - Updated docker image
 - constrained gym version: gym>=0.17,<0.20
+- Better hyperparameters for A2C/PPO on Pendulum
 
 ## Release 1.2.0 (2021-09-08)
 

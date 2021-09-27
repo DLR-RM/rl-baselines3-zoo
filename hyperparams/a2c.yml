@@ -38,7 +38,7 @@ Acrobot-v1:
   policy: 'MlpPolicy'
   ent_coef: .0
 
-# Almost tuned
+# Tuned
 Pendulum-v0:
   normalize: True
   n_envs: 8
@@ -49,7 +49,7 @@ Pendulum-v0:
   n_steps: 8
   gae_lambda: 0.9
   vf_coef: 0.4
-  gamma: 0.99
+  gamma: 0.9
   use_rms_prop: True
   normalize_advantage: False
   learning_rate: lin_7e-4
