@@ -34,7 +34,7 @@ LunarLander-v2:
   learning_rate: !!float 1e-3
   n_critic_updates: 15
 
-# To be tuned
+# Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
   env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
@@ -44,30 +44,16 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   batch_size: 128
   n_steps: 1024
   gamma: 0.99
-  # gae_lambda: 0.95
-  gae_lambda: 0.9
-  sub_sampling_factor: 5 # 5
+  gae_lambda: 0.95
+  sub_sampling_factor: 1
   cg_max_steps: 15
   cg_damping: 0.1
-  n_critic_updates: 5
+  n_critic_updates: 10
   learning_rate: !!float 1e-3
-  # use_sde: True
-  # sde_sample_freq: 4
-  # policy_kwargs: "dict(log_std_init=-2,
-  #                      ortho_init=False,
-  #                      activation_fn=nn.ReLU,
-  #                      net_arch=[dict(pi=[256, 256], vf=[256, 256])]
-  #                      )"
 
-# To be tuned
+# Tuned
 AntBulletEnv-v0:
   <<: *pybullet-defaults
-  learning_rate: !!float 1e-3
-  # policy_kwargs: "dict(log_std_init=-1,
-  #                      ortho_init=False,
-  #                      activation_fn=nn.ReLU,
-  #                      net_arch=[dict(pi=[256, 256], vf=[256, 256])]
-  #                      )"
 
 # To be tuned
 Walker2DBulletEnv-v0:
@@ -78,19 +64,20 @@ Walker2DBulletEnv-v0:
   #                      net_arch=[dict(pi=[256, 256], vf=[256, 256])]
   #                      )"
 
-# To be tuned
+# Tuned
 HopperBulletEnv-v0:
   <<: *pybullet-defaults
-  # policy_kwargs: "dict(log_std_init=-2,
-  #                      ortho_init=False,
-  #                      activation_fn=nn.ReLU,
-  #                      net_arch=[dict(pi=[256, 256], vf=[256, 256])]
-  #                      )"
+  n_timesteps: !!float 1e6
 
-# To be tuned
+# Tuned
 ReacherBulletEnv-v0:
   <<: *pybullet-defaults
-
+  n_timesteps: !!float 3e5
+  policy_kwargs: "dict(log_std_init=-1,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
 
 # To be tuned
 MinitaurBulletEnv-v0:
