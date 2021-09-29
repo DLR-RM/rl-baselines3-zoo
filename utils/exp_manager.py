@@ -541,7 +541,7 @@ class ExperimentManager(object):
         self, n_envs: int, eval_env: bool = False, no_log: bool = False
     ) -> VecEnv:
 
-        env = pistonball_v4.parallel_env(ball_mass=3.75)
+        env = pistonball_v4.parallel_env(ball_mass=.25, ball_elasticity=15)
         env = ss.color_reduction_v0(env, mode="B")
         env = ss.resize_v0(env, x_size=84, y_size=84, linear_interp=True)
         env = ss.frame_stack_v1(env, 3)
