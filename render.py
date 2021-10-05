@@ -23,7 +23,7 @@ num = sys.argv[1]
 #     return env
 
 
-env = pistonball_v4.env(ball_mass=.25, ball_elasticity=15)
+env = pistonball_v4.env(n_pistons=5)
 env = ss.color_reduction_v0(env, mode="B")
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
