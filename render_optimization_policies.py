@@ -9,7 +9,7 @@ from stable_baselines3 import PPO
 n_agents = 20
 n_envs = 4
 
-env = pistonball_v4.parallel_env(n_pistons=5)
+env = pistonball_v4.parallel_env()
 env = ss.color_reduction_v0(env, mode="B")
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
