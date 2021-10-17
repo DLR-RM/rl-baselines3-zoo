@@ -55,42 +55,8 @@ eval_freq = int(n_timesteps / n_evaluations)
 eval_freq = max(eval_freq // (n_envs * n_agents), 1)
 
 all_mean_rewards = []
+
 for i in range(10):
-    model = PPO("CnnPolicy", env, verbose=3, **params)
-    eval_callback = EvalCallback(
-        eval_env,
-        best_model_save_path="./eval_logs/" + num + "/" + str(i) + "/",
-        log_path="./eval_logs/" + num + "/" + str(i) + "/",
-        eval_freq=eval_freq,
-        deterministic=True,
-        render=False,
-    )
-    model.learn(total_timesteps=n_timesteps, callback=eval_callback)
-    model = PPO.load("./eval_logs/" + num + "/" + "best_model")
-    mean_reward, std_reward = evaluate_policy(
-        model, eval_env, deterministic=True, n_eval_episodes=25
-    )
-    print(mean_reward)
-    print(std_reward)
-    all_mean_rewards.append(mean_reward)
-    if mean_reward > 90:
-        model.save(
-            "./mature_policies/"
-            + str(num)
-            + "/"
-            + str(i)
-            + "_"
-            + str(mean_reward).split(".")[0]
-            + ".zip"
-        )
-
-if len(all_mean_rewards) > 0:
-    print(sum(all_mean_rewards) / len(all_mean_rewards))
-else:
-    print("No mature policies found")
-
-
-"""
     try:
         model = PPO("CnnPolicy", env, verbose=3, **params)
         eval_callback = EvalCallback(
@@ -121,4 +87,8 @@ else:
             )
     except:
         print("error")
-"""
+
+if len(all_mean_rewards) > 0:
+    print(sum(all_mean_rewards) / len(all_mean_rewards))
+else:
+    print("No mature policies found")
