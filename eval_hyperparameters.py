@@ -60,8 +60,8 @@ for i in range(10):
         model = PPO("CnnPolicy", env, verbose=3, **params)
         eval_callback = EvalCallback(
             eval_env,
-            best_model_save_path="./eval_logs/" + num + "/",
-            log_path="./eval_logs/" + num + "/",
+            best_model_save_path="./eval_logs/" + num + "/" + i + "/",
+            log_path="./eval_logs/" + num + "/" + i + "/",
             eval_freq=eval_freq,
             deterministic=True,
             render=False,
