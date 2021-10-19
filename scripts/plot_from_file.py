@@ -1,4 +1,5 @@
 import argparse
+import itertools
 import pickle
 
 import numpy as np
@@ -46,6 +47,7 @@ parser.add_argument("--fontsize", help="Font size", type=int, default=14)
 parser.add_argument("-l", "--labels", help="Custom labels", type=str, nargs="+")
 parser.add_argument("-b", "--boxplot", help="Enable boxplot", action="store_true", default=False)
 parser.add_argument("-r", "--rliable", help="Enable rliable plots", action="store_true", default=False)
+parser.add_argument("-vs", "--versus", help="Enable probability of improvement plot", action="store_true", default=False)
 parser.add_argument("-ci", "--ci-size", help="Confidence interval size (for rliable)", type=float, default=0.95)
 parser.add_argument("-latex", "--latex", help="Enable latex support", action="store_true", default=False)
 parser.add_argument("--merge", help="Merge with other results files", nargs="+", default=[], type=str)
@@ -182,6 +184,7 @@ if args.rliable:
     algorithms = list(labels.values())
     # Scores as a dictionary mapping algorithms to their normalized
     # score matrices, each of which is of size `(num_runs x num_envs)`.
+
     aggregate_func = lambda x: np.array(  # noqa: E731
         [
             metrics.aggregate_median(x),
@@ -193,7 +196,8 @@ if args.rliable:
     aggregate_scores, aggregate_interval_estimates = rly.get_interval_estimates(
         normalized_score_dict,
         aggregate_func,
-        reps=20000,  # Number of bootstrap replications.
+        # Default was 50000
+        reps=1000,  # Number of bootstrap replications.
         confidence_interval_size=args.ci_size,  # Coverage of confidence interval. Defaults to 95%.
     )
     fig, axes = plot_utils.plot_interval_estimates(
@@ -202,13 +206,16 @@ if args.rliable:
         metric_names=["Median", "IQM", "Mean", "Optimality Gap"],
         algorithms=algorithms,
         xlabel="Normalized Score",
-        xlabel_y_coordinate=-0.05,
+        xlabel_y_coordinate=0.02,
         subfigure_width=5,
         row_height=1,
         max_ticks=4,
         interval_height=0.6,
     )
+    # Adjust margin to see the x label
     plt.tight_layout()
+    plt.subplots_adjust(bottom=0.2)
+
     # Performance profiles
     # Normalized score thresholds
     normalized_score_thresholds = np.linspace(0.0, 2.0, 50)
@@ -229,6 +236,31 @@ if args.rliable:
         ax=ax,
     )
     plt.legend()
+
+    # Probability of improvement
+    # Scores as a dictionary containing pairs of normalized score
+    # matrices for pairs of algorithms we want to compare
+    algorithm_pairs_keys = itertools.combinations(algorithms, 2)
+    # algorithm_pairs = {.. , 'x,y': (score_x, score_y), ..}
+    algorithm_pairs = {}
+    for algo1, algo2 in algorithm_pairs_keys:
+        algorithm_pairs[f"{algo1}, {algo2}"] = (normalized_score_dict[algo1], normalized_score_dict[algo2])
+
+    if args.versus:
+        average_probabilities, average_prob_cis = rly.get_interval_estimates(
+            algorithm_pairs,
+            metrics.probability_of_improvement,
+            reps=1000,  # Default was 50000
+            confidence_interval_size=args.ci_size,
+        )
+        plot_utils.plot_probability_of_improvement(
+            average_probabilities,
+            average_prob_cis,
+            figsize=(10, 8),
+            interval_height=0.6,
+        )
+        plt.tight_layout()
+
     plt.show()
 
 # Plot final results with env as x axis

@@ -16,6 +16,7 @@ class ReferenceScore(NamedTuple):
 
 
 reference_scores = [
+    # PyBullet Envs
     ReferenceScore("HalfCheetahBulletEnv-v0", -1400, 2500),
     ReferenceScore("AntBulletEnv-v0", 300, 3000),
     ReferenceScore("HopperBulletEnv-v0", 20, 2500),
