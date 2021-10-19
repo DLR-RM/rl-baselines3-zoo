@@ -203,6 +203,7 @@ for env in args.env:  # noqa: C901
     plt.legend()
 
 
+# Markdown Table
 writer = pytablewriter.MarkdownTableWriter()
 writer.table_name = "results_table"
 

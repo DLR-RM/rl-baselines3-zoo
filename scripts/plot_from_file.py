@@ -6,6 +6,9 @@ import pandas as pd
 import pytablewriter
 import seaborn
 from matplotlib import pyplot as plt
+from rliable import library as rly
+from rliable import metrics, plot_utils
+from score_normalization import normalize_score
 
 
 # From https://github.com/mwaskom/seaborn/blob/master/seaborn/categorical.py
@@ -42,6 +45,8 @@ parser.add_argument("--figsize", help="Figure size, width, height in inches.", n
 parser.add_argument("--fontsize", help="Font size", type=int, default=14)
 parser.add_argument("-l", "--labels", help="Custom labels", type=str, nargs="+")
 parser.add_argument("-b", "--boxplot", help="Enable boxplot", action="store_true", default=False)
+parser.add_argument("-r", "--rliable", help="Enable rliable plots", action="store_true", default=False)
+parser.add_argument("-ci", "--ci-size", help="Confidence interval size (for rliable)", type=float, default=0.95)
 parser.add_argument("-latex", "--latex", help="Enable latex support", action="store_true", default=False)
 parser.add_argument("--merge", help="Merge with other results files", nargs="+", default=[], type=str)
 
@@ -132,20 +137,99 @@ if not args.skip_timesteps:
 
 # Convert to pandas dataframe, in order to use seaborn
 labels_df, envs_df, scores = [], [], []
+# Post-process to use it with rliable
+normalized_score_dict = {}
+# Convert env key to env id for normalization
+env_key_to_env_id = {
+    "Half": "HalfCheetahBulletEnv-v0",
+    "Ant": "AntBulletEnv-v0",
+    "Hopper": "HopperBulletEnv-v0",
+    "Walker": "Walker2DBulletEnv-v0",
+}
+
 for key in keys:
+    algo_scores = []
     for env in envs:
         if isinstance(results[env][key]["last_evals"], (np.float32, np.float64)):
             # No enough timesteps
             print(f"Skipping {env}-{key}")
             continue
+        algo_scores.append([])
         for score in results[env][key]["last_evals"]:
             labels_df.append(labels[key])
             # convert to int if needed
             # labels_df.append(int(labels[key]))
             envs_df.append(env)
             scores.append(score)
+            # Normalize score, env key must match env_id
+            if env in env_key_to_env_id:
+                score = normalize_score(score, env_key_to_env_id[env])
+            algo_scores[-1].append(score)
+
+    if len(algo_scores) > 0:
+        # shape: (n_envs, n_runs) -> (n_runs, n_envs)
+        # Truncate to convert to matrix
+        min_runs = min([len(algo_score) for algo_score in algo_scores])
+        if min_runs > 0:
+            algo_scores = [algo_score[:min_runs] for algo_score in algo_scores]
+            normalized_score_dict[labels[key]] = np.array(algo_scores).T
 
 data_frame = pd.DataFrame(data=dict(Method=labels_df, Environment=envs_df, Score=scores))
+
+# Rliable plots, see https://github.com/google-research/rliable
+if args.rliable:
+    print("Computing bootstrap CI ...")
+    algorithms = list(labels.values())
+    # Scores as a dictionary mapping algorithms to their normalized
+    # score matrices, each of which is of size `(num_runs x num_envs)`.
+    aggregate_func = lambda x: np.array(  # noqa: E731
+        [
+            metrics.aggregate_median(x),
+            metrics.aggregate_iqm(x),
+            metrics.aggregate_mean(x),
+            metrics.aggregate_optimality_gap(x),
+        ]
+    )
+    aggregate_scores, aggregate_interval_estimates = rly.get_interval_estimates(
+        normalized_score_dict,
+        aggregate_func,
+        reps=20000,  # Number of bootstrap replications.
+        confidence_interval_size=args.ci_size,  # Coverage of confidence interval. Defaults to 95%.
+    )
+    fig, axes = plot_utils.plot_interval_estimates(
+        aggregate_scores,
+        aggregate_interval_estimates,
+        metric_names=["Median", "IQM", "Mean", "Optimality Gap"],
+        algorithms=algorithms,
+        xlabel="Normalized Score",
+        xlabel_y_coordinate=-0.05,
+        subfigure_width=5,
+        row_height=1,
+        max_ticks=4,
+        interval_height=0.6,
+    )
+    plt.tight_layout()
+    # Performance profiles
+    # Normalized score thresholds
+    normalized_score_thresholds = np.linspace(0.0, 2.0, 50)
+    score_distributions, score_distributions_cis = rly.create_performance_profile(
+        normalized_score_dict,
+        normalized_score_thresholds,
+        reps=2000,
+        confidence_interval_size=args.ci_size,
+    )
+    # Plot score distributions
+    fig, ax = plt.subplots(ncols=1, figsize=(7, 5))
+    plot_utils.plot_performance_profiles(
+        score_distributions,
+        normalized_score_thresholds,
+        performance_profile_cis=score_distributions_cis,
+        colors=dict(zip(algorithms, seaborn.color_palette("colorblind"))),
+        xlabel=r"Normalized Score $(\tau)$",
+        ax=ax,
+    )
+    plt.legend()
+    plt.show()
 
 # Plot final results with env as x axis
 plt.figure("Sensitivity plot", figsize=args.figsize)
