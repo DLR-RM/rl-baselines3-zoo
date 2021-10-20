@@ -181,6 +181,7 @@ for key in keys:
         # Backward compat: mean_per_eval key may not be present
         if "mean_per_eval" in results[env][key]:
             all_algo_scores.append(results[env][key]["mean_per_eval"])
+        else:
             skip_all_algos_dict = True
 
         # Normalize score, env key must match env_id
