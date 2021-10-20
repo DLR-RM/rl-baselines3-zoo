@@ -17,17 +17,17 @@ class ReferenceScore(NamedTuple):
 
 reference_scores = [
     # PyBullet Envs
-    ReferenceScore("HalfCheetahBulletEnv-v0", -1400, 2500),
-    ReferenceScore("AntBulletEnv-v0", 300, 3000),
+    ReferenceScore("HalfCheetahBulletEnv-v0", -1400, 3000),
+    ReferenceScore("AntBulletEnv-v0", 300, 3500),
     ReferenceScore("HopperBulletEnv-v0", 20, 2500),
-    ReferenceScore("Walker2DBulletEnv-v0", 200, 2300),
+    ReferenceScore("Walker2DBulletEnv-v0", 200, 2500),
 ]
 
 # Alternative scaling
 # Min is a poorly optimized algorithm
 # reference_scores = [
 #     ReferenceScore("HalfCheetahBulletEnv-v0", 1000, 3000),
-#     ReferenceScore("AntBulletEnv-v0", 1000, 3000),
+#     ReferenceScore("AntBulletEnv-v0", 1000, 3500),
 #     ReferenceScore("HopperBulletEnv-v0", 1000, 2500),
 #     ReferenceScore("Walker2DBulletEnv-v0", 500, 2500),
 # ]

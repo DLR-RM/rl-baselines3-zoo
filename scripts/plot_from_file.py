@@ -7,8 +7,13 @@ import pandas as pd
 import pytablewriter
 import seaborn
 from matplotlib import pyplot as plt
-from rliable import library as rly
-from rliable import metrics, plot_utils
+
+try:
+    from rliable import library as rly
+    from rliable import metrics, plot_utils
+except ImportError:
+    rly = None
+
 from score_normalization import normalize_score
 
 
@@ -180,6 +185,10 @@ data_frame = pd.DataFrame(data=dict(Method=labels_df, Environment=envs_df, Score
 
 # Rliable plots, see https://github.com/google-research/rliable
 if args.rliable:
+
+    if rly is None:
+        raise ImportError("You must install rliable package to use this feature. Note: Python 3.7+ is required in that case.")
+
     print("Computing bootstrap CI ...")
     algorithms = list(labels.values())
     # Scores as a dictionary mapping algorithms to their normalized
@@ -197,7 +206,7 @@ if args.rliable:
         normalized_score_dict,
         aggregate_func,
         # Default was 50000
-        reps=1000,  # Number of bootstrap replications.
+        reps=2000,  # Number of bootstrap replications.
         confidence_interval_size=args.ci_size,  # Coverage of confidence interval. Defaults to 95%.
     )
     fig, axes = plot_utils.plot_interval_estimates(
@@ -218,7 +227,7 @@ if args.rliable:
 
     # Performance profiles
     # Normalized score thresholds
-    normalized_score_thresholds = np.linspace(0.0, 2.0, 50)
+    normalized_score_thresholds = np.linspace(0.0, 1.5, 50)
     score_distributions, score_distributions_cis = rly.create_performance_profile(
         normalized_score_dict,
         normalized_score_thresholds,
