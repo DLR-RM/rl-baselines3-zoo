@@ -146,8 +146,10 @@ if not args.skip_timesteps:
 # Convert to pandas dataframe, in order to use seaborn
 labels_df, envs_df, scores = [], [], []
 # Post-process to use it with rliable
+# algo: (n_runs, n_envs)
 normalized_score_dict = {}
-all_eval_scores_dict = {}
+# algo: (n_runs, n_envs, n_eval)
+all_eval_normalized_scores_dict = {}
 # Convert env key to env id for normalization
 env_key_to_env_id = {
     "Half": "HalfCheetahBulletEnv-v0",
@@ -157,36 +159,36 @@ env_key_to_env_id = {
 }
 
 for key in keys:
-    algo_scores = []
-    all_algo_scores = []
+    algo_scores, all_algo_scores = [], []
     for env in envs:
         if isinstance(results[env][key]["last_evals"], (np.float32, np.float64)):
             # No enough timesteps
             print(f"Skipping {env}-{key}")
             continue
-        algo_scores.append([])
+
         for score in results[env][key]["last_evals"]:
             labels_df.append(labels[key])
             # convert to int if needed
             # labels_df.append(int(labels[key]))
             envs_df.append(env)
             scores.append(score)
-            # Normalize score, env key must match env_id
-            if env in env_key_to_env_id:
-                score = normalize_score(score, env_key_to_env_id[env])
-            algo_scores[-1].append(score)
-        all_algo_scores.append(normalize_score(results[env][key]["mean_per_eval"], env_key_to_env_id[env]))
 
-    # shape: (n_envs, n_runs) -> (n_runs, n_envs)
+        algo_scores.append(results[env][key]["last_evals"])
+        all_algo_scores.append(results[env][key]["mean_per_eval"])
+        # Normalize score, env key must match env_id
+        if env in env_key_to_env_id:
+            algo_scores[-1] = normalize_score(algo_scores[-1], env_key_to_env_id[env])
+            all_algo_scores[-1] = normalize_score(all_algo_scores[-1], env_key_to_env_id[env])
+
     # Truncate to convert to matrix
     min_runs = min([len(algo_score) for algo_score in algo_scores])
     if min_runs > 0:
         algo_scores = [algo_score[:min_runs] for algo_score in algo_scores]
-        normalized_score_dict[labels[key]] = np.array(algo_scores).T
-        # (n_eval, n_trials)
         all_algo_scores = [all_algo_score[:, :min_runs] for all_algo_score in all_algo_scores]
-        # (n_runs x n_envs x n_eval)
-        all_eval_scores_dict[labels[key]] = np.array(all_algo_scores).transpose((2, 0, 1))
+        # shape: (n_envs, n_runs) -> (n_runs, n_envs)
+        normalized_score_dict[labels[key]] = np.array(algo_scores).T
+        # (n_envs, n_eval, n_runs) -> (n_runs, n_envs, n_eval)
+        all_eval_normalized_scores_dict[labels[key]] = np.array(all_algo_scores).transpose((2, 0, 1))
 
 data_frame = pd.DataFrame(data=dict(Method=labels_df, Environment=envs_df, Score=scores))
 
@@ -280,13 +282,15 @@ if args.rliable:
     if args.iqm:
         # Load scores as a dictionary mapping algorithms to their normalized
         # score matrices across all evaluations, each of which is of size
-        # `(n_runs x n_envs x n_eval)` where scores are recorded every n steps.
+        # `(n_runs, n_envs, n_eval)` where scores are recorded every n steps.
         # Only compute CI for 1/4 of the evaluations and keep the first and last eval
         downsample_factor = 4
-        n_evals = all_eval_scores_dict[algorithms[0]].shape[-1]
+        n_evals = all_eval_normalized_scores_dict[algorithms[0]].shape[-1]
         eval_indices = np.arange(n_evals - 1)[::downsample_factor]
         eval_indices = np.concatenate((eval_indices, [n_evals - 1]))
-        eval_indices_scores_dict = {algorithm: score[:, :, eval_indices] for algorithm, score in all_eval_scores_dict.items()}
+        eval_indices_scores_dict = {
+            algorithm: score[:, :, eval_indices] for algorithm, score in all_eval_normalized_scores_dict.items()
+        }
         iqm = lambda scores: np.array(  # noqa: E731
             [metrics.aggregate_iqm(scores[..., eval_idx]) for eval_idx in range(scores.shape[-1])]
         )
