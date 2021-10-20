@@ -1,6 +1,7 @@
 import argparse
 import itertools
 import pickle
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -179,6 +180,8 @@ for key in keys:
         if env in env_key_to_env_id:
             algo_scores[-1] = normalize_score(algo_scores[-1], env_key_to_env_id[env])
             all_algo_scores[-1] = normalize_score(all_algo_scores[-1], env_key_to_env_id[env])
+        elif env not in env_key_to_env_id and args.rliable:
+            warnings.warn(f"{env} not found for normalizing scores, you should update `env_key_to_env_id`")
 
     # Truncate to convert to matrix
     min_runs = min([len(algo_score) for algo_score in algo_scores])
@@ -218,6 +221,7 @@ if args.rliable:
         reps=2000,  # Number of bootstrap replications.
         confidence_interval_size=args.ci_size,  # Coverage of confidence interval. Defaults to 95%.
     )
+
     fig, axes = plot_utils.plot_interval_estimates(
         aggregate_scores,
         aggregate_interval_estimates,
@@ -230,6 +234,7 @@ if args.rliable:
         max_ticks=4,
         interval_height=0.6,
     )
+    fig.canvas.manager.set_window_title("Rliable metrics")
     # Adjust margin to see the x label
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.2)
@@ -253,6 +258,7 @@ if args.rliable:
         xlabel=r"Normalized Score $(\tau)$",
         ax=ax,
     )
+    fig.canvas.manager.set_window_title("Performance profiles")
     plt.legend()
 
     # Probability of improvement
@@ -277,6 +283,7 @@ if args.rliable:
             figsize=(10, 8),
             interval_height=0.6,
         )
+        plt.gcf().canvas.manager.set_window_title("Probability of Improvement")
         plt.tight_layout()
 
     if args.iqm:
@@ -309,6 +316,7 @@ if args.rliable:
             xlabel=r"Number of Evaluations",
             ylabel="IQM Normalized Score",
         )
+        plt.gcf().canvas.manager.set_window_title("IQM Normalized Score - Sample Efficiency Curve")
         plt.legend()
         plt.tight_layout()
 
