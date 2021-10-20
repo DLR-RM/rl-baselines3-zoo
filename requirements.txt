@@ -15,3 +15,5 @@ atari-py==0.2.6
 plotly
 pygame
 panda-gym>=1.1.1
+# rliable requires python 3.7+
+# rliable>=1.0.5

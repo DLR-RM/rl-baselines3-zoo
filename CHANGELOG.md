@@ -1,9 +1,10 @@
-## Release 1.2.1a0 (WIP)
+## Release 1.2.1a4 (WIP)
 
 ### Breaking Changes
 - Upgrade to panda-gym 1.1.1
 
 ### New Features
+- Added support for using rliable for performance comparison
 
 ### Bug fixes
 - Fix training with Dict obs and channel last images
