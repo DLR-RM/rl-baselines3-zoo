@@ -9,8 +9,8 @@ import seaborn
 from matplotlib import pyplot as plt
 
 try:
-    from rliable import library as rly
-    from rliable import metrics, plot_utils
+    from rliable import library as rly  # pytype: disable=import-error
+    from rliable import metrics, plot_utils  # pytype: disable=import-error
 except ImportError:
     rly = None
 
@@ -53,6 +53,7 @@ parser.add_argument("-l", "--labels", help="Custom labels", type=str, nargs="+")
 parser.add_argument("-b", "--boxplot", help="Enable boxplot", action="store_true", default=False)
 parser.add_argument("-r", "--rliable", help="Enable rliable plots", action="store_true", default=False)
 parser.add_argument("-vs", "--versus", help="Enable probability of improvement plot", action="store_true", default=False)
+parser.add_argument("-iqm", "--iqm", help="Enable IQM sample efficiency plot", action="store_true", default=False)
 parser.add_argument("-ci", "--ci-size", help="Confidence interval size (for rliable)", type=float, default=0.95)
 parser.add_argument("-latex", "--latex", help="Enable latex support", action="store_true", default=False)
 parser.add_argument("--merge", help="Merge with other results files", nargs="+", default=[], type=str)
@@ -146,6 +147,7 @@ if not args.skip_timesteps:
 labels_df, envs_df, scores = [], [], []
 # Post-process to use it with rliable
 normalized_score_dict = {}
+all_eval_scores_dict = {}
 # Convert env key to env id for normalization
 env_key_to_env_id = {
     "Half": "HalfCheetahBulletEnv-v0",
@@ -156,6 +158,7 @@ env_key_to_env_id = {
 
 for key in keys:
     algo_scores = []
+    all_algo_scores = []
     for env in envs:
         if isinstance(results[env][key]["last_evals"], (np.float32, np.float64)):
             # No enough timesteps
@@ -172,14 +175,18 @@ for key in keys:
             if env in env_key_to_env_id:
                 score = normalize_score(score, env_key_to_env_id[env])
             algo_scores[-1].append(score)
+        all_algo_scores.append(normalize_score(results[env][key]["mean_per_eval"], env_key_to_env_id[env]))
 
-    if len(algo_scores) > 0:
-        # shape: (n_envs, n_runs) -> (n_runs, n_envs)
-        # Truncate to convert to matrix
-        min_runs = min([len(algo_score) for algo_score in algo_scores])
-        if min_runs > 0:
-            algo_scores = [algo_score[:min_runs] for algo_score in algo_scores]
-            normalized_score_dict[labels[key]] = np.array(algo_scores).T
+    # shape: (n_envs, n_runs) -> (n_runs, n_envs)
+    # Truncate to convert to matrix
+    min_runs = min([len(algo_score) for algo_score in algo_scores])
+    if min_runs > 0:
+        algo_scores = [algo_score[:min_runs] for algo_score in algo_scores]
+        normalized_score_dict[labels[key]] = np.array(algo_scores).T
+        # (n_eval, n_trials)
+        all_algo_scores = [all_algo_score[:, :min_runs] for all_algo_score in all_algo_scores]
+        # (n_runs x n_envs x n_eval)
+        all_eval_scores_dict[labels[key]] = np.array(all_algo_scores).transpose((2, 0, 1))
 
 data_frame = pd.DataFrame(data=dict(Method=labels_df, Environment=envs_df, Score=scores))
 
@@ -268,6 +275,37 @@ if args.rliable:
             figsize=(10, 8),
             interval_height=0.6,
         )
+        plt.tight_layout()
+
+    if args.iqm:
+        # Load scores as a dictionary mapping algorithms to their normalized
+        # score matrices across all evaluations, each of which is of size
+        # `(n_runs x n_envs x n_eval)` where scores are recorded every n steps.
+        # Only compute CI for 1/4 of the evaluations and keep the first and last eval
+        downsample_factor = 4
+        n_evals = all_eval_scores_dict[algorithms[0]].shape[-1]
+        eval_indices = np.arange(n_evals - 1)[::downsample_factor]
+        eval_indices = np.concatenate((eval_indices, [n_evals - 1]))
+        eval_indices_scores_dict = {algorithm: score[:, :, eval_indices] for algorithm, score in all_eval_scores_dict.items()}
+        iqm = lambda scores: np.array(  # noqa: E731
+            [metrics.aggregate_iqm(scores[..., eval_idx]) for eval_idx in range(scores.shape[-1])]
+        )
+        iqm_scores, iqm_cis = rly.get_interval_estimates(
+            eval_indices_scores_dict,
+            iqm,
+            reps=2000,
+            confidence_interval_size=args.ci_size,
+        )
+        plot_utils.plot_sample_efficiency_curve(
+            eval_indices + 1,
+            iqm_scores,
+            iqm_cis,
+            algorithms=algorithms,
+            # TODO: convert to timesteps using the timesteps
+            xlabel=r"Number of Evaluations",
+            ylabel="IQM Normalized Score",
+        )
+        plt.legend()
         plt.tight_layout()
 
     plt.show()

@@ -92,7 +92,7 @@ Then export your results to a file using the `all_plots.py` script (see above):
 python scripts/all_plots.py -a sac td3 tqc --env Half Ant -f logs/ -o logs/offpolicy
 ```
 
-You can now use the `plot_from_file.py` script with `--rliable` and `--versus` arguments:
+You can now use the `plot_from_file.py` script with `--rliable`, `--versus` and `--iqm` arguments:
 ```
 python scripts/plot_from_file.py -i logs/offpolicy.pkl --skip-timesteps --rliable --versus -l SAC TD3 TQC
 ```
