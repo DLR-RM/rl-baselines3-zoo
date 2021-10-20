@@ -158,6 +158,8 @@ env_key_to_env_id = {
     "Hopper": "HopperBulletEnv-v0",
     "Walker": "Walker2DBulletEnv-v0",
 }
+# Backward compat
+skip_all_algos_dict = False
 
 for key in keys:
     algo_scores, all_algo_scores = [], []
@@ -175,11 +177,17 @@ for key in keys:
             scores.append(score)
 
         algo_scores.append(results[env][key]["last_evals"])
-        all_algo_scores.append(results[env][key]["mean_per_eval"])
+
+        # Backward compat: mean_per_eval key may not be present
+        if "mean_per_eval" in results[env][key]:
+            all_algo_scores.append(results[env][key]["mean_per_eval"])
+            skip_all_algos_dict = True
+
         # Normalize score, env key must match env_id
         if env in env_key_to_env_id:
             algo_scores[-1] = normalize_score(algo_scores[-1], env_key_to_env_id[env])
-            all_algo_scores[-1] = normalize_score(all_algo_scores[-1], env_key_to_env_id[env])
+            if not skip_all_algos_dict:
+                all_algo_scores[-1] = normalize_score(all_algo_scores[-1], env_key_to_env_id[env])
         elif env not in env_key_to_env_id and args.rliable:
             warnings.warn(f"{env} not found for normalizing scores, you should update `env_key_to_env_id`")
 
@@ -187,11 +195,12 @@ for key in keys:
     min_runs = min([len(algo_score) for algo_score in algo_scores])
     if min_runs > 0:
         algo_scores = [algo_score[:min_runs] for algo_score in algo_scores]
-        all_algo_scores = [all_algo_score[:, :min_runs] for all_algo_score in all_algo_scores]
         # shape: (n_envs, n_runs) -> (n_runs, n_envs)
         normalized_score_dict[labels[key]] = np.array(algo_scores).T
-        # (n_envs, n_eval, n_runs) -> (n_runs, n_envs, n_eval)
-        all_eval_normalized_scores_dict[labels[key]] = np.array(all_algo_scores).transpose((2, 0, 1))
+        if not skip_all_algos_dict:
+            all_algo_scores = [all_algo_score[:, :min_runs] for all_algo_score in all_algo_scores]
+            # (n_envs, n_eval, n_runs) -> (n_runs, n_envs, n_eval)
+            all_eval_normalized_scores_dict[labels[key]] = np.array(all_algo_scores).transpose((2, 0, 1))
 
 data_frame = pd.DataFrame(data=dict(Method=labels_df, Environment=envs_df, Score=scores))
 
