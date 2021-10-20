@@ -58,6 +58,7 @@ AntBulletEnv-v0:
 # To be tuned
 Walker2DBulletEnv-v0:
   <<: *pybullet-defaults
+  cg_max_steps: 20
   # policy_kwargs: "dict(log_std_init=-2,
   #                      ortho_init=False,
   #                      activation_fn=nn.ReLU,
@@ -78,6 +79,16 @@ ReacherBulletEnv-v0:
                        activation_fn=nn.ReLU,
                        net_arch=[dict(pi=[256, 256], vf=[256, 256])]
                        )"
+
+BipedalWalker-v3:
+  <<: *pybullet-defaults
+  n_timesteps: !!float 1e6
+
+
+BipedalWalkerHardcore-v3:
+  <<: *pybullet-defaults
+  n_timesteps: !!float 1e7
+  cg_max_steps: 25
 
 # To be tuned
 MinitaurBulletEnv-v0:
