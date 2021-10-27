@@ -8,6 +8,7 @@ pistonball24
 
 ./run_render[n].sh # generate saved gifs
 
+./run_render_optimization.sh # generates gifs from policeis logged during optimization if something weird happens
 
 
 Todo:
