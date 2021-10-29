@@ -1,3 +1,18 @@
+## Release 1.3.1a0 (WIP)
+
+### Breaking Changes
+
+
+### New Features
+- Added mujoco hyperparameters
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
 ## Release 1.3.0 (2021-10-23)
 
 **rliable plots and bug fixes**
