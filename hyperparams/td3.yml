@@ -130,6 +130,11 @@ HalfCheetah-v3: &mujoco-defaults
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_starts: 10000
+  # SAC Hyperparams
+  train_freq: 1
+  gradient_steps: 1
+  learning_rate: !!float 3e-4
+  batch_size: 256
 
 Ant-v3:
   <<: *mujoco-defaults
