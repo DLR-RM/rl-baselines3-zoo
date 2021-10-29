@@ -13,7 +13,7 @@ N_EVAL_EPISODES = 20
 N_EVAL_ENVS = 5
 np.random.seed(8)
 SEEDS = np.random.randint(2 ** 20, size=(N_SEEDS,))
-N_TIMESTEPS = int(1e6)
+# N_TIMESTEPS = int(1e6)
 
 os.makedirs(os.path.join("logs", "slurm"), exist_ok=True)
 log_folder = "logs/"
@@ -27,8 +27,8 @@ for algo in ALGOS:
                 algo,
                 "--env",
                 env_id,
-                "--hyperparams",
-                "use_sde:False",
+                # "--hyperparams",
+                # "use_sde:False",
                 "--eval-episodes",
                 N_EVAL_EPISODES,
                 "--eval-freq",
@@ -43,8 +43,8 @@ for algo in ALGOS:
                 10,
                 "--num-threads",
                 2,
-                "-n",
-                N_TIMESTEPS,
+                # "-n",
+                # N_TIMESTEPS,
                 "-uuid",
             ]
             args = list(map(str, args))
