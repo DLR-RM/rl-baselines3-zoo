@@ -5,6 +5,7 @@
 
 ### New Features
 - Added mujoco hyperparameters
+- Added MuJoCo pre-trained agents
 
 ### Bug fixes
 
