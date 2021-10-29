@@ -8,7 +8,7 @@ ALGOS = ["sac", "td3", "tqc"]
 # "Humanoid-v3",
 ENVS = ["HalfCheetah-v3", "Ant-v3", "Hopper-v3", "Walker2d-v3", "Swimmer-v3"]
 N_SEEDS = 1
-EVAL_FREQ = 10000
+EVAL_FREQ = 25000
 N_EVAL_EPISODES = 20
 N_EVAL_ENVS = 5
 np.random.seed(8)
