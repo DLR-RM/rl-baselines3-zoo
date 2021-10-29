@@ -26,12 +26,9 @@ def test_trained_agents(trained_model):
     if algo == "her":
         return
 
-    # Skip mujoco envs if needed
+    # Skip mujoco envs
     if "Fetch" in trained_model or "-v3" in trained_model:
-        try:
-            import mujoco_py  # noqa: F401
-        except ImportError:
-            return
+        return
 
     if "-MiniGrid-" in trained_model:
         args = args + ["--gym-packages", "gym_minigrid"]

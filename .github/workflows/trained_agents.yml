@@ -31,9 +31,6 @@ jobs:
         # cpu version of pytorch - faster to download
         pip install torch==1.8.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
         pip install pybullet==3.1.9
-        # Free mujoco
-        sudo apt-get -y install patchelf
-        pip install free-mujoco-py
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
