@@ -1,8 +1,8 @@
 gym>=0.17,<0.20
-stable-baselines3[extra,tests,docs]>=1.3.0
+# stable-baselines3[extra,tests,docs]>=1.3.0
 sb3-contrib>=1.3.0
-box2d-py==2.3.8
-pybullet
+# box2d-py==2.3.8
+# pybullet
 gym-minigrid
 scikit-optimize
 optuna
@@ -11,9 +11,9 @@ seaborn
 pyyaml>=5.1
 cloudpickle>=1.5.0
 # tmp fix: ROM missing in newest release
-atari-py==0.2.6
+# atari-py==0.2.6
 plotly
 pygame
-panda-gym>=1.1.1
+# panda-gym>=1.1.1
 # rliable requires python 3.7+
 # rliable>=1.0.5
