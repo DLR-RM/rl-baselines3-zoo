@@ -232,7 +232,7 @@ parking-v0:
   )"
 
 # Space Engineers envs
-SE-Symmetric-v1: &defaults
+SE-Forward-v1: &defaults
   env_wrapper:
     - utils.wrappers.HistoryWrapper:
         horizon: 2
@@ -241,10 +241,10 @@ SE-Symmetric-v1: &defaults
   callback:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 400
-    - utils.callbacks.StopTrainingOnMeanRewardThreshold:
-        reward_threshold: 250
-        verbose: 1
-  n_timesteps: !!float 2e6
+    # - utils.callbacks.StopTrainingOnMeanRewardThreshold:
+    #     reward_threshold: 250
+    #     verbose: 1
+  n_timesteps: !!float 5e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
   buffer_size: 100000
@@ -260,6 +260,9 @@ SE-Symmetric-v1: &defaults
   use_sde: False
   top_quantiles_to_drop_per_net: 2
   policy_kwargs: "dict(net_arch=[256, 256], n_critics=2)"
+
+SE-Symmetric-v1:
+  <<: *defaults
 
 SE-Generic-v1:
   <<: *defaults
