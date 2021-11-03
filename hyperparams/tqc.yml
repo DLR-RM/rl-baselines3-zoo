@@ -264,6 +264,9 @@ SE-Forward-v1: &defaults
 SE-Symmetric-v1:
   <<: *defaults
 
+SE-Corrections-v1:
+  <<: *defaults
+
 SE-Generic-v1:
   <<: *defaults
   callback:
