@@ -196,7 +196,7 @@ class HumanTeleop(BaseAlgorithm):
                     Task.TURN_RIGHT: self.turn_right_controller,
                 }[task]
 
-                action = controller.predict(self._last_obs, deterministic=self.deterministic)
+                action, _ = controller.predict(self._last_obs, deterministic=self.deterministic)
                 # TODO for multi policy: display proba for each expert
             else:
                 task = None
