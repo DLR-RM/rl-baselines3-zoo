@@ -79,6 +79,30 @@ Plot evaluation reward curve for TQC, SAC and TD3 on the HalfCheetah and Ant PyB
 python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f rl-trained-agents/
 ```
 
+## Plot with the rliable library
+
+The RL zoo integrates some of [rliable](https://agarwl.github.io/rliable/) library features.
+
+First, you need to install [rliable](https://github.com/google-research/rliable).
+
+Note: Python 3.7+ is required in that case.
+
+Then export your results to a file using the `all_plots.py` script (see above):
+```
+python scripts/all_plots.py -a sac td3 tqc --env Half Ant -f logs/ -o logs/offpolicy
+```
+
+You can now use the `plot_from_file.py` script with `--rliable`, `--versus` and `--iqm` arguments:
+```
+python scripts/plot_from_file.py -i logs/offpolicy.pkl --skip-timesteps --rliable --versus -l SAC TD3 TQC
+```
+
+Note: you may need to edit `plot_from_file.py`, in particular the `env_key_to_env_id` dictionary
+and the `scripts/score_normalization.py` which stores min and max score for each environment.
+
+Remark: plotting with the `--rliable` option is usually slow as confidence interval need to be computed using bootstrap sampling.
+
+
 ## Custom Environment
 
 The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml`).

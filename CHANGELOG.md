@@ -1,9 +1,16 @@
-## Release 1.2.1a0 (WIP)
+## Release 1.3.0 (2021-10-23)
+
+**rliable plots and bug fixes**
+
+**WARNING: This version will be the last one supporting Python 3.6 (end of life in Dec 2021). We highly recommended you to upgrade to Python >= 3.7.**
 
 ### Breaking Changes
 - Upgrade to panda-gym 1.1.1
+- Upgrade to Stable-Baselines3 (SB3) >= 1.3.0
+- Upgrade to sb3-contrib >= 1.3.0
 
 ### New Features
+- Added support for using rliable for performance comparison
 
 ### Bug fixes
 - Fix training with Dict obs and channel last images
@@ -13,6 +20,7 @@
 ### Other
 - Updated docker image
 - constrained gym version: gym>=0.17,<0.20
+- Better hyperparameters for A2C/PPO on Pendulum
 
 ## Release 1.2.0 (2021-09-08)
 
