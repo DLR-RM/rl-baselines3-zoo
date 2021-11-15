@@ -130,6 +130,8 @@ HalfCheetah-v3: &mujoco-defaults
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_starts: 10000
+  noise_type: 'normal'
+  noise_std: 0.1
 
 Ant-v3:
   <<: *mujoco-defaults
