@@ -111,6 +111,7 @@ and also allow users to have access to pretrained agents.*
 |sac  |HalfCheetahBulletEnv-v0    |   2792.170|    12.088|1M         |        150000|          150|
 |sac  |Hopper-v3                  |   2325.547|  1129.676|1M         |        149841|          236|
 |sac  |HopperBulletEnv-v0         |   2603.494|   164.322|1M         |        149724|          151|
+|sac  |Humanoid-v3                |   6232.287|   279.885|2M         |        149460|          150|
 |sac  |LunarLanderContinuous-v2   |    260.390|    65.467|500k       |        149634|          672|
 |sac  |MountainCarContinuous-v0   |     94.679|     1.134|50k        |        149966|         1443|
 |sac  |Pendulum-v0                |   -156.995|    88.714|20k        |        150000|          750|
@@ -126,6 +127,7 @@ and also allow users to have access to pretrained agents.*
 |td3  |HalfCheetahBulletEnv-v0    |   2821.641|    19.722|1M         |        150000|          150|
 |td3  |Hopper-v3                  |   3606.390|     4.027|1M         |        150000|          150|
 |td3  |HopperBulletEnv-v0         |   2681.609|    27.806|1M         |        149486|          150|
+|td3  |Humanoid-v3                |   5566.687|    14.544|2M         |        150000|          150|
 |td3  |LunarLanderContinuous-v2   |    207.451|    67.562|300k       |        149488|          337|
 |td3  |MountainCarContinuous-v0   |     93.483|     0.075|300k       |        149976|         2275|
 |td3  |Pendulum-v0                |   -151.855|    90.227|20k        |        150000|          750|
@@ -145,6 +147,7 @@ and also allow users to have access to pretrained agents.*
 |tqc  |HalfCheetahBulletEnv-v0    |   3675.299|    17.681|1M         |        150000|          150|
 |tqc  |Hopper-v3                  |   3754.199|     8.276|1M         |        150000|          150|
 |tqc  |HopperBulletEnv-v0         |   2662.373|   206.210|1M         |        149881|          151|
+|tqc  |Humanoid-v3                |   7239.320|  1647.498|2M         |        149508|          165|
 |tqc  |LunarLanderContinuous-v2   |    277.956|    25.466|500k       |        149928|          706|
 |tqc  |MountainCarContinuous-v0   |     63.641|    45.259|50k        |        149796|          186|
 |tqc  |PandaPickAndPlace-v1       |     -8.024|     6.674|1M         |        150000|         3000|
