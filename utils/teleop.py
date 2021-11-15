@@ -90,6 +90,7 @@ class HumanTeleop(BaseAlgorithm):
         self.process = None
         self.window = None
         self.max_speed = 0.0
+        self._last_task = None
 
         self.deterministic = deterministic
 
@@ -183,8 +184,11 @@ class HumanTeleop(BaseAlgorithm):
 
             if move != "stay":
                 task = Task(move)
-                # TODO: check if the task has changed
-                self.env.env_method("change_task", task)
+                # Check if the task has changed
+                if task != self._last_task:
+                    self.env.env_method("change_task", task)
+                    self._last_task = task
+                # Re-enable joints movement
                 self.env.set_attr("max_speed", self.max_speed)
                 # TODO: update for the frame stack by stepping fast in the env?
                 # self._last_obs = self.env.env_method("change_task", task)
@@ -200,6 +204,7 @@ class HumanTeleop(BaseAlgorithm):
                 # TODO for multi policy: display proba for each expert
             else:
                 task = None
+                # Keep the joints at the current position
                 self.env.set_attr("max_speed", 0.0)
 
             self._last_obs, reward, done, infos = self.env.step(action)
