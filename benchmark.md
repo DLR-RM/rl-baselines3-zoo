@@ -134,7 +134,7 @@ and also allow users to have access to pretrained agents.*
 |td3  |ReacherBulletEnv-v0        |     17.114|     9.750|300k       |        150000|         1000|
 |td3  |Swimmer-v3                 |    359.127|     1.244|1M         |        150000|          150|
 |td3  |Walker2DBulletEnv-v0       |   2213.672|   230.558|1M         |        149800|          152|
-|td3  |Walker2d-v3                |    114.775|   771.577|1M         |        149369|         4833|
+|td3  |Walker2d-v3                |   4717.823|    46.303|1M         |        150000|          150|
 |tqc  |Ant-v3                     |   3339.362|  1969.906|1M         |        149583|          202|
 |tqc  |AntBulletEnv-v0            |   3456.717|   248.733|1M         |        150000|          150|
 |tqc  |BipedalWalker-v3           |    329.808|    45.083|500k       |        149682|          254|
