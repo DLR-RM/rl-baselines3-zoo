@@ -162,9 +162,7 @@ Humanoid-v3:
 Swimmer-v3:
   <<: *mujoco-defaults
   gamma: 0.9999
-  noise_type: 'normal'
-  noise_std: 0.1
-  
+
 # === HER Robotics GoalEnvs ===
 FetchReach-v1:
   env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper

@@ -128,13 +128,14 @@ HalfCheetah-v3: &mujoco-defaults
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_starts: 10000
+  noise_type: 'normal'
+  noise_std: 0.1
 
 Ant-v3:
   <<: *mujoco-defaults
 
 Hopper-v3:
   <<: *mujoco-defaults
-  top_quantiles_to_drop_per_net: 5
 
 Walker2d-v3:
   <<: *mujoco-defaults
@@ -146,3 +147,5 @@ Humanoid-v3:
 Swimmer-v3:
   <<: *mujoco-defaults
   gamma: 0.9999
+  train_freq: 1
+  gradient_steps: 1
