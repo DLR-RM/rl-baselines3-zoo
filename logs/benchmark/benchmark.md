@@ -26,7 +26,9 @@ and also allow users to have access to pretrained agents.*
 |a2c  |BreakoutNoFrameskip-v4     |    279.793|   122.177|10M        |        604115|           82|
 |a2c  |CartPole-v1                |    500.000|     0.000|500k       |        150000|          300|
 |a2c  |EnduroNoFrameskip-v4       |      0.000|     0.000|10M        |        599040|           45|
+|a2c  |HalfCheetah-v3             |   3041.174|   157.265|1M         |        150000|          150|
 |a2c  |HalfCheetahBulletEnv-v0    |   2107.384|    36.008|2M         |        150000|          150|
+|a2c  |Hopper-v3                  |    733.454|   376.574|1M         |        149987|          580|
 |a2c  |HopperBulletEnv-v0         |    815.355|   313.798|2M         |        149541|          254|
 |a2c  |LunarLander-v2             |    155.751|    80.419|200k       |        149443|          297|
 |a2c  |LunarLanderContinuous-v2   |     84.225|   145.906|5M         |        149305|          256|
@@ -39,6 +41,7 @@ and also allow users to have access to pretrained agents.*
 |a2c  |RoadRunnerNoFrameskip-v4   |  31671.512|  6364.085|10M        |        606710|          172|
 |a2c  |SeaquestNoFrameskip-v4     |   1721.493|   105.339|10M        |        599691|           67|
 |a2c  |SpaceInvadersNoFrameskip-v4|    627.160|   201.974|10M        |        604848|          162|
+|a2c  |Swimmer-v3                 |    200.627|     2.544|1M         |        150000|          150|
 |a2c  |Walker2DBulletEnv-v0       |    858.209|   333.116|2M         |        149156|          173|
 |ddpg |AntBulletEnv-v0            |   2399.147|    75.410|1M         |        150000|          150|
 |ddpg |BipedalWalker-v3           |    197.486|   141.580|1M         |        149237|          227|
@@ -72,9 +75,9 @@ and also allow users to have access to pretrained agents.*
 |ppo  |BreakoutNoFrameskip-v4     |    398.033|    33.328|10M        |        600418|           60|
 |ppo  |CartPole-v1                |    500.000|     0.000|100k       |        150000|          300|
 |ppo  |EnduroNoFrameskip-v4       |    996.364|   176.090|10M        |        572416|           11|
-|ppo  |HalfCheetah-v3             |   1850.905|    33.678|1M         |        150000|          150|
+|ppo  |HalfCheetah-v3             |   5819.099|   663.530|1M         |        150000|          150|
 |ppo  |HalfCheetahBulletEnv-v0    |   2924.721|    64.465|2M         |        150000|          150|
-|ppo  |Hopper-v3                  |   1077.984|    22.975|1M         |        149996|          502|
+|ppo  |Hopper-v3                  |   2410.435|    10.026|1M         |        150000|          150|
 |ppo  |HopperBulletEnv-v0         |   2575.054|   223.301|2M         |        149094|          152|
 |ppo  |LunarLander-v2             |    242.119|    31.823|1M         |        149636|          369|
 |ppo  |LunarLanderContinuous-v2   |    270.863|    32.072|1M         |        149956|          526|
