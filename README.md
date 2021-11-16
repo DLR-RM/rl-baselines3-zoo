@@ -372,7 +372,7 @@ PyBullet Envs (Continued)
 
 |  RL Algo |  Walker2d | HalfCheetah | Ant | Swimmer |  Hopper | Humanoid |
 |----------|-----------|-------------|-----|---------|---------|----------|
-| A2C      |  |  |  |  |  | |
+| A2C      |  | :heavy_check_mark: |  | :heavy_check_mark: | :heavy_check_mark: | |
 | PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | DDPG     |  |  |  |  |  | |
 | SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
