@@ -163,7 +163,6 @@ ReacherBulletEnv-v0:
 # === Mujoco Envs ===
 
 HalfCheetah-v3: &mujoco-defaults
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
