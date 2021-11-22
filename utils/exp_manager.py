@@ -64,7 +64,7 @@ from utils.utils import (
     linear_schedule,
 )
 
-from pettingzoo.butterfly import pistonball_v4
+from pettingzoo.butterfly import knights_archers_zombies_v7
 import supersuit as ss
 
 
@@ -541,10 +541,12 @@ class ExperimentManager(object):
         self, n_envs: int, eval_env: bool = False, no_log: bool = False
     ) -> VecEnv:
 
-        env = pistonball_v4.parallel_env()
+        env = knights_archers_zombies_v7.parallel_env()
         env = ss.color_reduction_v0(env, mode="B")
-        env = ss.resize_v0(env, x_size=84, y_size=84, linear_interp=True)
+        env = ss.resize_v0(env, x_size=84, y_size=84)
+        env = ss.pad_action_space_v0(env)
         env = ss.frame_stack_v1(env, 3)
+        env = ss.black_death_v2(env)
         env = ss.pettingzoo_env_to_vec_env_v0(env)
         print(n_envs)
         env = ss.concat_vec_envs_v0(

@@ -1,5 +1,5 @@
 from stable_baselines3 import PPO
-from pettingzoo.butterfly import pistonball_v4
+from pettingzoo.butterfly import knights_archers_zombies_v7
 import supersuit as ss
 from stable_baselines3.common.vec_env import VecMonitor, VecTransposeImage, VecNormalize
 from stable_baselines3.common.evaluation import evaluate_policy
@@ -23,10 +23,12 @@ num = sys.argv[1]
 #     return env
 
 
-env = pistonball_v4.env()
+env = knights_archers_zombies_v7.env()
 env = ss.color_reduction_v0(env, mode="B")
 env = ss.resize_v0(env, x_size=84, y_size=84)
+env = ss.pad_action_space_v0(env)
 env = ss.frame_stack_v1(env, 3)
+env = ss.black_death_v2(env)
 
 policies = os.listdir("./mature_policies/" + str(num) + "/")
 
