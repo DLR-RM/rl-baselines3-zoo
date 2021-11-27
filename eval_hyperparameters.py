@@ -62,7 +62,7 @@ all_mean_rewards = []
 
 for i in range(10):
     try:
-        model = PPO("CnnPolicy", env, verbose=3, **params)
+        model = PPO("CnnPolicy", env, verbose=1, **params)
         eval_callback = EvalCallback(
             eval_env,
             best_model_save_path="./eval_logs/" + num + "/" + str(i) + "/",
