@@ -26,7 +26,9 @@ and also allow users to have access to pretrained agents.*
 |a2c  |BreakoutNoFrameskip-v4     |    279.793|   122.177|10M        |        604115|           82|
 |a2c  |CartPole-v1                |    500.000|     0.000|500k       |        150000|          300|
 |a2c  |EnduroNoFrameskip-v4       |      0.000|     0.000|10M        |        599040|           45|
+|a2c  |HalfCheetah-v3             |   3041.174|   157.265|1M         |        150000|          150|
 |a2c  |HalfCheetahBulletEnv-v0    |   2107.384|    36.008|2M         |        150000|          150|
+|a2c  |Hopper-v3                  |    733.454|   376.574|1M         |        149987|          580|
 |a2c  |HopperBulletEnv-v0         |    815.355|   313.798|2M         |        149541|          254|
 |a2c  |LunarLander-v2             |    155.751|    80.419|200k       |        149443|          297|
 |a2c  |LunarLanderContinuous-v2   |     84.225|   145.906|5M         |        149305|          256|
@@ -39,6 +41,7 @@ and also allow users to have access to pretrained agents.*
 |a2c  |RoadRunnerNoFrameskip-v4   |  31671.512|  6364.085|10M        |        606710|          172|
 |a2c  |SeaquestNoFrameskip-v4     |   1721.493|   105.339|10M        |        599691|           67|
 |a2c  |SpaceInvadersNoFrameskip-v4|    627.160|   201.974|10M        |        604848|          162|
+|a2c  |Swimmer-v3                 |    200.627|     2.544|1M         |        150000|          150|
 |a2c  |Walker2DBulletEnv-v0       |    858.209|   333.116|2M         |        149156|          173|
 |ddpg |AntBulletEnv-v0            |   2399.147|    75.410|1M         |        150000|          150|
 |ddpg |BipedalWalker-v3           |    197.486|   141.580|1M         |        149237|          227|
@@ -63,6 +66,7 @@ and also allow users to have access to pretrained agents.*
 |dqn  |SeaquestNoFrameskip-v4     |   2000.290|   606.644|10M        |        599505|           69|
 |dqn  |SpaceInvadersNoFrameskip-v4|    622.742|   201.564|10M        |        604311|          155|
 |ppo  |Acrobot-v1                 |    -73.506|    18.201|1M         |        149979|         2013|
+|ppo  |Ant-v3                     |   1327.158|   451.577|1M         |        149572|          175|
 |ppo  |AntBulletEnv-v0            |   2865.922|    56.468|2M         |        150000|          150|
 |ppo  |AsteroidsNoFrameskip-v4    |   2156.174|   744.640|10M        |        602092|          149|
 |ppo  |BeamRiderNoFrameskip-v4    |   3397.000|  1662.368|10M        |        598926|           46|
@@ -71,7 +75,9 @@ and also allow users to have access to pretrained agents.*
 |ppo  |BreakoutNoFrameskip-v4     |    398.033|    33.328|10M        |        600418|           60|
 |ppo  |CartPole-v1                |    500.000|     0.000|100k       |        150000|          300|
 |ppo  |EnduroNoFrameskip-v4       |    996.364|   176.090|10M        |        572416|           11|
+|ppo  |HalfCheetah-v3             |   5819.099|   663.530|1M         |        150000|          150|
 |ppo  |HalfCheetahBulletEnv-v0    |   2924.721|    64.465|2M         |        150000|          150|
+|ppo  |Hopper-v3                  |   2410.435|    10.026|1M         |        150000|          150|
 |ppo  |HopperBulletEnv-v0         |   2575.054|   223.301|2M         |        149094|          152|
 |ppo  |LunarLander-v2             |    242.119|    31.823|1M         |        149636|          369|
 |ppo  |LunarLanderContinuous-v2   |    270.863|    32.072|1M         |        149956|          526|
@@ -84,7 +90,9 @@ and also allow users to have access to pretrained agents.*
 |ppo  |RoadRunnerNoFrameskip-v4   |  40680.645|  6675.058|10M        |        605786|          155|
 |ppo  |SeaquestNoFrameskip-v4     |   1783.636|    34.096|10M        |        598243|           66|
 |ppo  |SpaceInvadersNoFrameskip-v4|    960.331|   425.355|10M        |        603771|          136|
+|ppo  |Swimmer-v3                 |    281.561|     9.671|1M         |        150000|          150|
 |ppo  |Walker2DBulletEnv-v0       |   2109.992|    13.899|2M         |        150000|          150|
+|ppo  |Walker2d-v3                |   3478.798|   821.708|1M         |        149343|          171|
 |qrdqn|Acrobot-v1                 |    -69.135|     9.967|100k       |        149949|         2138|
 |qrdqn|AsteroidsNoFrameskip-v4    |   2185.303|  1097.172|10M        |        599784|           66|
 |qrdqn|BeamRiderNoFrameskip-v4    |  17122.941| 10769.997|10M        |        596483|           17|
@@ -98,26 +106,39 @@ and also allow users to have access to pretrained agents.*
 |qrdqn|RoadRunnerNoFrameskip-v4   |  42325.424|  8361.161|10M        |        591016|           59|
 |qrdqn|SeaquestNoFrameskip-v4     |   2557.576|    76.951|10M        |        596275|           66|
 |qrdqn|SpaceInvadersNoFrameskip-v4|   1899.928|   823.488|10M        |        597218|           69|
+|sac  |Ant-v3                     |   4615.791|  1354.111|1M         |        149074|          165|
 |sac  |AntBulletEnv-v0            |   3073.114|   175.148|1M         |        150000|          150|
 |sac  |BipedalWalker-v3           |    297.668|    33.060|500k       |        149530|          136|
 |sac  |BipedalWalkerHardcore-v3   |      4.423|   103.910|10M        |        149794|           88|
+|sac  |HalfCheetah-v3             |   9535.451|   100.470|1M         |        150000|          150|
 |sac  |HalfCheetahBulletEnv-v0    |   2792.170|    12.088|1M         |        150000|          150|
+|sac  |Hopper-v3                  |   2325.547|  1129.676|1M         |        149841|          236|
 |sac  |HopperBulletEnv-v0         |   2603.494|   164.322|1M         |        149724|          151|
+|sac  |Humanoid-v3                |   6232.287|   279.885|2M         |        149460|          150|
 |sac  |LunarLanderContinuous-v2   |    260.390|    65.467|500k       |        149634|          672|
 |sac  |MountainCarContinuous-v0   |     94.679|     1.134|50k        |        149966|         1443|
 |sac  |Pendulum-v0                |   -156.995|    88.714|20k        |        150000|          750|
 |sac  |ReacherBulletEnv-v0        |     18.062|     9.729|300k       |        150000|         1000|
+|sac  |Swimmer-v3                 |    345.568|     3.084|1M         |        150000|          150|
 |sac  |Walker2DBulletEnv-v0       |   2292.266|    13.970|1M         |        149983|          150|
+|sac  |Walker2d-v3                |   3863.203|   254.347|1M         |        149309|          150|
+|td3  |Ant-v3                     |   5813.274|   589.773|1M         |        149393|          151|
 |td3  |AntBulletEnv-v0            |   3300.026|    54.640|1M         |        150000|          150|
 |td3  |BipedalWalker-v3           |    305.990|    56.886|1M         |        149999|          224|
 |td3  |BipedalWalkerHardcore-v3   |    -98.116|    16.087|10M        |        150000|           75|
+|td3  |HalfCheetah-v3             |   9655.666|   969.916|1M         |        150000|          150|
 |td3  |HalfCheetahBulletEnv-v0    |   2821.641|    19.722|1M         |        150000|          150|
+|td3  |Hopper-v3                  |   3606.390|     4.027|1M         |        150000|          150|
 |td3  |HopperBulletEnv-v0         |   2681.609|    27.806|1M         |        149486|          150|
+|td3  |Humanoid-v3                |   5566.687|    14.544|2M         |        150000|          150|
 |td3  |LunarLanderContinuous-v2   |    207.451|    67.562|300k       |        149488|          337|
 |td3  |MountainCarContinuous-v0   |     93.483|     0.075|300k       |        149976|         2275|
 |td3  |Pendulum-v0                |   -151.855|    90.227|20k        |        150000|          750|
 |td3  |ReacherBulletEnv-v0        |     17.114|     9.750|300k       |        150000|         1000|
+|td3  |Swimmer-v3                 |    359.127|     1.244|1M         |        150000|          150|
 |td3  |Walker2DBulletEnv-v0       |   2213.672|   230.558|1M         |        149800|          152|
+|td3  |Walker2d-v3                |   4717.823|    46.303|1M         |        150000|          150|
+|tqc  |Ant-v3                     |   3339.362|  1969.906|1M         |        149583|          202|
 |tqc  |AntBulletEnv-v0            |   3456.717|   248.733|1M         |        150000|          150|
 |tqc  |BipedalWalker-v3           |    329.808|    45.083|500k       |        149682|          254|
 |tqc  |BipedalWalkerHardcore-v3   |    235.226|   110.569|2M         |        149032|          131|
@@ -125,8 +146,11 @@ and also allow users to have access to pretrained agents.*
 |tqc  |FetchPush-v1               |     -8.799|     5.438|1M         |        150000|         3000|
 |tqc  |FetchReach-v1              |     -1.659|     0.873|20k        |        150000|         3000|
 |tqc  |FetchSlide-v1              |    -29.210|    11.387|3M         |        150000|         3000|
+|tqc  |HalfCheetah-v3             |  12089.939|   127.440|1M         |        150000|          150|
 |tqc  |HalfCheetahBulletEnv-v0    |   3675.299|    17.681|1M         |        150000|          150|
+|tqc  |Hopper-v3                  |   3754.199|     8.276|1M         |        150000|          150|
 |tqc  |HopperBulletEnv-v0         |   2662.373|   206.210|1M         |        149881|          151|
+|tqc  |Humanoid-v3                |   7239.320|  1647.498|2M         |        149508|          165|
 |tqc  |LunarLanderContinuous-v2   |    277.956|    25.466|500k       |        149928|          706|
 |tqc  |MountainCarContinuous-v0   |     63.641|    45.259|50k        |        149796|          186|
 |tqc  |PandaPickAndPlace-v1       |     -8.024|     6.674|1M         |        150000|         3000|
@@ -136,5 +160,7 @@ and also allow users to have access to pretrained agents.*
 |tqc  |PandaStack-v1              |    -96.915|    17.240|1M         |        150000|         1500|
 |tqc  |Pendulum-v0                |   -151.340|    87.893|20k        |        150000|          750|
 |tqc  |ReacherBulletEnv-v0        |     18.255|     9.543|300k       |        150000|         1000|
+|tqc  |Swimmer-v3                 |    339.423|     1.486|1M         |        150000|          150|
 |tqc  |Walker2DBulletEnv-v0       |   2508.934|   614.624|1M         |        149572|          159|
+|tqc  |Walker2d-v3                |   4380.720|   500.489|1M         |        149606|          152|
 |tqc  |parking-v0                 |     -6.762|     2.690|100k       |        149983|         7528|

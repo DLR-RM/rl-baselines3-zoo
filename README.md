@@ -82,6 +82,7 @@ python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f rl-trained-a
 ## Plot with the rliable library
 
 The RL zoo integrates some of [rliable](https://agarwl.github.io/rliable/) library features.
+You can find a visual explanation of the tools used by rliable in this [blog post](https://araffin.github.io/post/rliable/).
 
 First, you need to install [rliable](https://github.com/google-research/rliable).
 
@@ -343,7 +344,7 @@ Additional Atari Games (to be completed):
 ### PyBullet Environments
 
 See https://github.com/bulletphysics/bullet3/tree/master/examples/pybullet/gym/pybullet_envs.
-Similar to [MuJoCo Envs](https://gym.openai.com/envs/#mujoco) but with a free simulator: pybullet. We are using `BulletEnv-v0` version.
+Similar to [MuJoCo Envs](https://gym.openai.com/envs/#mujoco) but with a ~free~ (MuJoCo 2.1.0+ is now free!) easy to install simulator: pybullet. We are using `BulletEnv-v0` version.
 
 Note: those environments are derived from [Roboschool](https://github.com/openai/roboschool) and are harder than the Mujoco version (see [Pybullet issue](https://github.com/bulletphysics/bullet3/issues/1718#issuecomment-393198883))
 
@@ -367,6 +368,16 @@ PyBullet Envs (Continued)
 | TD3      | | | | |
 | TQC      | | | | |
 
+### MuJoCo Environments
+
+|  RL Algo |  Walker2d | HalfCheetah | Ant | Swimmer |  Hopper | Humanoid |
+|----------|-----------|-------------|-----|---------|---------|----------|
+| A2C      |  | :heavy_check_mark: |  | :heavy_check_mark: | :heavy_check_mark: | |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| DDPG     |  |  |  |  |  | |
+| SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| TD3      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| TQC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 ### Robotics Environments
 
@@ -386,7 +397,7 @@ We used the v1 environments.
 
 See https://github.com/qgallouedec/panda-gym/.
 
-Similar to [MuJoCo Robotics Envs](https://gym.openai.com/envs/#robotics) but with a free simulator: pybullet.
+Similar to [MuJoCo Robotics Envs](https://gym.openai.com/envs/#robotics) but with a ~free~ easy to install simulator: pybullet.
 
 We used the v1 environments.
 
