@@ -32,3 +32,8 @@ try:
     import panda_gym  # pytype: disable=import-error
 except ImportError:
     panda_gym = None
+
+try:
+    import gym_pcwcf
+except ImportError:
+    gym_pcwcf = None

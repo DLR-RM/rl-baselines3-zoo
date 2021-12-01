@@ -43,6 +43,7 @@ import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from utils.hyperparams_opt import HYPERPARAMS_SAMPLER
 from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
+from utils.policies import ConstrainedActorCriticPolicy
 
 
 class ExperimentManager(object):
@@ -161,6 +162,10 @@ class ExperimentManager(object):
         """
         hyperparams, saved_hyperparams = self.read_hyperparameters()
         hyperparams, self.env_wrapper, self.callbacks = self._preprocess_hyperparams(hyperparams)
+
+        #Проверка на policy
+        if hyperparams['policy'] == 'constrained':
+            hyperparams['policy'] = ConstrainedActorCriticPolicy
 
         self.create_log_folder()
         self.create_callbacks()

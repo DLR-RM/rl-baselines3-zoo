@@ -564,3 +564,15 @@ Walker2d-v3:
   gae_lambda: 0.95
   max_grad_norm: 1
   vf_coef: 0.871923
+
+cwcf-v0:
+  normalize: false
+  policy: 'constrainedz'
+  n_timesteps: 1000
+  learning_rate: 0.00066
+  max_grad_norm: 3.9
+  n_steps: 1024
+  gae_lambda: 1.89e-08
+  ent_coef: 0.73
+  vf_coef: 0.00037
+  clip_range: 0.4999898
