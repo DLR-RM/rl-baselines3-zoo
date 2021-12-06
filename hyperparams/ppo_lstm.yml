@@ -1,6 +1,7 @@
 atari:
   env_wrapper:
-    - stable_baselines3.common.atari_wrappers.AtariWrapper
+    - stable_baselines3.common.atari_wrappers.AtariWrapper:
+        terminal_on_life_loss: False
   frame_stack: 4
   policy: 'CnnLstmPolicy'
   n_envs: 8
@@ -98,11 +99,14 @@ BipedalWalker-v3:
   clip_range: 0.2
 
 BipedalWalkerHardcore-v3:
+  # env_wrapper:
+  #   - utils.wrappers.FrameSkip:
+  #       skip: 2
   normalize: true
   n_envs: 16
   n_timesteps: !!float 10e7
   policy: 'MlpLstmPolicy'
-  n_steps: 2048
+  n_steps: 512
   batch_size: 64
   gae_lambda: 0.95
   gamma: 0.99
@@ -110,6 +114,9 @@ BipedalWalkerHardcore-v3:
   ent_coef: 0.001
   learning_rate: lin_2.5e-4
   clip_range: lin_0.2
+  policy_kwargs: "dict(enable_critic_lstm=False,
+                       lstm_hidden_size=256,
+                       )"
 
 LunarLander-v2:
   n_envs: 16
@@ -322,13 +329,20 @@ MiniGrid-FourRooms-v0:
 
 CarRacing-v0:
   env_wrapper:
+    # - stable_baselines3.common.atari_wrappers.MaxAndSkipEnv:
+    #     skip: 4
+    # - gym.wrappers.RescaleAction:
+    #     a: -1.0
+    #     b: 1.0
+    - utils.wrappers.FrameSkip:
+        skip: 2
     - gym.wrappers.resize_observation.ResizeObservation:
         shape: 64
     - gym.wrappers.gray_scale_observation.GrayScaleObservation:
         keep_dim: true
-  frame_stack: 4
+  frame_stack: 2
   n_envs: 8
-  n_timesteps: !!float 1e6
+  n_timesteps: !!float 2e6
   policy: 'CnnLstmPolicy'
   batch_size: 128
   n_steps: 512
@@ -344,6 +358,8 @@ CarRacing-v0:
   clip_range: 0.4
   policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
+                       enable_critic_lstm=False,
+                       lstm_hidden_size=256,
                        )"
 
 
