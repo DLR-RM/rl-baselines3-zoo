@@ -1,7 +1,7 @@
-## Release 1.3.1a2 (WIP)
+## Release 1.3.1a4 (WIP)
 
 ### Breaking Changes
-
+- Dropped python 3.6 support
 
 ### New Features
 - Added mujoco hyperparameters
