@@ -124,7 +124,6 @@ BipedalWalkerHardcore-v3:
 
 # Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
