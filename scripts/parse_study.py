@@ -1,6 +1,8 @@
 import argparse
 import json
+import os
 import pickle
+from pprint import pprint
 
 import optuna
 
@@ -15,6 +17,13 @@ def value_key(trial: optuna.trial.Trial) -> float:
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--study-file", help="Path to a pickle file contained a saved study", type=str)
+parser.add_argument(
+    "-f",
+    "--folder",
+    help="Folder where the best hyperparameter json files will be written",
+    type=str,
+    default="logs/hyperparameter_jsons",
+)
 parser.add_argument("--study-name", help="Study name used during hyperparameter optimization", type=str)
 parser.add_argument("--storage", help="Database storage path used during hyperparameter optimization", type=str)
 parser.add_argument("--print-n-best-trials", help="Show final return values for n best trials", type=int, default=0)
@@ -41,18 +50,20 @@ else:
         direction="maximize",
     )
 
-values = []
 trials = study.trials
 trials.sort(key=value_key, reverse=True)
 
-for trial in trials:
-    if len(values) < args.print_n_best_trials:
-        print(trial.value)
-    values.append(trial.value)
+for idx, trial in enumerate(trials):
+    if idx < args.print_n_best_trials:
+        print(f"# Top {idx + 1} - value: {trial.value:.2f}")
+        print()
+        pprint(trial.params)
+        print()
 
-
-for i in range(min(args.save_n_best_hyperparameters, len(trials))):
-    params = trials[i].params
-    text = json.dumps(params)
-    with open(f"hyperparameter_jsons/hyperparameters_{i}.json", "w+") as json_file:
-        json_file.write(text)
+if args.save_n_best_hyperparameters > 0:
+    os.makedirs(f"{args.folder}", exist_ok=True)
+    for i in range(min(args.save_n_best_hyperparameters, len(trials))):
+        params = trials[i].params
+        with open(f"{args.folder}/hyperparameters_{i + 1}.json", "w+") as json_file:
+            json_file.write(json.dumps(trials[i].params, indent=4))
+    print(f"Saved best hyperparameters to {args.folder}")
