@@ -1,4 +1,4 @@
-## Release 1.3.1a4 (WIP)
+## Release 1.3.1a5 (WIP)
 
 ### Breaking Changes
 - Dropped python 3.6 support
@@ -6,6 +6,7 @@
 ### New Features
 - Added mujoco hyperparameters
 - Added MuJoCo pre-trained agents
+- Added script to parse best hyperparameters of an optuna study
 
 ### Bug fixes
 

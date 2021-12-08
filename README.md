@@ -182,6 +182,11 @@ Distributed optimization using a shared database is also possible (see the corre
 python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage sqlite:///example.db
 ```
 
+Print and save best hyperparameters of an Optuna study:
+```
+python scripts/parse_study.py -i path/to/study.pkl --print-n-best-trials 10 --save-n-best-hyperparameters 10
+```
+
 ### Hyperparameters search space
 
 Note that the default hyperparameters used in the zoo when tuning are not always the same as the defaults provided in [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/modules/base.html). Consult the latest source code to be sure of these settings. For example:
