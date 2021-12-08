@@ -135,7 +135,6 @@ LunarLanderContinuous-v2:
 
 # Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 16
   n_timesteps: !!float 2e6
@@ -161,7 +160,6 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
 # Tuned
 AntBulletEnv-v0:
   <<: *pybullet-defaults
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   learning_rate: !!float 3e-5
   policy_kwargs: "dict(log_std_init=-1,
                        ortho_init=False,
@@ -193,7 +191,6 @@ HopperBulletEnv-v0:
 
 # Tuned
 ReacherBulletEnv-v0:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 8
   n_timesteps: !!float 1e6
