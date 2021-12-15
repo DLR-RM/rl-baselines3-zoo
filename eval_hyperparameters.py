@@ -15,7 +15,7 @@ num = sys.argv[1]
 n_evaluations = 20
 n_agents = 20
 n_envs = 4
-n_timesteps = 2000000
+n_timesteps = 25000000
 
 with open("./hyperparameter_jsons/" + "hyperparameters_" + num + ".json") as f:
     params = json.load(f)
