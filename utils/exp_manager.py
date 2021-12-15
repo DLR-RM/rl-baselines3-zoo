@@ -547,9 +547,9 @@ class ExperimentManager(object):
         env = ss.pad_action_space_v0(env)
         env = ss.frame_stack_v1(env, 3)
         env = ss.black_death_v2(env)
-        env = ss.pettingzoo_env_to_vec_env_v0(env)
+        env = ss.pettingzoo_env_to_vec_env_v1(env)
         print(n_envs)
-        env = ss.concat_vec_envs_v0(
+        env = ss.concat_vec_envs_v1(
             env, n_envs, num_cpus=4, base_class="stable_baselines3"
         )
         env = VecMonitor(env)
