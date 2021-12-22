@@ -269,14 +269,5 @@ CarRacing-v0:
   n_envs: 2
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 300000
-  batch_size: 256
-  ent_coef: 'auto'
-  gamma: 0.99
-  tau: 0.02
   train_freq: 8
   gradient_steps: 10
-  learning_starts: 1000
-  use_sde: True
-  use_sde_at_warmup: True
