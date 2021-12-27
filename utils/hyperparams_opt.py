@@ -90,13 +90,12 @@ def sample_trpo_params(trial: optuna.Trial) -> Dict[str, Any]:
     lr_schedule = "constant"
     # Uncomment to enable learning rate schedule
     # lr_schedule = trial.suggest_categorical('lr_schedule', ['linear', 'constant'])
-    n_epochs = trial.suggest_categorical("n_epochs", [1, 5, 10, 20])
-    ls_alpha = trial.suggest_categorical("ls_alpha", [0.6, 0.7, 0.8, 0.9])
-    n_critic_updates = trial.suggest_categorical("n_critic_updates", [1, 2, 3, 5, 10, 20])
-    target_kl = trial.suggest_categorical("target_kl", [0.1, 0.05, 0.01, 0.005, 0.001])
+    # line_search_shrinking_factor = trial.suggest_categorical("line_search_shrinking_factor", [0.6, 0.7, 0.8, 0.9])
+    n_critic_updates = trial.suggest_categorical("n_critic_updates", [5, 10, 20, 25, 30])
+    cg_max_steps = trial.suggest_categorical("cg_max_steps", [5, 10, 20, 25, 30])
+    # cg_damping = trial.suggest_categorical("cg_damping", [0.5, 0.2, 0.1, 0.05, 0.01])
+    target_kl = trial.suggest_categorical("target_kl", [0.1, 0.05, 0.03, 0.02, 0.01, 0.005, 0.001])
     gae_lambda = trial.suggest_categorical("gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
-    max_grad_norm = trial.suggest_categorical("max_grad_norm", [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5])
-    vf_coef = trial.suggest_uniform("vf_coef", 0, 1)
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
     # Uncomment for gSDE (continuous actions)
     # log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
@@ -128,14 +127,13 @@ def sample_trpo_params(trial: optuna.Trial) -> Dict[str, Any]:
         "n_steps": n_steps,
         "batch_size": batch_size,
         "gamma": gamma,
-        "ls_alpha": ls_alpha,
+        # "cg_damping": cg_damping,
+        "cg_max_steps": cg_max_steps,
+        # "line_search_shrinking_factor": line_search_shrinking_factor,
         "n_critic_updates": n_critic_updates,
         "target_kl": target_kl,
         "learning_rate": learning_rate,
-        "n_epochs": n_epochs,
         "gae_lambda": gae_lambda,
-        "max_grad_norm": max_grad_norm,
-        "vf_coef": vf_coef,
         # "sde_sample_freq": sde_sample_freq,
         "policy_kwargs": dict(
             # log_std_init=log_std_init,
