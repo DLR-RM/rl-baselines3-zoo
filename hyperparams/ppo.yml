@@ -566,13 +566,23 @@ Walker2d-v3:
   vf_coef: 0.871923
 
 cwcf-v0:
+  n_envs: 16
+  gamma: 1.
   normalize: false
-  policy: 'constrainedz'
-  n_timesteps: 1000
-  learning_rate: 0.00066
-  max_grad_norm: 3.9
-  n_steps: 1024
-  gae_lambda: 1.89e-08
-  ent_coef: 0.73
-  vf_coef: 0.00037
-  clip_range: 0.4999898
+  policy: 'constrained'
+  batch_size: 1024
+  learning_rate: lr_0.0001
+#  lr_schedule: 'linear'
+  max_grad_norm: 1.0
+  n_epochs: 20
+  n_steps: 128
+  n_timesteps: 1024000
+  gae_lambda: 0.6
+  ent_coef: 0.075
+  vf_coef: 0.8
+  clip_range: 0.6
+  policy_kwargs: "dict(
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[256, 256, 256]
+                   )"

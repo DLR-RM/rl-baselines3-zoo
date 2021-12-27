@@ -45,7 +45,6 @@ from utils.hyperparams_opt import HYPERPARAMS_SAMPLER
 from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 from utils.policies import ConstrainedActorCriticPolicy
 
-
 class ExperimentManager(object):
     """
     Experiment manager: read the hyperparameters,
@@ -67,6 +66,7 @@ class ExperimentManager(object):
         save_freq: int = -1,
         hyperparams: Optional[Dict[str, Any]] = None,
         env_kwargs: Optional[Dict[str, Any]] = None,
+        eval_env_kwargs: Optional[Dict[str, Any]] = None,
         trained_agent: str = "",
         optimize_hyperparameters: bool = False,
         storage: Optional[str] = None,
@@ -87,6 +87,7 @@ class ExperimentManager(object):
         vec_env_type: str = "dummy",
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
+        timeout: int = 8*60*60
     ):
         super(ExperimentManager, self).__init__()
         self.algo = algo
@@ -94,6 +95,7 @@ class ExperimentManager(object):
         # Custom params
         self.custom_hyperparams = hyperparams
         self.env_kwargs = {} if env_kwargs is None else env_kwargs
+        self.eval_env_kwargs = {} if eval_env_kwargs is None else eval_env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False
         self.normalize_kwargs = {}
@@ -152,6 +154,7 @@ class ExperimentManager(object):
             self.log_path, f"{self.env_id}_{get_latest_run_id(self.log_path, self.env_id) + 1}{uuid_str}"
         )
         self.params_path = f"{self.save_path}/{self.env_id}"
+        self.timeout = timeout
 
     def setup_experiment(self) -> Optional[BaseAlgorithm]:
         """
@@ -508,13 +511,16 @@ class ExperimentManager(object):
         if "Neck" in self.env_id or self.is_robotics_env(self.env_id) or "parking-v0" in self.env_id:
             monitor_kwargs = dict(info_keywords=("is_success",))
 
+        # Для eval env используются отдельные параметры
+        env_kwargs = self.eval_env_kwargs if eval_env else self.env_kwargs
+
         # On most env, SubprocVecEnv does not help and is quite memory hungry
         # therefore we use DummyVecEnv by default
         env = make_vec_env(
             env_id=self.env_id,
             n_envs=n_envs,
             seed=self.seed,
-            env_kwargs=self.env_kwargs,
+            env_kwargs=env_kwargs,
             monitor_dir=log_dir,
             wrapper_class=self.env_wrapper,
             vec_env_cls=self.vec_env_class,
@@ -715,7 +721,7 @@ class ExperimentManager(object):
         )
 
         try:
-            study.optimize(self.objective, n_trials=self.n_trials, n_jobs=self.n_jobs)
+            study.optimize(self.objective, n_trials=self.n_trials, n_jobs=self.n_jobs, timeout=self.timeout)
         except KeyboardInterrupt:
             pass
 

@@ -106,6 +106,9 @@ if __name__ == "__main__":  # noqa: C901
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
     )
     parser.add_argument(
+        "--eval-env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the evaluational env constructor"
+    )
+    parser.add_argument(
         "-params",
         "--hyperparams",
         type=str,
@@ -165,6 +168,7 @@ if __name__ == "__main__":  # noqa: C901
         args.save_freq,
         args.hyperparams,
         args.env_kwargs,
+        args.eval_env_kwargs,
         args.trained_agent,
         args.optimize_hyperparameters,
         args.storage,
