@@ -25,7 +25,15 @@ from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckA
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.utils import constant_fn
-from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize, VecTransposeImage
+from stable_baselines3.common.vec_env import (
+    DummyVecEnv,
+    SubprocVecEnv,
+    VecEnv,
+    VecFrameStack,
+    VecNormalize,
+    VecTransposeImage,
+    is_vecenv_wrapped,
+)
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401
@@ -99,6 +107,7 @@ class ExperimentManager(object):
         # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
 
         # Callbacks
+        self.specified_callbacks = []
         self.callbacks = []
         self.save_freq = save_freq
         self.eval_freq = eval_freq
@@ -347,6 +356,7 @@ class ExperimentManager(object):
 
         callbacks = get_callback_list(hyperparams)
         if "callback" in hyperparams.keys():
+            self.specified_callbacks = hyperparams["callback"]
             del hyperparams["callback"]
 
         return hyperparams, env_wrapper, callbacks
@@ -423,16 +433,18 @@ class ExperimentManager(object):
 
     @staticmethod
     def is_atari(env_id: str) -> bool:
-        return "AtariEnv" in gym.envs.registry.env_specs[env_id].entry_point
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point
+        return "AtariEnv" in str(entry_point)
 
     @staticmethod
     def is_bullet(env_id: str) -> bool:
-        return "pybullet_envs" in gym.envs.registry.env_specs[env_id].entry_point
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point
+        return "pybullet_envs" in str(entry_point)
 
     @staticmethod
     def is_robotics_env(env_id: str) -> bool:
         entry_point = gym.envs.registry.env_specs[env_id].entry_point
-        return "gym.envs.robotics" in entry_point or "panda_gym.envs" in entry_point
+        return "gym.envs.robotics" in str(entry_point) or "panda_gym.envs" in str(entry_point)
 
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """
@@ -516,12 +528,25 @@ class ExperimentManager(object):
             if self.verbose > 0:
                 print(f"Stacking {n_stack} frames")
 
-        # Wrap if needed to re-order channels
-        # (switch from channel last to channel first convention)
-        if is_image_space(env.observation_space) and not is_image_space_channels_first(env.observation_space):
-            if self.verbose > 0:
-                print("Wrapping into a VecTransposeImage")
-            env = VecTransposeImage(env)
+        if not is_vecenv_wrapped(env, VecTransposeImage):
+            wrap_with_vectranspose = False
+            if isinstance(env.observation_space, gym.spaces.Dict):
+                # If even one of the keys is a image-space in need of transpose, apply transpose
+                # If the image spaces are not consistent (for instance one is channel first,
+                # the other channel last), VecTransposeImage will throw an error
+                for space in env.observation_space.spaces.values():
+                    wrap_with_vectranspose = wrap_with_vectranspose or (
+                        is_image_space(space) and not is_image_space_channels_first(space)
+                    )
+            else:
+                wrap_with_vectranspose = is_image_space(env.observation_space) and not is_image_space_channels_first(
+                    env.observation_space
+                )
+
+            if wrap_with_vectranspose:
+                if self.verbose >= 1:
+                    print("Wrapping the env in a VecTransposeImage.")
+                env = VecTransposeImage(env)
 
         return env
 
@@ -613,6 +638,7 @@ class ExperimentManager(object):
         path = None
         if self.optimization_log_path is not None:
             path = os.path.join(self.optimization_log_path, f"trial_{str(trial.number)}")
+        callbacks = get_callback_list({"callback": self.specified_callbacks})
         eval_callback = TrialEvalCallback(
             eval_env,
             trial,
@@ -622,9 +648,10 @@ class ExperimentManager(object):
             eval_freq=optuna_eval_freq,
             deterministic=self.deterministic_eval,
         )
+        callbacks.append(eval_callback)
 
         try:
-            model.learn(self.n_timesteps, callback=eval_callback)
+            model.learn(self.n_timesteps, callback=callbacks)
             # Free memory
             model.env.close()
             eval_env.close()

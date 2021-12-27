@@ -79,6 +79,31 @@ Plot evaluation reward curve for TQC, SAC and TD3 on the HalfCheetah and Ant PyB
 python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f rl-trained-agents/
 ```
 
+## Plot with the rliable library
+
+The RL zoo integrates some of [rliable](https://agarwl.github.io/rliable/) library features.
+You can find a visual explanation of the tools used by rliable in this [blog post](https://araffin.github.io/post/rliable/).
+
+First, you need to install [rliable](https://github.com/google-research/rliable).
+
+Note: Python 3.7+ is required in that case.
+
+Then export your results to a file using the `all_plots.py` script (see above):
+```
+python scripts/all_plots.py -a sac td3 tqc --env Half Ant -f logs/ -o logs/offpolicy
+```
+
+You can now use the `plot_from_file.py` script with `--rliable`, `--versus` and `--iqm` arguments:
+```
+python scripts/plot_from_file.py -i logs/offpolicy.pkl --skip-timesteps --rliable --versus -l SAC TD3 TQC
+```
+
+Note: you may need to edit `plot_from_file.py`, in particular the `env_key_to_env_id` dictionary
+and the `scripts/score_normalization.py` which stores min and max score for each environment.
+
+Remark: plotting with the `--rliable` option is usually slow as confidence interval need to be computed using bootstrap sampling.
+
+
 ## Custom Environment
 
 The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml`).
@@ -142,8 +167,7 @@ Not all hyperparameters are tuned, and tuning enforces certain default hyperpara
 
 Hyperparameters not specified in [utils/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/utils/hyperparams_opt.py) are taken from the associated YAML file and fallback to the default values of SB3 if not present.
 
-Note: hyperparameters search is not implemented for DQN for now.
-when using SuccessiveHalvingPruner ("halving"), you must specify `--n-jobs > 1`
+Note: when using SuccessiveHalvingPruner ("halving"), you must specify `--n-jobs > 1`
 
 Budget of 1000 trials with a maximum of 50000 steps:
 
@@ -155,6 +179,11 @@ python train.py --algo ppo --env MountainCar-v0 -n 50000 -optimize --n-trials 10
 Distributed optimization using a shared database is also possible (see the corresponding [Optuna documentation](https://optuna.readthedocs.io/en/stable/tutorial/10_key_features/004_distributed.html)):
 ```
 python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage sqlite:///example.db
+```
+
+Print and save best hyperparameters of an Optuna study:
+```
+python scripts/parse_study.py -i path/to/study.pkl --print-n-best-trials 10 --save-n-best-hyperparameters 10
 ```
 
 ### Hyperparameters search space
@@ -319,7 +348,7 @@ Additional Atari Games (to be completed):
 ### PyBullet Environments
 
 See https://github.com/bulletphysics/bullet3/tree/master/examples/pybullet/gym/pybullet_envs.
-Similar to [MuJoCo Envs](https://gym.openai.com/envs/#mujoco) but with a free simulator: pybullet. We are using `BulletEnv-v0` version.
+Similar to [MuJoCo Envs](https://gym.openai.com/envs/#mujoco) but with a ~free~ (MuJoCo 2.1.0+ is now free!) easy to install simulator: pybullet. We are using `BulletEnv-v0` version.
 
 Note: those environments are derived from [Roboschool](https://github.com/openai/roboschool) and are harder than the Mujoco version (see [Pybullet issue](https://github.com/bulletphysics/bullet3/issues/1718#issuecomment-393198883))
 
@@ -343,6 +372,16 @@ PyBullet Envs (Continued)
 | TD3      | | | | |
 | TQC      | | | | |
 
+### MuJoCo Environments
+
+|  RL Algo |  Walker2d | HalfCheetah | Ant | Swimmer |  Hopper | Humanoid |
+|----------|-----------|-------------|-----|---------|---------|----------|
+| A2C      |  | :heavy_check_mark: |  | :heavy_check_mark: | :heavy_check_mark: | |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| DDPG     |  |  |  |  |  | |
+| SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| TD3      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| TQC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 ### Robotics Environments
 
@@ -362,7 +401,7 @@ We used the v1 environments.
 
 See https://github.com/qgallouedec/panda-gym/.
 
-Similar to [MuJoCo Robotics Envs](https://gym.openai.com/envs/#robotics) but with a free simulator: pybullet.
+Similar to [MuJoCo Robotics Envs](https://gym.openai.com/envs/#robotics) but with a ~free~ easy to install simulator: pybullet.
 
 We used the v1 environments.
 

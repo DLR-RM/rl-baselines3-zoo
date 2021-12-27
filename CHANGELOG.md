@@ -1,11 +1,56 @@
-## Release 1.2.0a0 (WIP)
+## Release 1.3.1a5 (WIP)
 
 ### Breaking Changes
+- Dropped python 3.6 support
+
+### New Features
+- Added mujoco hyperparameters
+- Added MuJoCo pre-trained agents
+- Added script to parse best hyperparameters of an optuna study
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
+## Release 1.3.0 (2021-10-23)
+
+**rliable plots and bug fixes**
+
+**WARNING: This version will be the last one supporting Python 3.6 (end of life in Dec 2021). We highly recommended you to upgrade to Python >= 3.7.**
+
+### Breaking Changes
+- Upgrade to panda-gym 1.1.1
+- Upgrade to Stable-Baselines3 (SB3) >= 1.3.0
+- Upgrade to sb3-contrib >= 1.3.0
+
+### New Features
+- Added support for using rliable for performance comparison
+
+### Bug fixes
+- Fix training with Dict obs and channel last images
+
+### Documentation
+
+### Other
+- Updated docker image
+- constrained gym version: gym>=0.17,<0.20
+- Better hyperparameters for A2C/PPO on Pendulum
+
+## Release 1.2.0 (2021-09-08)
+
+### Breaking Changes
+- Upgrade to Stable-Baselines3 (SB3) >= 1.2.0
+- Upgrade to sb3-contrib >= 1.2.0
 
 ### New Features
 
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)
+- Fix `TypeError` for `gym.Env` class entry points in `ExperimentManager` (@schuderer)
+- Fix usage of callbacks during hyperparameter optimization (@SammyRamone)
 
 ### Documentation
 
