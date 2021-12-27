@@ -36,7 +36,6 @@ LunarLander-v2:
 
 # Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 2
   n_timesteps: !!float 2e6
@@ -79,6 +78,32 @@ ReacherBulletEnv-v0:
                        activation_fn=nn.ReLU,
                        net_arch=[dict(pi=[256, 256], vf=[256, 256])]
                        )"
+
+# === Mujoco Envs ===
+# To be tuned
+HalfCheetah-v3: &mujoco-defaults
+  <<: *pybullet-defaults
+  n_timesteps: !!float 1e6
+  n_critic_updates: 20
+  cg_max_steps: 25
+
+# Tuned
+Ant-v3:
+  <<: *mujoco-defaults
+# Tuned
+Hopper-v3:
+  <<: *mujoco-defaults
+# Tuned
+Walker2d-v3:
+  <<: *mujoco-defaults
+
+Humanoid-v3:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+# Tuned
+Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
 
 BipedalWalker-v3:
   <<: *pybullet-defaults
