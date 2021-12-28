@@ -80,16 +80,17 @@ ReacherBulletEnv-v0:
                        )"
 
 # === Mujoco Envs ===
-# To be tuned
-HalfCheetah-v3: &mujoco-defaults
+# Tuned
+Ant-v3: &mujoco-defaults
   <<: *pybullet-defaults
   n_timesteps: !!float 1e6
   n_critic_updates: 20
   cg_max_steps: 25
 
 # Tuned
-Ant-v3:
+HalfCheetah-v3:
   <<: *mujoco-defaults
+  target_kl: 0.04
 # Tuned
 Hopper-v3:
   <<: *mujoco-defaults

@@ -164,3 +164,8 @@ and also allow users to have access to pretrained agents.*
 |tqc  |Walker2DBulletEnv-v0       |   2508.934|   614.624|1M         |        149572|          159|
 |tqc  |Walker2d-v3                |   4380.720|   500.489|1M         |        149606|          152|
 |tqc  |parking-v0                 |     -6.762|     2.690|100k       |        149983|         7528|
+|trpo |Ant-v3                     |   4982.301|   663.761|1M         |        149909|          153|
+|trpo |HalfCheetah-v3             |   1785.476|    68.672|1M         |        150000|          150|
+|trpo |Hopper-v3                  |   3618.386|   356.768|1M         |        149575|          152|
+|trpo |Swimmer-v3                 |    365.663|     2.087|1M         |        150000|          150|
+|trpo |Walker2d-v3                |   4933.148|  1452.538|1M         |        149054|          163|
