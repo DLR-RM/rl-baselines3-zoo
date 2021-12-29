@@ -2,7 +2,7 @@
 
 ### Breaking Changes
 - Dropped python 3.6 support
-- Upgrade to Stable-Baselines3 (SB3) >= 1.3.1a7
+- Upgrade to Stable-Baselines3 (SB3) >= 1.3.1a8
 - Upgrade to sb3-contrib >= 1.3.1a7
 
 ### New Features
