@@ -1,0 +1,217 @@
+# Tuned
+CartPole-v1:
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 512
+  batch_size: 512
+  cg_damping: !!float 1e-3
+  gae_lambda: 0.98
+  gamma: 0.99
+  learning_rate: !!float 1e-3
+  n_critic_updates: 20
+
+# Tuned
+Pendulum-v0:
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  gamma: 0.9
+  n_critic_updates: 15
+  use_sde: True
+  sde_sample_freq: 4
+
+# Tuned
+LunarLander-v2:
+  n_envs: 2
+  n_timesteps: !!float 2e5
+  policy: 'MlpPolicy'
+  n_steps: 512
+  cg_damping: 0.01
+  gae_lambda: 0.98
+  gamma: 0.99
+  learning_rate: !!float 1e-3
+  n_critic_updates: 15
+
+# Tuned
+LunarLanderContinuous-v2:
+  normalize: true
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  n_critic_updates: 20
+
+# Tuned
+Acrobot-v1:
+  normalize: true
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 1024
+
+# Tuned
+MountainCar-v0:
+  normalize: true
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  n_critic_updates: 20
+
+# Tuned
+MountainCarContinuous-v0:
+  normalize: True
+  n_envs: 2
+  n_timesteps: 50000
+  policy: 'MlpPolicy'
+  use_sde: True
+  sde_sample_freq: 4
+
+# === Pybullet Envs ===
+
+# Tuned
+HalfCheetahBulletEnv-v0: &pybullet-defaults
+  normalize: true
+  n_envs: 2
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  batch_size: 128
+  n_steps: 1024
+  gamma: 0.99
+  gae_lambda: 0.95
+  sub_sampling_factor: 1
+  cg_max_steps: 25
+  cg_damping: 0.1
+  n_critic_updates: 20
+  learning_rate: !!float 1e-3
+
+# Tuned
+AntBulletEnv-v0:
+  <<: *pybullet-defaults
+
+# To be tuned
+Walker2DBulletEnv-v0:
+  <<: *pybullet-defaults
+  # cg_max_steps: 20
+  # policy_kwargs: "dict(log_std_init=-2,
+  #                      ortho_init=False,
+  #                      activation_fn=nn.ReLU,
+  #                      net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+  #                      )"
+
+# Tuned
+HopperBulletEnv-v0:
+  <<: *pybullet-defaults
+  n_timesteps: !!float 1e6
+
+# Tuned
+ReacherBulletEnv-v0:
+  <<: *pybullet-defaults
+  n_timesteps: !!float 3e5
+  policy_kwargs: "dict(log_std_init=-1,
+                       ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       )"
+
+# === Mujoco Envs ===
+# Tuned
+Ant-v3: &mujoco-defaults
+  <<: *pybullet-defaults
+  n_timesteps: !!float 1e6
+
+# Tuned
+HalfCheetah-v3:
+  <<: *mujoco-defaults
+  target_kl: 0.04
+# Tuned
+Hopper-v3:
+  <<: *mujoco-defaults
+# Tuned
+Walker2d-v3:
+  <<: *mujoco-defaults
+
+Humanoid-v3:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+# Tuned
+Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+
+# Tuned
+BipedalWalker-v3:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 1e6
+
+BipedalWalkerHardcore-v3:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 1e7
+
+# To be tuned
+MinitaurBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
+
+
+# To be tuned
+MinitaurBulletDuckEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
+
+# To be tuned
+HumanoidBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 1e7
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
+
+# To be tuned
+InvertedDoublePendulumBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
+
+# To be tuned
+InvertedPendulumSwingupBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  learning_rate: 2.5e-4
