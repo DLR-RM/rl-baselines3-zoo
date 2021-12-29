@@ -35,6 +35,43 @@ LunarLander-v2:
   n_critic_updates: 15
 
 # Tuned
+LunarLanderContinuous-v2:
+  normalize: true
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  n_critic_updates: 20
+
+# Tuned
+Acrobot-v1:
+  normalize: true
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 1024
+
+# Tuned
+MountainCar-v0:
+  normalize: true
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  n_critic_updates: 20
+
+# Tuned
+MountainCarContinuous-v0:
+  normalize: True
+  n_envs: 2
+  n_timesteps: 50000
+  policy: 'MlpPolicy'
+  use_sde: True
+  sde_sample_freq: 4
+
+# === Pybullet Envs ===
+
+# Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
   normalize: true
   n_envs: 2
@@ -45,9 +82,9 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   gamma: 0.99
   gae_lambda: 0.95
   sub_sampling_factor: 1
-  cg_max_steps: 15
+  cg_max_steps: 25
   cg_damping: 0.1
-  n_critic_updates: 10
+  n_critic_updates: 20
   learning_rate: !!float 1e-3
 
 # Tuned
@@ -57,7 +94,7 @@ AntBulletEnv-v0:
 # To be tuned
 Walker2DBulletEnv-v0:
   <<: *pybullet-defaults
-  cg_max_steps: 20
+  # cg_max_steps: 20
   # policy_kwargs: "dict(log_std_init=-2,
   #                      ortho_init=False,
   #                      activation_fn=nn.ReLU,
@@ -84,8 +121,6 @@ ReacherBulletEnv-v0:
 Ant-v3: &mujoco-defaults
   <<: *pybullet-defaults
   n_timesteps: !!float 1e6
-  n_critic_updates: 20
-  cg_max_steps: 25
 
 # Tuned
 HalfCheetah-v3:
@@ -106,15 +141,14 @@ Swimmer-v3:
   <<: *mujoco-defaults
   gamma: 0.9999
 
+# Tuned
 BipedalWalker-v3:
-  <<: *pybullet-defaults
+  <<: *mujoco-defaults
   n_timesteps: !!float 1e6
 
-
 BipedalWalkerHardcore-v3:
-  <<: *pybullet-defaults
+  <<: *mujoco-defaults
   n_timesteps: !!float 1e7
-  cg_max_steps: 25
 
 # To be tuned
 MinitaurBulletEnv-v0:

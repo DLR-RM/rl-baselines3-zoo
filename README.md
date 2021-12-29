@@ -330,7 +330,7 @@ Additional Atari Games (to be completed):
 | SAC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | TD3      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | TQC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
-| TRPO     |   |  |  |  |  |
+| TRPO     | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
 ### Box2D Environments
@@ -345,7 +345,7 @@ Additional Atari Games (to be completed):
 | SAC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
 | TD3      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
 | TQC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
-| TRPO     | | | | | |
+| TRPO     | | :heavy_check_mark: | :heavy_check_mark: | | |
 
 ### PyBullet Environments
 
