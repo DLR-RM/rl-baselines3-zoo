@@ -291,7 +291,7 @@ The previous command will create a `mp4` file. To convert this file to `gif` for
 python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
 ```
 
-## Current Collection: 100+ Trained Agents!
+## Current Collection: 150+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
 
@@ -362,7 +362,7 @@ Note: those environments are derived from [Roboschool](https://github.com/openai
 | SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | TD3      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | TQC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
-| TRPO     |  |  |  |  |  | |
+| TRPO     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 
 PyBullet Envs (Continued)
 
