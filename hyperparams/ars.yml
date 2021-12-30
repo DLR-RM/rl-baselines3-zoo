@@ -1,58 +1,68 @@
 CartPole-v1:
   n_envs: 2
-  n_timesteps: !!float 1e5
+  n_timesteps: !!float 2e5
   policy: 'LinearPolicy'
 
 Pendulum-v0:
   n_envs: 2
-  n_timesteps: !!float 1e5
+  n_timesteps: !!float 1e6
   policy: 'LinearPolicy'
 
 LunarLander-v2:
   n_envs: 2
-  n_timesteps: !!float 1e5
+  n_timesteps: !!float 1e6
   policy: 'LinearPolicy'
 
 LunarLanderContinuous-v2:
   normalize: true
-  n_timesteps: !!float 1e5
+  n_timesteps: !!float 1e6
   policy: 'LinearPolicy'
 
-# Tuned
 Acrobot-v1:
   normalize: true
   n_envs: 2
-  n_timesteps: !!float 1e5
+  n_timesteps: !!float 1e6
   policy: 'LinearPolicy'
 
 MountainCar-v0:
   normalize: true
-  n_envs: 2
-  n_timesteps: !!float 1e5
+  n_envs: 4
+  n_timesteps: !!float 1e6
   policy: 'LinearPolicy'
 
 MountainCarContinuous-v0:
   normalize: True
-  n_envs: 2
-  n_timesteps: !!float 1e5
+  n_envs: 4
+  n_timesteps: !!float 1e6
   policy: 'LinearPolicy'
+  n_delta: 16
 
 # === Pybullet Envs ===
 
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  normalize: true
-  n_envs: 2
+  # normalize: true
+  normalize: "{'norm_obs': True, 'norm_reward': False}"
+  n_envs: 1
   n_timesteps: !!float 2e6
   policy: 'LinearPolicy'
+  n_delta: 32
+  n_top: 4
+  learning_rate: 0.02
+  delta_std: 0.03
 
 AntBulletEnv-v0:
   <<: *pybullet-defaults
+  n_delta: 60
+  n_top: 20
 
 Walker2DBulletEnv-v0:
   <<: *pybullet-defaults
 
 HopperBulletEnv-v0:
   <<: *pybullet-defaults
+  n_envs: 4
+  n_delta: 8
+  n_top: 4
 
 ReacherBulletEnv-v0:
   <<: *pybullet-defaults
@@ -62,6 +72,7 @@ ReacherBulletEnv-v0:
 HalfCheetah-v3: &mujoco-defaults
   <<: *pybullet-defaults
   # n_timesteps: !!float 1e6
+  n_envs: 4
 
 Ant-v3:
   <<: *mujoco-defaults
