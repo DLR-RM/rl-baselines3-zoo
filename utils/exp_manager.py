@@ -166,6 +166,7 @@ class ExperimentManager(object):
         self.create_callbacks()
 
         # Create env to have access to action space for action noise
+        n_envs = 1 if self.algo == "ars" else self.n_envs
         env = self.create_envs(self.n_envs, no_log=False)
 
         self._hyperparams = self._preprocess_action_noise(hyperparams, saved_hyperparams, env)
@@ -197,6 +198,10 @@ class ExperimentManager(object):
 
         if len(self.callbacks) > 0:
             kwargs["callback"] = self.callbacks
+
+        # Special case for ARS
+        if self.algo == "ars":
+            kwargs["envs"] = [self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)]
 
         try:
             model.learn(self.n_timesteps, **kwargs)
