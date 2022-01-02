@@ -329,20 +329,24 @@ MiniGrid-FourRooms-v0:
 
 CarRacing-v0:
   env_wrapper:
-    # - stable_baselines3.common.atari_wrappers.MaxAndSkipEnv:
-    #     skip: 4
     # - gym.wrappers.RescaleAction:
     #     a: -1.0
     #     b: 1.0
     - utils.wrappers.FrameSkip:
         skip: 2
+    # - ae.wrapper.AutoencoderWrapper:
+    #     ae_path: "logs/car_racing_rgb_160.pkl"
+    # - utils.wrappers.HistoryWrapper:
+    #     horizon: 2
     - gym.wrappers.resize_observation.ResizeObservation:
         shape: 64
     - gym.wrappers.gray_scale_observation.GrayScaleObservation:
         keep_dim: true
   frame_stack: 2
+  # normalize: True
   n_envs: 8
   n_timesteps: !!float 2e6
+  # policy: 'MlpLstmPolicy'
   policy: 'CnnLstmPolicy'
   batch_size: 128
   n_steps: 512
@@ -361,7 +365,6 @@ CarRacing-v0:
                        enable_critic_lstm=False,
                        lstm_hidden_size=256,
                        )"
-
 
 # === Mujoco Envs ===
 # HalfCheetah-v3: &mujoco-defaults
