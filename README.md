@@ -167,8 +167,7 @@ Not all hyperparameters are tuned, and tuning enforces certain default hyperpara
 
 Hyperparameters not specified in [utils/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/utils/hyperparams_opt.py) are taken from the associated YAML file and fallback to the default values of SB3 if not present.
 
-Note: hyperparameters search is not implemented for DQN for now.
-when using SuccessiveHalvingPruner ("halving"), you must specify `--n-jobs > 1`
+Note: when using SuccessiveHalvingPruner ("halving"), you must specify `--n-jobs > 1`
 
 Budget of 1000 trials with a maximum of 50000 steps:
 
@@ -292,7 +291,7 @@ The previous command will create a `mp4` file. To convert this file to `gif` for
 python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
 ```
 
-## Current Collection: 100+ Trained Agents!
+## Current Collection: 150+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
 
@@ -331,6 +330,7 @@ Additional Atari Games (to be completed):
 | SAC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | TD3      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | TQC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
+| TRPO     | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
 ### Box2D Environments
@@ -345,6 +345,7 @@ Additional Atari Games (to be completed):
 | SAC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
 | TD3      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
 | TQC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
+| TRPO     | | :heavy_check_mark: | :heavy_check_mark: | | |
 
 ### PyBullet Environments
 
@@ -361,6 +362,7 @@ Note: those environments are derived from [Roboschool](https://github.com/openai
 | SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | TD3      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | TQC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| TRPO     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 
 PyBullet Envs (Continued)
 
@@ -383,6 +385,7 @@ PyBullet Envs (Continued)
 | SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | TD3      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | TQC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| TRPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |  |
 
 ### Robotics Environments
 
