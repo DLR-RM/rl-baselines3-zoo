@@ -44,30 +44,51 @@ MountainCarContinuous-v0:
 
 # === Pybullet Envs ===
 
+# TO be tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  # normalize: true
   normalize: "dict(norm_obs=True, norm_reward=False)"
   n_envs: 1
-  n_timesteps: !!float 2e6
   policy: 'LinearPolicy'
+  n_timesteps: !!float 1.25e7
+  learning_rate: !!float 0.02
+  delta_std: !!float 0.03
   n_delta: 32
   n_top: 4
-  learning_rate: 0.02
-  delta_std: 0.03
+  alive_bonus_offset: 0
+  normalize: "dict(norm_obs=True, norm_reward=False)"
 
 AntBulletEnv-v0:
-  <<: *pybullet-defaults
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.015
+  delta_std: !!float 0.025
   n_delta: 60
   n_top: 20
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
 
 Walker2DBulletEnv-v0:
   <<: *pybullet-defaults
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.03
+  delta_std: !!float 0.025
+  n_delta: 40
+  n_top: 30
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
 
 HopperBulletEnv-v0:
-  <<: *pybullet-defaults
-  n_envs: 4
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7e6
+  learning_rate: !!float 0.01
+  delta_std: !!float 0.025
   n_delta: 8
   n_top: 4
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
 
 ReacherBulletEnv-v0:
   <<: *pybullet-defaults
@@ -147,6 +168,7 @@ BipedalWalker-v3:
   <<: *pybullet-defaults
   n_timesteps: !!float 1e6
 
+# TO Be Tuned
 BipedalWalkerHardcore-v3:
   <<: *pybullet-defaults
-  n_timesteps: !!float 1e7
+  n_timesteps: !!float 10e7
