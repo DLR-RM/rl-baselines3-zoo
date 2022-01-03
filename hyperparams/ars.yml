@@ -166,9 +166,15 @@ Humanoid-v3:
 
 BipedalWalker-v3:
   <<: *pybullet-defaults
-  n_timesteps: !!float 1e6
+  n_timesteps: !!float 1e7
+  n_delta: 16
+  n_top: 8
+  alive_bonus_offset: -0.1
 
 # TO Be Tuned
 BipedalWalkerHardcore-v3:
   <<: *pybullet-defaults
   n_timesteps: !!float 10e7
+  n_delta: 16
+  n_top: 8
+  alive_bonus_offset: -0.1
