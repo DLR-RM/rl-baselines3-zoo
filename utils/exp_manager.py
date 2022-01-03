@@ -15,6 +15,7 @@ from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
 from optuna.visualization import plot_optimization_history, plot_param_importances
+from sb3_contrib.common.vec_env import AsyncEval
 
 # For using HER with GoalEnv
 from stable_baselines3 import HerReplayBuffer  # noqa: F401
@@ -201,7 +202,11 @@ class ExperimentManager(object):
 
         # Special case for ARS
         if self.algo == "ars":
-            kwargs["envs"] = [self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)]
+
+            def make_vec_venv_ars():
+                return self.create_envs(n_envs=1, no_log=True)
+
+            kwargs["async_eval"] = AsyncEval([make_vec_venv_ars for _ in range(self.n_envs)], model.policy)
 
         try:
             model.learn(self.n_timesteps, **kwargs)
