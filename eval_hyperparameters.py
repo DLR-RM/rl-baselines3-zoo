@@ -13,7 +13,7 @@ from stable_baselines3.common.preprocessing import (
 
 num = sys.argv[1]
 n_evaluations = 20
-n_agents = 20
+n_agents = 4
 n_envs = 4
 n_timesteps = 25000000
 
@@ -79,7 +79,7 @@ for i in range(10):
         print(mean_reward)
         print(std_reward)
         all_mean_rewards.append(mean_reward)
-        if mean_reward > 90:
+        if mean_reward > 1:
             model.save(
                 "./mature_policies/"
                 + str(num)
