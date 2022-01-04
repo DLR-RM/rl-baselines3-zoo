@@ -168,7 +168,7 @@ class ExperimentManager(object):
 
         # Create env to have access to action space for action noise
         n_envs = 1 if self.algo == "ars" else self.n_envs
-        env = self.create_envs(self.n_envs, no_log=False)
+        env = self.create_envs(n_envs, no_log=False)
 
         self._hyperparams = self._preprocess_action_noise(hyperparams, saved_hyperparams, env)
 
@@ -202,11 +202,7 @@ class ExperimentManager(object):
 
         # Special case for ARS
         if self.algo == "ars":
-
-            def make_vec_venv_ars():
-                return self.create_envs(n_envs=1, no_log=True)
-
-            kwargs["async_eval"] = AsyncEval([make_vec_venv_ars for _ in range(self.n_envs)], model.policy)
+            kwargs["async_eval"] = AsyncEval([lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy)
 
         try:
             model.learn(self.n_timesteps, **kwargs)
@@ -591,8 +587,7 @@ class ExperimentManager(object):
         if sampler_method == "random":
             sampler = RandomSampler(seed=self.seed)
         elif sampler_method == "tpe":
-            # TODO: try with multivariate=True
-            sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed)
+            sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed, multivariate=True)
         elif sampler_method == "skopt":
             # cf https://scikit-optimize.github.io/#skopt.Optimizer
             # GP: gaussian process
@@ -628,8 +623,11 @@ class ExperimentManager(object):
         sampled_hyperparams = HYPERPARAMS_SAMPLER[self.algo](trial)
         kwargs.update(sampled_hyperparams)
 
+        n_envs = 1 if self.algo == "ars" else self.n_envs
+        env = self.create_envs(n_envs, no_log=True)
+
         model = ALGOS[self.algo](
-            env=self.create_envs(self.n_envs, no_log=True),
+            env=env,
             tensorboard_log=None,
             # We do not seed the trial
             seed=None,
@@ -660,8 +658,13 @@ class ExperimentManager(object):
         )
         callbacks.append(eval_callback)
 
+        learn_kwargs = {}
+        # Special case for ARS
+        if self.algo == "ars":
+            learn_kwargs["async_eval"] = AsyncEval([lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy)
+
         try:
-            model.learn(self.n_timesteps, callback=callbacks)
+            model.learn(self.n_timesteps, callback=callbacks, **learn_kwargs)
             # Free memory
             model.env.close()
             eval_env.close()

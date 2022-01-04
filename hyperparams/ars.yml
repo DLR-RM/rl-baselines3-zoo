@@ -5,7 +5,7 @@ CartPole-v1:
 
 Pendulum-v0:
   n_envs: 1
-  n_timesteps: !!float 5e6
+  n_timesteps: !!float 1e6
   policy: 'LinearPolicy'
   normalize: "dict(norm_obs=True, norm_reward=False)"
   n_delta: 12
