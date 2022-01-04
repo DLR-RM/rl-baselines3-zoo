@@ -5,11 +5,14 @@ CartPole-v1:
 
 Pendulum-v0:
   n_envs: 1
-  n_timesteps: !!float 1e6
-  policy: 'LinearPolicy'
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
   normalize: "dict(norm_obs=True, norm_reward=False)"
-  n_delta: 12
-  n_top: 4
+  learning_rate: !!float 0.018
+  n_delta: 4
+  n_top: 1
+  delta_std: 0.1
+  policy_kwargs: "dict(net_arch=[16])"
 
 LunarLander-v2:
   n_envs: 1
