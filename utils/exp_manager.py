@@ -202,7 +202,9 @@ class ExperimentManager(object):
 
         # Special case for ARS
         if self.algo == "ars":
-            kwargs["async_eval"] = AsyncEval([lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy)
+            kwargs["async_eval"] = AsyncEval(
+                [lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy
+            )
 
         try:
             model.learn(self.n_timesteps, **kwargs)
@@ -641,7 +643,7 @@ class ExperimentManager(object):
 
         optuna_eval_freq = int(self.n_timesteps / self.n_evaluations)
         # Account for parallel envs
-        optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
+        optuna_eval_freq = max(optuna_eval_freq // self.n_envs, 1)
         # Use non-deterministic eval for Atari
         path = None
         if self.optimization_log_path is not None:
@@ -661,7 +663,9 @@ class ExperimentManager(object):
         learn_kwargs = {}
         # Special case for ARS
         if self.algo == "ars":
-            learn_kwargs["async_eval"] = AsyncEval([lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy)
+            learn_kwargs["async_eval"] = AsyncEval(
+                [lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy
+            )
 
         try:
             model.learn(self.n_timesteps, callback=callbacks, **learn_kwargs)
