@@ -165,16 +165,26 @@ Humanoid-v3:
 
 
 BipedalWalker-v3:
-  <<: *pybullet-defaults
-  n_timesteps: !!float 1e7
-  n_delta: 16
-  n_top: 8
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 1e8
+  learning_rate: 0.02
+  delta_std: 0.0075
+  n_delta: 64
+  n_top: 32
   alive_bonus_offset: -0.1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[16])"
 
 # TO Be Tuned
 BipedalWalkerHardcore-v3:
-  <<: *pybullet-defaults
-  n_timesteps: !!float 10e7
-  n_delta: 16
-  n_top: 8
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 5e8
+  learning_rate: 0.02
+  delta_std: 0.0075
+  n_delta: 64
+  n_top: 32
   alive_bonus_offset: -0.1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[16])"
