@@ -1,8 +1,71 @@
-## Release 1.1.0a11 (WIP)
+## Release 1.3.1a7 (WIP)
 
 ### Breaking Changes
-- Upgrade to SB3 >= 1.1.0a11 (master version)
-- Upgrade to sb3-contrib >= 1.1.011
+- Dropped python 3.6 support
+- Upgrade to Stable-Baselines3 (SB3) >= 1.3.1a8
+- Upgrade to sb3-contrib >= 1.3.1a7
+
+### New Features
+- Added mujoco hyperparameters
+- Added MuJoCo pre-trained agents
+- Added script to parse best hyperparameters of an optuna study
+- Added TRPO support
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
+## Release 1.3.0 (2021-10-23)
+
+**rliable plots and bug fixes**
+
+**WARNING: This version will be the last one supporting Python 3.6 (end of life in Dec 2021). We highly recommended you to upgrade to Python >= 3.7.**
+
+### Breaking Changes
+- Upgrade to panda-gym 1.1.1
+- Upgrade to Stable-Baselines3 (SB3) >= 1.3.0
+- Upgrade to sb3-contrib >= 1.3.0
+
+### New Features
+- Added support for using rliable for performance comparison
+
+### Bug fixes
+- Fix training with Dict obs and channel last images
+
+### Documentation
+
+### Other
+- Updated docker image
+- constrained gym version: gym>=0.17,<0.20
+- Better hyperparameters for A2C/PPO on Pendulum
+
+## Release 1.2.0 (2021-09-08)
+
+### Breaking Changes
+- Upgrade to Stable-Baselines3 (SB3) >= 1.2.0
+- Upgrade to sb3-contrib >= 1.2.0
+
+### New Features
+
+### Bug fixes
+- Fix `--load-last-checkpoint` (@SammyRamone)
+- Fix `TypeError` for `gym.Env` class entry points in `ExperimentManager` (@schuderer)
+- Fix usage of callbacks during hyperparameter optimization (@SammyRamone)
+
+### Documentation
+
+### Other
+- Added python 3.9 to Github CI
+- Increased DQN replay buffer size for Atari games (@nikhilrayaprolu)
+
+## Release 1.1.0 (2021-07-01)
+
+### Breaking Changes
+- Upgrade to Stable-Baselines3 (SB3) >= 1.1.0
+- Upgrade to sb3-contrib >= 1.1.0
 - Add timeout handling (cf SB3 doc)
 - `HER` is now a replay buffer class and no more an algorithm
 - Removed `PlotNoiseRatioCallback`
@@ -18,10 +81,12 @@
 - Added `--load-last-checkpoint` option for the enjoy script
 - Save Optuna study object at the end of hyperparameter optimization and plot the results (`plotly` package required)
 - Allow to pass multiple folders to `scripts/plot_train.py`
+- Flag to save logs and optimal policies from each training run (@justinkterry)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
 - Fixed `get_latest_run_id()` so it works in Windows too (@NicolasHaeffner)
+- Fixed video record when using `HER` replay buffer
 
 ### Documentation
 - Updated README (dict obs are now supported)
@@ -40,6 +105,7 @@
 - Clarify n_evaluations help text (@justinkterry)
 - Simplified hyperparameters files making use of defaults
 - Added new TQC+HER agents
+- Add `panda-gym`environments (@qgallouedec)
 
 ## Release 1.0 (2021-03-17)
 

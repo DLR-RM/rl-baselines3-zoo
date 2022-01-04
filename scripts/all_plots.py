@@ -195,6 +195,7 @@ for env in args.env:  # noqa: C901
                     "std_error": std_error,
                     "last_evals": last_evals,
                     "std_error_last_eval": std_error_last_eval,
+                    "mean_per_eval": mean_per_eval,
                 }
 
                 plt.plot(timesteps / divider, mean_, label=f"{algo}-{args.labels[folder_idx]}", linewidth=3)
@@ -203,6 +204,7 @@ for env in args.env:  # noqa: C901
     plt.legend()
 
 
+# Markdown Table
 writer = pytablewriter.MarkdownTableWriter()
 writer.table_name = "results_table"
 

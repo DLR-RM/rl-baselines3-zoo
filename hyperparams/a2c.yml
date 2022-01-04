@@ -38,7 +38,7 @@ Acrobot-v1:
   policy: 'MlpPolicy'
   ent_coef: .0
 
-# Almost tuned
+# Tuned
 Pendulum-v0:
   normalize: True
   n_envs: 8
@@ -49,7 +49,7 @@ Pendulum-v0:
   n_steps: 8
   gae_lambda: 0.9
   vf_coef: 0.4
-  gamma: 0.99
+  gamma: 0.9
   use_rms_prop: True
   normalize_advantage: False
   learning_rate: lin_7e-4
@@ -124,7 +124,6 @@ BipedalWalkerHardcore-v3:
 
 # Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
@@ -159,3 +158,27 @@ HopperBulletEnv-v0:
 ReacherBulletEnv-v0:
   <<: *pybullet-defaults
   learning_rate: lin_0.0008
+
+# === Mujoco Envs ===
+
+HalfCheetah-v3: &mujoco-defaults
+  normalize: true
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+
+Ant-v3:
+  <<: *mujoco-defaults
+
+Hopper-v3:
+  <<: *mujoco-defaults
+
+Walker2d-v3:
+  <<: *mujoco-defaults
+
+Humanoid-v3:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+
+Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999

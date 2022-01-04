@@ -1,3 +1,5 @@
+import glob
+import os
 import subprocess
 
 import pytest
@@ -63,4 +65,58 @@ def test_optimize(tmp_path, sampler, pruner, experiment):
     ]
 
     return_code = subprocess.call(["python", "train.py"] + args)
+    _assert_eq(return_code, 0)
+
+
+def test_optimize_log_path(tmp_path):
+    algo, env_id = "a2c", "CartPole-v1"
+    sampler = "random"
+    pruner = "median"
+    optimization_log_path = str(tmp_path / "optim_logs")
+
+    args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id, "-params", 'policy_kwargs:"dict(net_arch=[32])"', "n_envs:1"]
+    args += [
+        "--seed",
+        "14",
+        "--log-folder",
+        tmp_path,
+        "--n-trials",
+        str(N_TRIALS),
+        "--n-jobs",
+        str(N_JOBS),
+        "--sampler",
+        sampler,
+        "--pruner",
+        pruner,
+        "--n-evaluations",
+        str(2),
+        "--n-startup-trials",
+        str(1),
+        "--optimization-log-path",
+        optimization_log_path,
+        "-optimize",
+    ]
+
+    return_code = subprocess.call(["python", "train.py"] + args)
+    _assert_eq(return_code, 0)
+    print(optimization_log_path)
+    assert os.path.isdir(optimization_log_path)
+    # Log folder of the first trial
+    assert os.path.isdir(os.path.join(optimization_log_path, "trial_1"))
+    assert os.path.isfile(os.path.join(optimization_log_path, "trial_1", "evaluations.npz"))
+
+    study_path = list(glob.glob(str(tmp_path / algo / "report_*.pkl")))[0]
+    print(study_path)
+    # Test reading best trials
+    args = [
+        "-i",
+        study_path,
+        "--print-n-best-trials",
+        str(N_TRIALS),
+        "--save-n-best-hyperparameters",
+        str(N_TRIALS),
+        "-f",
+        str(tmp_path / "best_hyperparameters"),
+    ]
+    return_code = subprocess.call(["python", "scripts/parse_study.py"] + args)
     _assert_eq(return_code, 0)

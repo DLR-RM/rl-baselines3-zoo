@@ -121,3 +121,31 @@ InvertedDoublePendulumBulletEnv-v0:
 InvertedPendulumSwingupBulletEnv-v0:
   <<: *pybullet-defaults
   n_timesteps: !!float 3e5
+
+# === Mujoco Envs ===
+
+HalfCheetah-v3: &mujoco-defaults
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_starts: 10000
+  noise_type: 'normal'
+  noise_std: 0.1
+
+Ant-v3:
+  <<: *mujoco-defaults
+
+Hopper-v3:
+  <<: *mujoco-defaults
+
+Walker2d-v3:
+  <<: *mujoco-defaults
+
+Humanoid-v3:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+
+Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+  train_freq: 1
+  gradient_steps: 1

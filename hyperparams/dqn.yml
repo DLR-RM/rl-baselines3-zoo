@@ -4,7 +4,7 @@ atari:
   frame_stack: 4
   policy: 'CnnPolicy'
   n_timesteps: !!float 1e7
-  buffer_size: 10000
+  buffer_size: 100000
   learning_rate: !!float 1e-4
   batch_size: 32
   learning_starts: 100000
