@@ -486,7 +486,7 @@ def sample_ars_params(trial: optuna.Trial) -> Dict[str, Any]:
     :param trial:
     :return:
     """
-    n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [1, 2])
+    # n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [1, 2])
     n_delta = trial.suggest_categorical("n_delta", [4, 8, 6, 32, 64])
     # learning_rate = trial.suggest_categorical("learning_rate", [0.01, 0.02, 0.025, 0.03])
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 0.1)
@@ -509,7 +509,7 @@ def sample_ars_params(trial: optuna.Trial) -> Dict[str, Any]:
     # TODO: optimize the alive_bonus_offset too
 
     return {
-        "n_eval_episodes": n_eval_episodes,
+        # "n_eval_episodes": n_eval_episodes,
         "n_delta": n_delta,
         "learning_rate": learning_rate,
         "delta_std": delta_std,
