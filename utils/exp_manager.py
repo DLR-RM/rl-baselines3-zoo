@@ -201,7 +201,7 @@ class ExperimentManager(object):
             kwargs["callback"] = self.callbacks
 
         # Special case for ARS
-        if self.algo == "ars":
+        if self.algo == "ars" and self.n_envs > 1:
             kwargs["async_eval"] = AsyncEval(
                 [lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy
             )
@@ -662,7 +662,7 @@ class ExperimentManager(object):
 
         learn_kwargs = {}
         # Special case for ARS
-        if self.algo == "ars":
+        if self.algo == "ars" and self.n_envs > 1:
             learn_kwargs["async_eval"] = AsyncEval(
                 [lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy
             )

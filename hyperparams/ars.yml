@@ -1,11 +1,14 @@
+# Tuned
 CartPole-v1:
-  n_envs: 2
-  n_timesteps: !!float 2e5
-  policy: 'LinearPolicy'
-
-Pendulum-v0:
   n_envs: 1
-  n_timesteps: !!float 5e6
+  n_timesteps: !!float 5e4
+  policy: 'LinearPolicy'
+  n_delta: 2
+
+# Tuned
+Pendulum-v0: &pendulum-params
+  n_envs: 1
+  n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   normalize: "dict(norm_obs=True, norm_reward=False)"
   learning_rate: !!float 0.018
@@ -13,37 +16,36 @@ Pendulum-v0:
   n_top: 1
   delta_std: 0.1
   policy_kwargs: "dict(net_arch=[16])"
+  zero_policy: False
 
+# TO BE Tuned
 LunarLander-v2:
-  n_envs: 1
-  n_timesteps: !!float 1e6
-  policy: 'LinearPolicy'
-  normalize: "dict(norm_obs=True, norm_reward=False)"
+  <<: *pendulum-params
+  n_delta: 6
+  n_top: 1
+  n_timesteps: !!float 5e6
 
-
+# Tuned
 LunarLanderContinuous-v2:
-  normalize: true
-  n_timesteps: !!float 1e6
-  policy: 'LinearPolicy'
+  <<: *pendulum-params
+  n_timesteps: !!float 2e6
 
+# Tuned
 Acrobot-v1:
-  normalize: true
-  n_envs: 2
-  n_timesteps: !!float 1e6
-  policy: 'LinearPolicy'
+  <<: *pendulum-params
+  n_timesteps: !!float 5e5
 
+# Tuned
 MountainCar-v0:
-  normalize: true
-  n_envs: 4
-  n_timesteps: !!float 1e6
-  policy: 'LinearPolicy'
+  <<: *pendulum-params
+  n_delta: 8
+  n_timesteps: !!float 5e5
 
+# To be tuned
 MountainCarContinuous-v0:
-  normalize: True
-  n_envs: 4
-  n_timesteps: !!float 1e6
-  policy: 'LinearPolicy'
-  n_delta: 16
+  <<: *pendulum-params
+  n_delta: 8
+  n_timesteps: !!float 5e5
 
 # === Pybullet Envs ===
 
@@ -166,7 +168,7 @@ Humanoid-v3:
   alive_bonus_offset: -5
   normalize: "dict(norm_obs=True, norm_reward=False)"
 
-
+# Almost tuned
 BipedalWalker-v3:
   n_envs: 1
   policy: 'MlpPolicy'
