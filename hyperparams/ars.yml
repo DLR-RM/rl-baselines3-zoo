@@ -23,7 +23,7 @@ LunarLander-v2:
   <<: *pendulum-params
   n_delta: 6
   n_top: 1
-  n_timesteps: !!float 5e6
+  n_timesteps: !!float 2e6
 
 # Tuned
 LunarLanderContinuous-v2:
@@ -41,11 +41,11 @@ MountainCar-v0:
   n_delta: 8
   n_timesteps: !!float 5e5
 
-# To be tuned
+# Tuned
 MountainCarContinuous-v0:
   <<: *pendulum-params
-  n_delta: 8
   n_timesteps: !!float 5e5
+  delta_std: 0.2
 
 # === Pybullet Envs ===
 
