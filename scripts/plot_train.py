@@ -21,7 +21,7 @@ parser.add_argument("--figsize", help="Figure size, width, height in inches.", n
 parser.add_argument("--fontsize", help="Font size", type=int, default=14)
 parser.add_argument("-max", "--max-timesteps", help="Max number of timesteps to display", type=int)
 parser.add_argument("-x", "--x-axis", help="X-axis", choices=["steps", "episodes", "time"], type=str, default="steps")
-parser.add_argument("-y", "--y-axis", help="Y-axis", choices=["success", "reward"], type=str, default="reward")
+parser.add_argument("-y", "--y-axis", help="Y-axis", choices=["success", "reward", "length"], type=str, default="reward")
 parser.add_argument("-w", "--episode-window", help="Rolling window size", type=int, default=100)
 
 args = parser.parse_args()
@@ -31,11 +31,27 @@ algo = args.algo
 envs = args.env
 log_path = os.path.join(args.exp_folder, algo)
 
-x_axis = {"steps": X_TIMESTEPS, "episodes": X_EPISODES, "time": X_WALLTIME}[args.x_axis]
-x_label = {"steps": "Timesteps", "episodes": "Episodes", "time": "Walltime (in hours)"}[args.x_axis]
+x_axis = {
+    "steps": X_TIMESTEPS,
+    "episodes": X_EPISODES,
+    "time": X_WALLTIME,
+}[args.x_axis]
+x_label = {
+    "steps": "Timesteps",
+    "episodes": "Episodes",
+    "time": "Walltime (in hours)",
+}[args.x_axis]
 
-y_axis = {"success": "is_success", "reward": "r"}[args.y_axis]
-y_label = {"success": "Training Success Rate", "reward": "Training Episodic Reward"}[args.y_axis]
+y_axis = {
+    "success": "is_success",
+    "reward": "r",
+    "length": "l",
+}[args.y_axis]
+y_label = {
+    "success": "Training Success Rate",
+    "reward": "Training Episodic Reward",
+    "length": "Training Episode Length",
+}[args.y_axis]
 
 dirs = []
 
