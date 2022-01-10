@@ -489,9 +489,9 @@ def sample_ars_params(trial: optuna.Trial) -> Dict[str, Any]:
     # n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [1, 2])
     n_delta = trial.suggest_categorical("n_delta", [4, 8, 6, 32, 64])
     # learning_rate = trial.suggest_categorical("learning_rate", [0.01, 0.02, 0.025, 0.03])
-    learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 0.1)
-    delta_std = trial.suggest_categorical("delta_std", [0.01, 0.02, 0.025, 0.03, 0.05, 0.1, 0.2])
-    top_frac_size = trial.suggest_categorical("top_frac_size", [0.1, 0.2, 0.3, 0.5, 0.8, 1.0])
+    learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
+    delta_std = trial.suggest_categorical("delta_std", [0.01, 0.02, 0.025, 0.03, 0.05, 0.1, 0.2, 0.3])
+    top_frac_size = trial.suggest_categorical("top_frac_size", [0.1, 0.2, 0.3, 0.5, 0.8, 0.9, 1.0])
     zero_policy = trial.suggest_categorical("zero_policy", [True, False])
     n_top = max(int(top_frac_size * n_delta), 1)
 
