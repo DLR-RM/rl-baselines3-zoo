@@ -1,7 +1,75 @@
+from copy import deepcopy
+from typing import Union
+
 import gym
 import numpy as np
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from scipy.signal import iirfilter, sosfilt, zpk2sos
+from stable_baselines3.common.type_aliases import GymObs, GymStepReturn
+from stable_baselines3.common.vec_env.base_vec_env import VecEnv, VecEnvObs, VecEnvStepReturn, VecEnvWrapper
+from stable_baselines3.common.vec_env.subproc_vec_env import SubprocVecEnv, _flatten_obs
+
+
+class VecForceResetWrapper(VecEnvWrapper):
+    """
+    For all environments to reset at once,
+    and tell the agent the trajectory was truncated.
+
+    :param venv: The vectorized environment
+    """
+
+    def __init__(self, venv: VecEnv):
+        super().__init__(venv=venv)
+        self.use_subproc = isinstance(venv, SubprocVecEnv)
+
+    def reset(self) -> VecEnvObs:
+        return self.venv.reset()
+
+    def step_wait(self) -> VecEnvStepReturn:
+        if self.use_subproc:
+            return self._subproc_step_wait()
+
+        for env_idx in range(self.num_envs):
+            obs, self.buf_rews[env_idx], self.buf_dones[env_idx], self.buf_infos[env_idx] = self.envs[env_idx].step(
+                self.actions[env_idx]
+            )
+            self._save_obs(env_idx, obs)
+
+        if self.buf_dones.any():
+            for env_idx in range(self.num_envs):
+                self.buf_infos[env_idx]["terminal_observation"] = self.buf_obs[None][env_idx]
+                if not self.buf_dones[env_idx]:
+                    self.buf_infos[env_idx]["TimeLimit.truncated"] = True
+                self.buf_dones[env_idx] = True
+                obs = self.envs[env_idx].reset()
+                self._save_obs(env_idx, obs)
+
+        return (
+            self._obs_from_buf(),
+            np.copy(self.buf_rews),
+            np.copy(self.buf_dones),
+            deepcopy(self.buf_infos),
+        )
+
+    def _subproc_step_wait(self) -> VecEnvStepReturn:
+        results = [remote.recv() for remote in self.remotes]
+        self.waiting = False
+        obs, rewards, dones, infos = zip(*results)
+        dones = np.stack(dones)
+        obs = list(obs)
+        updated_remotes = []
+        if np.array(dones).any():
+            for idx, remote in enumerate(self.remotes):
+                if not dones[idx]:
+                    infos[idx]["terminal_observation"] = obs[idx]
+                    infos[idx]["TimeLimit.truncated"] = True
+                    dones[idx] = True
+                    remote.send(("reset", None))
+                    updated_remotes.append((idx, remote))
+
+        for idx, remote in updated_remotes:
+            obs[idx] = remote.recv()
+        return _flatten_obs(obs, self.observation_space), np.stack(rewards), dones, infos
 
 
 class DoneOnSuccessWrapper(gym.Wrapper):
@@ -305,3 +373,50 @@ class HistoryWrapperObsDict(gym.Wrapper):
         obs_dict["observation"] = self._create_obs_from_history()
 
         return obs_dict, reward, done, info
+
+
+class PhaseWrapper(gym.Wrapper):
+    """Add phase as input"""
+
+    def __init__(self, env: gym.Env, period: int = 40, n_components: int = 4, phase_only: bool = False):
+        obs_space = env.observation_space
+
+        assert len(obs_space.shape) == 1, "Only 1D observation spaces are supported"
+
+        low, high = obs_space.low, obs_space.high
+
+        if phase_only:
+            low, high = [], []
+        low, high = np.concatenate((low, [-1.0] * 2 * n_components)), np.concatenate((high, [1.0] * 2 * n_components))
+
+        env.observation_space = gym.spaces.Box(low=low, high=high, dtype=np.float32)
+
+        super(PhaseWrapper, self).__init__(env)
+        self._current_step = 0
+        self._n_components = n_components
+        self._period = period
+        self._phase_only = phase_only
+
+    def reset(self) -> GymObs:
+        self._current_step = 0
+        return self._get_obs(self.env.reset())
+
+    def step(self, action: Union[int, np.ndarray]) -> GymStepReturn:
+        self._current_step += 1
+        obs, reward, done, info = self.env.step(action)
+        return self._get_obs(obs), reward, done, info
+
+    def _get_obs(self, obs: np.ndarray) -> np.ndarray:
+        """
+        Concatenate the phase feature to the current observation.
+        """
+        k = 2 * np.pi / self._period
+        phase_feature = []
+        for i in range(1, self._n_components + 1):
+            phase_feature.append(np.cos(i * k * self._current_step))
+            phase_feature.append(np.sin(i * k * self._current_step))
+
+        if self._phase_only:
+            return np.array(phase_feature)
+
+        return np.append(obs, phase_feature)

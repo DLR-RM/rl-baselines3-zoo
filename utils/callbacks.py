@@ -1,4 +1,5 @@
 import os
+import pickle
 import tempfile
 import time
 from copy import deepcopy
@@ -10,7 +11,8 @@ import optuna
 from sb3_contrib import TQC
 from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
-from stable_baselines3.common.vec_env import VecEnv
+from stable_baselines3.common.utils import safe_mean
+from stable_baselines3.common.vec_env import VecEnv, sync_envs_normalization
 
 
 class TrialEvalCallback(EvalCallback):
@@ -129,6 +131,12 @@ class ParallelTrainCallback(BaseCallback):
 
         self.model.save(temp_file)
 
+        if self.model.get_vec_normalize_env() is not None:
+            temp_file_norm = os.path.join("logs", "vec_normalize.pkl")
+
+            with open(temp_file_norm, "wb") as file_handler:
+                pickle.dump(self.model.get_vec_normalize_env(), file_handler)
+
         # TODO: add support for other algorithms
         for model_class in [SAC, TQC]:
             if isinstance(self.model, model_class):
@@ -137,6 +145,11 @@ class ParallelTrainCallback(BaseCallback):
 
         assert self.model_class is not None, f"{self.model} is not supported for parallel training"
         self._model = self.model_class.load(temp_file)
+
+        if self.model.get_vec_normalize_env() is not None:
+            with open(temp_file_norm, "rb") as file_handler:
+                self._model._vec_normalize_env = pickle.load(file_handler)
+                self._model._vec_normalize_env.training = False
 
         self.batch_size = self._model.batch_size
 
@@ -182,6 +195,10 @@ class ParallelTrainCallback(BaseCallback):
             self._model.replay_buffer = deepcopy(self.model.replay_buffer)
             self.model.set_parameters(deepcopy(self._model.get_parameters()))
             self.model.actor = self.model.policy.actor
+            # Sync VecNormalize
+            if self.model.get_vec_normalize_env() is not None:
+                sync_envs_normalization(self.model.get_vec_normalize_env(), self._model._vec_normalize_env)
+
             if self.num_timesteps >= self._model.learning_starts:
                 self.train()
             # Do not wait for the training loop to finish
@@ -193,3 +210,31 @@ class ParallelTrainCallback(BaseCallback):
             if self.verbose > 0:
                 print("Waiting for training thread to terminate")
             self.process.join()
+
+
+class StopTrainingOnMeanRewardThreshold(BaseCallback):
+    """
+    Stop the training once a threshold in mean episodic reward
+    has been reached (i.e. when the model is good enough).
+
+    :param reward_threshold:  Minimum expected reward per episode
+        to stop training.
+    :param verbose:
+    """
+
+    def __init__(self, reward_threshold: float, verbose: int = 0):
+        super().__init__(verbose=verbose)
+        self.reward_threshold = reward_threshold
+
+    def _on_step(self) -> bool:
+        continue_training = True
+        if len(self.model.ep_info_buffer) > 0 and len(self.model.ep_info_buffer[0]) > 0:
+            mean_reward = safe_mean([ep_info["r"] for ep_info in self.model.ep_info_buffer])
+            # Convert np.bool_ to bool, otherwise callback() is False won't work
+            continue_training = bool(mean_reward < self.reward_threshold)
+            if self.verbose > 0 and not continue_training:
+                print(
+                    f"Stopping training because the mean reward {mean_reward:.2f} "
+                    f" is above the threshold {self.reward_threshold}"
+                )
+        return continue_training

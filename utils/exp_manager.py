@@ -11,6 +11,7 @@ import gym
 import numpy as np
 import optuna
 import yaml
+import zmq
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
@@ -29,6 +30,7 @@ from stable_baselines3.common.vec_env import (
     DummyVecEnv,
     SubprocVecEnv,
     VecEnv,
+    VecEnvWrapper,
     VecFrameStack,
     VecNormalize,
     VecTransposeImage,
@@ -99,6 +101,7 @@ class ExperimentManager(object):
         self.env_wrapper = None
         self.frame_stack = None
         self.seed = seed
+        self.vec_env_wrapper = None
         self.optimization_log_path = optimization_log_path
 
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
@@ -160,7 +163,7 @@ class ExperimentManager(object):
         :return: the initialized RL model
         """
         hyperparams, saved_hyperparams = self.read_hyperparameters()
-        hyperparams, self.env_wrapper, self.callbacks = self._preprocess_hyperparams(hyperparams)
+        hyperparams, self.env_wrapper, self.callbacks, self.vec_env_wrapper = self._preprocess_hyperparams(hyperparams)
 
         self.create_log_folder()
         self.create_callbacks()
@@ -200,12 +203,18 @@ class ExperimentManager(object):
 
         try:
             model.learn(self.n_timesteps, **kwargs)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, zmq.error.ZMQError):
             # this allows to save the model when interrupting training
             pass
         finally:
             # Release resources
             try:
+                # Hack for zmq on Windows to allow early termination
+                env_tmp = model.env
+                while isinstance(env_tmp, VecEnvWrapper):
+                    env_tmp = env_tmp.venv
+                env_tmp.waiting = False
+
                 model.env.close()
             except EOFError:
                 pass
@@ -310,7 +319,7 @@ class ExperimentManager(object):
 
     def _preprocess_hyperparams(
         self, hyperparams: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback]]:
+    ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback], Optional[Callable]]:
         self.n_envs = hyperparams.get("n_envs", 1)
 
         if self.verbose > 0:
@@ -354,12 +363,16 @@ class ExperimentManager(object):
         if "env_wrapper" in hyperparams.keys():
             del hyperparams["env_wrapper"]
 
+        vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
+        if "vec_env_wrapper" in hyperparams.keys():
+            del hyperparams["vec_env_wrapper"]
+
         callbacks = get_callback_list(hyperparams)
         if "callback" in hyperparams.keys():
             self.specified_callbacks = hyperparams["callback"]
             del hyperparams["callback"]
 
-        return hyperparams, env_wrapper, callbacks
+        return hyperparams, env_wrapper, callbacks, vec_env_wrapper
 
     def _preprocess_action_noise(
         self, hyperparams: Dict[str, Any], saved_hyperparams: Dict[str, Any], env: VecEnv
@@ -517,6 +530,9 @@ class ExperimentManager(object):
             monitor_kwargs=monitor_kwargs,
         )
 
+        if self.vec_env_wrapper is not None:
+            env = self.vec_env_wrapper(env)
+
         # Wrap the env into a VecNormalize wrapper if needed
         # and load saved statistics when present
         env = self._maybe_normalize(env, eval_env)
@@ -653,9 +669,30 @@ class ExperimentManager(object):
         try:
             model.learn(self.n_timesteps, callback=callbacks)
             # Free memory
+            env_tmp = model.env
+            while isinstance(env_tmp, VecEnvWrapper):
+                env_tmp = env_tmp.venv
+            env_tmp.waiting = False
+
+            env_tmp = eval_env
+            while isinstance(env_tmp, VecEnvWrapper):
+                env_tmp = env_tmp.venv
+            env_tmp.waiting = False
+
             model.env.close()
             eval_env.close()
         except (AssertionError, ValueError) as e:
+            # Hack for zmq on Windows to allow early termination
+            env_tmp = model.env
+            while isinstance(env_tmp, VecEnvWrapper):
+                env_tmp = env_tmp.venv
+            env_tmp.waiting = False
+
+            env_tmp = eval_env
+            while isinstance(env_tmp, VecEnvWrapper):
+                env_tmp = env_tmp.venv
+            env_tmp.waiting = False
+
             # Sometimes, random hyperparams can generate NaN
             # Free memory
             model.env.close()

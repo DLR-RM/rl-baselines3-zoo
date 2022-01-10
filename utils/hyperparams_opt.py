@@ -218,21 +218,22 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
     gamma = trial.suggest_categorical("gamma", [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
     batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 128, 256, 512, 1024, 2048])
-    buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(1e5), int(1e6)])
-    learning_starts = trial.suggest_categorical("learning_starts", [0, 1000, 10000, 20000])
+    buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(5e4), int(1e5)])
+    learning_starts = trial.suggest_categorical("learning_starts", [0, 1000])
     # train_freq = trial.suggest_categorical('train_freq', [1, 10, 100, 300])
-    train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512])
+    # train_freq = trial.suggest_categorical("train_freq", [1, 4, 8, 16, 32, 64, 128, 256, 512])
+    train_freq = 100
     # Polyak coeff
-    tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.01, 0.02, 0.05, 0.08])
+    tau = trial.suggest_categorical("tau", [0.001, 0.005, 0.008, 0.01, 0.02, 0.05, 0.08])
     # gradient_steps takes too much time
     # gradient_steps = trial.suggest_categorical('gradient_steps', [1, 100, 300])
     gradient_steps = train_freq
     # ent_coef = trial.suggest_categorical('ent_coef', ['auto', 0.5, 0.1, 0.05, 0.01, 0.0001])
     ent_coef = "auto"
     # You can comment that out when not using gSDE
-    log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
+    # log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
     # NOTE: Add "verybig" to net_arch when tuning HER
-    net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
+    net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big", "large", "verybig"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
     net_arch = {
@@ -240,14 +241,16 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
         "medium": [256, 256],
         "big": [400, 300],
         # Uncomment for tuning HER
-        # "large": [256, 256, 256],
-        # "verybig": [512, 512, 512],
+        "large": [256, 256, 256],
+        "verybig": [512, 512, 512],
     }[net_arch]
 
     target_entropy = "auto"
     # if ent_coef == 'auto':
     #     # target_entropy = trial.suggest_categorical('target_entropy', ['auto', 5, 1, 0, -1, -5, -10, -20, -50])
     #     target_entropy = trial.suggest_uniform('target_entropy', -10, 10)
+
+    # log_std_init=log_std_init,
 
     hyperparams = {
         "gamma": gamma,
@@ -260,7 +263,7 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
         "ent_coef": ent_coef,
         "tau": tau,
         "target_entropy": target_entropy,
-        "policy_kwargs": dict(log_std_init=log_std_init, net_arch=net_arch),
+        "policy_kwargs": dict(net_arch=net_arch),
     }
 
     if trial.using_her_replay_buffer:
@@ -455,10 +458,12 @@ def sample_tqc_params(trial: optuna.Trial) -> Dict[str, Any]:
     # TQC is SAC + Distributional RL
     hyperparams = sample_sac_params(trial)
 
-    n_quantiles = trial.suggest_int("n_quantiles", 5, 50)
-    top_quantiles_to_drop_per_net = trial.suggest_int("top_quantiles_to_drop_per_net", 0, n_quantiles - 1)
+    # n_quantiles = trial.suggest_int("n_quantiles", 5, 50)
+    n_quantiles = trial.suggest_categorical("n_quantiles", [15, 25, 50])
+    top_quantiles_to_drop_per_net = trial.suggest_int("top_quantiles_to_drop_per_net", 0, 10)
+    n_critics = trial.suggest_int("n_critics", 1, 2)
 
-    hyperparams["policy_kwargs"].update({"n_quantiles": n_quantiles})
+    hyperparams["policy_kwargs"].update({"n_quantiles": n_quantiles, "n_critics": n_critics})
     hyperparams["top_quantiles_to_drop_per_net"] = top_quantiles_to_drop_per_net
 
     return hyperparams
