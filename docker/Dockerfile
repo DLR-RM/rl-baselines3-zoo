@@ -24,9 +24,7 @@ RUN \
     pip install git+https://github.com/eleurent/highway-env && \
     rm -rf $HOME/.cache/pip
 
-# tmp fix: current pypi gym package is out of date
-# and create empty video files
-RUN pip install gym==0.17.3
+RUN pip install gym==0.19.0
 
 ENV PATH=$VENV/bin:$PATH
 

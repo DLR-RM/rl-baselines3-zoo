@@ -8,7 +8,7 @@ import gym
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
-from sb3_contrib import QRDQN, TQC
+from sb3_contrib import QRDQN, TQC, TRPO
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -33,6 +33,7 @@ ALGOS = {
     "qrdqn": QRDQN,
     "tqc": TQC,
     "human": HumanTeleop,
+    "trpo": TRPO,
 }
 
 

@@ -1,3 +1,23 @@
+## Release 1.3.1a7 (WIP)
+
+### Breaking Changes
+- Dropped python 3.6 support
+- Upgrade to Stable-Baselines3 (SB3) >= 1.3.1a8
+- Upgrade to sb3-contrib >= 1.3.1a7
+
+### New Features
+- Added mujoco hyperparameters
+- Added MuJoCo pre-trained agents
+- Added script to parse best hyperparameters of an optuna study
+- Added TRPO support
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
 ## Release 1.3.0 (2021-10-23)
 
 **rliable plots and bug fixes**

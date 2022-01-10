@@ -124,7 +124,6 @@ BipedalWalkerHardcore-v3:
 
 # Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   normalize: true
   n_envs: 4
   n_timesteps: !!float 2e6
@@ -159,3 +158,27 @@ HopperBulletEnv-v0:
 ReacherBulletEnv-v0:
   <<: *pybullet-defaults
   learning_rate: lin_0.0008
+
+# === Mujoco Envs ===
+
+HalfCheetah-v3: &mujoco-defaults
+  normalize: true
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+
+Ant-v3:
+  <<: *mujoco-defaults
+
+Hopper-v3:
+  <<: *mujoco-defaults
+
+Walker2d-v3:
+  <<: *mujoco-defaults
+
+Humanoid-v3:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+
+Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
