@@ -218,6 +218,8 @@ def main():  # noqa: C901
                     episode_reward = 0.0
                     ep_len = 0
                     state = None
+                    # if model.get_vec_normalize_env() is not None:
+                    #     model.get_vec_normalize_env().save("/tmp/sb3/vecnormalize.pkl")
 
                 # Reset also when the goal is achieved when using HER
                 if done and infos[0].get("is_success") is not None:
