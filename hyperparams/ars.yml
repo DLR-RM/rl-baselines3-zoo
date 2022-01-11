@@ -49,33 +49,37 @@ MountainCarContinuous-v0:
 
 # === Pybullet Envs ===
 
-# TO be tuned
+# Almost tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  normalize: "dict(norm_obs=True, norm_reward=False)"
   n_envs: 1
-  policy: 'LinearPolicy'
-  n_timesteps: !!float 1.25e7
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.02
+  delta_std: !!float 0.03
+  n_delta: 8
+  n_top: 8
+  alive_bonus_offset: 0
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[64, 64])"
+  zero_policy: False
+
+# To be tuned
+AntBulletEnv-v0:
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 7.5e7
   learning_rate: !!float 0.02
   delta_std: !!float 0.03
   n_delta: 32
-  n_top: 4
+  n_top: 32
   alive_bonus_offset: 0
   normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[128, 64])"
+  zero_policy: False
 
-AntBulletEnv-v0:
-  n_envs: 1
-  policy: 'LinearPolicy'
-  n_timesteps: !!float 7.5e7
-  learning_rate: !!float 0.015
-  delta_std: !!float 0.025
-  n_delta: 60
-  n_top: 20
-  alive_bonus_offset: -1
-  normalize: "dict(norm_obs=True, norm_reward=False)"
 
 Walker2DBulletEnv-v0:
-  <<: *pybullet-defaults
-  policy: 'LinearPolicy'
+  policy: 'MlpPolicy'
   n_timesteps: !!float 7.5e7
   learning_rate: !!float 0.03
   delta_std: !!float 0.025
@@ -83,7 +87,10 @@ Walker2DBulletEnv-v0:
   n_top: 30
   alive_bonus_offset: -1
   normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[64, 64])"
+  zero_policy: False
 
+# Tuned
 HopperBulletEnv-v0:
   n_envs: 1
   policy: 'LinearPolicy'
