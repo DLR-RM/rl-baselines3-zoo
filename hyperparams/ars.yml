@@ -193,3 +193,7 @@ BipedalWalkerHardcore-v3:
   alive_bonus_offset: -0.1
   normalize: "dict(norm_obs=True, norm_reward=False)"
   policy_kwargs: "dict(net_arch=[16])"
+
+A1Walking-v0:
+  <<: *pendulum-params
+  n_timesteps: !!float 2e6
