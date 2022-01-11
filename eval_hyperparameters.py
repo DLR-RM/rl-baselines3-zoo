@@ -92,7 +92,7 @@ for i in range(10):
     except:
         print("Error occurred during evaluation")
 
-if len(all_mean_rewards) > 1:
+if len(all_mean_rewards) > 0:
     print(sum(all_mean_rewards) / len(all_mean_rewards))
 else:
     print("No mature policies found")
