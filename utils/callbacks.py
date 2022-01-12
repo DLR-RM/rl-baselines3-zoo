@@ -1,11 +1,11 @@
 import os
+import pickle
 import tempfile
 import time
 from copy import deepcopy
 from functools import wraps
 from threading import Thread
 from typing import Optional
-import pickle
 
 import optuna
 from sb3_contrib import TQC

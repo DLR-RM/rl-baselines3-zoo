@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import glob
 import importlib
 import os
@@ -6,6 +7,7 @@ import sys
 
 import numpy as np
 import torch as th
+import websockets
 import yaml
 from stable_baselines3.common.utils import set_random_seed
 
@@ -13,6 +15,25 @@ import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 from utils.exp_manager import ExperimentManager
 from utils.utils import StoreDict
+
+EXIT = False
+socket_port = int(os.environ.get("SOCKET_PORT", 8895))
+
+# To unlock the start
+# echo '{"angle":0,"throttle":0,"drive_mode":"local"}' | websocat "ws://127.0.0.1:8895/wsDrive"
+
+
+async def handler(websocket):
+    _ = await websocket.recv()
+    global EXIT
+    EXIT = True
+
+
+async def main_wait():
+    async with websockets.serve(handler, "", socket_port):
+        while not EXIT:
+            await asyncio.sleep(0.05)
+        print("Exiting socket server")
 
 
 def main():  # noqa: C901
@@ -178,6 +199,11 @@ def main():  # noqa: C901
     model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
 
     obs = env.reset()
+
+    # Wait for message from websocket
+    if bool(os.environ.get("WAIT_FOR_START", False)):
+        print(f"Waiting for socket message on port {socket_port}")
+        asyncio.run(main_wait())
 
     # Deterministic by default except for atari games
     stochastic = args.stochastic or is_atari and not args.deterministic
