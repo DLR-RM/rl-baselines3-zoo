@@ -201,7 +201,7 @@ def main():  # noqa: C901
     obs = env.reset()
 
     # Wait for message from websocket
-    if bool(os.environ.get("WAIT_FOR_START", False)):
+    if bool(int(os.environ.get("WAIT_FOR_START", False))):
         print(f"Waiting for socket message on port {socket_port}")
         asyncio.run(main_wait())
 
