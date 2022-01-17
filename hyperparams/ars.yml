@@ -204,3 +204,15 @@ BipedalWalkerHardcore-v3:
 A1Walking-v0:
   <<: *pendulum-params
   n_timesteps: !!float 2e6
+
+A1Jumping-v0:
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.03
+  delta_std: !!float 0.025
+  n_delta: 40
+  n_top: 30
+  # alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  # policy_kwargs: "dict(net_arch=[16])"
+
