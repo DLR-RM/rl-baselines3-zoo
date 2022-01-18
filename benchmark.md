@@ -43,6 +43,17 @@ and also allow users to have access to pretrained agents.*
 |a2c  |SpaceInvadersNoFrameskip-v4|    627.160|   201.974|10M        |        604848|          162|
 |a2c  |Swimmer-v3                 |    200.627|     2.544|1M         |        150000|          150|
 |a2c  |Walker2DBulletEnv-v0       |    858.209|   333.116|2M         |        149156|          173|
+|ars  |Acrobot-v1                 |    -82.884|    23.825|500k       |        149985|         1788|
+|ars  |Ant-v3                     |   2333.773|    20.597|75M        |        150000|          150|
+|ars  |CartPole-v1                |    500.000|     0.000|50k        |        150000|          300|
+|ars  |HalfCheetah-v3             |   4815.192|  1340.752|12M        |        150000|          150|
+|ars  |Hopper-v3                  |   3343.919|     5.730|7M         |        150000|          150|
+|ars  |LunarLanderContinuous-v2   |    167.959|   147.071|2M         |        149883|          562|
+|ars  |MountainCar-v0             |   -122.000|    33.456|500k       |        149938|         1229|
+|ars  |MountainCarContinuous-v0   |     96.672|     0.784|500k       |        149990|          621|
+|ars  |Pendulum-v0                |   -212.540|   160.444|2M         |        150000|          750|
+|ars  |Swimmer-v3                 |    355.267|    12.796|2M         |        150000|          150|
+|ars  |Walker2d-v3                |   2993.582|   166.289|75M        |        149821|          152|
 |ddpg |AntBulletEnv-v0            |   2399.147|    75.410|1M         |        150000|          150|
 |ddpg |BipedalWalker-v3           |    197.486|   141.580|1M         |        149237|          227|
 |ddpg |HalfCheetahBulletEnv-v0    |   2078.325|   208.379|1M         |        150000|          150|
