@@ -15,6 +15,7 @@ from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
 from optuna.visualization import plot_optimization_history, plot_param_importances
+from sb3_contrib.common.vec_env import AsyncEval
 
 # For using HER with GoalEnv
 from stable_baselines3 import HerReplayBuffer  # noqa: F401
@@ -166,7 +167,8 @@ class ExperimentManager(object):
         self.create_callbacks()
 
         # Create env to have access to action space for action noise
-        env = self.create_envs(self.n_envs, no_log=False)
+        n_envs = 1 if self.algo == "ars" else self.n_envs
+        env = self.create_envs(n_envs, no_log=False)
 
         self._hyperparams = self._preprocess_action_noise(hyperparams, saved_hyperparams, env)
 
@@ -197,6 +199,12 @@ class ExperimentManager(object):
 
         if len(self.callbacks) > 0:
             kwargs["callback"] = self.callbacks
+
+        # Special case for ARS
+        if self.algo == "ars" and self.n_envs > 1:
+            kwargs["async_eval"] = AsyncEval(
+                [lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy
+            )
 
         try:
             model.learn(self.n_timesteps, **kwargs)
@@ -272,7 +280,7 @@ class ExperimentManager(object):
     @staticmethod
     def _preprocess_schedules(hyperparams: Dict[str, Any]) -> Dict[str, Any]:
         # Create schedules
-        for key in ["learning_rate", "clip_range", "clip_range_vf"]:
+        for key in ["learning_rate", "clip_range", "clip_range_vf", "delta_std"]:
             if key not in hyperparams:
                 continue
             if isinstance(hyperparams[key], str):
@@ -581,8 +589,7 @@ class ExperimentManager(object):
         if sampler_method == "random":
             sampler = RandomSampler(seed=self.seed)
         elif sampler_method == "tpe":
-            # TODO: try with multivariate=True
-            sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed)
+            sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed, multivariate=True)
         elif sampler_method == "skopt":
             # cf https://scikit-optimize.github.io/#skopt.Optimizer
             # GP: gaussian process
@@ -618,8 +625,11 @@ class ExperimentManager(object):
         sampled_hyperparams = HYPERPARAMS_SAMPLER[self.algo](trial)
         kwargs.update(sampled_hyperparams)
 
+        n_envs = 1 if self.algo == "ars" else self.n_envs
+        env = self.create_envs(n_envs, no_log=True)
+
         model = ALGOS[self.algo](
-            env=self.create_envs(self.n_envs, no_log=True),
+            env=env,
             tensorboard_log=None,
             # We do not seed the trial
             seed=None,
@@ -633,7 +643,7 @@ class ExperimentManager(object):
 
         optuna_eval_freq = int(self.n_timesteps / self.n_evaluations)
         # Account for parallel envs
-        optuna_eval_freq = max(optuna_eval_freq // model.get_env().num_envs, 1)
+        optuna_eval_freq = max(optuna_eval_freq // self.n_envs, 1)
         # Use non-deterministic eval for Atari
         path = None
         if self.optimization_log_path is not None:
@@ -650,8 +660,15 @@ class ExperimentManager(object):
         )
         callbacks.append(eval_callback)
 
+        learn_kwargs = {}
+        # Special case for ARS
+        if self.algo == "ars" and self.n_envs > 1:
+            learn_kwargs["async_eval"] = AsyncEval(
+                [lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy
+            )
+
         try:
-            model.learn(self.n_timesteps, callback=callbacks)
+            model.learn(self.n_timesteps, callback=callbacks, **learn_kwargs)
             # Free memory
             model.env.close()
             eval_env.close()

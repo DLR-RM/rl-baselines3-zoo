@@ -480,8 +480,48 @@ def sample_qrdqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     return hyperparams
 
 
+def sample_ars_params(trial: optuna.Trial) -> Dict[str, Any]:
+    """
+    Sampler for ARS hyperparams.
+    :param trial:
+    :return:
+    """
+    # n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [1, 2])
+    n_delta = trial.suggest_categorical("n_delta", [4, 8, 6, 32, 64])
+    # learning_rate = trial.suggest_categorical("learning_rate", [0.01, 0.02, 0.025, 0.03])
+    learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
+    delta_std = trial.suggest_categorical("delta_std", [0.01, 0.02, 0.025, 0.03, 0.05, 0.1, 0.2, 0.3])
+    top_frac_size = trial.suggest_categorical("top_frac_size", [0.1, 0.2, 0.3, 0.5, 0.8, 0.9, 1.0])
+    zero_policy = trial.suggest_categorical("zero_policy", [True, False])
+    n_top = max(int(top_frac_size * n_delta), 1)
+
+    # net_arch = trial.suggest_categorical("net_arch", ["linear", "tiny", "small"])
+
+    # Note: remove bias to be as the original linear policy
+    # and do not squash output
+    # Comment out when doing hyperparams search with linear policy only
+    # net_arch = {
+    #     "linear": [],
+    #     "tiny": [16],
+    #     "small": [32],
+    # }[net_arch]
+
+    # TODO: optimize the alive_bonus_offset too
+
+    return {
+        # "n_eval_episodes": n_eval_episodes,
+        "n_delta": n_delta,
+        "learning_rate": learning_rate,
+        "delta_std": delta_std,
+        "n_top": n_top,
+        "zero_policy": zero_policy,
+        # "policy_kwargs": dict(net_arch=net_arch),
+    }
+
+
 HYPERPARAMS_SAMPLER = {
     "a2c": sample_a2c_params,
+    "ars": sample_ars_params,
     "ddpg": sample_ddpg_params,
     "dqn": sample_dqn_params,
     "qrdqn": sample_qrdqn_params,
