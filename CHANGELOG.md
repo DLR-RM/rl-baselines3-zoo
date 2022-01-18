@@ -1,4 +1,4 @@
-## Release 1.3.1a7 (WIP)
+## Release 1.3.1a9 (WIP)
 
 ### Breaking Changes
 - Dropped python 3.6 support
@@ -10,10 +10,12 @@
 - Added MuJoCo pre-trained agents
 - Added script to parse best hyperparameters of an optuna study
 - Added TRPO support
+- Added ARS support and pre-trained agents
 
 ### Bug fixes
 
 ### Documentation
+- Replace front image
 
 ### Other
 
