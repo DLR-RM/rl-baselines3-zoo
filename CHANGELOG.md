@@ -2,8 +2,8 @@
 
 ### Breaking Changes
 - Dropped python 3.6 support
-- Upgrade to Stable-Baselines3 (SB3) >= 1.3.1a9
-- Upgrade to sb3-contrib >= 1.3.1a9
+- Upgrade to Stable-Baselines3 (SB3) >= 1.4.0
+- Upgrade to sb3-contrib >= 1.4.0
 
 ### New Features
 - Added mujoco hyperparameters
