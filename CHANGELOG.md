@@ -1,4 +1,4 @@
-## Release 1.3.1a9 (WIP)
+## Release 1.4.0 (2022-01-19)
 
 ### Breaking Changes
 - Dropped python 3.6 support
