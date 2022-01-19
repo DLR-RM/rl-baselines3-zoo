@@ -254,3 +254,6 @@ parking-v0:
     n_sampled_goal=4,
     max_episode_length=100
   )"
+
+A1Walking-v0:
+  <<: *pybullet-defaults
