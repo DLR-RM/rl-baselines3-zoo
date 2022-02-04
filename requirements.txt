@@ -1,5 +1,5 @@
-gym>=0.17,<0.20
-stable-baselines3[extra,tests,docs]>=1.4.0
+gym>=0.21
+stable-baselines3[extra,tests,docs]@git+https://github.com/dlr-rm/stable-baselines3.git
 sb3-contrib>=1.4.0
 box2d-py==2.3.8
 pybullet
