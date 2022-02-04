@@ -12,7 +12,7 @@ EVAL_FREQ = 25000
 N_EVAL_EPISODES = 20
 N_EVAL_ENVS = 5
 np.random.seed(8)
-SEEDS = np.random.randint(2 ** 20, size=(N_SEEDS,))
+SEEDS = np.random.randint(2**20, size=(N_SEEDS,))
 # N_TIMESTEPS = int(1e6)
 
 os.makedirs(os.path.join("logs", "slurm"), exist_ok=True)

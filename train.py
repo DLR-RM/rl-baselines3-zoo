@@ -135,7 +135,7 @@ if __name__ == "__main__":  # noqa: C901
     uuid_str = f"_{uuid.uuid4()}" if args.uuid else ""
     if args.seed < 0:
         # Seed but with a random one
-        args.seed = np.random.randint(2 ** 32 - 1, dtype="int64").item()
+        args.seed = np.random.randint(2**32 - 1, dtype="int64").item()
 
     set_random_seed(args.seed)
 
