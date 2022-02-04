@@ -12,7 +12,7 @@ CartPole-v1:
   n_critic_updates: 20
 
 # Tuned
-Pendulum-v0:
+Pendulum-v1:
   n_envs: 2
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'

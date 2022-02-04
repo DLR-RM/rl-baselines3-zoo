@@ -81,14 +81,14 @@ def test_load(tmp_path):
 
 
 def test_record_video(tmp_path):
-    args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v0", "-o", str(tmp_path)]
+    args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v1", "-o", str(tmp_path)]
 
     # Skip if no X-Server
     pytest.importorskip("pyglet.gl")
 
     return_code = subprocess.call(["python", "-m", "utils.record_video"] + args)
     _assert_eq(return_code, 0)
-    video_path = str(tmp_path / "final-model-sac-Pendulum-v0-step-0-to-step-100.mp4")
+    video_path = str(tmp_path / "final-model-sac-Pendulum-v1-step-0-to-step-100.mp4")
     # File is not empty
     assert os.stat(video_path).st_size != 0, "Recorded video is empty"
 
