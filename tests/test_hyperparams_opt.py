@@ -23,13 +23,13 @@ for algo in ALGOS:
         experiments[f"{algo}-{env_id}"] = (algo, env_id)
 
 # Test for SAC
-experiments["sac-Pendulum-v0"] = ("sac", "Pendulum-v0")
+experiments["sac-Pendulum-v1"] = ("sac", "Pendulum-v1")
 # Test for TD3
-experiments["td3-Pendulum-v0"] = ("td3", "Pendulum-v0")
+experiments["td3-Pendulum-v1"] = ("td3", "Pendulum-v1")
 # Test for HER
 experiments["tqc-parking-v0"] = ("tqc", "parking-v0")
 # Test for TQC
-experiments["tqc-Pendulum-v0"] = ("tqc", "Pendulum-v0")
+experiments["tqc-Pendulum-v1"] = ("tqc", "Pendulum-v1")
 
 
 @pytest.mark.parametrize("sampler", ["random", "tpe"])

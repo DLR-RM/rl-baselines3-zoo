@@ -39,7 +39,7 @@ Acrobot-v1:
   ent_coef: .0
 
 # Tuned
-Pendulum-v0:
+Pendulum-v1:
   normalize: True
   n_envs: 8
   n_timesteps: !!float 1e6
