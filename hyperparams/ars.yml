@@ -6,7 +6,7 @@ CartPole-v1:
   n_delta: 2
 
 # Tuned
-Pendulum-v0: &pendulum-params
+Pendulum-v1: &pendulum-params
   n_envs: 1
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'

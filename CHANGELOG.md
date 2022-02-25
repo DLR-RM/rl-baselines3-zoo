@@ -1,3 +1,19 @@
+## Release 1.4.1a1 (WIP)
+
+### Breaking Changes
+- Upgrade to Stable-Baselines3 (SB3) >= 1.4.1a1
+- Upgrade to sb3-contrib >= 1.4.1a1
+- Upgraded to gym 0.21
+
+### New Features
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
 ## Release 1.4.0 (2022-01-19)
 
 ### Breaking Changes
