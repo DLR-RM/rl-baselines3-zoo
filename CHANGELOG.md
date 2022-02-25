@@ -8,6 +8,7 @@
 ### New Features
 
 ### Bug fixes
+- Policies saved during during optimization with distributed Optuna load on new systems (@jkterry)
 
 ### Documentation
 
@@ -29,7 +30,6 @@
 - Added ARS support and pre-trained agents
 
 ### Bug fixes
-- Policies saved during during optimization with distributed Optuna load on new systems (@jkterry)
 
 ### Documentation
 - Replace front image
