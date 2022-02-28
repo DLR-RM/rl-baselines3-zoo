@@ -4,6 +4,7 @@ import importlib
 import os
 import time
 import uuid
+from ast import Raise
 from distutils.util import strtobool
 
 import gym
@@ -118,10 +119,8 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
     parser.add_argument(
         "--track",
-        type=lambda x: bool(strtobool(x)),
+        action="store_true",
         default=False,
-        nargs="?",
-        const=True,
         help="if toggled, this experiment will be tracked with Weights and Biases",
     )
     parser.add_argument("--wandb-project-name", type=str, default="sb3", help="the wandb's project name")
@@ -166,7 +165,10 @@ if __name__ == "__main__":  # noqa: C901
     print(f"Seed: {args.seed}")
 
     if args.track:
-        import wandb
+        try:
+            import wandb
+        except ImportError:
+            raise ImportError("if you want to use W&B tracking, please install W&B via `pip install wandb`")
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
         run = wandb.init(
@@ -215,14 +217,16 @@ if __name__ == "__main__":  # noqa: C901
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
-    model, saved_hyperparams = exp_manager.setup_experiment()
-    if args.track:
-        args.saved_hyperparams = saved_hyperparams
-        run.config.setdefaults(vars(args))
+    results = exp_manager.setup_experiment()
+    if results is not None:
+        model, saved_hyperparams = results
+        if args.track:
+            args.saved_hyperparams = saved_hyperparams
+            run.config.setdefaults(vars(args))
 
-    # Normal training
-    if model is not None:
-        exp_manager.learn(model)
-        exp_manager.save_trained_model(model)
+        # Normal training
+        if model is not None:
+            exp_manager.learn(model)
+            exp_manager.save_trained_model(model)
     else:
         exp_manager.hyperparameters_optimization()
