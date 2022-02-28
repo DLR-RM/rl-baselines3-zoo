@@ -24,9 +24,6 @@ num = sys.argv[1]
 
 
 env = knights_archers_zombies_v8.env()
-env = ss.color_reduction_v0(env, mode="R")
-env = ss.resize_v0(env, x_size=84, y_size=84)
-env = ss.pad_action_space_v0(env)
 env = ss.frame_stack_v1(env, 3)
 env = ss.black_death_v2(env)
 

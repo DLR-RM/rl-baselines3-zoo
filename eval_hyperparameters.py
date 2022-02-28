@@ -32,9 +32,6 @@ def image_transpose(env):
 
 
 env = knights_archers_zombies_v8.parallel_env()
-env = ss.color_reduction_v0(env, mode="R")
-env = ss.resize_v0(env, x_size=84, y_size=84)
-env = ss.pad_action_space_v0(env)
 env = ss.frame_stack_v1(env, 3)
 env = ss.black_death_v2(env)
 env = ss.pettingzoo_env_to_vec_env_v1(env)
@@ -43,9 +40,6 @@ env = VecMonitor(env)
 env = image_transpose(env)
 
 eval_env = knights_archers_zombies_v8.parallel_env()
-eval_env = ss.color_reduction_v0(eval_env, mode="R")
-eval_env = ss.resize_v0(eval_env, x_size=84, y_size=84)
-eval_env = ss.pad_action_space_v0(eval_env)
 eval_env = ss.frame_stack_v1(eval_env, 3)
 eval_env = ss.black_death_v2(eval_env)
 eval_env = ss.pettingzoo_env_to_vec_env_v1(eval_env)
