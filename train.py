@@ -168,7 +168,6 @@ if __name__ == "__main__":  # noqa: C901
     if args.track:
         import wandb
 
-        print(args)
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
         run = wandb.init(
             name=run_name,
