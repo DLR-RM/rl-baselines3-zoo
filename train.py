@@ -2,7 +2,9 @@ import argparse
 import difflib
 import importlib
 import os
+import time
 import uuid
+from distutils.util import strtobool
 
 import gym
 import numpy as np
@@ -114,6 +116,16 @@ if __name__ == "__main__":  # noqa: C901
         help="Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)",
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
+    parser.add_argument(
+        "--track",
+        type=lambda x: bool(strtobool(x)),
+        default=False,
+        nargs="?",
+        const=True,
+        help="if toggled, this experiment will be tracked with Weights and Biases",
+    )
+    parser.add_argument("--wandb-project-name", type=str, default="sb3", help="the wandb's project name")
+    parser.add_argument("--wandb-entity", type=str, default=None, help="the entity (team) of wandb's project")
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -153,6 +165,21 @@ if __name__ == "__main__":  # noqa: C901
     print("=" * 10, env_id, "=" * 10)
     print(f"Seed: {args.seed}")
 
+    if args.track:
+        import wandb
+
+        print(args)
+        run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
+        run = wandb.init(
+            project=args.wandb_project_name,
+            entity=args.wandb_entity,
+            config=vars(args),
+            sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
+            monitor_gym=True,  # auto-upload the videos of agents playing the game
+            save_code=True,  # optional
+        )
+        args.tensorboard_log = f"runs/{run_name}"
+
     exp_manager = ExperimentManager(
         args,
         args.algo,
@@ -188,7 +215,10 @@ if __name__ == "__main__":  # noqa: C901
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
-    model = exp_manager.setup_experiment()
+    model, saved_hyperparams = exp_manager.setup_experiment()
+    if args.track:
+        args.saved_hyperparams = saved_hyperparams
+        run.config.setdefaults(vars(args))
 
     # Normal training
     if model is not None:
