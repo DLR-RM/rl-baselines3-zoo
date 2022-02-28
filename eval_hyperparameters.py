@@ -1,7 +1,7 @@
 import sys
 import json
 from stable_baselines3 import PPO
-from pettingzoo.butterfly import knights_archers_zombies_v7
+from pettingzoo.butterfly import knights_archers_zombies_v8
 import supersuit as ss
 from stable_baselines3.common.vec_env import VecMonitor, VecTransposeImage, VecNormalize
 from stable_baselines3.common.evaluation import evaluate_policy
@@ -31,7 +31,7 @@ def image_transpose(env):
     return env
 
 
-env = knights_archers_zombies_v7.parallel_env()
+env = knights_archers_zombies_v8.parallel_env()
 env = ss.color_reduction_v0(env, mode="R")
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.pad_action_space_v0(env)
@@ -42,7 +42,7 @@ env = ss.concat_vec_envs_v1(env, n_envs, num_cpus=1, base_class="stable_baseline
 env = VecMonitor(env)
 env = image_transpose(env)
 
-eval_env = knights_archers_zombies_v7.parallel_env()
+eval_env = knights_archers_zombies_v8.parallel_env()
 eval_env = ss.color_reduction_v0(eval_env, mode="R")
 eval_env = ss.resize_v0(eval_env, x_size=84, y_size=84)
 eval_env = ss.pad_action_space_v0(eval_env)
