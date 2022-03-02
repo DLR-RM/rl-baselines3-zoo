@@ -561,3 +561,10 @@ Walker2d-v3:
   gae_lambda: 0.95
   max_grad_norm: 1
   vf_coef: 0.871923
+
+QuadrupedSpring-v0:
+  # <<: *pybullet-defaults
+  normalize: True
+  n_timesteps: !!float 1e6
+  n_envs: 1
+  policy: 'MlpPolicy'

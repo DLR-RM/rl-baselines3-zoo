@@ -32,3 +32,8 @@ try:
     import panda_gym  # pytype: disable=import-error
 except ImportError:
     panda_gym = None
+
+try:
+    import quadruped_spring  # pytype: disable=import-error
+except ImportError:
+    quadruped_spring = None
