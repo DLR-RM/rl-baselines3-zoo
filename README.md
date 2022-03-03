@@ -196,6 +196,22 @@ Note that the default hyperparameters used in the zoo when tuning are not always
 
 When working with continuous actions, we recommend to enable [gSDE](https://arxiv.org/abs/2005.05719) by uncommenting lines in [utils/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/utils/hyperparams_opt.py).
 
+
+## Experiment tracking
+
+We support tracking experiment data such as learning curves and hyperparameters via [Weights and Biases](https://wandb.ai).
+
+The following command
+```
+python train.py --algo ppo --env CartPole-v1 --track --wandb-project-name sb3
+```
+
+yields a tracked experiment at this [URL](https://wandb.ai/openrlbenchmark/sb3/runs/1b65ldmh), which looks like
+
+![](images/wandb.gif)
+
+
+
 ## Env normalization
 
 In the hyperparameter file, `normalize: True` means that the training environment will be wrapped in a [VecNormalize](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_normalize.py#L13) wrapper.
