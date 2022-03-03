@@ -205,10 +205,13 @@ class ExperimentManager(object):
 
         if self.continue_training:
             model = self._load_pretrained_agent(self._hyperparams, env)
+            print('a')
         elif self.optimize_hyperparameters:
+            print('b')
             return None
         else:
             # Train an agent from scratch
+            print('c')
             model = ALGOS[self.algo](
                 env=env,
                 tensorboard_log=self.tensorboard_log,
