@@ -206,9 +206,7 @@ The following command
 python train.py --algo ppo --env CartPole-v1 --track --wandb-project-name sb3
 ```
 
-yields a tracked experiment at this [URL](https://wandb.ai/openrlbenchmark/sb3/runs/1b65ldmh), which looks like
-
-![](images/wandb.gif)
+yields a tracked experiment at this [URL](https://wandb.ai/openrlbenchmark/sb3/runs/1b65ldmh).
 
 
 

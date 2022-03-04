@@ -4,8 +4,6 @@ import importlib
 import os
 import time
 import uuid
-from ast import Raise
-from distutils.util import strtobool
 
 import gym
 import numpy as np
@@ -168,7 +166,9 @@ if __name__ == "__main__":  # noqa: C901
         try:
             import wandb
         except ImportError:
-            raise ImportError("if you want to use W&B tracking, please install W&B via `pip install wandb`")
+            raise ImportError(
+                "if you want to use Weights & Biases to track experiment, please install W&B via `pip install wandb`"
+            )
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
         run = wandb.init(
@@ -216,8 +216,12 @@ if __name__ == "__main__":  # noqa: C901
         no_optim_plots=args.no_optim_plots,
     )
 
+    from utils.callbacks import RawStatisticsCallback
+
     # Prepare experiment and launch hyperparameter optimization if needed
     results = exp_manager.setup_experiment()
+    exp_manager.callbacks = [RawStatisticsCallback()]
+    exp_manager.create_callbacks()
     if results is not None:
         model, saved_hyperparams = results
         if args.track:
