@@ -216,15 +216,12 @@ if __name__ == "__main__":  # noqa: C901
         no_optim_plots=args.no_optim_plots,
     )
 
-    from utils.callbacks import RawStatisticsCallback
-
     # Prepare experiment and launch hyperparameter optimization if needed
     results = exp_manager.setup_experiment()
-    exp_manager.callbacks = [RawStatisticsCallback()]
-    exp_manager.create_callbacks()
     if results is not None:
         model, saved_hyperparams = results
         if args.track:
+            # we need to save the loaded hyperparameters
             args.saved_hyperparams = saved_hyperparams
             run.config.setdefaults(vars(args))
 
