@@ -10,6 +10,7 @@
 
 ### Bug fixes
 - Policies saved during during optimization with distributed Optuna load on new systems (@jkterry)
+- Fixed script for recording video that was not up to date with the enjoy script
 
 ### Documentation
 

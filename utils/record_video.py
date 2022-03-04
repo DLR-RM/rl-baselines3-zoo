@@ -1,12 +1,15 @@
 import argparse
 import os
+import sys
 
+import yaml
+from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import VecVideoRecorder
 
 from utils.exp_manager import ExperimentManager
-from utils.utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
+from utils.utils import ALGOS, StoreDict, create_test_env, get_latest_run_id, get_saved_hyperparams
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # noqa: C901
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
@@ -15,6 +18,7 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
     parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
+    parser.add_argument("--stochastic", action="store_true", default=False, help="Use stochastic actions")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
     parser.add_argument(
         "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
@@ -28,6 +32,9 @@ if __name__ == "__main__":
         type=int,
         help="Load checkpoint instead of last model if available, you must pass the number of timesteps corresponding to it",
     )
+    parser.add_argument(
+        "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
+    )
     args = parser.parse_args()
 
     env_id = args.env
@@ -35,7 +42,6 @@ if __name__ == "__main__":
     folder = args.folder
     video_folder = args.output_folder
     seed = args.seed
-    deterministic = args.deterministic
     video_length = args.n_timesteps
     n_envs = args.n_envs
     load_best = args.load_best
@@ -67,10 +73,26 @@ if __name__ == "__main__":
     if not found:
         raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
 
+    off_policy_algos = ["qrdqn", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
+
+    set_random_seed(args.seed)
+
+    is_atari = ExperimentManager.is_atari(env_id)
+
     stats_path = os.path.join(log_path, env_id)
     hyperparams, stats_path = get_saved_hyperparams(stats_path)
 
-    is_atari = ExperimentManager.is_atari(env_id)
+    # load env_kwargs if existing
+    env_kwargs = {}
+    args_path = os.path.join(log_path, env_id, "args.yml")
+    if os.path.isfile(args_path):
+        with open(args_path, "r") as f:
+            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+            if loaded_args["env_kwargs"] is not None:
+                env_kwargs = loaded_args["env_kwargs"]
+    # overwrite with command line arguments
+    if args.env_kwargs is not None:
+        env_kwargs.update(args.env_kwargs)
 
     env = create_test_env(
         env_id,
@@ -80,11 +102,35 @@ if __name__ == "__main__":
         log_dir=None,
         should_render=not args.no_render,
         hyperparams=hyperparams,
+        env_kwargs=env_kwargs,
     )
 
-    model = ALGOS[algo].load(model_path, env=env)
+    kwargs = dict(seed=args.seed)
+    if algo in off_policy_algos:
+        # Dummy buffer size as we don't need memory to enjoy the trained agent
+        kwargs.update(dict(buffer_size=1))
+
+    # Check if we are running python 3.8+
+    # we need to patch saved model under python 3.6/3.7 to load them
+    newer_python_version = sys.version_info.major == 3 and sys.version_info.minor >= 8
+
+    custom_objects = {}
+    if newer_python_version:
+        custom_objects = {
+            "learning_rate": 0.0,
+            "lr_schedule": lambda _: 0.0,
+            "clip_range": lambda _: 0.0,
+        }
+
+    print(f"Loading {model_path}")
+
+    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
 
     obs = env.reset()
+
+    # Deterministic by default except for atari games
+    stochastic = args.stochastic or is_atari and not args.deterministic
+    deterministic = not stochastic
 
     if video_folder is None:
         video_folder = os.path.join(log_path, "videos")
