@@ -13,3 +13,5 @@ rl-trained_agents/
 htmlcov/
 git_rewrite_commit_history.sh
 .vscode/
+wandb
+runs

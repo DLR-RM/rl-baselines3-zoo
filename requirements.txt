@@ -13,3 +13,4 @@ cloudpickle>=1.5.0
 plotly
 panda-gym==1.1.1 # tmp fix: until compatibility with panda-gym v2
 rliable>=1.0.5
+wandb

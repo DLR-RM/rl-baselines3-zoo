@@ -153,7 +153,7 @@ class ExperimentManager(object):
         )
         self.params_path = f"{self.save_path}/{self.env_id}"
 
-    def setup_experiment(self) -> Optional[BaseAlgorithm]:
+    def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
         """
         Read hyperparameters, pre-process them (create schedules, wrappers, callbacks, action noise objects)
         create the environment and possibly the model.
@@ -187,7 +187,7 @@ class ExperimentManager(object):
             )
 
         self._save_config(saved_hyperparams)
-        return model
+        return model, saved_hyperparams
 
     def learn(self, model: BaseAlgorithm) -> None:
         """
