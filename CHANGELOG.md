@@ -8,6 +8,7 @@
 ### New Features
 
 ### Bug fixes
+- Policies saved during during optimization with distributed Optuna load on new systems (@jkterry)
 - Fixed script for recording video that was not up to date with the enjoy script
 
 ### Documentation
@@ -89,7 +90,7 @@
 - `HER` is now a replay buffer class and no more an algorithm
 - Removed `PlotNoiseRatioCallback`
 - Removed `PlotActionWrapper`
-- Changed `'lr'` key in Optuna param dict to `'learning_rate'` so the dict can be directly passed to SB3 methods (@justinkterry)
+- Changed `'lr'` key in Optuna param dict to `'learning_rate'` so the dict can be directly passed to SB3 methods (@jkterry)
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
@@ -100,7 +101,7 @@
 - Added `--load-last-checkpoint` option for the enjoy script
 - Save Optuna study object at the end of hyperparameter optimization and plot the results (`plotly` package required)
 - Allow to pass multiple folders to `scripts/plot_train.py`
-- Flag to save logs and optimal policies from each training run (@justinkterry)
+- Flag to save logs and optimal policies from each training run (@jkterry)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
@@ -119,9 +120,9 @@
 - Minimum cloudpickle version added to `requirements.txt` (@amy12xx)
 - Fixed atari-py version (ROM missing in newest release)
 - Updated `SAC` and `TD3` search spaces
-- Cleanup eval_freq documentation and variable name changes (@justinkterry)
-- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
-- Clarify n_evaluations help text (@justinkterry)
+- Cleanup eval_freq documentation and variable name changes (@jkterry)
+- Add clarifying print statement when printing saved hyperparameters during optimization (@jkterry)
+- Clarify n_evaluations help text (@jkterry)
 - Simplified hyperparameters files making use of defaults
 - Added new TQC+HER agents
 - Add `panda-gym`environments (@qgallouedec)

@@ -637,8 +637,6 @@ class ExperimentManager(object):
             **kwargs,
         )
 
-        model.trial = trial
-
         eval_env = self.create_envs(n_envs=self.n_eval_envs, eval_env=True)
 
         optuna_eval_freq = int(self.n_timesteps / self.n_evaluations)
