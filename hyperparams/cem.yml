@@ -18,13 +18,17 @@ Pendulum-v1: &pendulum-params
 # TO BE Tuned
 LunarLander-v2:
   <<: *pendulum-params
-  pop_size: 12
-  n_top: 1
   n_timesteps: !!float 2e6
+  pop_size: 16
+  n_top: 4
+  policy_kwargs: "dict(net_arch=[32])"
 
+# Tuned
 LunarLanderContinuous-v2:
   <<: *pendulum-params
   n_timesteps: !!float 2e6
+  pop_size: 16
+  n_top: 4
 
 Acrobot-v1:
   <<: *pendulum-params
