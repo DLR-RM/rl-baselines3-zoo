@@ -193,3 +193,21 @@ class ParallelTrainCallback(BaseCallback):
             if self.verbose > 0:
                 print("Waiting for training thread to terminate")
             self.process.join()
+
+
+class RawStatisticsCallback(BaseCallback):
+    """
+    Callback used for evaluating and reporting a trial.
+    """
+
+    def __init__(self, verbose=0):
+        super(RawStatisticsCallback, self).__init__(verbose)
+        print(self.training_env)
+
+    def _on_step(self) -> bool:
+        for info in self.locals["infos"]:
+            if "episode" in info:
+                self.logger.record("raw/rollouts/episodic_return", info["episode"]["r"])
+                self.logger.record("raw/rollouts/episodic_length", info["episode"]["r"])
+                self.logger.record("raw/rollouts/episodic_time", info["episode"]["t"])
+                return True
