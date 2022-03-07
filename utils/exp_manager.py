@@ -545,7 +545,6 @@ class ExperimentManager(object):
     ) -> VecEnv:
 
         env = knights_archers_zombies_v8.parallel_env()
-        env = ss.frame_stack_v1(env, 3)
         env = ss.black_death_v2(env)
         env = ss.pettingzoo_env_to_vec_env_v1(env)
         print(n_envs)
