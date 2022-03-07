@@ -4,6 +4,7 @@
 - Upgrade to Stable-Baselines3 (SB3) >= 1.4.1a1
 - Upgrade to sb3-contrib >= 1.4.1a1
 - Upgraded to gym 0.21
+- Support experiment tracking via Weights and Biases (@vwxyzjn)
 
 ### New Features
 
