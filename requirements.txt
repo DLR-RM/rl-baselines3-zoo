@@ -1,6 +1,6 @@
-gym>=0.17,<0.20
-stable-baselines3[extra,tests,docs]>=1.3.1a8
-sb3-contrib>=1.3.1a7
+gym==0.21
+stable-baselines3[extra,tests,docs]>=1.4.1a1
+sb3-contrib>=1.4.1a1
 box2d-py==2.3.8
 pybullet
 gym-minigrid
@@ -10,8 +10,7 @@ pytablewriter
 seaborn
 pyyaml>=5.1
 cloudpickle>=1.5.0
-# tmp fix: ROM missing in newest release
-atari-py==0.2.6
 plotly
 panda-gym==1.1.1 # tmp fix: until compatibility with panda-gym v2
 rliable>=1.0.5
+wandb

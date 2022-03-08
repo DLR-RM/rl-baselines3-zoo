@@ -14,7 +14,7 @@ MountainCarContinuous-v0:
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64])"
 
-Pendulum-v0:
+Pendulum-v1:
   # callback:
   #   - utils.callbacks.ParallelTrainCallback
   n_timesteps: 20000

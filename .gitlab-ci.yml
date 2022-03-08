@@ -16,7 +16,7 @@ pytest:
 check-trained-agents:
   script:
   # MKL_THREADING_LAYER=GNU to avoid MKL_THREADING_LAYER=INTEL incompatibility error
-  - pip install pickle5  # Add support for pickle6 protocol
+  - pip install pickle5  # Add support for pickle5 protocol
   - MKL_THREADING_LAYER=GNU make check-trained-agents
 
 lint:

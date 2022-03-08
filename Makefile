@@ -6,7 +6,7 @@ pytest:
 
 # check all trained agents (slow)
 check-trained-agents:
-	python -m pytest -v tests/test_enjoy.py -k trained_agent
+	python -m pytest -v tests/test_enjoy.py -k trained_agent --color=yes
 
 # Type check
 type:

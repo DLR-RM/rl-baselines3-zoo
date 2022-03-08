@@ -34,7 +34,7 @@ and also allow users to have access to pretrained agents.*
 |a2c  |LunarLanderContinuous-v2   |     84.225|   145.906|5M         |        149305|          256|
 |a2c  |MountainCar-v0             |   -111.263|    24.087|1M         |        149982|         1348|
 |a2c  |MountainCarContinuous-v0   |     91.166|     0.255|100k       |        149923|         1659|
-|a2c  |Pendulum-v0                |   -162.965|   103.210|1M         |        150000|          750|
+|a2c  |Pendulum-v1                |   -162.965|   103.210|1M         |        150000|          750|
 |a2c  |PongNoFrameskip-v4         |     17.292|     3.214|10M        |        594910|           65|
 |a2c  |QbertNoFrameskip-v4        |   3882.345|  1223.327|10M        |        610670|          194|
 |a2c  |ReacherBulletEnv-v0        |     14.968|    10.978|2M         |        150000|         1000|
@@ -43,13 +43,24 @@ and also allow users to have access to pretrained agents.*
 |a2c  |SpaceInvadersNoFrameskip-v4|    627.160|   201.974|10M        |        604848|          162|
 |a2c  |Swimmer-v3                 |    200.627|     2.544|1M         |        150000|          150|
 |a2c  |Walker2DBulletEnv-v0       |    858.209|   333.116|2M         |        149156|          173|
+|ars  |Acrobot-v1                 |    -82.884|    23.825|500k       |        149985|         1788|
+|ars  |Ant-v3                     |   2333.773|    20.597|75M        |        150000|          150|
+|ars  |CartPole-v1                |    500.000|     0.000|50k        |        150000|          300|
+|ars  |HalfCheetah-v3             |   4815.192|  1340.752|12M        |        150000|          150|
+|ars  |Hopper-v3                  |   3343.919|     5.730|7M         |        150000|          150|
+|ars  |LunarLanderContinuous-v2   |    167.959|   147.071|2M         |        149883|          562|
+|ars  |MountainCar-v0             |   -122.000|    33.456|500k       |        149938|         1229|
+|ars  |MountainCarContinuous-v0   |     96.672|     0.784|500k       |        149990|          621|
+|ars  |Pendulum-v1                |   -212.540|   160.444|2M         |        150000|          750|
+|ars  |Swimmer-v3                 |    355.267|    12.796|2M         |        150000|          150|
+|ars  |Walker2d-v3                |   2993.582|   166.289|75M        |        149821|          152|
 |ddpg |AntBulletEnv-v0            |   2399.147|    75.410|1M         |        150000|          150|
 |ddpg |BipedalWalker-v3           |    197.486|   141.580|1M         |        149237|          227|
 |ddpg |HalfCheetahBulletEnv-v0    |   2078.325|   208.379|1M         |        150000|          150|
 |ddpg |HopperBulletEnv-v0         |   1157.065|   448.695|1M         |        149565|          346|
 |ddpg |LunarLanderContinuous-v2   |    230.217|    92.372|300k       |        149862|          556|
 |ddpg |MountainCarContinuous-v0   |     93.512|     0.048|300k       |        149965|         2260|
-|ddpg |Pendulum-v0                |   -152.099|    94.282|20k        |        150000|          750|
+|ddpg |Pendulum-v1                |   -152.099|    94.282|20k        |        150000|          750|
 |ddpg |ReacherBulletEnv-v0        |     15.582|     9.606|300k       |        150000|         1000|
 |ddpg |Walker2DBulletEnv-v0       |   1387.591|   736.955|1M         |        149051|          208|
 |dqn  |Acrobot-v1                 |    -76.639|    11.752|100k       |        149998|         1932|
@@ -83,7 +94,7 @@ and also allow users to have access to pretrained agents.*
 |ppo  |LunarLanderContinuous-v2   |    270.863|    32.072|1M         |        149956|          526|
 |ppo  |MountainCar-v0             |   -110.423|    19.473|1M         |        149954|         1358|
 |ppo  |MountainCarContinuous-v0   |     88.343|     2.572|20k        |        149983|          633|
-|ppo  |Pendulum-v0                |   -172.225|   104.159|100k       |        150000|          750|
+|ppo  |Pendulum-v1                |   -172.225|   104.159|100k       |        150000|          750|
 |ppo  |PongNoFrameskip-v4         |     20.989|     0.105|10M        |        599902|           90|
 |ppo  |QbertNoFrameskip-v4        |  15627.108|  3313.538|10M        |        600248|           83|
 |ppo  |ReacherBulletEnv-v0        |     17.091|    11.048|1M         |        150000|         1000|
@@ -117,7 +128,7 @@ and also allow users to have access to pretrained agents.*
 |sac  |Humanoid-v3                |   6232.287|   279.885|2M         |        149460|          150|
 |sac  |LunarLanderContinuous-v2   |    260.390|    65.467|500k       |        149634|          672|
 |sac  |MountainCarContinuous-v0   |     94.679|     1.134|50k        |        149966|         1443|
-|sac  |Pendulum-v0                |   -156.995|    88.714|20k        |        150000|          750|
+|sac  |Pendulum-v1                |   -156.995|    88.714|20k        |        150000|          750|
 |sac  |ReacherBulletEnv-v0        |     18.062|     9.729|300k       |        150000|         1000|
 |sac  |Swimmer-v3                 |    345.568|     3.084|1M         |        150000|          150|
 |sac  |Walker2DBulletEnv-v0       |   2292.266|    13.970|1M         |        149983|          150|
@@ -133,7 +144,7 @@ and also allow users to have access to pretrained agents.*
 |td3  |Humanoid-v3                |   5566.687|    14.544|2M         |        150000|          150|
 |td3  |LunarLanderContinuous-v2   |    207.451|    67.562|300k       |        149488|          337|
 |td3  |MountainCarContinuous-v0   |     93.483|     0.075|300k       |        149976|         2275|
-|td3  |Pendulum-v0                |   -151.855|    90.227|20k        |        150000|          750|
+|td3  |Pendulum-v1                |   -151.855|    90.227|20k        |        150000|          750|
 |td3  |ReacherBulletEnv-v0        |     17.114|     9.750|300k       |        150000|         1000|
 |td3  |Swimmer-v3                 |    359.127|     1.244|1M         |        150000|          150|
 |td3  |Walker2DBulletEnv-v0       |   2213.672|   230.558|1M         |        149800|          152|
@@ -158,7 +169,7 @@ and also allow users to have access to pretrained agents.*
 |tqc  |PandaReach-v1              |     -1.768|     0.858|20k        |        150000|         3000|
 |tqc  |PandaSlide-v1              |    -27.497|     9.868|3M         |        150000|         3000|
 |tqc  |PandaStack-v1              |    -96.915|    17.240|1M         |        150000|         1500|
-|tqc  |Pendulum-v0                |   -151.340|    87.893|20k        |        150000|          750|
+|tqc  |Pendulum-v1                |   -151.340|    87.893|20k        |        150000|          750|
 |tqc  |ReacherBulletEnv-v0        |     18.255|     9.543|300k       |        150000|         1000|
 |tqc  |Swimmer-v3                 |    339.423|     1.486|1M         |        150000|          150|
 |tqc  |Walker2DBulletEnv-v0       |   2508.934|   614.624|1M         |        149572|          159|
@@ -177,7 +188,7 @@ and also allow users to have access to pretrained agents.*
 |trpo |LunarLanderContinuous-v2   |    262.387|    21.428|200k       |        149925|          501|
 |trpo |MountainCar-v0             |   -107.278|    13.231|100k       |        149974|         1398|
 |trpo |MountainCarContinuous-v0   |     92.489|     0.355|50k        |        149971|         1732|
-|trpo |Pendulum-v0                |   -174.631|   127.577|100k       |        150000|          750|
+|trpo |Pendulum-v1                |   -174.631|   127.577|100k       |        150000|          750|
 |trpo |ReacherBulletEnv-v0        |     14.741|    11.559|300k       |        150000|         1000|
 |trpo |Swimmer-v3                 |    365.663|     2.087|1M         |        150000|          150|
 |trpo |Walker2DBulletEnv-v0       |   1483.467|   823.468|2M         |        149860|          197|

@@ -5,7 +5,7 @@ MountainCarContinuous-v0:
   noise_type: 'ornstein-uhlenbeck'
   noise_std: 0.5
 
-Pendulum-v0:
+Pendulum-v1:
   n_timesteps: 20000
   policy: 'MlpPolicy'
   gamma: 0.98
