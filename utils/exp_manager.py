@@ -628,12 +628,17 @@ class ExperimentManager(object):
         n_envs = 1 if self.algo == "ars" else self.n_envs
         env = self.create_envs(n_envs, no_log=True)
 
+        verbosity = 0
+        
+        if self.verbose == 2:
+            verbosity = 2
+        
         model = ALGOS[self.algo](
             env=env,
             tensorboard_log=None,
             # We do not seed the trial
             seed=None,
-            verbose=self.verbose,
+            verbose=verbosity,
             **kwargs,
         )
 
