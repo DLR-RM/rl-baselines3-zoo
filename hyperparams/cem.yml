@@ -6,13 +6,14 @@ CartPole-v1:
   pop_size: 4
   n_top: 2
 
+# Tuned
 Pendulum-v1: &pendulum-params
   n_envs: 1
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   normalize: "dict(norm_obs=True, norm_reward=False)"
   pop_size: 8
-  n_top: 2
+  n_top: 4
   policy_kwargs: "dict(net_arch=[16])"
 
 # TO BE Tuned
@@ -30,6 +31,7 @@ LunarLanderContinuous-v2:
   pop_size: 16
   n_top: 4
 
+# Tuned
 Acrobot-v1:
   <<: *pendulum-params
   n_timesteps: !!float 5e5
@@ -46,19 +48,13 @@ MountainCarContinuous-v0:
   n_timesteps: !!float 5e5
 
 # === Pybullet Envs ===
-
+# To be tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
-  n_envs: 1
-  policy: 'MlpPolicy'
-  n_timesteps: !!float 7.5e7
-  learning_rate: !!float 0.02
-  delta_std: !!float 0.03
-  pop_size: 16
-  n_top: 8
-  alive_bonus_offset: 0
-  normalize: "dict(norm_obs=True, norm_reward=False)"
-  policy_kwargs: "dict(net_arch=[64])"
-  zero_policy: False
+  <<: *pendulum-params
+  n_timesteps: !!float 1e6
+  pop_size: 64
+  n_top: 6
+  extra_noise_std: 0.1
 
 # To be tuned
 AntBulletEnv-v0:
@@ -87,16 +83,14 @@ Walker2DBulletEnv-v0:
   policy_kwargs: "dict(net_arch=[64, 64])"
   zero_policy: False
 
+# Tuned
 HopperBulletEnv-v0:
-  n_envs: 1
-  policy: 'LinearPolicy'
-  n_timesteps: !!float 7e6
-  learning_rate: !!float 0.01
-  delta_std: !!float 0.025
-  n_delta: 8
-  n_top: 4
+  <<: *pendulum-params
+  n_timesteps: !!float 1e6
+  pop_size: 64
+  n_top: 6
+  extra_noise_std: 0.1
   alive_bonus_offset: -1
-  normalize: "dict(norm_obs=True, norm_reward=False)"
 
 ReacherBulletEnv-v0:
   <<: *pybullet-defaults
@@ -107,20 +101,23 @@ ReacherBulletEnv-v0:
 Swimmer-v3:
   <<: *pendulum-params
   n_timesteps: !!float 1e6
+  n_top: 2
 
 Hopper-v3:
   <<: *pendulum-params
   n_timesteps: !!float 1e6
-  pop_size: 16
-  n_top: 4
+  pop_size: 64
+  n_top: 6
+  extra_noise_std: 0.1
   alive_bonus_offset: -1
+
 
 HalfCheetah-v3:
   <<: *pendulum-params
   n_timesteps: !!float 1e6
-  pop_size: 16
-  n_top: 4
-  alive_bonus_offset: 0
+  pop_size: 50
+  n_top: 6
+  extra_noise_std: 0.1
 
 Walker2d-v3:
   n_envs: 1
@@ -131,14 +128,14 @@ Walker2d-v3:
   alive_bonus_offset: -1
   normalize: "dict(norm_obs=True, norm_reward=False)"
 
+# TO BE TUNED
 Ant-v3:
-  n_envs: 1
-  policy: 'LinearPolicy'
-  n_timesteps: !!float 7.5e7
-  pop_size: 60
-  n_top: 20
+  <<: *pendulum-params
+  n_timesteps: !!float 2e6
+  pop_size: 128
+  n_top: 32
+  extra_noise_std: 0.1
   alive_bonus_offset: -1
-  normalize: "dict(norm_obs=True, norm_reward=False)"
 
 
 Humanoid-v3:
