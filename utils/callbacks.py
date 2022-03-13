@@ -47,17 +47,15 @@ class TrialEvalCallback(EvalCallback):
         if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
             super(TrialEvalCallback, self)._on_step()
             self.eval_idx += 1
-            # report best or report current ?
             # report num_timesteps or elasped time ?
 
             # HACK for ARS/CEM, remove alive bonus if needed
-            if hasattr(self.model, "alive_bonus_offset"):
-                # TODO: retrieve the true episode length
-                mean_ep_length = self.logger.name_to_value["eval/mean_ep_length"]
-                adjusted_return = self.last_mean_reward + mean_ep_length * self.model.alive_bonus_offset
-                self.trial.report(adjusted_return, self.eval_idx)
-            else:
-                self.trial.report(self.last_mean_reward, self.eval_idx)
+            # if hasattr(self.model, "alive_bonus_offset"):
+            #     # TODO: retrieve the true episode length
+            #     adjusted_return = self.last_mean_reward + mean_ep_length * self.model.alive_bonus_offset
+            #     self.trial.report(adjusted_return, self.eval_idx)
+
+            self.trial.report(self.last_mean_reward, self.eval_idx)
             # Prune trial if need
             if self.trial.should_prune():
                 self.is_pruned = True
