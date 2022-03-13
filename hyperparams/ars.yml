@@ -215,4 +215,3 @@ A1Jumping-v0:
   # alive_bonus_offset: -1
   normalize: "dict(norm_obs=True, norm_reward=False)"
   # policy_kwargs: "dict(net_arch=[16])"
-
