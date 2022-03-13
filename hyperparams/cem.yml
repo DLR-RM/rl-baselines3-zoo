@@ -131,6 +131,12 @@ Walker2d-v3:
 # TO BE TUNED
 Ant-v3:
   <<: *pendulum-params
+  # For hyperparameter optimization, to alive_bonus_offset
+  # taken into account (reward_offset):
+  # env_wrapper:
+  #   - utils.wrappers.DoneOnSuccessWrapper:
+  #         reward_offset: -1.0
+  #   - stable_baselines3.common.monitor.Monitor
   n_timesteps: !!float 2e6
   pop_size: 128
   n_top: 32
