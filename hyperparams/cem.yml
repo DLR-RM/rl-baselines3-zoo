@@ -138,10 +138,12 @@ Ant-v3:
   #         reward_offset: -1.0
   #   - stable_baselines3.common.monitor.Monitor
   n_timesteps: !!float 2e6
-  pop_size: 128
-  n_top: 32
-  extra_noise_std: 0.1
+  pop_size: 64
+  n_top: 6
+  # extra_noise_std: 0.1
+  # noise_multiplier: 0.999
   alive_bonus_offset: -1
+  policy_kwargs: "dict(net_arch=[])"
 
 
 Humanoid-v3:
