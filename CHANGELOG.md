@@ -4,7 +4,8 @@
 - Upgrade to Stable-Baselines3 (SB3) >= 1.4.1a1
 - Upgrade to sb3-contrib >= 1.4.1a1
 - Upgraded to gym 0.21
-- Support experiment tracking via Weights and Biases (@vwxyzjn)
+- Support experiment tracking via Weights and Biases via the `--track` flag (@vwxyzjn)
+- Support tracking raw episodic stats via `RawStatisticsCallback` (@vwxyzjn, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/216)
 
 ### New Features
 - Verbose mode for each trial (when doing hyperparam optimization) can now be activated using the debug mode (verbose == 2)
