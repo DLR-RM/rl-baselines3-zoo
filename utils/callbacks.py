@@ -48,13 +48,6 @@ class TrialEvalCallback(EvalCallback):
             super(TrialEvalCallback, self)._on_step()
             self.eval_idx += 1
             # report num_timesteps or elasped time ?
-
-            # HACK for ARS/CEM, remove alive bonus if needed
-            # if hasattr(self.model, "alive_bonus_offset"):
-            #     # TODO: retrieve the true episode length
-            #     adjusted_return = self.last_mean_reward + mean_ep_length * self.model.alive_bonus_offset
-            #     self.trial.report(adjusted_return, self.eval_idx)
-
             self.trial.report(self.last_mean_reward, self.eval_idx)
             # Prune trial if need
             if self.trial.should_prune():
