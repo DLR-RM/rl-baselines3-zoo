@@ -18,12 +18,14 @@ Pendulum-v1: &pendulum-params
   policy_kwargs: "dict(net_arch=[16])"
   zero_policy: False
 
-# TO BE Tuned
+# Almost Tuned
 LunarLander-v2:
   <<: *pendulum-params
-  n_delta: 6
-  n_top: 1
-  n_timesteps: !!float 2e6
+  n_timesteps: !!float 4e6
+  n_delta: 64
+  n_top: 4
+  policy_kwargs: "dict(net_arch=[])"
+  # delta_std: 0.08
 
 # Tuned
 LunarLanderContinuous-v2:
