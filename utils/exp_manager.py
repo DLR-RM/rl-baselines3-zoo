@@ -628,12 +628,20 @@ class ExperimentManager(object):
         n_envs = 1 if self.algo in ["ars", "cem"] else self.n_envs
         env = self.create_envs(n_envs, no_log=True)
 
+        # By default, do not activate verbose output to keep
+        # stdout clean with only the trials results
+        trial_verbosity = 0
+        # Activate verbose mode for the trial in debug mode
+        # See PR #214
+        if self.verbose >= 2:
+            trial_verbosity = self.verbose
+
         model = ALGOS[self.algo](
             env=env,
             tensorboard_log=None,
             # We do not seed the trial
             seed=None,
-            verbose=0,
+            verbose=trial_verbosity,
             **kwargs,
         )
 

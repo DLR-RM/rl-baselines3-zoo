@@ -7,6 +7,7 @@
 - Support experiment tracking via Weights and Biases (@vwxyzjn)
 
 ### New Features
+- Verbose mode for each trial (when doing hyperparam optimization) can now be activated using the debug mode (verbose == 2)
 
 ### Bug fixes
 - Policies saved during during optimization with distributed Optuna load on new systems (@jkterry)
@@ -16,7 +17,6 @@
 ### Documentation
 
 ### Other
-
 
 ## Release 1.4.0 (2022-01-19)
 
