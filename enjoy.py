@@ -24,6 +24,7 @@ def main():  # noqa: C901
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
     parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
     parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
+    parser.add_argument("--exp-uuid", help="Experiment UUID (default: boh: error)", default="boh", type=str)
     parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
     parser.add_argument(
         "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
@@ -78,7 +79,12 @@ def main():  # noqa: C901
     if args.exp_id > 0:
         log_path = os.path.join(folder, algo, f"{env_id}_{args.exp_id}")
     else:
-        log_path = os.path.join(folder, algo)
+        # log_path = os.path.join(folder, algo)
+        if args.exp_uuid != 'boh':
+            log_path = os.path.join(folder, algo, f"{env_id}_{args.exp_uuid}")
+        else:
+            log_path = os.path.join(folder, algo)
+
 
     assert os.path.isdir(log_path), f"The {log_path} folder was not found"
 
