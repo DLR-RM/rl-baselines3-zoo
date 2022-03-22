@@ -295,8 +295,13 @@ def get_latest_run_id(log_path: str, env_id: str) -> int:
     for path in glob.glob(os.path.join(log_path, env_id + "_[0-9]*")):
         file_name = os.path.basename(path)
         ext = file_name.split("_")[-1]
-        if env_id == "_".join(file_name.split("_")[:-1]) and ext.isdigit() and int(ext) > max_run_id:
-            max_run_id = int(ext)
+        if ext.isdigit():
+            if env_id == "_".join(file_name.split("_")[:-1]) and ext.isdigit() and int(ext) > max_run_id:
+                max_run_id = int(ext)
+        else:
+            ext = file_name.split("_")[-2]
+            if env_id == "_".join(file_name.split("_")[:-2]) and ext.isdigit() and int(ext) > max_run_id:
+                max_run_id = int(ext)
     return max_run_id
 
 
