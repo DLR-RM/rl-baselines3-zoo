@@ -1,14 +1,17 @@
-## Release 1.4.1a1 (WIP)
+## Release 1.5.0 (2022-03-25)
+
+**Support for Weight and Biases experiment tracking**
 
 ### Breaking Changes
-- Upgrade to Stable-Baselines3 (SB3) >= 1.4.1a1
-- Upgrade to sb3-contrib >= 1.4.1a1
+- Upgrade to Stable-Baselines3 (SB3) >= 1.5.0
+- Upgrade to sb3-contrib >= 1.5.0
 - Upgraded to gym 0.21
-- Support experiment tracking via Weights and Biases via the `--track` flag (@vwxyzjn)
-- Support tracking raw episodic stats via `RawStatisticsCallback` (@vwxyzjn, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/216)
 
 ### New Features
 - Verbose mode for each trial (when doing hyperparam optimization) can now be activated using the debug mode (verbose == 2)
+- Support experiment tracking via Weights and Biases via the `--track` flag (@vwxyzjn)
+- Support tracking raw episodic stats via `RawStatisticsCallback` (@vwxyzjn, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/216)
+
 
 ### Bug fixes
 - Policies saved during during optimization with distributed Optuna load on new systems (@jkterry)
