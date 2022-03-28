@@ -746,7 +746,10 @@ class ExperimentManager(object):
 
         print("Params: ")
         for key, value in trial.params.items():
-            print(f"    {key}: {value}")
+            if key in trial.user_attrs:
+                print(f"    {key}: {trial.user_attrs[key]}")
+            else:
+                print(f"    {key}: {value}")
 
         report_name = (
             f"report_{self.env_id}_{self.n_trials}-trials-{self.n_timesteps}"
