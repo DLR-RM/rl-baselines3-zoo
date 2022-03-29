@@ -42,7 +42,31 @@ CartPole-v1:
   learning_rate: lin_0.001
   clip_range: lin_0.2
 
+seals/CartPole-v0:
+  n_envs: 8
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 32
+  batch_size: 256
+  gae_lambda: 0.8
+  gamma: 0.98
+  n_epochs: 20
+  ent_coef: 0.0
+  learning_rate: lin_0.001
+  clip_range: lin_0.2
+
 MountainCar-v0:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  n_steps: 16
+  gae_lambda: 0.98
+  gamma: 0.99
+  n_epochs: 4
+  ent_coef: 0.0
+
+seals/MountainCar-v0:
   normalize: true
   n_envs: 16
   n_timesteps: !!float 1e6
@@ -355,6 +379,9 @@ Ant-v3: &mujoco-defaults
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
 
+seals/Ant-v0:
+  <<: *mujoco-defaults
+
 # Hopper-v3:
 #   <<: *mujoco-defaults
 #
@@ -369,10 +396,36 @@ Swimmer-v3:
   <<: *mujoco-defaults
   gamma: 0.9999
 
+seals/Swimmer-v0:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+
 # Tuned
 # 10 mujoco envs
 
 HalfCheetah-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 64
+  n_steps: 512
+  gamma: 0.98
+  learning_rate: 2.0633e-05
+  ent_coef: 0.000401762
+  clip_range: 0.1
+  n_epochs: 20
+  gae_lambda: 0.92
+  max_grad_norm: 0.8
+  vf_coef: 0.58096
+  policy_kwargs: "dict(
+                    log_std_init=-2,
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                  )"
+
+seals/HalfCheetah-v0:
   normalize: true
   n_envs: 1
   policy: 'MlpPolicy'
@@ -432,6 +485,28 @@ Hopper-v3:
                     net_arch=[dict(pi=[256, 256], vf=[256, 256])]
                   )"
 
+seals/Hopper-v0:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 32
+  n_steps: 512
+  gamma: 0.999
+  learning_rate: 9.80828e-05
+  ent_coef: 0.00229519
+  clip_range: 0.2
+  n_epochs: 5
+  gae_lambda: 0.99
+  max_grad_norm: 0.7
+  vf_coef: 0.835671
+  policy_kwargs: "dict(
+                    log_std_init=-2,
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                  )"
+
 HumanoidStandup-v3:
   normalize: true
   n_envs: 1
@@ -455,6 +530,28 @@ HumanoidStandup-v3:
                   )"
 
 Humanoid-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 1e7
+  batch_size: 256
+  n_steps: 512
+  gamma: 0.95
+  learning_rate: 3.56987e-05
+  ent_coef: 0.00238306
+  clip_range: 0.3
+  n_epochs: 5
+  gae_lambda: 0.9
+  max_grad_norm: 2
+  vf_coef: 0.431892
+  policy_kwargs: "dict(
+                    log_std_init=-2,
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                  )"
+
+seals/Humanoid-v0:
   normalize: true
   n_envs: 1
   policy: 'MlpPolicy'
@@ -547,6 +644,22 @@ Reacher-v3:
 #                   )"
 
 Walker2d-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 32
+  n_steps: 512
+  gamma: 0.99
+  learning_rate: 5.05041e-05
+  ent_coef: 0.000585045
+  clip_range: 0.1
+  n_epochs: 20
+  gae_lambda: 0.95
+  max_grad_norm: 1
+  vf_coef: 0.871923
+
+seals/Walker2d-v0:
   normalize: true
   n_envs: 1
   policy: 'MlpPolicy'
