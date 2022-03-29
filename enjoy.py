@@ -3,7 +3,6 @@ import glob
 import importlib
 import os
 import sys
-from xml.dom import ValidationErr
 
 import numpy as np
 import torch as th
@@ -25,12 +24,12 @@ def main():  # noqa: C901
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
     parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
     parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
-    parser.add_argument("--exp-uuid", help="Experiment UUID (default: 0: latest, -1: no exp folder)", default=0, type=int)
     parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
     parser.add_argument(
         "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
     )
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
+    parser.add_argument("--device", help="PyTorch device to be use (ex: cpu, cuda...)", default="auto", type=str)
     parser.add_argument(
         "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
     )
@@ -75,26 +74,12 @@ def main():  # noqa: C901
     if args.exp_id == 0:
         args.exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
         print(f"Loading latest experiment, id={args.exp_id}")
-    else:
-        if args.exp_uuid == 0:
-            args.exp_uuid = get_latest_run_id(os.path.join(folder, algo), env_id)
-            print(f"Loading latest experiment, id={args.exp_uuid}")
 
     # Sanity checks
     if args.exp_id > 0:
         log_path = os.path.join(folder, algo, f"{env_id}_{args.exp_id}")
     else:
-        # log_path = os.path.join(folder, algo)
-        if args.exp_uuid > 0:
-            log_path = glob.glob(os.path.join(folder, algo, f"{env_id}_{args.exp_uuid}_*"))
-            print(log_path)
-            if len(log_path) > 1:
-                raise ValueError('There are two experiments with the same id')
-            elif len(log_path) == 1:
-                log_path = log_path[0]
-        else:
-            log_path = os.path.join(folder, algo)
-
+        log_path = os.path.join(folder, algo)
 
     assert os.path.isdir(log_path), f"The {log_path} folder was not found"
 
@@ -191,7 +176,7 @@ def main():  # noqa: C901
             "clip_range": lambda _: 0.0,
         }
 
-    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
+    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=args.device, **kwargs)
 
     obs = env.reset()
 
