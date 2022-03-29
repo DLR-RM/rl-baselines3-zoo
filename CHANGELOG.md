@@ -1,3 +1,16 @@
+## Release 1.5.1a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+- Support setting PyTorch's device with thye `--device` flag (@gregwar)
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
 ## Release 1.5.0 (2022-03-25)
 
 **Support for Weight and Biases experiment tracking**
