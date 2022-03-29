@@ -195,20 +195,40 @@ HalfCheetah-v3: &mujoco-defaults
   policy: 'MlpPolicy'
   learning_starts: 10000
 
+seals/HalfCheetah-v0:
+  <<: *mujoco-defaults
+
 Ant-v3:
+  <<: *mujoco-defaults
+
+seals/Ant-v0:
   <<: *mujoco-defaults
 
 Hopper-v3:
   <<: *mujoco-defaults
 
+seals/Hopper-v0:
+  <<: *mujoco-defaults
+
 Walker2d-v3:
+  <<: *mujoco-defaults
+
+seals/Walker2d-v0:
   <<: *mujoco-defaults
 
 Humanoid-v3:
   <<: *mujoco-defaults
   n_timesteps: !!float 2e6
 
+seals/Humanoid-v0:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+
 Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+
+seals/Swimmer-v0:
   <<: *mujoco-defaults
   gamma: 0.9999
 

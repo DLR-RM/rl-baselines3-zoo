@@ -5,6 +5,12 @@ CartPole-v1:
   policy: 'LinearPolicy'
   n_delta: 2
 
+seals/CartPole-v0:
+  n_envs: 1
+  n_timesteps: !!float 5e4
+  policy: 'LinearPolicy'
+  n_delta: 2
+
 # Tuned
 Pendulum-v1: &pendulum-params
   n_envs: 1
@@ -37,6 +43,11 @@ Acrobot-v1:
 
 # Tuned
 MountainCar-v0:
+  <<: *pendulum-params
+  n_delta: 8
+  n_timesteps: !!float 5e5
+
+seals/MountainCar-v0:
   <<: *pendulum-params
   n_delta: 8
   n_timesteps: !!float 5e5
@@ -119,7 +130,29 @@ Swimmer-v3:
   alive_bonus_offset: 0
   # normalize: "dict(norm_obs=True, norm_reward=False)"
 
+seals/Swimmer-v0:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 2e6
+  learning_rate: !!float 0.02
+  delta_std: !!float 0.01
+  n_delta: 1
+  n_top: 1
+  alive_bonus_offset: 0
+  # normalize: "dict(norm_obs=True, norm_reward=False)"
+
 Hopper-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7e6
+  learning_rate: !!float 0.01
+  delta_std: !!float 0.025
+  n_delta: 8
+  n_top: 4
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+seals/Hopper-v0:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 7e6
@@ -141,7 +174,29 @@ HalfCheetah-v3:
   alive_bonus_offset: 0
   normalize: "dict(norm_obs=True, norm_reward=False)"
 
+seals/HalfCheetah-v0:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 1.25e7
+  learning_rate: !!float 0.02
+  delta_std: !!float 0.03
+  n_delta: 32
+  n_top: 4
+  alive_bonus_offset: 0
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
 Walker2d-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.03
+  delta_std: !!float 0.025
+  n_delta: 40
+  n_top: 30
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+seals/Walker2d-v0:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 7.5e7
@@ -163,8 +218,30 @@ Ant-v3:
   alive_bonus_offset: -1
   normalize: "dict(norm_obs=True, norm_reward=False)"
 
+seals/Ant-v0:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.015
+  delta_std: !!float 0.025
+  n_delta: 60
+  n_top: 20
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
 
 Humanoid-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 2.5e8
+  learning_rate: 0.02
+  delta_std: 0.0075
+  n_delta: 256
+  n_top: 256
+  alive_bonus_offset: -5
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+seals/Humanoid-v0:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 2.5e8
