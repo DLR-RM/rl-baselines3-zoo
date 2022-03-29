@@ -5,7 +5,7 @@ import time
 import warnings
 from collections import OrderedDict
 from pprint import pprint
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import gym
 import numpy as np
@@ -38,6 +38,7 @@ from stable_baselines3.common.vec_env import (
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401
+import torch as th
 
 # Register custom envs
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
@@ -87,6 +88,7 @@ class ExperimentManager(object):
         vec_env_type: str = "dummy",
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
+        device: Union[th.device, str] = "auto",
     ):
         super(ExperimentManager, self).__init__()
         self.algo = algo
@@ -138,6 +140,7 @@ class ExperimentManager(object):
         self.n_startup_trials = n_startup_trials
         self.n_evaluations = n_evaluations
         self.deterministic_eval = not self.is_atari(self.env_id)
+        self.device = device
 
         # Logging
         self.log_folder = log_folder
@@ -183,6 +186,7 @@ class ExperimentManager(object):
                 tensorboard_log=self.tensorboard_log,
                 seed=self.seed,
                 verbose=self.verbose,
+                device=self.device,
                 **self._hyperparams,
             )
 
@@ -573,6 +577,7 @@ class ExperimentManager(object):
             seed=self.seed,
             tensorboard_log=self.tensorboard_log,
             verbose=self.verbose,
+            device=self.device,
             **hyperparams,
         )
 
@@ -642,6 +647,7 @@ class ExperimentManager(object):
             # We do not seed the trial
             seed=None,
             verbose=trial_verbosity,
+            device=self.device,
             **kwargs,
         )
 
