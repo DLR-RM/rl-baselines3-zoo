@@ -29,6 +29,7 @@ def main():  # noqa: C901
         "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
     )
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
+    parser.add_argument("--device", help="PyTorch device to be use (ex: cpu, cuda...)", default="auto", type=str)
     parser.add_argument(
         "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
     )
@@ -175,7 +176,7 @@ def main():  # noqa: C901
             "clip_range": lambda _: 0.0,
         }
 
-    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
+    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=args.device, **kwargs)
 
     obs = env.reset()
 

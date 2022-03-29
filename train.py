@@ -56,6 +56,7 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("-f", "--log-folder", help="Log folder", type=str, default="logs")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=-1)
     parser.add_argument("--vec-env", help="VecEnv type", type=str, default="dummy", choices=["dummy", "subproc"])
+    parser.add_argument("--device", help="PyTorch device to be use (ex: cpu, cuda...)", default="auto", type=str)
     parser.add_argument(
         "--n-trials",
         help="Number of trials for optimizing hyperparameters. "
@@ -214,6 +215,7 @@ if __name__ == "__main__":  # noqa: C901
         vec_env_type=args.vec_env,
         n_eval_envs=args.n_eval_envs,
         no_optim_plots=args.no_optim_plots,
+        device=args.device,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
