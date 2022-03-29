@@ -7,9 +7,9 @@ import sys
 import numpy as np
 import torch as th
 import yaml
+from stable_baselines3.common.utils import set_random_seed
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
-from stable_baselines3.common.utils import set_random_seed
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 from utils.exp_manager import ExperimentManager
 from utils.utils import StoreDict

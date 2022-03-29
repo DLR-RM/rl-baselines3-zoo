@@ -10,6 +10,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import gym
 import numpy as np
 import optuna
+import torch as th
 import yaml
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
@@ -38,7 +39,6 @@ from stable_baselines3.common.vec_env import (
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401
-import torch as th
 
 # Register custom envs
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
