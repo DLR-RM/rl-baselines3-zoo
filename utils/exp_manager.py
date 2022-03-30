@@ -346,7 +346,7 @@ class ExperimentManager(object):
         if self.n_evaluations is None:
             self.n_evaluations = self.n_timesteps // int(1e5)
             print(f"Doing {self.n_evaluations} intermediate evaluations for pruning "
-                  f"based on the number of timesteps.")
+                  "based on the number of timesteps.")
 
         # Pre-process normalize config
         hyperparams = self._preprocess_normalization(hyperparams)
