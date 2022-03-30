@@ -5,7 +5,10 @@ include(cmake/CMakeRC.cmake)
 cmrc_add_resource_library(baselines3_model_resources
         ALIAS baselines3_model::rc
         NAMESPACE baselines3_model
+
+        # XXX: Generate
         assets/approach_v0_model.pt
+        assets/CartPole_v1_model.pt
         )
 
 # Install PyTorch C++ first, see: https://pytorch.org/cppdocs/installing.html
@@ -21,7 +24,10 @@ option(BASELINES3_BIN "Building bin" OFF)
 set(ALL_SOURCES
     src/baselines3_models/predictor.cpp
     src/baselines3_models/preprocessing.cpp
-    src/baselines3_models/approach_v0.cpp
+
+    # XXX: Generate
+    # src/baselines3_models/approach_v0.cpp
+    src/baselines3_models/cartpole_v1.cpp
 )
 
 add_library(baselines3_models SHARED ${ALL_SOURCES})

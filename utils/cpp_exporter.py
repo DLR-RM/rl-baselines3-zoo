@@ -5,6 +5,7 @@ from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.common.policies import ActorCriticPolicy
 from stable_baselines3.td3.policies import TD3Policy
 from stable_baselines3.sac.policies import SACPolicy
+from stable_baselines3.dqn.policies import DQNPolicy
 
 
 class CppExporter(object):
@@ -19,6 +20,7 @@ class CppExporter(object):
         observation_space = self.model.env.observation_space
         policy = self.model.policy
         preprocess_observation = ""
+        self.vars["OBSERVATION_SPACE"] = repr(observation_space)
 
         if isinstance(observation_space, spaces.Box):
             if is_image_space(observation_space) and policy.normalize_images:
@@ -38,19 +40,23 @@ class CppExporter(object):
 
     def generate_action_processing(self):
         action_space = self.model.env.action_space
+        process_action = ""
+        self.vars["ACTION_SPACE"] = repr(action_space)
 
         if isinstance(action_space, spaces.Box):
             if self.model.policy.squash_output:
                 low_values = ",".join([f"(float){x}" for x in action_space.low])
-                process_action = "torch::Tensor action_low = torch::tensor({%s});\n" % low_values
+                process_action += "torch::Tensor action_low = torch::tensor({%s});\n" % low_values
                 high_values = ",".join([f"(float){x}" for x in action_space.high])
                 process_action += "torch::Tensor action_high = torch::tensor({%s});\n" % high_values
 
                 process_action += "result = action_low + (0.5 * (action + 1.0) * (action_high - action_low));\n"
             else:
-                process_action = "result = action;\n"
+                process_action += "result = action;\n"
+        if isinstance(action_space, spaces.Discrete):
+            process_action += "result = action;\n"
         elif isinstance(action_space, spaces.Box):
-            process_action = "result = action;\n"
+            process_action += "result = action;\n"
         else:
             raise NotImplementedError(f"C++ exporting does not support processing action {action_space}")
 
@@ -89,16 +95,24 @@ class CppExporter(object):
         if isinstance(policy, TD3Policy):
             traced_script_module = th.jit.trace(policy.actor.mu, policy.actor.extract_features(obs))
             self.vars["POLICY_TYPE"] = "ACTOR_MU"
-        if isinstance(policy, ActorCriticPolicy) or isinstance(policy, SACPolicy):
+        elif isinstance(policy, SACPolicy):
             model = th.nn.Sequential(policy.actor.latent_pi, policy.actor.mu)
             traced_script_module = th.jit.trace(model, policy.actor.extract_features(obs))
             self.vars["POLICY_TYPE"] = "ACTOR_MU"
+        elif isinstance(policy, ActorCriticPolicy):
+            model = th.nn.Sequential(policy.mlp_extractor.policy_net, policy.action_net)
+            traced_script_module = th.jit.trace(model, policy.extract_features(obs))
+            self.vars["POLICY_TYPE"] = "ACTOR_MU"
+        elif isinstance(policy, DQNPolicy):
+            traced_script_module = th.jit.trace(policy.q_net.q_net, policy.q_net.extract_features(obs))
+            self.vars["POLICY_TYPE"] = "QNET_SCAN"
         else:
             raise NotImplementedError(f"C++ exporting does not support policy {policy}")
 
-        print(f"Generated {fname}")
-        traced_script_module.save(fname)
-        self.vars["MODEL_FNAME"] = asset_fname
+        if traced_script_module is not None:
+            print(f"Generated {fname}")
+            traced_script_module.save(fname)
+            self.vars["MODEL_FNAME"] = asset_fname
 
     def export(self):
         self.export_model()

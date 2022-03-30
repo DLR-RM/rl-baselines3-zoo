@@ -22,11 +22,18 @@ torch::Tensor Predictor::predict(torch::Tensor &observation) {
     inputs.push_back(processed_observation);
 
     action = module.forward(inputs).toTensor();
+    action = process_action(action);
+  } else if (policy_type == QNET_SCAN) {
+    std::vector<torch::jit::IValue> inputs;
+    inputs.push_back(processed_observation);
+
+    auto q_values = module.forward(inputs).toTensor();
+    action = torch::argmax(q_values);
   } else {
     throw std::runtime_error("Unknown policy type");
   }
 
-  return process_action(action);
+  return action;
 }
 
 torch::Tensor Predictor::preprocess_observation(torch::Tensor &observation) {
@@ -35,6 +42,11 @@ torch::Tensor Predictor::preprocess_observation(torch::Tensor &observation) {
 
 torch::Tensor Predictor::process_action(torch::Tensor &action) {
   return action;
+}
+
+std::vector<torch::Tensor> Predictor::enumerate_actions() {
+  std::vector<torch::Tensor> result;
+  return result;
 }
 
 } // namespace baselines3_models
