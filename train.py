@@ -89,7 +89,7 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument(
         "--n-evaluations",
         help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization."
-             "Default is 1 evaluation per 100k timesteps.",
+        "Default is 1 evaluation per 100k timesteps.",
         type=int,
         default=None,
     )
