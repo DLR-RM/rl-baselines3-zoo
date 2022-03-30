@@ -15,12 +15,13 @@ Predictor::Predictor(std::string model_filename) {
 torch::Tensor Predictor::predict(torch::Tensor &observation) {
   c10::InferenceMode guard;
   torch::Tensor processed_observation = preprocess_observation(observation);
+  at::Tensor action;
 
-  if (policy_type == ACTOR_DETERMINISTIC) {
+  if (policy_type == ACTOR_MU) {
     std::vector<torch::jit::IValue> inputs;
     inputs.push_back(processed_observation);
 
-    at::Tensor action = module.forward(inputs).toTensor();
+    action = module.forward(inputs).toTensor();
   } else {
     throw std::runtime_error("Unknown policy type");
   }
