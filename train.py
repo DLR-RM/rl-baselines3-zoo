@@ -62,7 +62,7 @@ if __name__ == "__main__":  # noqa: C901
         help="Number of trials for optimizing hyperparameters. "
         "This applies to each optimization runner, not the entire optimization process.",
         type=int,
-        default=10,
+        default=500,
     )
     parser.add_argument(
         "-optimize", "--optimize-hyperparameters", action="store_true", default=False, help="Run hyperparameters search"
