@@ -64,6 +64,7 @@ if __name__ == "__main__":  # noqa: C901
         type=int,
         default=10,
     )
+    parser.add_argument("--n-models", help="Number of models for optimizing hyperparameters.", type=int, default=1)
     parser.add_argument(
         "-optimize", "--optimize-hyperparameters", action="store_true", default=False, help="Run hyperparameters search"
     )
