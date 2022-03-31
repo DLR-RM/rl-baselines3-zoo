@@ -62,7 +62,7 @@ if __name__ == "__main__":  # noqa: C901
         help="Number of trials for optimizing hyperparameters. "
         "This applies to each optimization runner, not the entire optimization process.",
         type=int,
-        default=10,
+        default=500,
     )
     parser.add_argument("--n-models", help="Number of models for optimizing hyperparameters.", type=int, default=1)
     parser.add_argument(
@@ -89,9 +89,10 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--n-startup-trials", help="Number of trials before using optuna sampler", type=int, default=10)
     parser.add_argument(
         "--n-evaluations",
-        help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization",
+        help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization."
+        "Default is 1 evaluation per 100k timesteps.",
         type=int,
-        default=20,
+        default=None,
     )
     parser.add_argument(
         "--storage", help="Database storage path if distributed optimization should be used", type=str, default=None
