@@ -1,14 +1,15 @@
-import torch as th
+import os
 import re
 import shutil
-import os
+
+import torch as th
 from gym import spaces
 from stable_baselines3.common.base_class import BaseAlgorithm
-from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.common.policies import ActorCriticPolicy
-from stable_baselines3.td3.policies import TD3Policy
-from stable_baselines3.sac.policies import SACPolicy
+from stable_baselines3.common.preprocessing import is_image_space
 from stable_baselines3.dqn.policies import DQNPolicy
+from stable_baselines3.sac.policies import SACPolicy
+from stable_baselines3.td3.policies import TD3Policy
 
 
 class CppExporter(object):
@@ -39,7 +40,7 @@ class CppExporter(object):
 
         def ignore(directory, files):
             if directory == self.template_directory:
-                return ['.gitignore', 'model_template.h', 'model_template.cpp']
+                return [".gitignore", "model_template.h", "model_template.cpp"]
 
             return []
 
@@ -146,12 +147,12 @@ class CppExporter(object):
         Updates the target's CMakeLists.txt, adding files in static and sources section
 
         :raises ValueError: If a section can't be found in the CMakeLists
-        """        
+        """
         cmake_contents = open(self.directory + "/CMakeLists.txt", "r").read()
 
-        def add_to_section(section_name:str, fname:str, contents:str):
+        def add_to_section(section_name: str, fname: str, contents: str):
             pattern = f"#{section_name}(.+)#!{section_name}"
-            flags=re.MULTILINE + re.DOTALL
+            flags = re.MULTILINE + re.DOTALL
 
             match = re.search(pattern, cmake_contents, flags=flags)
 
@@ -163,13 +164,13 @@ class CppExporter(object):
                 files = list(map(str.strip, files.split("\n")))
             else:
                 files = []
-            
+
             if fname not in files:
                 print(f"Adding {fname} to CMake {section_name}")
                 files.append(fname)
 
             new_section = f"#{section_name}\n" + ("\n".join(files)) + "\n" + f"#!{section_name}"
-            
+
             return re.sub(pattern, new_section, contents, flags=flags)
 
         cmake_contents = add_to_section("static", self.asset_fname, cmake_contents)
