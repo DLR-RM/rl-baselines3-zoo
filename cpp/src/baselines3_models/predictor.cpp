@@ -16,17 +16,13 @@ torch::Tensor Predictor::predict(torch::Tensor &observation) {
   c10::InferenceMode guard;
   torch::Tensor processed_observation = preprocess_observation(observation);
   at::Tensor action;
+  std::vector<torch::jit::IValue> inputs;
+  inputs.push_back(processed_observation);
 
   if (policy_type == ACTOR_MU) {
-    std::vector<torch::jit::IValue> inputs;
-    inputs.push_back(processed_observation);
-
     action = module.forward(inputs).toTensor();
     action = process_action(action);
-  } else if (policy_type == QNET_SCAN) {
-    std::vector<torch::jit::IValue> inputs;
-    inputs.push_back(processed_observation);
-
+  } else if (policy_type == QNET_ALL) {
     auto q_values = module.forward(inputs).toTensor();
     action = torch::argmax(q_values);
   } else {
@@ -34,6 +30,15 @@ torch::Tensor Predictor::predict(torch::Tensor &observation) {
   }
 
   return action;
+}
+
+std::vector<float> Predictor::predict_vector(std::vector<float> obs) {
+  torch::Tensor observation = torch::from_blob(obs.data(), obs.size());
+  torch::Tensor action = predict(observation);
+  action = action.contiguous().to(torch::kFloat32);
+  std::vector<float> result(action.data_ptr<float>(),
+                            action.data_ptr<float>() + action.numel());
+  return result;
 }
 
 torch::Tensor Predictor::preprocess_observation(torch::Tensor &observation) {

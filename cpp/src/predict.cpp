@@ -1,24 +1,16 @@
-#include "baselines3_models/preprocessing.h"
-#include "baselines3_models/approach_v0.h"
+// This file is just a demonstration, you can adapt to test your model
+// First, include your model:
 #include "baselines3_models/cartpole_v1.h"
-#include <chrono>
-#include <iostream>
-#include <memory>
-#include "cmrc/cmrc.hpp"
 
 using namespace baselines3_models;
-using namespace torch::indexing;
 
 int main(int argc, const char *argv[]) {  
+  // Create an instance of it:
   CartPole_v1 cartpole;
 
+  // Build an observation:
   torch::Tensor observation = torch::tensor({0., 0., 0., 0.});
-  cartpole.predict(observation);
 
-  // approach_v0 approach;
-
-  // torch::Tensor observation = torch::tensor({-1., 0., 0., 1., 0., 1., 0., 0., 0.});
-  // torch::Tensor action = approach.predict(observation);
-
-  // std::cout << (action) << std::endl;
+  // You can now check the prediction:
+  std::cout << cartpole.predict(observation) << std::endl;
 }
