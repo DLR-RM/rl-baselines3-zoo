@@ -55,7 +55,7 @@ python train.py --algo a2c --env BreakoutNoFrameskip-v4 -i rl-trained-agents/a2c
 
 When using off-policy algorithms, you can also save the replay buffer after training:
 ```
-python train.py --algo sac --env Pendulum-v0 --save-replay-buffer
+python train.py --algo sac --env Pendulum-v1 --save-replay-buffer
 ```
 It will be automatically loaded if present when continuing training.
 
@@ -210,6 +210,8 @@ Print and save best hyperparameters of an Optuna study:
 python scripts/parse_study.py -i path/to/study.pkl --print-n-best-trials 10 --save-n-best-hyperparameters 10
 ```
 
+The default budget for hyperparameter tuning is 500 trials and there is one intermediate evaluation for pruning/early stopping per 100k time steps.
+
 ### Hyperparameters search space
 
 Note that the default hyperparameters used in the zoo when tuning are not always the same as the defaults provided in [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/modules/base.html). Consult the latest source code to be sure of these settings. For example:
@@ -219,6 +221,20 @@ Note that the default hyperparameters used in the zoo when tuning are not always
 - Non-episodic rollout in TD3 and DDPG assumes `gradient_steps = train_freq` and so tunes only `train_freq` to reduce the search space.  
 
 When working with continuous actions, we recommend to enable [gSDE](https://arxiv.org/abs/2005.05719) by uncommenting lines in [utils/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/utils/hyperparams_opt.py).
+
+
+## Experiment tracking
+
+We support tracking experiment data such as learning curves and hyperparameters via [Weights and Biases](https://wandb.ai).
+
+The following command
+```
+python train.py --algo ppo --env CartPole-v1 --track --wandb-project-name sb3
+```
+
+yields a tracked experiment at this [URL](https://wandb.ai/openrlbenchmark/sb3/runs/1b65ldmh).
+
+
 
 ## Env normalization
 
@@ -344,13 +360,13 @@ Additional Atari Games (to be completed):
 
 ### Classic Control Environments
 
-|  RL Algo |  CartPole-v1 | MountainCar-v0 | Acrobot-v1 |  Pendulum-v0 | MountainCarContinuous-v0 |
-|----------|--------------|----------------|------------|--------------|--------------------------|
-| ARS      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
-| A2C      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
-| PPO      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
-| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A | N/A |
-| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A | N/A |
+|  RL Algo |  CartPole-v1 | MountainCar-v0 | Acrobot-v1 | Pendulum-v1 | MountainCarContinuous-v0 |
+|----------|--------------|----------------|------------|--------------------|--------------------------|
+| ARS      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| A2C      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A                | N/A |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A                | N/A |
 | DDPG     |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | SAC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | TD3      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
@@ -552,4 +568,4 @@ If you trained an agent that is not present in the RL Zoo, please submit a Pull 
 
 ## Contributors
 
-We would like to thanks our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres)
+We would like to thank our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres), [@ernestum](https://github.com/ernestum)

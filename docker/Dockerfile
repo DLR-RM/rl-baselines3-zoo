@@ -21,10 +21,8 @@ RUN \
     mkdir -p ${CODE_DIR}/rl_zoo && \
     pip uninstall -y stable-baselines3 && \
     pip install -r /tmp/requirements.txt && \
-    pip install git+https://github.com/eleurent/highway-env && \
+    pip install git+https://github.com/eleurent/highway-env@1a04c6a98be64632cf9683625022023e70ff1ab1 && \
     rm -rf $HOME/.cache/pip
-
-RUN pip install gym==0.19.0
 
 ENV PATH=$VENV/bin:$PATH
 

@@ -5,11 +5,12 @@ import time
 import warnings
 from collections import OrderedDict
 from pprint import pprint
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import gym
 import numpy as np
 import optuna
+import torch as th
 import yaml
 import zmq
 from optuna.integration.skopt import SkoptSampler
@@ -88,6 +89,7 @@ class ExperimentManager(object):
         vec_env_type: str = "dummy",
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
+        device: Union[th.device, str] = "auto",
     ):
         super(ExperimentManager, self).__init__()
         self.algo = algo
@@ -140,6 +142,7 @@ class ExperimentManager(object):
         self.n_startup_trials = n_startup_trials
         self.n_evaluations = n_evaluations
         self.deterministic_eval = not self.is_atari(self.env_id)
+        self.device = device
 
         # Logging
         self.log_folder = log_folder
@@ -155,7 +158,7 @@ class ExperimentManager(object):
         )
         self.params_path = f"{self.save_path}/{self.env_id}"
 
-    def setup_experiment(self) -> Optional[BaseAlgorithm]:
+    def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
         """
         Read hyperparameters, pre-process them (create schedules, wrappers, callbacks, action noise objects)
         create the environment and possibly the model.
@@ -185,11 +188,12 @@ class ExperimentManager(object):
                 tensorboard_log=self.tensorboard_log,
                 seed=self.seed,
                 verbose=self.verbose,
+                device=self.device,
                 **self._hyperparams,
             )
 
         self._save_config(saved_hyperparams)
-        return model
+        return model, saved_hyperparams
 
     def learn(self, model: BaseAlgorithm) -> None:
         """
@@ -339,6 +343,14 @@ class ExperimentManager(object):
                 print(f"Overwriting n_timesteps with n={self.n_timesteps}")
         else:
             self.n_timesteps = int(hyperparams["n_timesteps"])
+
+        # Derive n_evaluations from number of timesteps if needed
+        if self.n_evaluations is None:
+            self.n_evaluations = self.n_timesteps // int(1e5)
+            print(
+                f"Doing {self.n_evaluations} intermediate evaluations for pruning based on the number of timesteps."
+                " (1 evaluation every 100k timesteps)"
+            )
 
         # Pre-process normalize config
         hyperparams = self._preprocess_normalization(hyperparams)
@@ -582,6 +594,7 @@ class ExperimentManager(object):
             seed=self.seed,
             tensorboard_log=self.tensorboard_log,
             verbose=self.verbose,
+            device=self.device,
             **hyperparams,
         )
 
@@ -637,16 +650,23 @@ class ExperimentManager(object):
         n_envs = 1 if self.algo == "ars" else self.n_envs
         env = self.create_envs(n_envs, no_log=True)
 
+        # By default, do not activate verbose output to keep
+        # stdout clean with only the trials results
+        trial_verbosity = 0
+        # Activate verbose mode for the trial in debug mode
+        # See PR #214
+        if self.verbose >= 2:
+            trial_verbosity = self.verbose
+
         model = ALGOS[self.algo](
             env=env,
             tensorboard_log=None,
             # We do not seed the trial
             seed=None,
-            verbose=0,
+            verbose=trial_verbosity,
+            device=self.device,
             **kwargs,
         )
-
-        model.trial = trial
 
         eval_env = self.create_envs(n_envs=self.n_eval_envs, eval_env=True)
 

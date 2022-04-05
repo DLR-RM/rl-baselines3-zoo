@@ -6,7 +6,6 @@ donkey-mountain-track-v0:
     - gym.wrappers.time_limit.TimeLimit:
         max_episode_steps: 10000
     - ae.wrapper.AutoencoderWrapper
-    # ae_path: "/home/antonin/Documents/rl/racing_car/live-2/aae-train-donkeycar/logs/ae-32_1649093552.pkl"
     - utils.wrappers.HistoryWrapper:
         horizon: 2
   callback:
