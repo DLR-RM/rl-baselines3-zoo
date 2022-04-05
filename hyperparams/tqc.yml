@@ -1,22 +1,14 @@
 ## Custom envs
-donkey-generated-track-v0:
+donkey-mountain-track-v0:
   # Normalize AE (+ the rest)
-  # TODO: try normalizing reward too
   normalize: "{'norm_obs': True, 'norm_reward': False}"
   env_wrapper:
     - gym.wrappers.time_limit.TimeLimit:
         max_episode_steps: 10000
+    - ae.wrapper.AutoencoderWrapper
+    # ae_path: "/home/antonin/Documents/rl/racing_car/live-2/aae-train-donkeycar/logs/ae-32_1649093552.pkl"
     - utils.wrappers.HistoryWrapper:
         horizon: 2
-    # - utils.wrappers.ResidualExpertWrapper:
-    #     model_path: ./logs/human/donkey-generated-track-v0_2/policy.pt
-    #     d3rlpy_model: True
-    #     residual_scale: 0.5
-    #     expert_scale: 1.0
-    #- utils.wrappers.TimeFeatureWrapper:
-    #    test_mode: False
-    # - stable_baselines3.common.monitor.Monitor:
-    #     filename: None
   callback:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 200
