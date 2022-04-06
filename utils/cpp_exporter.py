@@ -216,13 +216,14 @@ class CppExporter(object):
             traced["actor"] = th.jit.trace(model, obs)
 
             action = model(features)
-            traced["q"] = th.jit.trace(policy.critic.q_networks[0], th.cat([features, action], dim=1))
+            q_model = th.nn.Sequential(policy.critic.features_extractor, policy.critic.q_networks[0])
+            traced["q"] = th.jit.trace(q_model, th.cat([features, action], dim=1))
             self.vars["POLICY_TYPE"] = "ACTOR_Q"
         elif isinstance(policy, ActorCriticPolicy):
             actor_model = th.nn.Sequential(policy.features_extractor, policy.mlp_extractor.policy_net, policy.action_net)
             traced["actor"] = th.jit.trace(actor_model, obs)
 
-            value_model = th.nn.Sequential(policy.mlp_extractor.value_net, policy.value_net)
+            value_model = th.nn.Sequential(policy.features_extractor, policy.mlp_extractor.value_net, policy.value_net)
             traced["v"] = th.jit.trace(value_model, obs)
 
             if isinstance(self.model.env.action_space, spaces.Discrete):
