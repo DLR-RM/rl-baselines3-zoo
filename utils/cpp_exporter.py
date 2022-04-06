@@ -208,7 +208,8 @@ class CppExporter(object):
             traced["actor"] = th.jit.trace(model, obs)
 
             action = policy.actor.mu(features)
-            traced["q"] = th.jit.trace(policy.critic.q_networks[0], th.cat([features, action], dim=1))
+            q_model = th.nn.Sequential(policy.critic.features_extractor, policy.critic.q_networks[0])
+            traced["q"] = th.jit.trace(q_model, th.cat([features, action], dim=1))
             self.vars["POLICY_TYPE"] = "ACTOR_Q"
         elif isinstance(policy, SACPolicy):
             features = policy.actor.extract_features(obs)
