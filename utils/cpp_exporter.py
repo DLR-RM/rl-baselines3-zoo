@@ -203,22 +203,20 @@ class CppExporter(object):
         obs = preprocess_obs(obs, self.model.env.observation_space)
 
         if isinstance(policy, TD3Policy):
-            features = policy.actor.extract_features(obs)
             model = th.nn.Sequential(policy.actor.features_extractor, policy.actor.mu)
             traced["actor"] = th.jit.trace(model, obs)
 
-            action = policy.actor.mu(features)
+            action = policy.actor.mu(policy.actor.extract_features(obs))
             q_model = th.nn.Sequential(policy.critic.features_extractor, policy.critic.q_networks[0])
-            traced["q"] = th.jit.trace(q_model, th.cat([features, action], dim=1))
+            traced["q"] = th.jit.trace(q_model, th.cat([obs, action], dim=1))
             self.vars["POLICY_TYPE"] = "ACTOR_Q"
         elif isinstance(policy, SACPolicy):
-            features = policy.actor.extract_features(obs)
-            model = th.nn.Sequential(obs, policy.actor.features_extractor, policy.actor.latent_pi, policy.actor.mu)
+            model = th.nn.Sequential(policy.actor.features_extractor, policy.actor.latent_pi, policy.actor.mu)
             traced["actor"] = th.jit.trace(model, obs)
 
-            action = model(features)
+            action = model(obs)
             q_model = th.nn.Sequential(policy.critic.features_extractor, policy.critic.q_networks[0])
-            traced["q"] = th.jit.trace(q_model, th.cat([features, action], dim=1))
+            traced["q"] = th.jit.trace(q_model, th.cat([obs, action], dim=1))
             self.vars["POLICY_TYPE"] = "ACTOR_Q"
         elif isinstance(policy, ActorCriticPolicy):
             actor_model = th.nn.Sequential(policy.features_extractor, policy.mlp_extractor.policy_net, policy.action_net)
