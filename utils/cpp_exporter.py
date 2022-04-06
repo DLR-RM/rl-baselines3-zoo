@@ -6,7 +6,7 @@ import torch as th
 from gym import spaces
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.policies import ActorCriticPolicy
-from stable_baselines3.common.preprocessing import is_image_space
+from stable_baselines3.common.preprocessing import is_image_space, preprocess_obs
 from stable_baselines3.dqn.policies import DQNPolicy
 from stable_baselines3.sac.policies import SACPolicy
 from stable_baselines3.td3.policies import TD3Policy
@@ -200,35 +200,38 @@ class CppExporter(object):
             "v": None,
         }
 
+        obs = preprocess_obs(obs, self.model.env.observation_space)
+
         if isinstance(policy, TD3Policy):
             features = policy.actor.extract_features(obs)
-            traced["actor"] = th.jit.trace(policy.actor.mu, features)
+            model = th.nn.Sequential(policy.actor.features_extractor, policy.actor.mu)
+            traced["actor"] = th.jit.trace(model, obs)
 
             action = policy.actor.mu(features)
             traced["q"] = th.jit.trace(policy.critic.q_networks[0], th.cat([features, action], dim=1))
             self.vars["POLICY_TYPE"] = "ACTOR_Q"
         elif isinstance(policy, SACPolicy):
             features = policy.actor.extract_features(obs)
-            model = th.nn.Sequential(policy.actor.latent_pi, policy.actor.mu)
-            traced["actor"] = th.jit.trace(model, features)
+            model = th.nn.Sequential(obs, policy.actor.features_extractor, policy.actor.latent_pi, policy.actor.mu)
+            traced["actor"] = th.jit.trace(model, obs)
 
             action = model(features)
             traced["q"] = th.jit.trace(policy.critic.q_networks[0], th.cat([features, action], dim=1))
             self.vars["POLICY_TYPE"] = "ACTOR_Q"
         elif isinstance(policy, ActorCriticPolicy):
-            actor_model = th.nn.Sequential(policy.mlp_extractor.policy_net, policy.action_net)
-            traced["actor"] = th.jit.trace(actor_model, policy.extract_features(obs))
+            actor_model = th.nn.Sequential(policy.features_extractor, policy.mlp_extractor.policy_net, policy.action_net)
+            traced["actor"] = th.jit.trace(actor_model, obs)
 
-            # action = policy.predict(obs)
             value_model = th.nn.Sequential(policy.mlp_extractor.value_net, policy.value_net)
-            traced["v"] = th.jit.trace(value_model, policy.extract_features(obs))
+            traced["v"] = th.jit.trace(value_model, obs)
 
             if isinstance(self.model.env.action_space, spaces.Discrete):
                 self.vars["POLICY_TYPE"] = "ACTOR_VALUE_DISCRETE"
             else:
                 self.vars["POLICY_TYPE"] = "ACTOR_VALUE"
         elif isinstance(policy, DQNPolicy):
-            traced["q"] = th.jit.trace(policy.q_net.q_net, policy.q_net.extract_features(obs))
+            q_model = th.nn.Sequential(policy.q_net.features_extractor, policy.q_net.q_net)
+            traced["q"] = th.jit.trace(q_model, obs)
             self.vars["POLICY_TYPE"] = "QNET_ALL"
         else:
             raise NotImplementedError(f"C++ exporting does not support policy {policy}")
