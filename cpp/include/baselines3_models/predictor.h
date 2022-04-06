@@ -7,15 +7,19 @@ namespace baselines3_models {
 class Predictor {
 public:
   enum PolicyType {
-    // The module is an actor's µ: directly outputs action from state
-    ACTOR_MU,
+    // The first network is an actor and the second a value network
+    ACTOR_VALUE,
+    ACTOR_VALUE_DISCRETE,
+    // The first network is an actor and the second a Q network
+    ACTOR_Q,
     // The network is a Q-Network: outputs Q(s,a) for all a for a given s
     QNET_ALL
   };
 
-  Predictor(std::string model_filename);
+  Predictor(std::string actor_filename, std::string q_filename, std::string v_filename);
 
-  torch::Tensor predict(torch::Tensor &observation);
+  torch::Tensor predict(torch::Tensor &observation, bool unscale_action = true);
+  double value(torch::Tensor &observation);
 
   std::vector<float> predict_vector(std::vector<float> obs);
 
@@ -24,7 +28,9 @@ public:
   virtual std::vector<torch::Tensor> enumerate_actions();
 
 protected:
-  torch::jit::script::Module module;
+  torch::jit::script::Module model_actor;
+  torch::jit::script::Module model_q;
+  torch::jit::script::Module model_v;
   PolicyType policy_type;
 };
 } // namespace baselines3_models

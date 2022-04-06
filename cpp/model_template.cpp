@@ -11,7 +11,7 @@
 
 namespace baselines3_models {
 
-CLASS_NAME::CLASS_NAME() : Predictor("MODEL_FNAME") {
+CLASS_NAME::CLASS_NAME() : Predictor("MODEL_ACTOR", "MODEL_Q", "MODEL_V") {
   policy_type = POLICY_TYPE;
 }
 

@@ -30,7 +30,7 @@ class CppExporter(object):
         self.vars = {}
 
         # Name of the asset (.pt file)
-        self.asset_fname = None
+        self.asset_fnames = []
         self.cpp_fname = None
 
     def generate_directory(self):
@@ -173,7 +173,8 @@ class CppExporter(object):
 
             return re.sub(pattern, new_section, contents, flags=flags)
 
-        cmake_contents = add_to_section("static", self.asset_fname, cmake_contents)
+        for asset in self.asset_fnames:
+            cmake_contents = add_to_section("static", asset, cmake_contents)
         cmake_contents = add_to_section("sources", self.cpp_fname, cmake_contents)
 
         with open(self.directory + "/CMakeLists.txt", "w") as f:
@@ -187,31 +188,61 @@ class CppExporter(object):
         """
         policy = self.model.policy
         obs = th.Tensor(self.model.env.reset())
-        self.asset_fname = f"assets/{self.name.lower()}_model.pt"
-        fname = self.directory + "/" + self.asset_fname
-        traced_script_module = None
+        
+        def get_fname(suffix):
+            asset_fname = f"assets/{self.name.lower()}_{suffix}.pt"
+            fname = self.directory + "/" + asset_fname
+            return asset_fname, fname
+
+        traced = {
+            'actor': None,
+            'q': None,
+            'v': None,
+        }
 
         if isinstance(policy, TD3Policy):
-            traced_script_module = th.jit.trace(policy.actor.mu, policy.actor.extract_features(obs))
-            self.vars["POLICY_TYPE"] = "ACTOR_MU"
+            features = policy.actor.extract_features(obs)
+            traced['actor'] = th.jit.trace(policy.actor.mu, features)
+
+            action = policy.actor.mu(features)
+            traced['q'] = th.jit.trace(policy.critic.q_networks[0], th.cat([features, action], dim=1))
+            self.vars["POLICY_TYPE"] = "ACTOR_Q"
         elif isinstance(policy, SACPolicy):
+            features = policy.actor.extract_features(obs)
             model = th.nn.Sequential(policy.actor.latent_pi, policy.actor.mu)
-            traced_script_module = th.jit.trace(model, policy.actor.extract_features(obs))
-            self.vars["POLICY_TYPE"] = "ACTOR_MU"
+            traced['actor'] = th.jit.trace(model, features)
+
+            action = model(features)
+            traced['q'] = th.jit.trace(policy.critic.q_networks[0], th.cat([features, action], dim=1))
+            self.vars["POLICY_TYPE"] = "ACTOR_Q"
         elif isinstance(policy, ActorCriticPolicy):
-            model = th.nn.Sequential(policy.mlp_extractor.policy_net, policy.action_net)
-            traced_script_module = th.jit.trace(model, policy.extract_features(obs))
-            self.vars["POLICY_TYPE"] = "ACTOR_MU"
+            actor_model = th.nn.Sequential(policy.mlp_extractor.policy_net, policy.action_net)
+            traced['actor'] = th.jit.trace(actor_model, policy.extract_features(obs))
+
+            # action = policy.predict(obs)
+            value_model = th.nn.Sequential(policy.mlp_extractor.value_net, policy.value_net)
+            traced['v'] = th.jit.trace(value_model, policy.extract_features(obs))
+
+            if isinstance(self.model.env.action_space, spaces.Discrete):
+                self.vars["POLICY_TYPE"] = "ACTOR_VALUE_DISCRETE"
+            else:
+                self.vars["POLICY_TYPE"] = "ACTOR_VALUE"
         elif isinstance(policy, DQNPolicy):
-            traced_script_module = th.jit.trace(policy.q_net.q_net, policy.q_net.extract_features(obs))
+            traced['q'] = th.jit.trace(policy.q_net.q_net, policy.q_net.extract_features(obs))
             self.vars["POLICY_TYPE"] = "QNET_ALL"
         else:
             raise NotImplementedError(f"C++ exporting does not support policy {policy}")
 
-        if traced_script_module is not None:
-            print(f"Generated {fname}")
-            traced_script_module.save(fname)
-            self.vars["MODEL_FNAME"] = self.asset_fname
+        for entry in traced.keys():
+            var = f"MODEL_{entry.upper()}"
+            if traced[entry] is None:
+                self.vars[var] = ''
+            else:
+                asset_fname, fname = get_fname(entry)
+                traced[entry].save(fname)
+                print(f"Generated {fname}")
+                self.asset_fnames.append(asset_fname)
+                self.vars[var] = asset_fname
 
     def export(self):
         self.generate_directory()
