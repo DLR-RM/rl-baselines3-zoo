@@ -89,17 +89,19 @@ class CppExporter(object):
         self.vars["ACTION_SPACE"] = repr(action_space)
 
         if isinstance(action_space, spaces.Box):
+            # Handling action clipping
+            low_values = ",".join([f"(float){x}" for x in action_space.low])
+            process_action += "torch::Tensor action_low = torch::tensor({%s});\n" % low_values
+            high_values = ",".join([f"(float){x}" for x in action_space.high])
+            process_action += "torch::Tensor action_high = torch::tensor({%s});\n" % high_values
+
             if self.model.policy.squash_output:
                 # Unscaling the action assuming it lies in [-1, 1], since squash networks use Tanh as
                 # final activation functions
-                low_values = ",".join([f"(float){x}" for x in action_space.low])
-                process_action += "torch::Tensor action_low = torch::tensor({%s});\n" % low_values
-                high_values = ",".join([f"(float){x}" for x in action_space.high])
-                process_action += "torch::Tensor action_high = torch::tensor({%s});\n" % high_values
-
                 process_action += "result = action_low + (0.5 * (action + 1.0) * (action_high - action_low));\n"
             else:
-                process_action += "result = action;\n"
+                # Clipping not squashed action
+                process_action += "result = torch::clip(action, action_low, action_high);\n"
         elif isinstance(action_space, spaces.Discrete) or isinstance(action_space, spaces.MultiDiscrete):
             # Keeping input as it is
             process_action += "result = action;\n"
@@ -203,25 +205,58 @@ class CppExporter(object):
         obs = preprocess_obs(obs, self.model.env.observation_space)
 
         if isinstance(policy, TD3Policy):
-            model = th.nn.Sequential(policy.actor.features_extractor, policy.actor.mu)
-            traced["actor"] = th.jit.trace(model, obs)
+            # Actor extract features and apply mu
+            actor_model = th.nn.Sequential(policy.actor.features_extractor, policy.actor.mu)
+            traced["actor"] = th.jit.trace(actor_model, obs)
+
+            # Value function is a combination of actor and Q
+            class TD3PolicyValue(th.nn.Module):
+                def __init__(self, policy : TD3Policy, actor_model: th.nn.Module):
+                    super(TD3PolicyValue, self).__init__()
+
+                    self.actor = actor_model
+                    self.critic = policy.critic
+
+                def forward(self, obs):
+                    action = self.actor_model(obs)
+                    critic_features = self.critic.features_extractor(obs)
+                    return self.critic.q_networks[0](th.cat([critic_features, action], dim=1))
 
             action = policy.actor.mu(policy.actor.extract_features(obs))
-            q_model = th.nn.Sequential(policy.critic.features_extractor, policy.critic.q_networks[0])
-            traced["q"] = th.jit.trace(q_model, th.cat([obs, action], dim=1))
-            self.vars["POLICY_TYPE"] = "ACTOR_Q"
+            v_model = TD3PolicyValue(policy, actor_model)
+            traced["v"] = th.jit.trace(v_model, obs)
+            self.vars["POLICY_TYPE"] = "ACTOR_VALUE"
         elif isinstance(policy, SACPolicy):
-            model = th.nn.Sequential(policy.actor.features_extractor, policy.actor.latent_pi, policy.actor.mu)
-            traced["actor"] = th.jit.trace(model, obs)
+            # Feature extractor, latent pi and mu
+            if self.model.use_sde:
+                # XXX: Check for bijector ?
+                actor_model = th.nn.Sequential(policy.actor.features_extractor, policy.actor.latent_pi, policy.actor.mu)
+            else:
+                actor_model = th.nn.Sequential(policy.actor.features_extractor,
+                                               policy.actor.latent_pi, policy.actor.mu, th.nn.Tanh())
+            traced["actor"] = th.jit.trace(actor_model, obs)
 
-            action = model(obs)
-            q_model = th.nn.Sequential(policy.critic.features_extractor, policy.critic.q_networks[0])
-            traced["q"] = th.jit.trace(q_model, th.cat([obs, action], dim=1))
-            self.vars["POLICY_TYPE"] = "ACTOR_Q"
+            class SACPolicyValue(th.nn.Module):
+                def __init__(self, policy : SACPolicy, actor_model: th.nn.Module):
+                    super(SACPolicyValue, self).__init__()
+
+                    self.actor_model = actor_model
+                    self.critic = policy.critic
+
+                def forward(self, obs):
+                    action = self.actor_model(obs)
+                    critic_features = self.critic.features_extractor(obs)
+                    return self.critic.q_networks[0](th.cat([critic_features, action], dim=1))
+
+            v_model = SACPolicyValue(policy, actor_model)
+            traced["v"] = th.jit.trace(v_model, obs)
+            self.vars["POLICY_TYPE"] = "ACTOR_VALUE"
         elif isinstance(policy, ActorCriticPolicy):
+            # Actor is feature extractor, mpl and action net
             actor_model = th.nn.Sequential(policy.features_extractor, policy.mlp_extractor.policy_net, policy.action_net)
             traced["actor"] = th.jit.trace(actor_model, obs)
 
+            # The value network is computed directly in ActorCriticPolicy (and not the Q network)
             value_model = th.nn.Sequential(policy.features_extractor, policy.mlp_extractor.value_net, policy.value_net)
             traced["v"] = th.jit.trace(value_model, obs)
 
@@ -230,6 +265,8 @@ class CppExporter(object):
             else:
                 self.vars["POLICY_TYPE"] = "ACTOR_VALUE"
         elif isinstance(policy, DQNPolicy):
+            # For DQN, we only use one Q network that outputs Q(s,a) for all possible actions, it is then
+            # both used for action prediction using argmax and for value prediction
             q_model = th.nn.Sequential(policy.q_net.features_extractor, policy.q_net.q_net)
             traced["q"] = th.jit.trace(q_model, obs)
             self.vars["POLICY_TYPE"] = "QNET_ALL"

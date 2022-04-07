@@ -7,11 +7,9 @@ namespace baselines3_models {
 class Predictor {
 public:
   enum PolicyType {
-    // The first network is an actor and the second a value network
+    // If we have an actor network and a value network
     ACTOR_VALUE,
     ACTOR_VALUE_DISCRETE,
-    // The first network is an actor and the second a Q network
-    ACTOR_Q,
     // The network is a Q-Network: outputs Q(s,a) for all a for a given s
     QNET_ALL
   };

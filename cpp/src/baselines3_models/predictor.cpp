@@ -32,7 +32,7 @@ torch::Tensor Predictor::predict(torch::Tensor &observation,
   std::vector<torch::jit::IValue> inputs;
   inputs.push_back(processed_observation.unsqueeze(0));
 
-  if (policy_type == ACTOR_Q || policy_type == ACTOR_VALUE || policy_type == ACTOR_VALUE_DISCRETE) {
+  if (policy_type == ACTOR_VALUE || policy_type == ACTOR_VALUE_DISCRETE) {
     action = model_actor.forward(inputs).toTensor();
     if (unscale_action) {
       action = process_action(action);
@@ -57,14 +57,7 @@ double Predictor::value(torch::Tensor &observation) {
   at::Tensor action;
   std::vector<torch::jit::IValue> inputs;
 
-  if (policy_type == ACTOR_Q) {
-    auto action = predict(observation, false);
-    std::vector<torch::Tensor> tensor_vec{ processed_observation, action };
-    inputs.push_back(torch::cat({ tensor_vec }).unsqueeze(0));
-
-    auto q = model_q.forward(inputs).toTensor();
-    value = q.data_ptr<float>()[0];
-  } else if (policy_type == ACTOR_VALUE || policy_type == ACTOR_VALUE_DISCRETE) {
+  if (policy_type == ACTOR_VALUE || policy_type == ACTOR_VALUE_DISCRETE) {
     inputs.push_back(processed_observation.unsqueeze(0));
     auto v = model_v.forward(inputs).toTensor();
     value = v.data_ptr<float>()[0];
