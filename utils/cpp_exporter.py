@@ -1,6 +1,9 @@
 import os
 import re
 import shutil
+from typing import List
+from pathlib import Path
+
 
 import torch as th
 from gym import spaces
@@ -17,28 +20,28 @@ class CppExporter(object):
         """
         C++ module exporter
 
-        :param BaseAlgorithm model: The algorithm that should be exported
-        :param str directory: Output directory
-        :param str name: The module name
+        :param model: The algorithm that should be exported
+        :param directory: Output directory
+        :param name: The module name
         """
         self.model = model
         self.directory = directory
         self.name = name.replace("-", "_")
 
         # Templates directory is found relatively to this script (../cpp)
-        self.template_directory = "/".join(__file__.split("/")[:-1] + ["..", "cpp"])
+        self.template_directory = str(Path(__file__).parent.parent / Path("cpp"))
         self.vars = {}
 
         # Name of the asset (.pt file)
         self.asset_fnames = []
         self.cpp_fname = None
 
-    def generate_directory(self):
+    def generate_directory(self) -> None:
         """
         Generates the target directory if it doesn't exists
         """
 
-        def ignore(directory, files):
+        def ignore(directory: str, files: List[str]) -> List[str]:
             if directory == self.template_directory:
                 return [".gitignore", "model_template.h", "model_template.cpp"]
 
@@ -71,8 +74,8 @@ class CppExporter(object):
         elif isinstance(observation_space, spaces.MultiDiscrete):
             # Applying multiple one hot representation (using C++ function)
             classes = ",".join(map(str, observation_space.nvec))
-            preprocess_observation += "torch::Tensor classes = torch::tensor({%s});\n" % classes
-            preprocess_observation += f"result = multi_one_hot(observation, classes);\n"
+            preprocess_observation += f"torch::Tensor classes = torch::tensor({classes});\n"
+            preprocess_observation += "result = multi_one_hot(observation, classes);\n"
         else:
             raise NotImplementedError(f"C++ exporting does not support observation {observation_space}")
 
@@ -118,9 +121,10 @@ class CppExporter(object):
         fname = self.name.lower()
 
         self.vars["FILE_NAME"] = fname
-        self.cpp_fname = f"src/baselines3_models/{fname}.cpp"
-        target_header = self.directory + f"/include/baselines3_models/{fname}.h"
-        target_cpp = self.directory + "/" + self.cpp_fname
+        self.cpp_fname = os.path.join("src", "baselines3_models", f"{fname}.cpp")
+        include_fname = os.path.join("include", "baselines3_models", f"{fname}.h")
+        target_header = os.path.join(self.directory, include_fname)
+        target_cpp = os.path.join(self.directory, self.cpp_fname)
 
         self.generate_observation_preprocessing()
         self.generate_action_processing()
@@ -191,9 +195,9 @@ class CppExporter(object):
         policy = self.model.policy
         obs = th.Tensor(self.model.env.reset())
 
-        def get_fname(suffix):
-            asset_fname = f"assets/{self.name.lower()}_{suffix}.pt"
-            fname = self.directory + "/" + asset_fname
+        def get_fname(suffix: str):
+            asset_fname = os.path.join("assets", f"{self.name.lower()}_{suffix}.pt")
+            fname = os.path.join(self.directory, asset_fname)
             return asset_fname, fname
 
         traced = {
@@ -211,7 +215,7 @@ class CppExporter(object):
 
             # Value function is a combination of actor and Q
             class TD3PolicyValue(th.nn.Module):
-                def __init__(self, policy : TD3Policy, actor_model: th.nn.Module):
+                def __init__(self, policy: TD3Policy, actor_model: th.nn.Module):
                     super(TD3PolicyValue, self).__init__()
 
                     self.actor = actor_model
@@ -222,6 +226,7 @@ class CppExporter(object):
                     critic_features = self.critic.features_extractor(obs)
                     return self.critic.q_networks[0](th.cat([critic_features, action], dim=1))
 
+            # Note(antonin): unused variable action
             action = policy.actor.mu(policy.actor.extract_features(obs))
             v_model = TD3PolicyValue(policy, actor_model)
             traced["v"] = th.jit.trace(v_model, obs)
@@ -232,12 +237,13 @@ class CppExporter(object):
                 # XXX: Check for bijector ?
                 actor_model = th.nn.Sequential(policy.actor.features_extractor, policy.actor.latent_pi, policy.actor.mu)
             else:
-                actor_model = th.nn.Sequential(policy.actor.features_extractor,
-                                               policy.actor.latent_pi, policy.actor.mu, th.nn.Tanh())
+                actor_model = th.nn.Sequential(
+                    policy.actor.features_extractor, policy.actor.latent_pi, policy.actor.mu, th.nn.Tanh()
+                )
             traced["actor"] = th.jit.trace(actor_model, obs)
 
             class SACPolicyValue(th.nn.Module):
-                def __init__(self, policy : SACPolicy, actor_model: th.nn.Module):
+                def __init__(self, policy: SACPolicy, actor_model: th.nn.Module):
                     super(SACPolicyValue, self).__init__()
 
                     self.actor_model = actor_model
@@ -284,7 +290,7 @@ class CppExporter(object):
                 self.asset_fnames.append(asset_fname)
                 self.vars[var] = asset_fname
 
-    def export(self):
+    def export(self) -> None:
         self.generate_directory()
         self.export_model()
         self.export_code()
