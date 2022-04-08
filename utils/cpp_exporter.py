@@ -1,9 +1,8 @@
 import os
 import re
 import shutil
-from typing import List
 from pathlib import Path
-
+from typing import List
 
 import torch as th
 from gym import spaces
