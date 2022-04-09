@@ -1,33 +1,39 @@
 ## Custom envs
-donkey-mountain-track-v0:
+donkey-mountain-track-v0: &defaults
   # Normalize AE (+ the rest)
   normalize: "{'norm_obs': True, 'norm_reward': False}"
   env_wrapper:
     - gym.wrappers.time_limit.TimeLimit:
         max_episode_steps: 10000
     - ae.wrapper.AutoencoderWrapper
+    #- ae.self_supervised.wrapper.SelfSupervisedWrapper:
+    #    add_speed: True
+    - utils.wrappers.ContinuityCostWrapper:
+        weight_continuity: 1.0
+        condition: True
     - utils.wrappers.HistoryWrapper:
         horizon: 2
   callback:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 200
+    - utils.callbacks.LapTimeCallback
   # vec_env_wrapper:
   #   - utils.wrappers.VecForceResetWrapper
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
-  #learning_rate: !!float 3e-4
   buffer_size: 200000
   batch_size: 256
   ent_coef: 'auto'
   gamma: 0.99
   tau: 0.02
-  # train_freq: [1, "episode"]
   train_freq: 200
-  # gradient_steps: -1
   gradient_steps: 256
   learning_starts: 5000
   use_sde_at_warmup: True
   use_sde: True
   sde_sample_freq: 16
   policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=2)"
+
+donkey-circuit-launch-track-v0:
+  <<: *defaults

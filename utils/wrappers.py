@@ -414,3 +414,42 @@ class ResidualExpertWrapper(gym.Wrapper):
         obs, self.expert_action = self._predict(obs)
 
         return obs, reward, done, info
+
+
+class ContinuityCostWrapper(gym.Wrapper):
+    """
+    Add continuity cost to the reward.
+    It assumes that the action space is normalized
+    and symmetric (actions in [-1, 1]).
+    :param env:
+    :param weight_continuity:
+    """
+
+    def __init__(self, env: gym.Env, weight_continuity: float = 0.0, condition: bool = False):
+        super(ContinuityCostWrapper, self).__init__(env)
+        self.last_action = None
+        self.weight_continuity = weight_continuity
+        self.condition = condition
+        if condition:
+            self.weight_continuity = 1.0
+
+    def reset(self):
+        self.last_action = None
+        return self.env.reset()
+
+    def step(self, action):
+        obs, reward, done, info = self.env.step(action)
+        # Continuity cost
+        if self.last_action is not None:
+            max_delta = 2.0  # for the action space: high - low = 1 - (-1) = 2
+            continuity_cost = np.mean((action - self.last_action) ** 2 / max_delta**2)
+            continuity_cost = self.weight_continuity * continuity_cost
+        else:
+            continuity_cost = 0.0
+        self.last_action = action.copy()
+
+        if self.condition:
+            reward = (1 - continuity_cost) * reward
+        else:
+            reward -= continuity_cost
+        return obs, reward, done, info
