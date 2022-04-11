@@ -12,6 +12,7 @@ import numpy as np
 import optuna
 import torch as th
 import yaml
+from optuna.study import MaxTrialsCallback
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
@@ -747,7 +748,7 @@ class ExperimentManager(object):
         )
 
         try:
-            study.optimize(self.objective, n_trials=self.n_trials, n_jobs=self.n_jobs)
+            study.optimize(self.objective, n_jobs=self.n_jobs, callbacks=[MaxTrialsCallback(self.n_trials)])
         except KeyboardInterrupt:
             pass
 
