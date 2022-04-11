@@ -8,9 +8,9 @@ donkey-mountain-track-v0: &defaults
     - ae.wrapper.AutoencoderWrapper
     #- ae.self_supervised.wrapper.SelfSupervisedWrapper:
     #    add_speed: True
-    - utils.wrappers.ContinuityCostWrapper:
-        weight_continuity: 1.0
-        condition: True
+    # - utils.wrappers.ContinuityCostWrapper:
+    #     weight_continuity: 3.0
+    #     condition: False
     - utils.wrappers.HistoryWrapper:
         horizon: 2
   callback:
@@ -33,7 +33,7 @@ donkey-mountain-track-v0: &defaults
   use_sde_at_warmup: True
   use_sde: True
   sde_sample_freq: 16
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=2)"
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=2, use_expln=True)"
 
 donkey-circuit-launch-track-v0:
   <<: *defaults
