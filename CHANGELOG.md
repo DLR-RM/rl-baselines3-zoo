@@ -3,6 +3,7 @@
 ### Breaking Changes
 - Change default value for number of hyperparameter optimization trials from 10 to 500. (@ernestum)
 - Derive number of intermediate pruning evaluations from number of time steps (1 evaluation per 100k time steps.) (@ernestum)
+- Updated default --eval-freq from 10k to 25k steps 
 
 ### New Features
 - Support setting PyTorch's device with thye `--device` flag (@gregwar)
