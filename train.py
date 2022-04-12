@@ -56,7 +56,7 @@ if __name__ == "__main__":  # noqa: C901
         "--eval-freq",
         help="Evaluate the agent every n steps (if negative, no evaluation). "
         "During hyperparameter optimization n-evaluations is used instead",
-        default=10000,
+        default=25000,
         type=int,
     )
     parser.add_argument(
