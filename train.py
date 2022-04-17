@@ -202,6 +202,7 @@ if __name__ == "__main__":  # noqa: C901
         args.storage,
         args.study_name,
         args.n_trials,
+        args.n_models,
         args.n_jobs,
         args.sampler,
         args.pruner,

@@ -73,6 +73,7 @@ class ExperimentManager(object):
         storage: Optional[str] = None,
         study_name: Optional[str] = None,
         n_trials: int = 1,
+        n_models: int = 1,
         n_jobs: int = 1,
         sampler: str = "tpe",
         pruner: str = "median",
@@ -133,6 +134,8 @@ class ExperimentManager(object):
         self.no_optim_plots = no_optim_plots
         # maximum number of trials for finding the best hyperparams
         self.n_trials = n_trials
+        # number of parallel trained models, result is the median score
+        self.n_models = n_models
         # number of parallel jobs when doing hyperparameter search
         self.n_jobs = n_jobs
         self.sampler = sampler
