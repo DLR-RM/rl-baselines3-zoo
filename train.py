@@ -38,7 +38,7 @@ if __name__ == "__main__":  # noqa: C901
         "--eval-freq",
         help="Evaluate the agent every n steps (if negative, no evaluation). "
         "During hyperparameter optimization n-evaluations is used instead",
-        default=10000,
+        default=25000,
         type=int,
     )
     parser.add_argument(
@@ -56,12 +56,13 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("-f", "--log-folder", help="Log folder", type=str, default="logs")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=-1)
     parser.add_argument("--vec-env", help="VecEnv type", type=str, default="dummy", choices=["dummy", "subproc"])
+    parser.add_argument("--device", help="PyTorch device to be use (ex: cpu, cuda...)", default="auto", type=str)
     parser.add_argument(
         "--n-trials",
         help="Number of trials for optimizing hyperparameters. "
         "This applies to each optimization runner, not the entire optimization process.",
         type=int,
-        default=10,
+        default=500,
     )
     parser.add_argument(
         "-optimize", "--optimize-hyperparameters", action="store_true", default=False, help="Run hyperparameters search"
@@ -87,9 +88,10 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--n-startup-trials", help="Number of trials before using optuna sampler", type=int, default=10)
     parser.add_argument(
         "--n-evaluations",
-        help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization",
+        help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization."
+        "Default is 1 evaluation per 100k timesteps.",
         type=int,
-        default=20,
+        default=None,
     )
     parser.add_argument(
         "--storage", help="Database storage path if distributed optimization should be used", type=str, default=None
@@ -214,6 +216,7 @@ if __name__ == "__main__":  # noqa: C901
         vec_env_type=args.vec_env,
         n_eval_envs=args.n_eval_envs,
         no_optim_plots=args.no_optim_plots,
+        device=args.device,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed

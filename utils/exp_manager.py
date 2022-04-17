@@ -5,11 +5,12 @@ import time
 import warnings
 from collections import OrderedDict
 from pprint import pprint
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import gym
 import numpy as np
 import optuna
+import torch as th
 import yaml
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
@@ -87,6 +88,7 @@ class ExperimentManager(object):
         vec_env_type: str = "dummy",
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
+        device: Union[th.device, str] = "auto",
     ):
         super(ExperimentManager, self).__init__()
         self.algo = algo
@@ -138,6 +140,7 @@ class ExperimentManager(object):
         self.n_startup_trials = n_startup_trials
         self.n_evaluations = n_evaluations
         self.deterministic_eval = not self.is_atari(self.env_id)
+        self.device = device
 
         # Logging
         self.log_folder = log_folder
@@ -183,6 +186,7 @@ class ExperimentManager(object):
                 tensorboard_log=self.tensorboard_log,
                 seed=self.seed,
                 verbose=self.verbose,
+                device=self.device,
                 **self._hyperparams,
             )
 
@@ -337,6 +341,14 @@ class ExperimentManager(object):
                 print(f"Overwriting n_timesteps with n={self.n_timesteps}")
         else:
             self.n_timesteps = int(hyperparams["n_timesteps"])
+
+        # Derive n_evaluations from number of timesteps if needed
+        if self.n_evaluations is None and self.optimize_hyperparameters:
+            self.n_evaluations = self.n_timesteps // int(1e5)
+            print(
+                f"Doing {self.n_evaluations} intermediate evaluations for pruning based on the number of timesteps."
+                " (1 evaluation every 100k timesteps)"
+            )
 
         # Pre-process normalize config
         hyperparams = self._preprocess_normalization(hyperparams)
@@ -573,6 +585,7 @@ class ExperimentManager(object):
             seed=self.seed,
             tensorboard_log=self.tensorboard_log,
             verbose=self.verbose,
+            device=self.device,
             **hyperparams,
         )
 
@@ -642,6 +655,7 @@ class ExperimentManager(object):
             # We do not seed the trial
             seed=None,
             verbose=trial_verbosity,
+            device=self.device,
             **kwargs,
         )
 
