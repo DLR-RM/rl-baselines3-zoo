@@ -342,6 +342,14 @@ class ExperimentManager(object):
         else:
             self.n_timesteps = int(hyperparams["n_timesteps"])
 
+        # Derive n_evaluations from number of timesteps if needed
+        if self.n_evaluations is None and self.optimize_hyperparameters:
+            self.n_evaluations = self.n_timesteps // int(1e5)
+            print(
+                f"Doing {self.n_evaluations} intermediate evaluations for pruning based on the number of timesteps."
+                " (1 evaluation every 100k timesteps)"
+            )
+
         # Pre-process normalize config
         hyperparams = self._preprocess_normalization(hyperparams)
 
