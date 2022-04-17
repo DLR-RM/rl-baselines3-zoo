@@ -13,6 +13,7 @@
 ### Documentation
 
 ### Other
+- When pruner is set to `"none"`, use `NopPruner` instead of diverted `MedianPruner` (@qgallouedec)
 
 ## Release 1.5.0 (2022-03-25)
 
