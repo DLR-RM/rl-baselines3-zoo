@@ -247,16 +247,19 @@ class RawStatisticsCallback(BaseCallback):
 
 class LapTimeCallback(BaseCallback):
     def _on_training_start(self):
-        self.n_laps = 0
         output_formats = self.logger.output_formats
         # Save reference to tensorboard formatter object
         # note: the failure case (not formatter found) is not handled here, should be done with try/except.
         self.tb_formatter = next(formatter for formatter in output_formats if isinstance(formatter, TensorBoardOutputFormat))
 
     def _on_step(self) -> bool:
-        if self.locals["infos"][0]["lap_count"] != self.n_laps:
-            self.n_laps = self.locals["infos"][0]["lap_count"]
-            lap_time = self.locals["infos"][0]["last_lap_time"]
-            if lap_time > 5.0:
-                self.tb_formatter.writer.add_scalar("time/lap_time", lap_time, self.num_timesteps)
-                self.tb_formatter.writer.flush()
+        lap_count = self.locals["infos"][0]["lap_count"]
+        lap_time = self.locals["infos"][0]["last_lap_time"]
+
+        if lap_time > 0:
+            self.tb_formatter.writer.add_scalar("time/lap_time", lap_time, self.num_timesteps)
+            if lap_count == 1:
+                self.tb_formatter.writer.add_scalar("time/first_lap_time", lap_time, self.num_timesteps)
+            else:
+                self.tb_formatter.writer.add_scalar("time/second_lap_time", lap_time, self.num_timesteps)
+            self.tb_formatter.writer.flush()

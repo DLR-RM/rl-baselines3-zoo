@@ -6,19 +6,12 @@ donkey-mountain-track-v0: &defaults
     - gym.wrappers.time_limit.TimeLimit:
         max_episode_steps: 10000
     - ae.wrapper.AutoencoderWrapper
-    #- ae.self_supervised.wrapper.SelfSupervisedWrapper:
-    #    add_speed: True
-    # - utils.wrappers.ContinuityCostWrapper:
-    #     weight_continuity: 3.0
-    #     condition: False
     - utils.wrappers.HistoryWrapper:
         horizon: 2
   callback:
     - utils.callbacks.ParallelTrainCallback:
         gradient_steps: 200
     - utils.callbacks.LapTimeCallback
-  # vec_env_wrapper:
-  #   - utils.wrappers.VecForceResetWrapper
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
