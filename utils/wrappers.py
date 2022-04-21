@@ -41,8 +41,8 @@ class ActionNoiseWrapper(gym.Wrapper):
     Add gaussian noise to the action (without telling the agent),
     to test the robustness of the control.
 
-    :param env: (gym.Env)
-    :param noise_std: (float) Standard deviation of the noise
+    :param env:
+    :param noise_std: Standard deviation of the noise
     """
 
     def __init__(self, env: gym.Env, noise_std: float = 0.1):
@@ -248,7 +248,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
     :param horizon: Number of steps to keep in the history.
     """
 
-    def __init__(self, env: gym.env, horizon: int = 2):
+    def __init__(self, env: gym.Env, horizon: int = 2):
         assert isinstance(env.observation_space.spaces["observation"], gym.spaces.Box)
 
         wrapped_obs_space = env.observation_space.spaces["observation"]
