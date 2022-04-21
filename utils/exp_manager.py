@@ -48,7 +48,7 @@ from utils.hyperparams_opt import HYPERPARAMS_SAMPLER
 from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
-class ExperimentManager(object):
+class ExperimentManager:
     """
     Experiment manager: read the hyperparameters,
     preprocess them, create the environment and the RL model.
@@ -91,7 +91,7 @@ class ExperimentManager(object):
         no_optim_plots: bool = False,
         device: Union[th.device, str] = "auto",
     ):
-        super(ExperimentManager, self).__init__()
+        super().__init__()
         self.algo = algo
         self.env_id = env_id
         # Custom params
@@ -261,7 +261,7 @@ class ExperimentManager(object):
 
     def read_hyperparameters(self) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         # Load hyperparameters from yaml file
-        with open(f"hyperparams/{self.algo}.yml", "r") as f:
+        with open(f"hyperparams/{self.algo}.yml") as f:
             hyperparams_dict = yaml.safe_load(f)
             if self.env_id in list(hyperparams_dict.keys()):
                 hyperparams = hyperparams_dict[self.env_id]
