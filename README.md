@@ -139,9 +139,33 @@ To load a checkpoint (here the checkpoint name is `rl_model_10000_steps.zip`):
 python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-checkpoint 10000
 ```
 
-To load the latest checkpoint:
+## Offline Training with d3rlpy
+
 ```
-python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-last-checkpoint
+python train.py --algo human --env donkey-generated-track-v0 --env-kwargs frame_skip:1 throttle_max:2.0 throttle_min:0.0 steering_min:-0.5 steering_max:0.5 level:6 max_cte:100000 test_mode:False  --num-threads 2 --eval-freq -1 \
+ -b logs/human/donkey-generated-track-v0_1/replay_buffer.pkl \
+ --pretrain-params batch_size:256 n_eval_episodes:1 n_epochs:20 n_iterations:20 \
+ --offline-algo bc
+```
+
+Params:
+
+```python
+
+n_iterations = args.pretrain_params.get("n_iterations", 10)
+n_epochs = args.pretrain_params.get("n_epochs", 1)
+q_func_type = args.pretrain_params.get("q_func_type")
+batch_size = args.pretrain_params.get("batch_size", 512)
+# n_action_samples = args.pretrain_params.get("n_action_samples", 1)
+n_eval_episodes = args.pretrain_params.get("n_eval_episodes", 5)
+add_to_buffer = args.pretrain_params.get("add_to_buffer", False)
+deterministic = args.pretrain_params.get("deterministic", True)
+```
+
+## Human driving
+
+```
+python train.py --algo human --env donkey-generated-track-v0 --env-kwargs frame_skip:1 throttle_max:1.0 throttle_min:-1.0 steering_min:-1 steering_max:1 level:6 max_cte:100000  --num-threads 2 --eval-freq -1
 ```
 
 ## Hyperparameter yaml syntax

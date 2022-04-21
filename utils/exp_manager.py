@@ -12,6 +12,7 @@ import numpy as np
 import optuna
 import torch as th
 import yaml
+import zmq
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
@@ -103,6 +104,7 @@ class ExperimentManager:
         self.frame_stack = None
         self.seed = seed
         self.optimization_log_path = optimization_log_path
+        self.vec_env_wrapper = None
 
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
 
@@ -164,7 +166,7 @@ class ExperimentManager:
         :return: the initialized RL model
         """
         hyperparams, saved_hyperparams = self.read_hyperparameters()
-        hyperparams, self.env_wrapper, self.callbacks = self._preprocess_hyperparams(hyperparams)
+        hyperparams, self.env_wrapper, self.callbacks, self.vec_env_wrapper = self._preprocess_hyperparams(hyperparams)
 
         self.create_log_folder()
         self.create_callbacks()
@@ -212,7 +214,7 @@ class ExperimentManager:
 
         try:
             model.learn(self.n_timesteps, **kwargs)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, zmq.error.ZMQError):
             # this allows to save the model when interrupting training
             pass
         finally:
@@ -322,7 +324,7 @@ class ExperimentManager:
 
     def _preprocess_hyperparams(
         self, hyperparams: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback]]:
+    ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback], Optional[Callable]]:
         self.n_envs = hyperparams.get("n_envs", 1)
 
         if self.verbose > 0:
@@ -374,12 +376,16 @@ class ExperimentManager:
         if "env_wrapper" in hyperparams.keys():
             del hyperparams["env_wrapper"]
 
+        vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
+        if "vec_env_wrapper" in hyperparams.keys():
+            del hyperparams["vec_env_wrapper"]
+
         callbacks = get_callback_list(hyperparams)
         if "callback" in hyperparams.keys():
             self.specified_callbacks = hyperparams["callback"]
             del hyperparams["callback"]
 
-        return hyperparams, env_wrapper, callbacks
+        return hyperparams, env_wrapper, callbacks, vec_env_wrapper
 
     def _preprocess_action_noise(
         self, hyperparams: Dict[str, Any], saved_hyperparams: Dict[str, Any], env: VecEnv
@@ -536,6 +542,9 @@ class ExperimentManager:
             vec_env_kwargs=self.vec_env_kwargs,
             monitor_kwargs=monitor_kwargs,
         )
+
+        if self.vec_env_wrapper is not None:
+            env = self.vec_env_wrapper(env)
 
         # Wrap the env into a VecNormalize wrapper if needed
         # and load saved statistics when present

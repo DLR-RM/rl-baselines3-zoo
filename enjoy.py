@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import glob
 import importlib
 import os
@@ -6,6 +7,7 @@ import sys
 
 import numpy as np
 import torch as th
+import websockets
 import yaml
 from stable_baselines3.common.utils import set_random_seed
 
@@ -13,6 +15,25 @@ import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 from utils.exp_manager import ExperimentManager
 from utils.utils import StoreDict
+
+EXIT = False
+socket_port = int(os.environ.get("SOCKET_PORT", 8895))
+
+# To unlock the start
+# echo '{"angle":0,"throttle":0,"drive_mode":"local"}' | websocat "ws://127.0.0.1:8895/wsDrive"
+
+
+async def handler(websocket):
+    _ = await websocket.recv()
+    global EXIT
+    EXIT = True
+
+
+async def main_wait():
+    async with websockets.serve(handler, "", socket_port):
+        while not EXIT:
+            await asyncio.sleep(0.05)
+        print("Exiting socket server")
 
 
 def main():  # noqa: C901
@@ -180,6 +201,11 @@ def main():  # noqa: C901
 
     obs = env.reset()
 
+    # Wait for message from websocket
+    if bool(int(os.environ.get("WAIT_FOR_START", False))):
+        print(f"Waiting for socket message on port {socket_port}")
+        asyncio.run(main_wait())
+
     # Deterministic by default except for atari games
     stochastic = args.stochastic or is_atari and not args.deterministic
     deterministic = not stochastic
@@ -219,6 +245,8 @@ def main():  # noqa: C901
                     episode_reward = 0.0
                     ep_len = 0
                     state = None
+                    # if model.get_vec_normalize_env() is not None:
+                    #     model.get_vec_normalize_env().save("/tmp/sb3/vecnormalize.pkl")
 
                 # Reset also when the goal is achieved when using HER
                 if done and infos[0].get("is_success") is not None:
@@ -230,6 +258,7 @@ def main():  # noqa: C901
                         episode_reward, ep_len = 0.0, 0
 
     except KeyboardInterrupt:
+        print("Cancelled by the user...")
         pass
 
     if args.verbose > 0 and len(successes) > 0:

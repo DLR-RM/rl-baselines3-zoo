@@ -11,6 +11,7 @@ seaborn
 pyyaml>=5.1
 cloudpickle>=1.5.0
 plotly
+git+https://github.com/takuseno/d3rlpy
 panda-gym==1.1.1 # tmp fix: until compatibility with panda-gym v2
 rliable>=1.0.5
 wandb

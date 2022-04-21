@@ -1,0 +1,13 @@
+donkey-generated-track-v0:
+  env_wrapper:
+    # - gym.wrappers.time_limit.TimeLimit:
+    #     max_episode_steps: 1200
+    - utils.wrappers.HistoryWrapper:
+        horizon: 2
+    # - utils.wrappers.TimeFeatureWrapper:
+    #     test_mode: True
+    # - stable_baselines3.common.monitor.Monitor:
+    #     filename: None
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  buffer_size: 100000

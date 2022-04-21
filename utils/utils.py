@@ -5,6 +5,7 @@ import os
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import gym
+import numpy as np
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
@@ -14,6 +15,16 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize
+
+try:
+    from utils.teleop import HumanTeleop
+except ImportError:
+    HumanTeleop = None
+
+try:
+    from rl_racing.utils.teleop import HumanTeleop as Teleop
+except ImportError:
+    Teleop = None
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
@@ -25,6 +36,8 @@ ALGOS = {
     "ppo": PPO,
     "sac": SAC,
     "td3": TD3,
+    "human": HumanTeleop,
+    "teleop": Teleop,
     # SB3 Contrib,
     "ars": ARS,
     "qrdqn": QRDQN,
@@ -42,7 +55,7 @@ def flatten_dict_observations(env: gym.Env) -> gym.Env:
         return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
 
 
-def get_wrapper_class(hyperparams: Dict[str, Any]) -> Optional[Callable[[gym.Env], gym.Env]]:
+def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
     """
     Get one or more Gym environment wrapper class specified as a hyper parameter
     "env_wrapper".
@@ -67,8 +80,8 @@ def get_wrapper_class(hyperparams: Dict[str, Any]) -> Optional[Callable[[gym.Env
     def get_class_name(wrapper_name):
         return wrapper_name.split(".")[-1]
 
-    if "env_wrapper" in hyperparams.keys():
-        wrapper_name = hyperparams.get("env_wrapper")
+    if key in hyperparams.keys():
+        wrapper_name = hyperparams.get(key)
 
         if wrapper_name is None:
             return None
@@ -203,6 +216,11 @@ def create_test_env(
 
     if "env_wrapper" in hyperparams.keys():
         del hyperparams["env_wrapper"]
+
+    # Ignore for now
+    # TODO: handle it properly
+    if "vec_env_wrapper" in hyperparams.keys():
+        del hyperparams["vec_env_wrapper"]
 
     vec_env_kwargs = {}
     vec_env_cls = DummyVecEnv
@@ -357,3 +375,69 @@ class StoreDict(argparse.Action):
             # Evaluate the string as python code
             arg_dict[key] = eval(value)
         setattr(namespace, self.dest, arg_dict)
+
+
+def evaluate_policy_add_to_buffer(
+    model,
+    env,
+    n_eval_episodes=10,
+    deterministic=True,
+    render=False,
+    callback=None,
+    reward_threshold=None,
+    return_episode_rewards=False,
+    replay_buffer=None,
+):
+    """
+    Runs policy for ``n_eval_episodes`` episodes and returns average reward.
+    This is made to work only with one env.
+    :param model: (BaseAlgorithm) The RL agent you want to evaluate.
+    :param env: (gym.Env or VecEnv) The gym environment. In the case of a ``VecEnv``
+        this must contain only one environment.
+    :param n_eval_episodes: (int) Number of episode to evaluate the agent
+    :param deterministic: (bool) Whether to use deterministic or stochastic actions
+    :param render: (bool) Whether to render the environment or not
+    :param callback: (callable) callback function to do additional checks,
+        called after each step.
+    :param reward_threshold: (float) Minimum expected reward per episode,
+        this will raise an error if the performance is not met
+    :param return_episode_rewards: (bool) If True, a list of reward per episode
+        will be returned instead of the mean.
+    :return: (float, float) Mean reward per episode, std of reward per episode
+        returns ([float], [int]) when ``return_episode_rewards`` is True
+    """
+    if isinstance(env, VecEnv):
+        assert env.num_envs == 1, "You must pass only one environment when using this function"
+
+    episode_rewards, episode_lengths = [], []
+    for _ in range(n_eval_episodes):
+        obs = env.reset()
+        done, state = False, None
+        episode_reward = 0.0
+        episode_length = 0
+        if model.use_sde:
+            model.actor.reset_noise()
+
+        while not done:
+            action, state = model.predict(obs, state=state, deterministic=deterministic)
+            new_obs, reward, done, info = env.step(action)
+            episode_reward += reward
+            if callback is not None:
+                callback(locals(), globals())
+            episode_length += 1
+            if replay_buffer is not None:
+                # We assume actions are normalized but not observation/reward
+                buffer_action = action
+                replay_buffer.add(obs, new_obs, buffer_action, reward, done, info)
+            obs = new_obs
+            if render:
+                env.render()
+        episode_rewards.append(episode_reward)
+        episode_lengths.append(episode_length)
+    mean_reward = np.mean(episode_rewards)
+    std_reward = np.std(episode_rewards)
+    if reward_threshold is not None:
+        assert mean_reward > reward_threshold, "Mean reward below threshold: " f"{mean_reward:.2f} < {reward_threshold:.2f}"
+    if return_episode_rewards:
+        return episode_rewards, episode_lengths
+    return mean_reward, std_reward

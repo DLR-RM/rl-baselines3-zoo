@@ -29,6 +29,16 @@ except ImportError:
     gym_donkeycar = None
 
 try:
+    import rl_racing.envs  # pytype: disable=import-error
+except ImportError:
+    rl_racing = None
+
+try:
+    import gym_space_engineers  # pytype: disable=import-error
+except ImportError:
+    gym_space_engineers = None
+
+try:
     import panda_gym  # pytype: disable=import-error
 except ImportError:
     panda_gym = None

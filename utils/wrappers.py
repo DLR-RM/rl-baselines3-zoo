@@ -1,7 +1,52 @@
+import os
+from copy import deepcopy
+from typing import Optional
+
 import gym
 import numpy as np
+import torch as th
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from scipy.signal import iirfilter, sosfilt, zpk2sos
+from stable_baselines3 import SAC
+from stable_baselines3.common.vec_env.base_vec_env import VecEnv, VecEnvObs, VecEnvStepReturn, VecEnvWrapper
+
+
+class VecForceResetWrapper(VecEnvWrapper):
+    """
+    For all environments to reset at once,
+    and tell the agent the trajectory was truncated.
+
+    :param venv: The vectorized environment
+    """
+
+    def __init__(self, venv: VecEnv):
+        super().__init__(venv=venv)
+
+    def reset(self) -> VecEnvObs:
+        return self.venv.reset()
+
+    def step_wait(self) -> VecEnvStepReturn:
+        for env_idx in range(self.num_envs):
+            obs, self.buf_rews[env_idx], self.buf_dones[env_idx], self.buf_infos[env_idx] = self.envs[env_idx].step(
+                self.actions[env_idx]
+            )
+            self._save_obs(env_idx, obs)
+
+        if self.buf_dones.any():
+            for env_idx in range(self.num_envs):
+                self.buf_infos[env_idx]["terminal_observation"] = self.buf_obs[None][env_idx]
+                if not self.buf_dones[env_idx]:
+                    self.buf_infos[env_idx]["TimeLimit.truncated"] = True
+                self.buf_dones[env_idx] = True
+                obs = self.envs[env_idx].reset()
+                self._save_obs(env_idx, obs)
+
+        return (
+            self._obs_from_buf(),
+            np.copy(self.buf_rews),
+            np.copy(self.buf_dones),
+            deepcopy(self.buf_infos),
+        )
 
 
 class DoneOnSuccessWrapper(gym.Wrapper):
@@ -305,3 +350,106 @@ class HistoryWrapperObsDict(gym.Wrapper):
         obs_dict["observation"] = self._create_obs_from_history()
 
         return obs_dict, reward, done, info
+
+
+class ResidualExpertWrapper(gym.Wrapper):
+    """
+    :param env:
+    :param model_path:
+    :param add_expert_to_obs:
+    :param residual_scale:
+    """
+
+    def __init__(
+        self,
+        env: gym.Env,
+        model_path: Optional[str] = os.environ.get("MODEL_PATH"),
+        add_expert_to_obs: bool = True,
+        residual_scale: float = 0.2,
+        expert_scale: float = 1.0,
+        d3rlpy_model: bool = False,
+    ):
+        assert isinstance(env.observation_space, gym.spaces.Box)
+        assert model_path is not None
+
+        wrapped_obs_space = env.observation_space
+
+        low = np.concatenate((wrapped_obs_space.low, np.finfo(np.float32).min * np.ones(2)))
+        high = np.concatenate((wrapped_obs_space.high, np.finfo(np.float32).max * np.ones(2)))
+
+        # Overwrite the observation space
+        env.observation_space = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
+
+        super(ResidualExpertWrapper, self).__init__(env)
+
+        print(f"Loading model from {model_path}")
+        if d3rlpy_model:
+            self.model = th.jit.load(model_path)
+        else:
+            self.model = SAC.load(model_path)
+        self.d3rlpy_model = d3rlpy_model
+        self._last_obs = None
+        self.residual_scale = residual_scale
+        self.expert_scale = expert_scale
+        self.add_expert_to_obs = add_expert_to_obs
+
+    def _predict(self, obs):
+        # TODO: move to gpu when possible
+        if self.d3rlpy_model:
+            expert_action = self.model(th.tensor(obs).reshape(1, -1)).cpu().numpy()[0, :]
+        else:
+            expert_action, _ = self.model.predict(obs, deterministic=True)
+        if self.add_expert_to_obs:
+            obs = np.concatenate((obs, expert_action), axis=-1)
+        return obs, expert_action
+
+    def reset(self):
+        obs = self.env.reset()
+        obs, self.expert_action = self._predict(obs)
+        return obs
+
+    def step(self, action):
+        action = np.clip(self.expert_scale * self.expert_action + self.residual_scale * action, -1.0, 1.0)
+        obs, reward, done, info = self.env.step(action)
+        obs, self.expert_action = self._predict(obs)
+
+        return obs, reward, done, info
+
+
+class ContinuityCostWrapper(gym.Wrapper):
+    """
+    Add continuity cost to the reward.
+    It assumes that the action space is normalized
+    and symmetric (actions in [-1, 1]).
+    :param env:
+    :param weight_continuity:
+    """
+
+    def __init__(self, env: gym.Env, weight_continuity: float = 0.0, condition: bool = False):
+        super(ContinuityCostWrapper, self).__init__(env)
+        self.last_action = None
+        self.weight_continuity = weight_continuity
+        self.condition = condition
+        if condition:
+            self.weight_continuity = 1.0
+
+    def reset(self):
+        self.last_action = None
+        return self.env.reset()
+
+    def step(self, action):
+        obs, reward, done, info = self.env.step(action)
+        # Continuity cost
+        if self.last_action is not None:
+            max_delta = 2.0  # for the action space: high - low = 1 - (-1) = 2
+            continuity_cost = np.mean((action - self.last_action) ** 2 / max_delta**2)
+            continuity_cost = self.weight_continuity * continuity_cost
+        else:
+            continuity_cost = 0.0
+        self.last_action = action.copy()
+
+        if self.condition:
+            reward = (1 - continuity_cost) * reward
+        else:
+            reward -= continuity_cost
+        return obs, reward, done, info
