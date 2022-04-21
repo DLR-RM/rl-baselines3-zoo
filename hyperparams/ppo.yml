@@ -508,7 +508,7 @@ InvertedPendulum-v3:
   max_grad_norm: 0.3
   vf_coef: 0.19816
 
-Reacher-v3:
+Reacher-v2:
   normalize: true
   n_envs: 1
   policy: 'MlpPolicy'
