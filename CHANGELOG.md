@@ -11,6 +11,7 @@
 
 ### Bug fixes
 - Fix `Reacher-v3` name in PPO hyperparameter file
+- Pinned ale-py==0.7.4 until new SB3 version is released
 
 ### Documentation
 
