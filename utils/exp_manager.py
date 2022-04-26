@@ -16,6 +16,7 @@ from optuna.study import MaxTrialsCallback
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
+from optuna.trial import TrialState
 from optuna.visualization import plot_optimization_history, plot_param_importances
 from sb3_contrib.common.vec_env import AsyncEval
 
@@ -74,6 +75,7 @@ class ExperimentManager:
         storage: Optional[str] = None,
         study_name: Optional[str] = None,
         n_trials: int = 1,
+        total_n_trials: Optional[int] = None,
         n_jobs: int = 1,
         sampler: str = "tpe",
         pruner: str = "median",
@@ -134,6 +136,7 @@ class ExperimentManager:
         self.no_optim_plots = no_optim_plots
         # maximum number of trials for finding the best hyperparams
         self.n_trials = n_trials
+        self.total_n_trials = total_n_trials
         # number of parallel jobs when doing hyperparameter search
         self.n_jobs = n_jobs
         self.sampler = sampler
@@ -748,7 +751,17 @@ class ExperimentManager:
         )
 
         try:
-            study.optimize(self.objective, n_jobs=self.n_jobs, callbacks=[MaxTrialsCallback(self.n_trials)])
+            if self.total_n_trials is not None:
+                study.optimize(self.objective,
+                               n_jobs=self.n_jobs,
+                               callbacks=
+                               [MaxTrialsCallback(
+                                   self.total_n_trials,
+                                    states=[TrialState.COMPLETE, TrialState.RUNNING])])
+            else:
+                study.optimize(self.objective,
+                               n_jobs=self.n_jobs,
+                               n_trials=self.n_trials)
         except KeyboardInterrupt:
             pass
 

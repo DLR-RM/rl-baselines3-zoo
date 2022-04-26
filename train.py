@@ -65,6 +65,13 @@ if __name__ == "__main__":  # noqa: C901
         default=500,
     )
     parser.add_argument(
+        "--total-n-trials",
+        help="Number of trials for optimizing hyperparameters. "
+             "This applies to the entire optimization process and takes precedence over --n-trials if set.",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
         "-optimize", "--optimize-hyperparameters", action="store_true", default=False, help="Run hyperparameters search"
     )
     parser.add_argument(
@@ -201,6 +208,7 @@ if __name__ == "__main__":  # noqa: C901
         args.storage,
         args.study_name,
         args.n_trials,
+        args.total_n_trials,
         args.n_jobs,
         args.sampler,
         args.pruner,
