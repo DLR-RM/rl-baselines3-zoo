@@ -12,10 +12,10 @@ import numpy as np
 import optuna
 import torch as th
 import yaml
-from optuna.study import MaxTrialsCallback
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
+from optuna.study import MaxTrialsCallback
 from optuna.trial import TrialState
 from optuna.visualization import plot_optimization_history, plot_param_importances
 from sb3_contrib.common.vec_env import AsyncEval
@@ -752,16 +752,13 @@ class ExperimentManager:
 
         try:
             if self.total_n_trials is not None:
-                study.optimize(self.objective,
-                               n_jobs=self.n_jobs,
-                               callbacks=
-                               [MaxTrialsCallback(
-                                   self.total_n_trials,
-                                    states=[TrialState.COMPLETE, TrialState.RUNNING])])
+                study.optimize(
+                    self.objective,
+                    n_jobs=self.n_jobs,
+                    callbacks=[MaxTrialsCallback(self.total_n_trials, states=[TrialState.COMPLETE, TrialState.RUNNING])],
+                )
             else:
-                study.optimize(self.objective,
-                               n_jobs=self.n_jobs,
-                               n_trials=self.n_trials)
+                study.optimize(self.objective, n_jobs=self.n_jobs, n_trials=self.n_trials)
         except KeyboardInterrupt:
             pass
 
