@@ -1,3 +1,4 @@
+#===hyperparametrs optimization
 --algo
 ppo
 --env
@@ -32,3 +33,5 @@ mode:'VAL'
 terminal_reward:[[0,-0.3],[-0.7,0]]
 --tensorboard-log
 /tmp/stable-baselines/
+#=============train=====
+--algo ppo --log-folder logs/tmp  --env cwcf-v0 --n-timesteps 2048000 --eval-freq 10240 --eval-episodes 990 --n-eval-envs 1 --env-kwargs lambda_coefficient:0.01 mode:'TRAIN' terminal_reward:[[0,-0.3],[-0.7,0]] --eval-env-kwargs lambda_coefficient:0.01 random_mode:False mode:'VAL' terminal_reward:[[0,-0.3],[-0.7,0]] --tensorboard-log /tmp/stable-baselines/
