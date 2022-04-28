@@ -141,7 +141,7 @@ def test_multiple_workers(tmp_path):
     return_code4 = p4.wait()
 
     study = optuna.load_study(study_name=study_name, storage=storage)
-    assert sum(t.state == TrialState.COMPLETE for t in study.trials) == n_trials
+    assert sum(t.state in (TrialState.COMPLETE, TrialState.PRUNED) for t in study.trials) == n_trials
 
     assert return_code1 == 0
     assert return_code2 == 0
