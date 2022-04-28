@@ -761,11 +761,21 @@ class ExperimentManager:
 
         try:
             if self.total_n_trials is not None:
-                study.optimize(
-                    self.objective,
-                    n_jobs=self.n_jobs,
-                    callbacks=[MaxTrialsCallback(self.total_n_trials, states=[TrialState.COMPLETE, TrialState.RUNNING])],
-                )
+                counted_states = [
+                    TrialState.COMPLETE,
+                    TrialState.RUNNING,
+                    TrialState.PRUNED,
+                ]
+                completed_trials = sum(t.state in counted_states for t in study.trials)
+                if completed_trials < self.total_n_trials:
+                    study.optimize(
+                        self.objective,
+                        n_jobs=self.n_jobs,
+                        callbacks=[MaxTrialsCallback(
+                            self.total_n_trials,
+                            states=counted_states,
+                        )],
+                    )
             else:
                 study.optimize(self.objective, n_jobs=self.n_jobs, n_trials=self.n_trials)
         except KeyboardInterrupt:
