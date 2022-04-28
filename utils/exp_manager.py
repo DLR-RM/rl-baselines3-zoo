@@ -762,10 +762,12 @@ class ExperimentManager:
                     study.optimize(
                         self.objective,
                         n_jobs=self.n_jobs,
-                        callbacks=[MaxTrialsCallback(
-                            self.total_n_trials,
-                            states=counted_states,
-                        )],
+                        callbacks=[
+                            MaxTrialsCallback(
+                                self.total_n_trials,
+                                states=counted_states,
+                            )
+                        ],
                     )
             else:
                 study.optimize(self.objective, n_jobs=self.n_jobs, n_trials=self.n_trials)
