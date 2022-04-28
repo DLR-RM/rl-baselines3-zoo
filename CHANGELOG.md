@@ -8,6 +8,7 @@
 
 ### New Features
 - Support setting PyTorch's device with thye `--device` flag (@gregwar)
+- Add `--tital-n-trials` parameter to help with distributed optimization. (@ernestum)
 
 ### Bug fixes
 - Fix `Reacher-v3` name in PPO hyperparameter file
