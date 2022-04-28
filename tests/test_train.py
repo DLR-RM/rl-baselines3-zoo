@@ -1,7 +1,9 @@
 import os
 import subprocess
 
+import optuna
 import pytest
+from optuna.trial import TrialState
 
 
 def _assert_eq(left, right):
@@ -101,3 +103,47 @@ def test_parallel_train(tmp_path):
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
+
+
+def test_multiple_workers(tmp_path):
+    study_name = "test-study"
+    storage = f"sqlite:///{tmp_path}/optuna.db"
+    n_trials = 6
+    args = [
+        "-optimize",
+        "--no-optim-plots",
+        "--storage",
+        storage,
+        "--total-n-trials",
+        str(n_trials),
+        "--study-name",
+        study_name,
+        "--n-evaluations",
+        str(1),
+        "-n",
+        str(100),
+        "--algo",
+        "ppo",
+        "--env",
+        "Pendulum-v1",
+        "--log-folder",
+        tmp_path,
+    ]
+
+    p1 = subprocess.Popen(["python", "train.py"] + args)
+    p2 = subprocess.Popen(["python", "train.py"] + args)
+    p3 = subprocess.Popen(["python", "train.py"] + args)
+    p4 = subprocess.Popen(["python", "train.py"] + args)
+
+    return_code1 = p1.wait()
+    return_code2 = p2.wait()
+    return_code3 = p3.wait()
+    return_code4 = p4.wait()
+
+    study = optuna.load_study(study_name=study_name, storage=storage)
+    assert sum(t.state == TrialState.COMPLETE for t in study.trials) == n_trials
+
+    assert return_code1 == 0
+    assert return_code2 == 0
+    assert return_code3 == 0
+    assert return_code4 == 0
