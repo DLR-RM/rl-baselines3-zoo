@@ -195,42 +195,95 @@ HalfCheetah-v3: &mujoco-defaults
   policy: 'MlpPolicy'
   learning_starts: 10000
 
+# Tuned
 seals/HalfCheetah-v0:
   <<: *mujoco-defaults
+  batch_size: 2048
+  buffer_size: 100000
+  gamma: 0.95
+  learning_rate: 0.000884624878315995
+  learning_starts: 10000
+  policy_kwargs: dict(net_arch=[64, 64], log_std_init=-0.6932709443503001)
+  tau: 0.01
+  train_freq: 64
 
 Ant-v3:
   <<: *mujoco-defaults
 
+# Tuned
 seals/Ant-v0:
   <<: *mujoco-defaults
+  batch_size: 512
+  buffer_size: 1000000
+  gamma: 0.98
+  learning_rate: 0.0018514039303149058
+  learning_starts: 1000
+  policy_kwargs: dict(net_arch=[256, 256], log_std_init=-2.2692589009754176)
+  tau: 0.05
+  train_freq: 64
 
 Hopper-v3:
   <<: *mujoco-defaults
 
+# Tuned
 seals/Hopper-v0:
   <<: *mujoco-defaults
+  batch_size: 128
+  buffer_size: 100000
+  gamma: 0.98
+  learning_rate: 0.001709807687567946
+  learning_starts: 1000
+  policy_kwargs: dict(net_arch=[256, 256], log_std_init=-1.6829391077276037)
+  tau: 0.08
+  train_freq: 32
 
 Walker2d-v3:
   <<: *mujoco-defaults
 
+# Tuned
 seals/Walker2d-v0:
   <<: *mujoco-defaults
+  batch_size: 128
+  buffer_size: 100000
+  gamma: 0.99
+  learning_rate: 0.0005845844772048097
+  learning_starts: 1000
+  policy_kwargs: dict(net_arch=[400, 300], log_std_init=0.1955317469998743)
+  tau: 0.02
+  train_freq: 1
 
 Humanoid-v3:
   <<: *mujoco-defaults
   n_timesteps: !!float 2e6
 
+# Tuned
 seals/Humanoid-v0:
   <<: *mujoco-defaults
   n_timesteps: !!float 2e6
+  batch_size: 64
+  buffer_size: 100000
+  gamma: 0.98
+  learning_rate: 4.426351861707874e-05
+  learning_starts: 20000
+  policy_kwargs: dict(net_arch=[400, 300], log_std_init=-0.1034412732183072)
+  tau: 0.08
+  train_freq: 8
 
 Swimmer-v3:
   <<: *mujoco-defaults
   gamma: 0.9999
 
+# Tuned
 seals/Swimmer-v0:
   <<: *mujoco-defaults
-  gamma: 0.9999
+  batch_size: 128
+  buffer_size: 100000
+  gamma: 0.995
+  learning_rate: 0.00039981805535514633
+  learning_starts: 1000
+  policy_kwargs: dict(net_arch=[400, 300], log_std_init=-2.689958330139309)
+  tau: 0.01
+  train_freq: 256
 
 # === HER Robotics GoalEnvs ===
 
