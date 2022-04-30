@@ -11,7 +11,7 @@ class DoneOnSuccessWrapper(gym.Wrapper):
     """
 
     def __init__(self, env: gym.Env, reward_offset: float = 0.0, n_successes: int = 1):
-        super(DoneOnSuccessWrapper, self).__init__(env)
+        super().__init__(env)
         self.reward_offset = reward_offset
         self.n_successes = n_successes
         self.current_successes = 0
@@ -41,12 +41,12 @@ class ActionNoiseWrapper(gym.Wrapper):
     Add gaussian noise to the action (without telling the agent),
     to test the robustness of the control.
 
-    :param env: (gym.Env)
-    :param noise_std: (float) Standard deviation of the noise
+    :param env:
+    :param noise_std: Standard deviation of the noise
     """
 
-    def __init__(self, env, noise_std=0.1):
-        super(ActionNoiseWrapper, self).__init__(env)
+    def __init__(self, env: gym.Env, noise_std: float = 0.1):
+        super().__init__(env)
         self.noise_std = noise_std
 
     def step(self, action):
@@ -95,13 +95,13 @@ class LowPassFilterWrapper(gym.Wrapper):
     """
     Butterworth-Lowpass
 
-    :param env: (gym.Env)
+    :param env:
     :param freq: Filter corner frequency.
     :param df: Sampling rate in Hz.
     """
 
-    def __init__(self, env, freq=5.0, df=25.0):
-        super(LowPassFilterWrapper, self).__init__(env)
+    def __init__(self, env: gym.Env, freq: float = 5.0, df: float = 25.0):
+        super().__init__(env)
         self.freq = freq
         self.df = df
         self.signal = []
@@ -123,12 +123,12 @@ class ActionSmoothingWrapper(gym.Wrapper):
     """
     Smooth the action using exponential moving average.
 
-    :param env: (gym.Env)
-    :param smoothing_coef: (float) Smoothing coefficient (0 no smoothing, 1 very smooth)
+    :param env:
+    :param smoothing_coef: Smoothing coefficient (0 no smoothing, 1 very smooth)
     """
 
-    def __init__(self, env, smoothing_coef: float = 0.0):
-        super(ActionSmoothingWrapper, self).__init__(env)
+    def __init__(self, env: gym.Env, smoothing_coef: float = 0.0):
+        super().__init__(env)
         self.smoothing_coef = smoothing_coef
         self.smoothed_action = None
         # from https://github.com/rail-berkeley/softlearning/issues/3
@@ -152,12 +152,12 @@ class DelayedRewardWrapper(gym.Wrapper):
     Delay the reward by `delay` steps, it makes the task harder but more realistic.
     The reward is accumulated during those steps.
 
-    :param env: (gym.Env)
-    :param delay: (int) Number of steps the reward should be delayed.
+    :param env:
+    :param delay: Number of steps the reward should be delayed.
     """
 
-    def __init__(self, env, delay=10):
-        super(DelayedRewardWrapper, self).__init__(env)
+    def __init__(self, env: gym.Env, delay: int = 10):
+        super().__init__(env)
         self.delay = delay
         self.current_step = 0
         self.accumulated_reward = 0.0
@@ -185,11 +185,11 @@ class HistoryWrapper(gym.Wrapper):
     """
     Stack past observations and actions to give an history to the agent.
 
-    :param env: (gym.Env)
-    :param horizon: (int) Number of steps to keep in the history.
+    :param env:
+    :param horizon:Number of steps to keep in the history.
     """
 
-    def __init__(self, env: gym.Env, horizon: int = 5):
+    def __init__(self, env: gym.Env, horizon: int = 2):
         assert isinstance(env.observation_space, gym.spaces.Box)
 
         wrapped_obs_space = env.observation_space
@@ -208,7 +208,7 @@ class HistoryWrapper(gym.Wrapper):
         # Overwrite the observation space
         env.observation_space = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
 
-        super(HistoryWrapper, self).__init__(env)
+        super().__init__(env)
 
         self.horizon = horizon
         self.low_action, self.high_action = low_action, high_action
@@ -244,11 +244,11 @@ class HistoryWrapperObsDict(gym.Wrapper):
     """
     History Wrapper for dict observation.
 
-    :param env: (gym.Env)
-    :param horizon: (int) Number of steps to keep in the history.
+    :param env:
+    :param horizon: Number of steps to keep in the history.
     """
 
-    def __init__(self, env, horizon=5):
+    def __init__(self, env: gym.Env, horizon: int = 2):
         assert isinstance(env.observation_space.spaces["observation"], gym.spaces.Box)
 
         wrapped_obs_space = env.observation_space.spaces["observation"]
@@ -267,7 +267,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
         # Overwrite the observation space
         env.observation_space.spaces["observation"] = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
 
-        super(HistoryWrapperObsDict, self).__init__(env)
+        super().__init__(env)
 
         self.horizon = horizon
         self.low_action, self.high_action = low_action, high_action
