@@ -1,6 +1,7 @@
 atari:
   env_wrapper:
-    - stable_baselines3.common.atari_wrappers.AtariWrapper
+    - stable_baselines3.common.atari_wrappers.AtariWrapper:
+        terminal_on_life_loss: True
   frame_stack: 4
   policy: 'CnnPolicy'
   n_envs: 8

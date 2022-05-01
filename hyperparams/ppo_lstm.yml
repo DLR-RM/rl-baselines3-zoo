@@ -13,7 +13,9 @@ atari:
   clip_range: lin_0.1
   vf_coef: 0.5
   ent_coef: 0.01
-
+  policy_kwargs: "dict(enable_critic_lstm=False,
+                       lstm_hidden_size=128,
+                       )"
 
 Pendulum-v1:
   n_envs: 4
