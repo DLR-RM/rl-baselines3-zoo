@@ -14,7 +14,7 @@ atari:
   ent_coef: 0.01
 
 # Tuned
-Pendulum-v1:
+PendulumNoVel-v1:
   n_envs: 4
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
@@ -29,7 +29,7 @@ Pendulum-v1:
   sde_sample_freq: 4
 
 # Tuned
-CartPole-v1:
+CartPoleNoVel-v1:
   n_envs: 8
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
@@ -42,7 +42,7 @@ CartPole-v1:
   learning_rate: lin_0.001
   clip_range: lin_0.2
 
-MountainCar-v0:
+MountainCarNoVel-v0:
   normalize: true
   n_envs: 16
   n_timesteps: !!float 1e6
@@ -54,7 +54,7 @@ MountainCar-v0:
   ent_coef: 0.0
 
 # Tuned
-MountainCarContinuous-v0:
+MountainCarContinuousNoVel-v0:
   normalize: true
   n_envs: 1
   n_timesteps: !!float 20000
@@ -111,7 +111,7 @@ BipedalWalkerHardcore-v3:
   learning_rate: lin_2.5e-4
   clip_range: lin_0.2
 
-LunarLander-v2:
+LunarLanderNoVel-v2:
   n_envs: 16
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
@@ -122,7 +122,7 @@ LunarLander-v2:
   n_epochs: 4
   ent_coef: 0.01
 
-LunarLanderContinuous-v2:
+LunarLanderContinuousNoVel-v2:
   n_envs: 16
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
