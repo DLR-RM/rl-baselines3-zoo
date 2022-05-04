@@ -4,9 +4,9 @@
 # Исходный код для статьи Применение методов Deep RL для отбора признаков при обнаружении компьютерных атак в IDS серевого типа
 
 
-<img src="images/panda_pick.gif" align="right" width="35%"/>
 
-RL Baselines3 Zoo is a training framework for Reinforcement Learning (RL), using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
+Форк RL pytorch-based фреймворка 
+RL Baselines3 Zoo (https://github.com/DLR-RM/stable-baselines3).
 
 It provides scripts for training, evaluating agents, tuning hyperparameters, plotting results and recording videos.
 
