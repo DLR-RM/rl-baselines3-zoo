@@ -1,8 +1,8 @@
-[![pipeline status](https://gitlab.com/araffin/rl-baselines3-zoo/badges/master/pipeline.svg)](https://gitlab.com/araffin/rl-baselines3-zoo/-/commits/master) [![coverage report](https://gitlab.com/araffin/rl-baselines3-zoo/badges/master/coverage.svg)](https://gitlab.com/araffin/rl-baselines3-zoo/-/commits/master) [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
 
-# RL Baselines3 Zoo: A Training Framework for Stable Baselines3 Reinforcement Learning Agents
+# Исходный код для статьи Применение методов Deep RL для отбора признаков при обнаружении компьютерных атак в IDS серевого типа
+
 
 <img src="images/panda_pick.gif" align="right" width="35%"/>
 
