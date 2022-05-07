@@ -17,7 +17,9 @@ atari:
                        lstm_hidden_size=128,
                        )"
 
+# Tuned
 PendulumNoVel-v1:
+  normalize: True
   n_envs: 4
   n_timesteps: !!float 1e5
   policy: 'MlpLstmPolicy'
@@ -30,9 +32,17 @@ PendulumNoVel-v1:
   clip_range: 0.2
   use_sde: True
   sde_sample_freq: 4
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
 
-
+# Tuned
 CartPoleNoVel-v1:
+  normalize: True
   n_envs: 8
   n_timesteps: !!float 1e5
   policy: 'MlpLstmPolicy'
@@ -44,6 +54,13 @@ CartPoleNoVel-v1:
   ent_coef: 0.0
   learning_rate: lin_0.001
   clip_range: lin_0.2
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
 
 MountainCarNoVel-v0:
   normalize: true
@@ -56,14 +73,14 @@ MountainCarNoVel-v0:
   n_epochs: 4
   ent_coef: 0.0
 
-
+# Tuned
 MountainCarContinuousNoVel-v0:
   normalize: true
-  n_envs: 1
-  n_timesteps: !!float 20000
+  n_envs: 8
+  n_timesteps: !!float 3e5
   policy: 'MlpLstmPolicy'
   batch_size: 256
-  n_steps: 8
+  n_steps: 1024
   gamma: 0.9999
   learning_rate: !!float 7.77e-05
   ent_coef: 0.00429
@@ -73,7 +90,11 @@ MountainCarContinuousNoVel-v0:
   max_grad_norm: 5
   vf_coef: 0.19
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-3.29, ortho_init=False)"
+  sde_sample_freq: 8
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=False,
+                       lstm_hidden_size=32,
+                       enable_critic_lstm=True,
+                       net_arch=[dict(pi=[64], vf=[64])])"
 
 Acrobot-v1:
   normalize: true
@@ -120,27 +141,28 @@ BipedalWalkerHardcore-v3:
                        lstm_hidden_size=256,
                        )"
 
-LunarLanderNoVel-v2:
-  n_envs: 16
-  n_timesteps: !!float 1e6
+# Tuned
+LunarLanderNoVel-v2: &lunar-defaults
+  normalize: True
+  n_envs: 32
+  n_timesteps: !!float 5e6
   policy: 'MlpLstmPolicy'
-  n_steps: 1024
-  batch_size: 64
+  n_steps: 512
+  batch_size: 128
   gae_lambda: 0.98
   gamma: 0.999
   n_epochs: 4
   ent_coef: 0.01
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
 
 LunarLanderContinuousNoVel-v2:
-  n_envs: 16
-  n_timesteps: !!float 1e6
-  policy: 'MlpLstmPolicy'
-  n_steps: 1024
-  batch_size: 64
-  gae_lambda: 0.98
-  gamma: 0.999
-  n_epochs: 4
-  ent_coef: 0.01
+  <<: *lunar-defaults
 
 
 HalfCheetahBulletEnv-v0: &pybullet-defaults
