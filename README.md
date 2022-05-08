@@ -14,7 +14,7 @@ creating_dataset.ipynb
 ```
 
 ## Обучение агента 
-Отдельные гиперпараметры определены в  `hyperparameters/algo_name.yml`.
+
 Команда для запуска
 ```
 python train.py --algo ppo
@@ -32,6 +32,8 @@ python train.py --algo ppo
 --eval-env-kwargs lambda_coefficient:0.01 random_mode:False mode:'VAL' terminal_reward:[[0,-0.3],[-0.7,0]] --tensorboard-log /tmp/stable-baselines/
 ```
 ## тестирования агента 
+
+Найденные гиперпараметры определены в  `hyperparameters/algo_name.yml`.
 ```
 sh run.sh
 ```
