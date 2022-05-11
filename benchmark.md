@@ -165,6 +165,7 @@ and also allow users to have access to pretrained agents.*
 |tqc  |LunarLanderContinuous-v2   |    277.956|    25.466|500k       |        149928|          706|
 |tqc  |MountainCarContinuous-v0   |     63.641|    45.259|50k        |        149796|          186|
 |tqc  |PandaPickAndPlace-v1       |     -8.024|     6.674|1M         |        150000|         3000|
+|tqc  |PandaPickAndPlace-v2       |    -36.555|    19.467|1M         |        150000|         3000|
 |tqc  |PandaPush-v1               |     -6.405|     6.400|1M         |        150000|         3000|
 |tqc  |PandaPush-v2               |     -8.658|     9.626|1M         |        150000|         3000|
 |tqc  |PandaReach-v1              |     -1.768|     0.858|20k        |        150000|         3000|
