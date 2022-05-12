@@ -274,6 +274,7 @@ PandaSlide-v2:
 
 PandaPickAndPlace-v2:
   <<: *her-defaults
+  learning_rate: !!float 2e-4
 
 PandaStack-v2:
   <<: *her-defaults

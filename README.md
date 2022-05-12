@@ -431,7 +431,7 @@ We used the v2 environments.
 
 |  RL Algo |  PandaReach | PandaPickAndPlace | PandaPush | PandaSlide | PandaStack | PandaFlip |
 |----------|-------------|-------------------|-----------|------------|------------|-----------|
-| HER+SAC | :heavy_check_mark: |  | :heavy_check_mark: |  |  |  |
+| HER+SAC | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |  |  |  |
 | HER+TQC | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |  |
 
 To visualize the result, you can pass `--env-kwargs render:True` to the enjoy script.
