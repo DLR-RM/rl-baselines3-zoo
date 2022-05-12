@@ -172,6 +172,7 @@ and also allow users to have access to pretrained agents.*
 |tqc  |PandaReach-v1              |     -1.768|     0.858|20k        |        150000|         3000|
 |tqc  |PandaReach-v2              |     -1.730|     0.829|20k        |        150000|         3000|
 |tqc  |PandaSlide-v1              |    -27.497|     9.868|3M         |        150000|         3000|
+|tqc  |PandaSlide-v2              |    -36.834|     8.606|3M         |        150000|         3000|
 |tqc  |PandaStack-v1              |    -96.915|    17.240|1M         |        150000|         1500|
 |tqc  |PandaStack-v2              |    -96.915|    17.240|1M         |        150000|         1500|
 |tqc  |Pendulum-v1                |   -151.340|    87.893|20k        |        150000|          750|
