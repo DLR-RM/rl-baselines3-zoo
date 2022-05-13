@@ -31,7 +31,7 @@ class TrialEvalCallback(EvalCallback):
         log_path: Optional[str] = None,
     ):
 
-        super(TrialEvalCallback, self).__init__(
+        super().__init__(
             eval_env=eval_env,
             n_eval_episodes=n_eval_episodes,
             eval_freq=eval_freq,
@@ -46,7 +46,7 @@ class TrialEvalCallback(EvalCallback):
 
     def _on_step(self) -> bool:
         if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
-            super(TrialEvalCallback, self)._on_step()
+            super()._on_step()
             self.eval_idx += 1
             # report best or report current ?
             # report num_timesteps or elasped time ?
@@ -69,7 +69,7 @@ class SaveVecNormalizeCallback(BaseCallback):
     """
 
     def __init__(self, save_freq: int, save_path: str, name_prefix: Optional[str] = None, verbose: int = 0):
-        super(SaveVecNormalizeCallback, self).__init__(verbose)
+        super().__init__(verbose)
         self.save_freq = save_freq
         self.save_path = save_path
         self.name_prefix = name_prefix
@@ -111,7 +111,7 @@ class ParallelTrainCallback(BaseCallback):
     """
 
     def __init__(self, gradient_steps: int = 100, verbose: int = 0, sleep_time: float = 0.0):
-        super(ParallelTrainCallback, self).__init__(verbose)
+        super().__init__(verbose)
         self.batch_size = 0
         self._model_ready = True
         self._model = None
@@ -202,7 +202,7 @@ class RawStatisticsCallback(BaseCallback):
     """
 
     def __init__(self, verbose=0):
-        super(RawStatisticsCallback, self).__init__(verbose)
+        super().__init__(verbose)
         # Custom counter to reports stats
         # (and avoid reporting multiple values for the same step)
         self._timesteps_counter = 0

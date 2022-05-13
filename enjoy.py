@@ -29,6 +29,7 @@ def main():  # noqa: C901
         "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
     )
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
+    parser.add_argument("--device", help="PyTorch device to be use (ex: cpu, cuda...)", default="auto", type=str)
     parser.add_argument(
         "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
     )
@@ -137,7 +138,7 @@ def main():  # noqa: C901
     env_kwargs = {}
     args_path = os.path.join(log_path, env_id, "args.yml")
     if os.path.isfile(args_path):
-        with open(args_path, "r") as f:
+        with open(args_path) as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
             if loaded_args["env_kwargs"] is not None:
                 env_kwargs = loaded_args["env_kwargs"]
@@ -175,7 +176,7 @@ def main():  # noqa: C901
             "clip_range": lambda _: 0.0,
         }
 
-    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
+    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=args.device, **kwargs)
 
     obs = env.reset()
 

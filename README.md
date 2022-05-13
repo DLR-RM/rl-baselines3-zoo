@@ -76,7 +76,7 @@ python scripts/plot_train.py -a her -e Fetch -y success -f rl-trained-agents/ -w
 Plot evaluation reward curve for TQC, SAC and TD3 on the HalfCheetah and Ant PyBullet environments:
 
 ```
-python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f rl-trained-agents/
+python3 scripts/all_plots.py -a sac td3 tqc --env HalfCheetahBullet AntBullet -f rl-trained-agents/
 ```
 
 ## Plot with the rliable library
@@ -185,6 +185,8 @@ Print and save best hyperparameters of an Optuna study:
 ```
 python scripts/parse_study.py -i path/to/study.pkl --print-n-best-trials 10 --save-n-best-hyperparameters 10
 ```
+
+The default budget for hyperparameter tuning is 500 trials and there is one intermediate evaluation for pruning/early stopping per 100k time steps.
 
 ### Hyperparameters search space
 
@@ -542,4 +544,4 @@ If you trained an agent that is not present in the RL Zoo, please submit a Pull 
 
 ## Contributors
 
-We would like to thanks our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres)
+We would like to thank our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres), [@ernestum](https://github.com/ernestum)

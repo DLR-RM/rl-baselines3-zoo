@@ -1,3 +1,23 @@
+## Release 1.5.1a0 (WIP)
+
+### Breaking Changes
+- Change default value for number of hyperparameter optimization trials from 10 to 500. (@ernestum)
+- Derive number of intermediate pruning evaluations from number of time steps (1 evaluation per 100k time steps.) (@ernestum)
+- Updated default --eval-freq from 10k to 25k steps
+- Update default horizon to 2 for the `HistoryWrapper`
+
+### New Features
+- Support setting PyTorch's device with thye `--device` flag (@gregwar)
+
+### Bug fixes
+- Fix `Reacher-v3` name in PPO hyperparameter file
+- Pinned ale-py==0.7.4 until new SB3 version is released
+
+### Documentation
+
+### Other
+- When pruner is set to `"none"`, use `NopPruner` instead of diverted `MedianPruner` (@qgallouedec)
+
 ## Release 1.5.0 (2022-03-25)
 
 **Support for Weight and Biases experiment tracking**
@@ -11,7 +31,6 @@
 - Verbose mode for each trial (when doing hyperparam optimization) can now be activated using the debug mode (verbose == 2)
 - Support experiment tracking via Weights and Biases via the `--track` flag (@vwxyzjn)
 - Support tracking raw episodic stats via `RawStatisticsCallback` (@vwxyzjn, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/216)
-
 
 ### Bug fixes
 - Policies saved during during optimization with distributed Optuna load on new systems (@jkterry)
