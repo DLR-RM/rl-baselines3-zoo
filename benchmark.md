@@ -169,17 +169,11 @@ and also allow users to have access to pretrained agents.*
 |tqc  |Humanoid-v3                |   7239.320|  1647.498|2M         |        149508|          165|
 |tqc  |LunarLanderContinuous-v2   |    277.956|    25.466|500k       |        149928|          706|
 |tqc  |MountainCarContinuous-v0   |     63.641|    45.259|50k        |        149796|          186|
-|tqc  |PandaPickAndPlace-v1       |     -8.024|     6.674|1M         |        150000|         3000|
 |tqc  |PandaPickAndPlace-v2       |    -36.555|    19.467|1M         |        150000|         3000|
-|tqc  |PandaPush-v1               |     -6.405|     6.400|1M         |        150000|         3000|
 |tqc  |PandaPush-v2               |     -8.658|     9.626|1M         |        150000|         3000|
-|tqc  |PandaReach-v1              |     -1.768|     0.858|20k        |        150000|         3000|
 |tqc  |PandaReach-v2              |     -1.730|     0.829|20k        |        150000|         3000|
-|tqc  |PandaSlide-v1              |    -27.497|     9.868|3M         |        150000|         3000|
 |tqc  |PandaSlide-v2              |    -36.834|     8.606|3M         |        150000|         3000|
-|tqc  |PandaStack-v1              |    -96.915|    17.240|1M         |        150000|         1500|
 |tqc  |PandaStack-v2              |    -96.915|    17.240|1M         |        150000|         1500|
-|tqc  |Pendulum-v1                |   -151.340|    87.893|20k        |        150000|          750|
 |tqc  |ReacherBulletEnv-v0        |     18.255|     9.543|300k       |        150000|         1000|
 |tqc  |Swimmer-v3                 |    339.423|     1.486|1M         |        150000|          150|
 |tqc  |Walker2DBulletEnv-v0       |   2508.934|   614.624|1M         |        149572|          159|
