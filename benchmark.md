@@ -174,6 +174,7 @@ and also allow users to have access to pretrained agents.*
 |tqc  |PandaReach-v2              |     -1.730|     0.829|20k        |        150000|         3000|
 |tqc  |PandaSlide-v2              |    -36.834|     8.606|3M         |        150000|         3000|
 |tqc  |PandaStack-v2              |    -96.915|    17.240|1M         |        150000|         1500|
+|tqc  |Pendulum-v1                |   -151.340|    87.893|20k        |        150000|          750|
 |tqc  |ReacherBulletEnv-v0        |     18.255|     9.543|300k       |        150000|         1000|
 |tqc  |Swimmer-v3                 |    339.423|     1.486|1M         |        150000|          150|
 |tqc  |Walker2DBulletEnv-v0       |   2508.934|   614.624|1M         |        149572|          159|
