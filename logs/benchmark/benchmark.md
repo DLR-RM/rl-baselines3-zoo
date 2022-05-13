@@ -131,6 +131,7 @@ and also allow users to have access to pretrained agents.*
 |sac  |PandaPickAndPlace-v2       |    -38.745|    18.012|1M         |        150000|         3000|
 |sac  |PandaPush-v2               |    -10.425|     8.239|1M         |        150000|         3000|
 |sac  |PandaReach-v2              |     -1.734|     0.835|20k        |        150000|         3000|
+|sac  |PandaStack-v2              |    -96.914|    17.217|1M         |        150000|         1500|
 |sac  |Pendulum-v1                |   -156.995|    88.714|20k        |        150000|          750|
 |sac  |ReacherBulletEnv-v0        |     18.062|     9.729|300k       |        150000|         1000|
 |sac  |Swimmer-v3                 |    345.568|     3.084|1M         |        150000|          150|
