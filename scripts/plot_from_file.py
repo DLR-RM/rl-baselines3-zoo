@@ -193,7 +193,7 @@ for key in keys:
             warnings.warn(f"{env} not found for normalizing scores, you should update `env_key_to_env_id`")
 
     # Truncate to convert to matrix
-    min_runs = min([len(algo_score) for algo_score in algo_scores])
+    min_runs = min(len(algo_score) for algo_score in algo_scores)
     if min_runs > 0:
         algo_scores = [algo_score[:min_runs] for algo_score in algo_scores]
         # shape: (n_envs, n_runs) -> (n_runs, n_envs)
