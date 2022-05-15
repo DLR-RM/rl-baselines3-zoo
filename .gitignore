@@ -18,3 +18,4 @@ runs
 server_scripts/
 retrained_logs
 old_logs
+tensorlog
