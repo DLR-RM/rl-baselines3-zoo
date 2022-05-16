@@ -43,10 +43,12 @@ def flatten_dict_observations(env: gym.Env) -> gym.Env:
         return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
 
 
-def get_wrapper_class(hyperparams: Dict[str, Any]) -> Optional[Callable[[gym.Env], gym.Env]]:
+def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
     """
     Get one or more Gym environment wrapper class specified as a hyper parameter
     "env_wrapper".
+    Works also for VecEnvWrapper with the key "vec_env_wrapper".
+
     e.g.
     env_wrapper: gym_minigrid.wrappers.FlatObsWrapper
 
@@ -68,8 +70,8 @@ def get_wrapper_class(hyperparams: Dict[str, Any]) -> Optional[Callable[[gym.Env
     def get_class_name(wrapper_name):
         return wrapper_name.split(".")[-1]
 
-    if "env_wrapper" in hyperparams.keys():
-        wrapper_name = hyperparams.get("env_wrapper")
+    if key in hyperparams.keys():
+        wrapper_name = hyperparams.get(key)
 
         if wrapper_name is None:
             return None
@@ -223,6 +225,12 @@ def create_test_env(
         vec_env_cls=vec_env_cls,
         vec_env_kwargs=vec_env_kwargs,
     )
+
+    if "vec_env_wrapper" in hyperparams.keys():
+
+        vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
+        env = vec_env_wrapper(env)
+        del hyperparams["vec_env_wrapper"]
 
     # Load saved stats for normalizing input and rewards
     # And optionally stack frames
