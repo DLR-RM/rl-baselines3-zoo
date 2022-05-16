@@ -565,6 +565,13 @@ Walker2d-v3:
 QuadrupedSpring-v0:
   # <<: *pybullet-defaults
   normalize: True
-  n_timesteps: !!float 1e6
-  n_envs: 1
+  n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
+  batch_size: 256
+  gamma: 0.9998
+  policy_kwargs: "dict(
+                  log_std_init=-2,
+                  ortho_init=False,
+                  activation_fn=nn.Tanh,
+                  net_arch=[dict(pi=[128, 128], vf=[128, 128])]
+                )"
