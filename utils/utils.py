@@ -358,3 +358,54 @@ class StoreDict(argparse.Action):
             # Evaluate the string as python code
             arg_dict[key] = eval(value)
         setattr(namespace, self.dest, arg_dict)
+
+
+def get_model_path(
+    exp_id: int,
+    folder: str,
+    algo: str,
+    env_id: str,
+    load_best: bool = False,
+    load_checkpoint: Optional[str] = None,
+    load_last_checkpoint: bool = False,
+) -> Tuple[str, str, str]:
+
+    if exp_id == 0:
+        exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
+        print(f"Loading latest experiment, id={exp_id}")
+    # Sanity checks
+    if exp_id > 0:
+        log_path = os.path.join(folder, algo, f"{env_id}_{exp_id}")
+    else:
+        log_path = os.path.join(folder, algo)
+
+    assert os.path.isdir(log_path), f"The {log_path} folder was not found"
+
+    if load_best:
+        model_path = os.path.join(log_path, "best_model.zip")
+        name_prefix = f"best-model-{algo}-{env_id}"
+    elif load_checkpoint is not None:
+        model_path = os.path.join(log_path, f"rl_model_{load_checkpoint}_steps.zip")
+        name_prefix = f"checkpoint-{load_checkpoint}-{algo}-{env_id}"
+    elif load_last_checkpoint:
+        checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
+        if len(checkpoints) == 0:
+            raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
+
+        def step_count(checkpoint_path: str) -> int:
+            # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
+            return int(checkpoint_path.split("_")[-2])
+
+        checkpoints = sorted(checkpoints, key=step_count)
+        model_path = checkpoints[-1]
+        name_prefix = f"checkpoint-{step_count(model_path)}-{algo}-{env_id}"
+    else:
+        # Default: load latest model
+        model_path = os.path.join(log_path, f"{env_id}.zip")
+        name_prefix = f"final-model-{algo}-{env_id}"
+
+    found = os.path.isfile(model_path)
+    if not found:
+        raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
+
+    return name_prefix, model_path, log_path
