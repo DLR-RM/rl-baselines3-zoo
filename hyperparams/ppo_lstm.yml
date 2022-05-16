@@ -271,18 +271,17 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 
 CarRacing-v0:
-  # <<: *lunar-defaults
   env_wrapper:
-    - utils.wrappers.FrameSkip:
-        skip: 2
+    # - utils.wrappers.FrameSkip:
+    #     skip: 2
     - gym.wrappers.resize_observation.ResizeObservation:
-        shape: 50
+        shape: 64
     # - gym.wrappers.gray_scale_observation.GrayScaleObservation:
     #     keep_dim: true
   frame_stack: 2
   normalize: "{'norm_obs': False, 'norm_reward': True}"
   n_envs: 8
-  n_timesteps: !!float 2e6
+  n_timesteps: !!float 4e6
   policy: 'CnnLstmPolicy'
   batch_size: 128
   n_steps: 512
