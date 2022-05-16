@@ -243,6 +243,17 @@ env_wrapper:
 
 Note that you can easily specify parameters too.
 
+## VecEnvWrapper
+
+You can specify which `VecEnvWrapper` to use in the config, the same way as for env wrappers (see above), using the `vec_env_wrapper` key:
+
+For instance:
+```yaml
+vec_env_wrapper: stable_baselines3.common.vec_env.VecMonitor
+```
+
+Note: `VecNormalize` is supported separately using `normalize` keyword, and `VecFrameStack` has a dedicated keyword `frame_stack`.
+
 ## Callbacks
 
 Following the same syntax as env wrappers, you can also add custom callbacks to use during training.
