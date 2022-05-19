@@ -193,7 +193,6 @@ def main():  # noqa: C901
                     episode_lengths.append(ep_len)
                     episode_reward = 0.0
                     ep_len = 0
-                    state = None
 
                 # Reset also when the goal is achieved when using HER
                 if done and infos[0].get("is_success") is not None:

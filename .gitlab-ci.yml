@@ -18,6 +18,7 @@ check-trained-agents:
   script:
   # MKL_THREADING_LAYER=GNU to avoid MKL_THREADING_LAYER=INTEL incompatibility error
   - pip install pickle5  # Add support for pickle5 protocol
+  - pip install git+https://github.com/araffin/huggingface_sb3/@feat/vecnorm-support
   - MKL_THREADING_LAYER=GNU make check-trained-agents
 
 lint:
