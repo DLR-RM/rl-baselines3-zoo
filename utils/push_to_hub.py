@@ -3,6 +3,7 @@ import glob
 import os
 import shutil
 import zipfile
+from copy import deepcopy
 from pathlib import Path
 from pprint import pformat
 from typing import Any, Dict, Optional, Tuple
@@ -334,7 +335,7 @@ if __name__ == "__main__":
         seed=args.seed,
         log_dir=None,
         should_render=not args.no_render,
-        hyperparams=hyperparams,
+        hyperparams=deepcopy(hyperparams),
         env_kwargs=env_kwargs,
     )
 
