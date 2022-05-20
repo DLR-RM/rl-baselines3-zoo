@@ -2,6 +2,7 @@ import argparse
 import os
 import shutil
 import zipfile
+from pathlib import Path
 
 from huggingface_sb3 import load_from_hub
 from requests.exceptions import HTTPError
@@ -13,9 +14,13 @@ if __name__ == "__main__":
     parser.add_argument("--env", help="environment ID", type=str, required=True)
     parser.add_argument("-f", "--folder", help="Log folder", type=str, required=True)
     parser.add_argument("-orga", "--organization", help="Huggingface hub organization", default="sb3")
+    parser.add_argument("-name", "--repo-name", help="Huggingface hub repository name, by default 'algo-env_id'", type=str)
     parser.add_argument("--algo", help="RL Algorithm", type=str, required=True, choices=list(ALGOS.keys()))
     parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
     parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
+    parser.add_argument(
+        "--force", action="store_true", default=False, help="Allow overwritting exp folder if it already exist"
+    )
     args = parser.parse_args()
 
     algo = args.algo
@@ -23,7 +28,10 @@ if __name__ == "__main__":
     folder = args.folder
     exp_id = args.exp_id
 
-    repo_id = f"{args.organization}/{args.algo}-{env_id}"
+    if args.repo_name is None:
+        args.repo_name = f"{args.algo}-{env_id}"
+
+    repo_id = f"{args.organization}/{args.repo_name}"
     print(f"Downloading from https://huggingface.co/{repo_id}")
 
     model_name = f"{args.algo}-{env_id}"
@@ -41,9 +49,6 @@ if __name__ == "__main__":
     env_kwargs = load_from_hub(repo_id, "env_kwargs.yml")
     train_eval_metrics = load_from_hub(repo_id, "train_eval_metrics.zip")
 
-    # TODO: check if token is needed for download
-    # otherwise just copy the repo
-
     if exp_id == 0:
         exp_id = get_latest_run_id(os.path.join(folder, algo), env_id) + 1
     # Sanity checks
@@ -53,8 +58,17 @@ if __name__ == "__main__":
         log_path = os.path.join(folder, algo)
 
     # Check that the folder does not exist
-    # TODO: Allow use --force to overwrite
-    assert not os.path.isdir(log_path), f"The {log_path} folder already exist"
+    log_folder = Path(log_path)
+    if log_folder.is_dir():
+        if args.force:
+            print(f"The folder {log_path} already exists, overwritting")
+            # Delete the current one to avoid errors
+            shutil.rmtree(log_path)
+        else:
+            raise ValueError(
+                f"The folder {log_path} already exists, use --force to overwrite it, "
+                "or choose '--exp-id 0' to create a new folder"
+            )
 
     print(f"Saving to {log_path}")
     os.makedirs(log_path, exist_ok=True)

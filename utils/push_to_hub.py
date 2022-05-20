@@ -43,7 +43,7 @@ def save_model_card(repo_dir: Path, generated_model_card: str, metadata: Dict[st
 
 def generate_model_card(
     algo_name: str,
-    model_architecture: str,
+    algo_class_name: str,
     organization: str,
     env_id: str,
     mean_reward: float,
@@ -53,18 +53,20 @@ def generate_model_card(
 ) -> Tuple[str, Dict[str, Any]]:
     """
     Generate the model card for the Hub
-    :param model_architecture: name of the model
-    :env_id: name of the environment
-    :mean_reward: mean reward of the agent
-    :std_reward: standard deviation of the mean reward of the agent
+
+    :param algo_class_name: name of the algorithm class
+    :param env_id: name of the environment
+    :param mean_reward: mean reward of the agent
+    :param std_reward: standard deviation of the mean reward of the agent
+    :return: Model card (readme) and metadata (performance, algo/env id, tags)
     """
     # Step 1: Select the tags
-    metadata = generate_metadata(model_architecture, env_id, mean_reward, std_reward)
+    metadata = generate_metadata(algo_class_name, env_id, mean_reward, std_reward)
 
     # Step 2: Generate the model card
     model_card = f"""
-# **{model_architecture}** Agent playing **{env_id}**
-This is a trained model of a **{model_architecture}** agent playing **{env_id}**
+# **{algo_class_name}** Agent playing **{env_id}**
+This is a trained model of a **{algo_class_name}** agent playing **{env_id}**
 using the [stable-baselines3 library](https://github.com/DLR-RM/stable-baselines3)
 and the [RL Zoo](https://github.com/DLR-RM/rl-baselines3-zoo).
 
@@ -83,7 +85,7 @@ SB3 Contrib: https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
 ```
 # Download model and save it into the logs/ folder
 python -m utils.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
-python enjoy --algo {algo_name} --env {env_id}  -f logs/
+python enjoy.py --algo {algo_name} --env {env_id}  -f logs/
 ```
 
 ## Training (with the RL Zoo)
@@ -113,7 +115,7 @@ def package_to_hub(
     model: BaseAlgorithm,
     model_name: str,
     algo_name: str,
-    model_architecture: str,
+    algo_class_name: str,
     log_path: Path,
     hyperparams: Dict[str, Any],
     env_kwargs: Dict[str, Any],
@@ -141,8 +143,16 @@ def package_to_hub(
 
     :param model: trained model
     :param model_name: name of the model zip file
-    :param model_architecture: name of the architecture of your model
-        (DQN, PPO, A2C, SAC...)
+    :param algo_name: alias used in the zoo for the algorithm,
+        usually lower case of the class (a2c, ars, ppo, ppo_lstm)
+    :param algo_class_name: name of the architecture of your model
+        Name of the algorithm class.
+        (DQN, PPO, A2C, SAC, RecurrentPPO, ...)
+    :param log_path: Path to where the model is saved in the zoo.
+    :param hyperparams: Hyperparameters used for training,
+        includes wrappers.
+    :param env_kwargs: Additional keyword arguments that were passed
+        to the environment.
     :param env_id: name of the environment
     :param eval_env: environment used to evaluate the agent
     :param repo_id: id of the model repository from the Hugging Face Hub
@@ -221,13 +231,20 @@ def package_to_hub(
 
     # Step 4: Generate a video
     if generate_video:
-        # TODO: cleanup files after generation
         _generate_replay(model, eval_env, video_length, is_deterministic, repo_local_path)
+        # Cleanup files after generation
+        # TODO: upstream to huggingface sb3
+        video_path = Path("test.mp4")
+        if video_path.is_file():
+            video_path.unlink()
+        json_path = list(glob.glob("*.meta.json"))
+        if len(json_path) > 0:
+            Path(json_path[0]).unlink()
 
     # Step 5: Generate the model card
     generated_model_card, metadata = generate_model_card(
         algo_name,
-        model_architecture,
+        algo_class_name,
         organization,
         env_id,
         mean_reward,
@@ -280,8 +297,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
     )
-    parser.add_argument("-orga", "--organization", help="Huggingface hub organization", default="sb3")
-    # TODO: allow to overwrite repo-id
+    parser.add_argument("-orga", "--organization", help="Huggingface hub organization", type=str, required=True)
+    parser.add_argument("-name", "--repo-name", help="Huggingface hub repository name, by default 'algo-env_id'", type=str)
+
     args = parser.parse_args()
     env_id = args.env
     algo = args.algo
@@ -344,26 +362,23 @@ if __name__ == "__main__":
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
 
-    # TODO: use try/except instead
-    # Check if we are running python 3.8+
-    # we need to patch saved model under python 3.6/3.7 to load them
-    # newer_python_version = sys.version_info.major == 3 and sys.version_info.minor >= 8
-
+    # Note: we assume that we push models using the same machine (same python version)
+    # that trained them, if not, we would need to pass custom object as in enjoy.py
     custom_objects = {}
-    # if newer_python_version:
-    #     custom_objects = {
-    #         "learning_rate": 0.0,
-    #         "lr_schedule": lambda _: 0.0,
-    #         "clip_range": lambda _: 0.0,
-    #     }
     model = ALGOS[algo].load(model_path, env=eval_env, custom_objects=custom_objects, device=args.device, **kwargs)
 
     # Deterministic by default except for atari games
     stochastic = args.stochastic or is_atari and not args.deterministic
     deterministic = not stochastic
 
-    # TODO: allow overwrite
+    # Default model name, the model will be saved under "{algo}-{env_id}.zip"
     model_name = f"{algo}-{env_id}"
+
+    if args.repo_name is None:
+        args.repo_name = model_name
+
+    repo_id = f"{args.organization}/{args.repo_name}"
+    print(f"Uploading to {repo_id}, make sure to have the rights")
 
     package_to_hub(
         model,
@@ -375,7 +390,7 @@ if __name__ == "__main__":
         env_kwargs,
         env_id,
         eval_env,
-        repo_id=f"{args.organization}/{model_name}",
+        repo_id=repo_id,
         commit_message="Initial Commit",
         is_deterministic=deterministic,
         n_eval_episodes=10,
