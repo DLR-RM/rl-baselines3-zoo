@@ -1,8 +1,10 @@
 import argparse
+import glob
 import os
 import shutil
 import zipfile
 from pathlib import Path
+from pprint import pformat
 from typing import Any, Dict, Optional, Tuple
 
 import torch as th
@@ -29,6 +31,8 @@ def generate_model_card(
     env_id: str,
     mean_reward: float,
     std_reward: float,
+    hyperparams: Dict[str, Any],
+    env_kwargs: Dict[str, Any],
 ) -> Tuple[str, Dict[str, Any]]:
     """
     Generate the model card for the Hub
@@ -69,6 +73,18 @@ python train.py --algo {algo_name} --env {env_id} -f logs/
 # Upload the model and generate video (when possible)
 python -m utils.push_to_hub --algo {algo_name} --env {env_id} -f logs/ -orga {organization}
 ```
+
+## Hyperparameters
+```python
+{pformat(hyperparams)}
+```
+"""
+    if len(env_kwargs) > 0:
+        model_card += f"""
+# Environment Arguments
+```python
+{pformat(env_kwargs)}
+```
 """
 
     return model_card, metadata
@@ -80,6 +96,7 @@ def package_to_hub(
     algo_name: str,
     model_architecture: str,
     log_path: Path,
+    hyperparams: Dict[str, Any],
     env_kwargs: Dict[str, Any],
     env_id: str,
     eval_env: VecEnv,
@@ -120,9 +137,8 @@ def package_to_hub(
     msg.info(
         "This function will save, evaluate, generate a video of your agent, "
         "create a model card and push everything to the hub. "
-        "It might take up to 1min. \n "
-        "This is a work in progress: if you encounter a bug, please open an issue "
-        "and use push_to_hub instead."
+        "It might take up to some minutes if video generation is activated. "
+        "This is a work in progress: if you encounter a bug, please open an issue."
     )
 
     organization, repo_name = repo_id.split("/")
@@ -147,7 +163,7 @@ def package_to_hub(
     repo.lfs_track(["*.mp4"])
 
     # Step 1: Save the model
-    model.save(Path(repo_local_path) / model_name)
+    model.save(repo_local_path / model_name)
 
     # Retrieve VecNormalize wrapper if it exists
     # we need to save the statistics
@@ -155,24 +171,31 @@ def package_to_hub(
 
     # Save the normalization
     if maybe_vec_normalize is not None:
-        maybe_vec_normalize.save(Path(repo_local_path) / "vec_normalize.pkl")
+        maybe_vec_normalize.save(repo_local_path / "vec_normalize.pkl")
         # Do not update the stats at test time
         maybe_vec_normalize.training = False
         # Reward normalization is not needed at test time
         maybe_vec_normalize.norm_reward = False
 
     # Unzip the model
-    with zipfile.ZipFile(Path(repo_local_path) / f"{model_name}.zip", "r") as zip_ref:
-        zip_ref.extractall(Path(repo_local_path) / model_name)
+    with zipfile.ZipFile(repo_local_path / f"{model_name}.zip", "r") as zip_ref:
+        zip_ref.extractall(repo_local_path / model_name)
 
     # Step 2: Copy config files
     args_path = log_path / env_id / "args.yml"
     config_path = log_path / env_id / "config.yml"
 
-    shutil.copy(args_path, Path(repo_local_path) / "args.yml")
-    shutil.copy(config_path, Path(repo_local_path) / "config.yml")
-    with open(Path(repo_local_path) / "env_kwargs.yml", "w") as outfile:
+    shutil.copy(args_path, repo_local_path / "args.yml")
+    shutil.copy(config_path, repo_local_path / "config.yml")
+    with open(repo_local_path / "env_kwargs.yml", "w") as outfile:
         yaml.dump(env_kwargs, outfile)
+
+    # Copy train/eval metrics into zip
+    with zipfile.ZipFile(repo_local_path / "train_eval_metrics.zip", "w") as archive:
+        if os.path.isfile(log_path / "evaluations.npz"):
+            archive.write(log_path / "evaluations.npz", arcname="evaluations.npz")
+        for monitor_file in glob.glob(f"{log_path}/*.csv"):
+            archive.write(monitor_file, arcname=monitor_file.split(os.sep)[-1])
 
     # Step 3: Evaluate the agent
     mean_reward, std_reward = _evaluate_agent(model, eval_env, n_eval_episodes, is_deterministic, repo_local_path)
@@ -190,6 +213,8 @@ def package_to_hub(
         env_id,
         mean_reward,
         std_reward,
+        hyperparams,
+        env_kwargs,
     )
 
     _save_model_card(repo_local_path, generated_model_card, metadata)
@@ -327,6 +352,7 @@ if __name__ == "__main__":
         algo,
         ALGOS[algo].__name__,
         Path(log_path),
+        hyperparams,
         env_kwargs,
         env_id,
         eval_env,

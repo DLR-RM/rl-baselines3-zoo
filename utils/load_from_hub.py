@@ -1,9 +1,10 @@
 import argparse
 import os
 import shutil
+import zipfile
 
-import yaml
 from huggingface_sb3 import load_from_hub
+from requests.exceptions import HTTPError
 
 from utils import ALGOS, get_latest_run_id
 
@@ -26,16 +27,17 @@ if __name__ == "__main__":
     model_name = f"{args.algo}-{env_id}"
     checkpoint = load_from_hub(repo_id, f"{model_name}.zip")
     config_path = load_from_hub(repo_id, "config.yml")
-    with open(config_path) as f:
-        config = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
 
     # If VecNormalize, download
-    vec_normalize_stats = None
-    if "normalize" in config:
+    try:
         vec_normalize_stats = load_from_hub(repo_id, "vec_normalize.pkl")
+    except HTTPError:
+        print("No normalization file")
+        vec_normalize_stats = None
 
     saved_args = load_from_hub(repo_id, "args.yml")
     env_kwargs = load_from_hub(repo_id, "env_kwargs.yml")
+    train_eval_metrics = load_from_hub(repo_id, "train_eval_metrics.zip")
 
     # TODO: check if token is needed for download
     # otherwise just copy the repo
@@ -63,3 +65,7 @@ if __name__ == "__main__":
     shutil.copy(env_kwargs, os.path.join(config_folder, "env_kwargs.yml"))
     if vec_normalize_stats is not None:
         shutil.copy(vec_normalize_stats, os.path.join(config_folder, "vecnormalize.pkl"))
+
+    # Extract monitor file and evaluation file
+    with zipfile.ZipFile(train_eval_metrics, "r") as zip_ref:
+        zip_ref.extractall(log_path)
