@@ -60,6 +60,8 @@ with hyperparameter optimization and pre-trained agents included.
 ## Usage (with SB3 RL Zoo)
 
 RL Zoo: https://github.com/DLR-RM/rl-baselines3-zoo
+SB3: https://github.com/DLR-RM/stable-baselines3
+SB3 Contrib: https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
 
 ```
 # Download model and save it into the logs/ folder
