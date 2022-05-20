@@ -24,6 +24,8 @@ if __name__ == "__main__":
     exp_id = args.exp_id
 
     repo_id = f"{args.organization}/{args.algo}-{env_id}"
+    print(f"Downloading from https://huggingface.co/{repo_id}")
+
     model_name = f"{args.algo}-{env_id}"
     checkpoint = load_from_hub(repo_id, f"{model_name}.zip")
     config_path = load_from_hub(repo_id, "config.yml")

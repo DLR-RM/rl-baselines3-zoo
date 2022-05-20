@@ -6,6 +6,7 @@ variables:
 
 type-check:
   script:
+  - pip install git+https://github.com/huggingface/huggingface_sb3
   - make type
 
 pytest:
