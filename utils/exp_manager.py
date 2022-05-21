@@ -171,7 +171,7 @@ class ExperimentManager:
         self.create_callbacks()
 
         # Create env to have access to action space for action noise
-        n_envs = 1 if self.algo == "ars" else self.n_envs
+        n_envs = 1 if self.algo in ["ars", "cem"] else self.n_envs
         env = self.create_envs(n_envs, no_log=False)
 
         self._hyperparams = self._preprocess_action_noise(hyperparams, saved_hyperparams, env)
@@ -205,8 +205,8 @@ class ExperimentManager:
         if len(self.callbacks) > 0:
             kwargs["callback"] = self.callbacks
 
-        # Special case for ARS
-        if self.algo == "ars" and self.n_envs > 1:
+        # Special case for ARS and CEM
+        if self.algo in ["ars", "cem"] and self.n_envs > 1:
             kwargs["async_eval"] = AsyncEval(
                 [lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy
             )
@@ -647,7 +647,7 @@ class ExperimentManager:
         sampled_hyperparams = HYPERPARAMS_SAMPLER[self.algo](trial)
         kwargs.update(sampled_hyperparams)
 
-        n_envs = 1 if self.algo == "ars" else self.n_envs
+        n_envs = 1 if self.algo in ["ars", "cem"] else self.n_envs
         env = self.create_envs(n_envs, no_log=True)
 
         # By default, do not activate verbose output to keep
@@ -690,8 +690,8 @@ class ExperimentManager:
         callbacks.append(eval_callback)
 
         learn_kwargs = {}
-        # Special case for ARS
-        if self.algo == "ars" and self.n_envs > 1:
+        # Special case for ARS and CEM
+        if self.algo in ["ars", "cem"] and self.n_envs > 1:
             learn_kwargs["async_eval"] = AsyncEval(
                 [lambda: self.create_envs(n_envs=1, no_log=True) for _ in range(self.n_envs)], model.policy
             )

@@ -48,7 +48,6 @@ class TrialEvalCallback(EvalCallback):
         if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
             super()._on_step()
             self.eval_idx += 1
-            # report best or report current ?
             # report num_timesteps or elasped time ?
             self.trial.report(self.last_mean_reward, self.eval_idx)
             # Prune trial if need

@@ -487,7 +487,7 @@ def sample_ars_params(trial: optuna.Trial) -> Dict[str, Any]:
     :return:
     """
     # n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [1, 2])
-    n_delta = trial.suggest_categorical("n_delta", [4, 8, 6, 32, 64])
+    n_delta = trial.suggest_categorical("n_delta", [4, 8, 16, 32, 64])
     # learning_rate = trial.suggest_categorical("learning_rate", [0.01, 0.02, 0.025, 0.03])
     learning_rate = trial.suggest_loguniform("learning_rate", 1e-5, 1)
     delta_std = trial.suggest_categorical("delta_std", [0.01, 0.02, 0.025, 0.03, 0.05, 0.1, 0.2, 0.3])
@@ -519,9 +519,48 @@ def sample_ars_params(trial: optuna.Trial) -> Dict[str, Any]:
     }
 
 
+def sample_cem_params(trial: optuna.Trial) -> Dict[str, Any]:
+    """
+    Sampler for CEM hyperparams.
+    :param trial:
+    :return:
+    """
+    # n_eval_episodes = trial.suggest_categorical("n_eval_episodes", [1, 2])
+    # pop_size = trial.suggest_categorical("pop_size", [4, 8, 16, 32, 64, 128])
+    pop_size = trial.suggest_int("pop_size", 2, 130, step=4)
+    extra_noise_std = trial.suggest_categorical("extra_noise_std", [0.01, 0.02, 0.025, 0.03, 0.05, 0.1, 0.2, 0.3])
+    noise_multiplier = trial.suggest_categorical("noise_multiplier", [0.99, 0.995, 0.998, 0.999, 0.9995, 0.9998])
+    top_frac_size = trial.suggest_categorical("top_frac_size", [0.1, 0.2, 0.3, 0.4, 0.5, 0.8, 0.9, 1.0])
+    n_top = max(int(top_frac_size * pop_size), 2)
+    # use_diagonal_covariance = trial.suggest_categorical("use_diagonal_covariance", [False, True])
+
+    # net_arch = trial.suggest_categorical("net_arch", ["linear", "tiny", "small"])
+
+    # Note: remove bias to be as the original linear policy
+    # and do not squash output
+    # Comment out when doing hyperparams search with linear policy only
+    # net_arch = {
+    #     "linear": [],
+    #     "tiny": [16],
+    #     "small": [32],
+    # }[net_arch]
+
+    # TODO: optimize the alive_bonus_offset too
+
+    return {
+        # "n_eval_episodes": n_eval_episodes,
+        "pop_size": pop_size,
+        "extra_noise_std": extra_noise_std,
+        "noise_multiplier": noise_multiplier,
+        "n_top": n_top,
+        # "policy_kwargs": dict(net_arch=net_arch),
+    }
+
+
 HYPERPARAMS_SAMPLER = {
     "a2c": sample_a2c_params,
     "ars": sample_ars_params,
+    "cem": sample_cem_params,
     "ddpg": sample_ddpg_params,
     "dqn": sample_dqn_params,
     "qrdqn": sample_qrdqn_params,
