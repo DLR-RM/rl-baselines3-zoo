@@ -114,7 +114,7 @@ def test_multiple_workers(tmp_path):
         "--no-optim-plots",
         "--storage",
         storage,
-        "--total-n-trials",
+        "--max-total-trials",
         str(n_trials),
         "--study-name",
         study_name,
