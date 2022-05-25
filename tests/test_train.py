@@ -107,7 +107,7 @@ def test_parallel_train(tmp_path):
 
 def test_multiple_workers(tmp_path):
     study_name = "test-study"
-    storage = f"sqlite:///{tmp_path}/optuna.db"
+    storage = "redis://localhost:6379"
     n_trials = 6
     args = [
         "-optimize",

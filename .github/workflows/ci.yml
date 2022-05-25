@@ -18,6 +18,11 @@ jobs:
       matrix:
         python-version: [3.7, 3.8, 3.9]
 
+    services:
+      image: redis:6.2.6
+      ports:
+        - 6379:6379
+
     steps:
     - uses: actions/checkout@v2
       with:
@@ -37,6 +42,7 @@ jobs:
         pip install opencv-python-headless
         # install parking-env to test HER (pinned so it works with gym 0.21)
         pip install highway-env==1.5.0
+        pip install redis
     - name: Type check
       run: |
         make type
