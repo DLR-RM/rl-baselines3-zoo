@@ -768,7 +768,7 @@ class ExperimentManager:
                     TrialState.RUNNING,
                     TrialState.PRUNED,
                 ]
-                completed_trials = len(study.get_trials(state=counted_states))
+                completed_trials = len(study.get_trials(states=counted_states))
                 if completed_trials < self.total_n_trials:
                     study.optimize(
                         self.objective,
