@@ -761,6 +761,8 @@ class ExperimentManager:
 
         try:
             if self.total_n_trials is not None:
+                # Note: we count already running trials here otherwise we get
+                #  (total_n_trials + number of workers) trials in total.
                 counted_states = [
                     TrialState.COMPLETE,
                     TrialState.RUNNING,
