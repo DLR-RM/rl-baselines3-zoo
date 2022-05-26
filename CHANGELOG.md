@@ -1,4 +1,4 @@
-## Release 1.5.1a0 (WIP)
+## Release 1.5.1a6 (WIP)
 
 ### Breaking Changes
 - Change default value for number of hyperparameter optimization trials from 10 to 500. (@ernestum)
@@ -8,10 +8,13 @@
 
 ### New Features
 - Support setting PyTorch's device with thye `--device` flag (@gregwar)
+- Added `vec_env_wrapper` support in the config (works the same as `env_wrapper`)
+- Added Huggingface hub integration
 
 ### Bug fixes
 - Fix `Reacher-v3` name in PPO hyperparameter file
 - Pinned ale-py==0.7.4 until new SB3 version is released
+- Fix enjoy / record videos with LSTM policy
 
 ### Documentation
 
