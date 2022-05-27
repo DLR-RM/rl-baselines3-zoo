@@ -111,7 +111,7 @@ def is_redis_available():
     except ImportError:
         return False
     try:
-        return redis.Redis(host='localhost', port=6379).ping()
+        return redis.Redis(host="localhost", port=6379).ping()
     except (redis.ConnectionError, ImportError):
         return False
 
