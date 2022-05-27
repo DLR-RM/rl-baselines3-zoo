@@ -121,6 +121,7 @@ def test_multiple_workers(tmp_path):
     study_name = "test-study"
     storage = "redis://localhost:6379"
     n_trials = 6
+    n_workers = 4
     args = [
         "-optimize",
         "--no-optim-plots",
@@ -142,20 +143,18 @@ def test_multiple_workers(tmp_path):
         tmp_path,
     ]
 
-    p1 = subprocess.Popen(["python", "train.py"] + args)
-    p2 = subprocess.Popen(["python", "train.py"] + args)
-    p3 = subprocess.Popen(["python", "train.py"] + args)
-    p4 = subprocess.Popen(["python", "train.py"] + args)
+    workers = [
+        subprocess.Popen(
+            ["python", "train.py"] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
+        )
+        for _ in range(n_workers)
+    ]
 
-    return_code1 = p1.wait()
-    return_code2 = p2.wait()
-    return_code3 = p3.wait()
-    return_code4 = p4.wait()
+    for worker in workers:
+        worker.wait()
 
     study = optuna.load_study(study_name=study_name, storage=storage)
-    assert sum(t.state in (TrialState.COMPLETE, TrialState.PRUNED) for t in study.trials) == n_trials
+    assert len(study.get_trials(states=(TrialState.COMPLETE, TrialState.PRUNED))) == n_trials
 
-    assert return_code1 == 0
-    assert return_code2 == 0
-    assert return_code3 == 0
-    assert return_code4 == 0
+    for worker in workers:
+        assert worker.returncode == 0, "STDOUT:\n{}\nSTDERR:\n{}\n".format(*worker.communicate())
