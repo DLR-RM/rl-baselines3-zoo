@@ -105,16 +105,28 @@ def test_parallel_train(tmp_path):
     _assert_eq(return_code, 0)
 
 
+def is_redis_available():
+    try:
+        import redis
+    except ImportError:
+        return False
+    try:
+        return redis.Redis(host='localhost', port=6379).ping()
+    except (redis.ConnectionError, ImportError):
+        return False
+
+
+@pytest.mark.skipif(not is_redis_available(), reason="Redis not installed or no Redis server reachable")
 def test_multiple_workers(tmp_path):
     study_name = "test-study"
-    storage = f"sqlite:///{tmp_path}/optuna.db"
+    storage = "redis://localhost:6379"
     n_trials = 6
     args = [
         "-optimize",
         "--no-optim-plots",
         "--storage",
         storage,
-        "--total-n-trials",
+        "--max-total-trials",
         str(n_trials),
         "--study-name",
         study_name,

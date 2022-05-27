@@ -75,7 +75,7 @@ class ExperimentManager:
         storage: Optional[str] = None,
         study_name: Optional[str] = None,
         n_trials: int = 1,
-        total_n_trials: Optional[int] = None,
+        max_total_trials: Optional[int] = None,
         n_jobs: int = 1,
         sampler: str = "tpe",
         pruner: str = "median",
@@ -108,6 +108,7 @@ class ExperimentManager:
         self.optimization_log_path = optimization_log_path
 
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
+        self.vec_env_wrapper = None
 
         self.vec_env_kwargs = {}
         # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
@@ -136,7 +137,7 @@ class ExperimentManager:
         self.no_optim_plots = no_optim_plots
         # maximum number of trials for finding the best hyperparams
         self.n_trials = n_trials
-        self.total_n_trials = total_n_trials
+        self.max_total_trials = max_total_trials
         # number of parallel jobs when doing hyperparameter search
         self.n_jobs = n_jobs
         self.sampler = sampler
@@ -168,7 +169,7 @@ class ExperimentManager:
         :return: the initialized RL model
         """
         hyperparams, saved_hyperparams = self.read_hyperparameters()
-        hyperparams, self.env_wrapper, self.callbacks = self._preprocess_hyperparams(hyperparams)
+        hyperparams, self.env_wrapper, self.callbacks, self.vec_env_wrapper = self._preprocess_hyperparams(hyperparams)
 
         self.create_log_folder()
         self.create_callbacks()
@@ -326,7 +327,7 @@ class ExperimentManager:
 
     def _preprocess_hyperparams(
         self, hyperparams: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback]]:
+    ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback], Optional[Callable]]:
         self.n_envs = hyperparams.get("n_envs", 1)
 
         if self.verbose > 0:
@@ -378,12 +379,17 @@ class ExperimentManager:
         if "env_wrapper" in hyperparams.keys():
             del hyperparams["env_wrapper"]
 
+        # Same for VecEnvWrapper
+        vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
+        if "vec_env_wrapper" in hyperparams.keys():
+            del hyperparams["vec_env_wrapper"]
+
         callbacks = get_callback_list(hyperparams)
         if "callback" in hyperparams.keys():
             self.specified_callbacks = hyperparams["callback"]
             del hyperparams["callback"]
 
-        return hyperparams, env_wrapper, callbacks
+        return hyperparams, env_wrapper, callbacks, vec_env_wrapper
 
     def _preprocess_action_noise(
         self, hyperparams: Dict[str, Any], saved_hyperparams: Dict[str, Any], env: VecEnv
@@ -540,6 +546,9 @@ class ExperimentManager:
             vec_env_kwargs=self.vec_env_kwargs,
             monitor_kwargs=monitor_kwargs,
         )
+
+        if self.vec_env_wrapper is not None:
+            env = self.vec_env_wrapper(env)
 
         # Wrap the env into a VecNormalize wrapper if needed
         # and load saved statistics when present
@@ -751,20 +760,22 @@ class ExperimentManager:
         )
 
         try:
-            if self.total_n_trials is not None:
+            if self.max_total_trials is not None:
+                # Note: we count already running trials here otherwise we get
+                #  (max_total_trials + number of workers) trials in total.
                 counted_states = [
                     TrialState.COMPLETE,
                     TrialState.RUNNING,
                     TrialState.PRUNED,
                 ]
-                completed_trials = sum(t.state in counted_states for t in study.trials)
-                if completed_trials < self.total_n_trials:
+                completed_trials = len(study.get_trials(states=counted_states))
+                if completed_trials < self.max_total_trials:
                     study.optimize(
                         self.objective,
                         n_jobs=self.n_jobs,
                         callbacks=[
                             MaxTrialsCallback(
-                                self.total_n_trials,
+                                self.max_total_trials,
                                 states=counted_states,
                             )
                         ],

@@ -65,7 +65,7 @@ if __name__ == "__main__":  # noqa: C901
         default=500,
     )
     parser.add_argument(
-        "--total-n-trials",
+        "--max-total-trials",
         help="Number of (potentially pruned) trials for optimizing hyperparameters. "
         "This applies to the entire optimization process and takes precedence over --n-trials if set.",
         type=int,
@@ -208,7 +208,7 @@ if __name__ == "__main__":  # noqa: C901
         args.storage,
         args.study_name,
         args.n_trials,
-        args.total_n_trials,
+        args.max_total_trials,
         args.n_jobs,
         args.sampler,
         args.pruner,
