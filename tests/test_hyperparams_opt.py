@@ -159,7 +159,7 @@ def test_multiple_workers(tmp_path):
         "-params",
         "n_envs:1",
         "--seed",
-        "12"
+        "12",
     ]
 
     # Sequencial execution to avoid race conditions
