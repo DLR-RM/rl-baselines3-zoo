@@ -15,3 +15,6 @@ git_rewrite_commit_history.sh
 .vscode/
 wandb
 runs
+hub
+*.mp4
+*.json

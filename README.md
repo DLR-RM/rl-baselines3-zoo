@@ -144,6 +144,18 @@ To load the latest checkpoint:
 python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-last-checkpoint
 ```
 
+## Huggingface Hub Integration
+
+Upload model to hub (same syntax as for `enjoy.py`):
+```
+python -m utils.push_to_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3
+```
+
+Download model from hub:
+```
+python -m utils.load_from_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3
+```
+
 ## Hyperparameter yaml syntax
 
 The syntax used in `hyperparameters/algo_name.yml` for setting hyperparameters (likewise the syntax to [overwrite hyperparameters](https://github.com/DLR-RM/rl-baselines3-zoo#overwrite-hyperparameters) on the cli) may be specialized if the argument is a function.  See examples in the `hyperparameters/` directory. For example:
@@ -242,6 +254,17 @@ env_wrapper:
 ```
 
 Note that you can easily specify parameters too.
+
+## VecEnvWrapper
+
+You can specify which `VecEnvWrapper` to use in the config, the same way as for env wrappers (see above), using the `vec_env_wrapper` key:
+
+For instance:
+```yaml
+vec_env_wrapper: stable_baselines3.common.vec_env.VecMonitor
+```
+
+Note: `VecNormalize` is supported separately using `normalize` keyword, and `VecFrameStack` has a dedicated keyword `frame_stack`.
 
 ## Callbacks
 
