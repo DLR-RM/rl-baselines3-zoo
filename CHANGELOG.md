@@ -11,6 +11,7 @@
 
 ### New Features
 - Support setting PyTorch's device with thye `--device` flag (@gregwar)
+- Add `--max-total-trials` parameter to help with distributed optimization. (@ernestum)
 - Added `vec_env_wrapper` support in the config (works the same as `env_wrapper`)
 - Added Huggingface hub integration
 
