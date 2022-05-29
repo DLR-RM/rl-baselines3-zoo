@@ -4,6 +4,7 @@ import pickle as pkl
 import time
 import warnings
 from collections import OrderedDict
+from copy import deepcopy
 from pprint import pprint
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -535,11 +536,14 @@ class ExperimentManager:
 
         # On most env, SubprocVecEnv does not help and is quite memory hungry
         # therefore we use DummyVecEnv by default
+        # Fix for gym 0.24, to keep old behavior
+        env_kwargs = deepcopy(self.env_kwargs)
+        env_kwargs.update(disable_env_checker=True)
         env = make_vec_env(
             env_id=self.env_id,
             n_envs=n_envs,
             seed=self.seed,
-            env_kwargs=self.env_kwargs,
+            env_kwargs=env_kwargs,
             monitor_dir=log_dir,
             wrapper_class=self.env_wrapper,
             vec_env_cls=self.vec_env_class,

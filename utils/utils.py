@@ -2,6 +2,7 @@ import argparse
 import glob
 import importlib
 import os
+from copy import deepcopy
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import gym
@@ -213,6 +214,10 @@ def create_test_env(
         # as Pybullet envs does not follow gym.render() interface
         vec_env_cls = SubprocVecEnv
         # start_method = 'spawn' for thread safe
+
+    # Fix for gym 0.24, to keep old behavior
+    env_kwargs = deepcopy(env_kwargs)
+    env_kwargs.update(disable_env_checker=True)
 
     env = make_vec_env(
         env_id,
