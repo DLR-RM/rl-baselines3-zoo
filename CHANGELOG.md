@@ -1,10 +1,13 @@
-## Release 1.5.1a6 (WIP)
+## Release 1.5.1a7 (WIP)
 
 ### Breaking Changes
 - Change default value for number of hyperparameter optimization trials from 10 to 500. (@ernestum)
 - Derive number of intermediate pruning evaluations from number of time steps (1 evaluation per 100k time steps.) (@ernestum)
 - Updated default --eval-freq from 10k to 25k steps
 - Update default horizon to 2 for the `HistoryWrapper`
+- Upgrade to Stable-Baselines3 (SB3) >= 1.5.1a7
+- Upgrade to sb3-contrib >= 1.5.1a7
+- Upgraded to gym 0.24
 
 ### New Features
 - Support setting PyTorch's device with thye `--device` flag (@gregwar)

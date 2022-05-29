@@ -1,6 +1,8 @@
-gym==0.21
-stable-baselines3[extra,tests,docs]>=1.5.0
-sb3-contrib>=1.5.0
+gym==0.24
+# stable-baselines3[extra,tests,docs]>=1.5.1a7
+git+https://github.com/carlosluis/stable-baselines3@fix_tests#egg=stable_baselines3[extra,tests,docs]
+# sb3-contrib>=1.5.0
+git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/new-gym-version
 box2d-py==2.3.8
 pybullet
 gym-minigrid
@@ -11,9 +13,9 @@ seaborn
 pyyaml>=5.1
 cloudpickle>=1.5.0
 plotly
-panda-gym==1.1.1 # tmp fix: until compatibility with panda-gym v2
+panda-gym~=2.0.2
 rliable>=1.0.5
 wandb
-ale-py==0.7.4 # tmp fix: until new SB3 version is released
+ale-py==0.7.5
 # TODO: replace with release
 git+https://github.com/huggingface/huggingface_sb3
