@@ -17,23 +17,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
-
-    services:
-      mysql:
-        image: mysql:5.7
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: mandatory_arguments
-          MYSQL_DATABASE: optunatest
-          MYSQL_USER: user
-          MYSQL_PASSWORD: test
-        options: >-
-          --health-cmd "mysqladmin ping -h localhost"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
     - uses: actions/checkout@v2
       with:
@@ -53,7 +36,6 @@ jobs:
         pip install opencv-python-headless
         # install parking-env to test HER (pinned so it works with gym 0.21)
         pip install highway-env==1.5.0
-        pip install PyMySQL cryptography
     - name: Type check
       run: |
         make type

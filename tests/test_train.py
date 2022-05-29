@@ -1,9 +1,7 @@
 import os
 import subprocess
 
-import optuna
 import pytest
-from optuna.trial import TrialState
 
 
 def _assert_eq(left, right):
@@ -103,46 +101,3 @@ def test_parallel_train(tmp_path):
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
-
-
-def test_multiple_workers(tmp_path):
-    study_name = "test-study"
-    storage = "mysql+pymysql://user:test@127.0.0.1/optunatest"
-    n_trials = 6
-    n_workers = 4
-    args = [
-        "-optimize",
-        "--no-optim-plots",
-        "--storage",
-        storage,
-        "--max-total-trials",
-        str(n_trials),
-        "--study-name",
-        study_name,
-        "--n-evaluations",
-        str(1),
-        "-n",
-        str(100),
-        "--algo",
-        "ppo",
-        "--env",
-        "Pendulum-v1",
-        "--log-folder",
-        tmp_path,
-    ]
-
-    workers = [
-        subprocess.Popen(
-            ["python", "train.py"] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
-        )
-        for _ in range(n_workers)
-    ]
-
-    for worker in workers:
-        worker.wait()
-
-    study = optuna.load_study(study_name=study_name, storage=storage)
-    assert len(study.get_trials(states=(TrialState.COMPLETE, TrialState.PRUNED))) == n_trials
-
-    for worker in workers:
-        assert worker.returncode == 0, "STDOUT:\n{}\nSTDERR:\n{}\n".format(*worker.communicate())
