@@ -328,7 +328,7 @@ def get_latest_run_id(log_path: str, env_id: str) -> int:
     max_run_id = 0
     for path in glob.glob(os.path.join(log_path, env_id + "_[0-9]*")):
         run_id = path.split("_")[-1]
-        path_without_run_id = path[:-len(run_id)-1]
+        path_without_run_id = path[: -len(run_id) - 1]
         if path_without_run_id.endswith(env_id) and run_id.isdigit() and int(run_id) > max_run_id:
             max_run_id = int(run_id)
     return max_run_id
