@@ -378,7 +378,7 @@ if __name__ == "__main__":
     if args.repo_name is None:
         args.repo_name = model_name
 
-    repo_id = f"{args.organization}/{args.repo_name}"
+    repo_id = f"{args.organization}/{args.repo_name.replace('/', '-')}"
     print(f"Uploading to {repo_id}, make sure to have the rights")
 
     package_to_hub(
