@@ -62,6 +62,7 @@ CartPoleNoVel-v1:
                     net_arch=[dict(pi=[64], vf=[64])]
                   )"
 
+# TO BE TUNED
 MountainCarNoVel-v0:
   normalize: true
   n_envs: 16
@@ -121,6 +122,7 @@ BipedalWalker-v3:
   learning_rate: !!float 2.5e-4
   clip_range: 0.2
 
+# TO BE TUNED
 BipedalWalkerHardcore-v3:
   # env_wrapper:
   #   - utils.wrappers.FrameSkip:
@@ -276,8 +278,8 @@ CarRacing-v0:
     #     skip: 2
     - gym.wrappers.resize_observation.ResizeObservation:
         shape: 64
-    # - gym.wrappers.gray_scale_observation.GrayScaleObservation:
-    #     keep_dim: true
+    - gym.wrappers.gray_scale_observation.GrayScaleObservation:
+        keep_dim: true
   frame_stack: 2
   normalize: "{'norm_obs': False, 'norm_reward': True}"
   n_envs: 8

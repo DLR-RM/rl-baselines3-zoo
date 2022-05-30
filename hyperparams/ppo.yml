@@ -1,7 +1,6 @@
 atari:
   env_wrapper:
-    - stable_baselines3.common.atari_wrappers.AtariWrapper:
-        terminal_on_life_loss: True
+    - stable_baselines3.common.atari_wrappers.AtariWrapper
   frame_stack: 4
   policy: 'CnnPolicy'
   n_envs: 8
@@ -15,7 +14,7 @@ atari:
   ent_coef: 0.01
 
 # Tuned
-PendulumNoVel-v1:
+Pendulum-v1:
   n_envs: 4
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
@@ -30,7 +29,7 @@ PendulumNoVel-v1:
   sde_sample_freq: 4
 
 # Tuned
-CartPoleNoVel-v1:
+CartPole-v1:
   n_envs: 8
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
@@ -43,7 +42,7 @@ CartPoleNoVel-v1:
   learning_rate: lin_0.001
   clip_range: lin_0.2
 
-MountainCarNoVel-v0:
+MountainCar-v0:
   normalize: true
   n_envs: 16
   n_timesteps: !!float 1e6
@@ -55,7 +54,7 @@ MountainCarNoVel-v0:
   ent_coef: 0.0
 
 # Tuned
-MountainCarContinuousNoVel-v0:
+MountainCarContinuous-v0:
   normalize: true
   n_envs: 1
   n_timesteps: !!float 20000
@@ -112,7 +111,7 @@ BipedalWalkerHardcore-v3:
   learning_rate: lin_2.5e-4
   clip_range: lin_0.2
 
-LunarLanderNoVel-v2:
+LunarLander-v2:
   n_envs: 16
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
@@ -123,7 +122,7 @@ LunarLanderNoVel-v2:
   n_epochs: 4
   ent_coef: 0.01
 
-LunarLanderContinuousNoVel-v2:
+LunarLanderContinuous-v2:
   n_envs: 16
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
@@ -529,28 +528,6 @@ Reacher-v2:
   gae_lambda: 1.0
   max_grad_norm: 0.9
   vf_coef: 0.950368
-
-# Swimmer-v3:
-#   normalize: true
-#   n_envs: 1
-#   policy: 'MlpPolicy'
-#   n_timesteps: !!float 1e6
-#   batch_size: 32
-#   n_steps: 512
-#   gamma: 0.9999
-#   learning_rate: 5.49717e-05
-#   ent_coef: 0.0554757
-#   clip_range: 0.3
-#   n_epochs: 10
-#   gae_lambda: 0.95
-#   max_grad_norm: 0.6
-#   vf_coef: 0.38782
-#   policy_kwargs: "dict(
-#                     log_std_init=-2,
-#                     ortho_init=False,
-#                     activation_fn=nn.ReLU,
-#                     net_arch=[dict(pi=[256, 256], vf=[256, 256])]
-#                   )"
 
 Walker2d-v3:
   normalize: true

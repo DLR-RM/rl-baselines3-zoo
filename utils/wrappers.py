@@ -310,6 +310,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
 class FrameSkip(gym.Wrapper):
     """
     Return only every ``skip``-th frame (frameskipping)
+
     :param env: the environment
     :param skip: number of ``skip``-th frame
     """
@@ -321,7 +322,8 @@ class FrameSkip(gym.Wrapper):
     def step(self, action: np.ndarray):
         """
         Step the environment with the given action
-        Repeat action, sum reward, and max over last observations.
+        Repeat action, sum reward.
+
         :param action: the action
         :return: observation, reward, done, information
         """
@@ -348,6 +350,7 @@ class MaskVelocityWrapper(gym.ObservationWrapper):
     :param env: Gym environment
     """
 
+    # Supported envs
     velocity_indices = {
         "CartPole-v1": np.array([1, 3]),
         "MountainCar-v0": np.array([1]),

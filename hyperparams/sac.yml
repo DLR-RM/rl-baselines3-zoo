@@ -165,6 +165,7 @@ CarRacing-v0:
   env_wrapper:
     - utils.wrappers.FrameSkip:
         skip: 2
+    # wrapper from https://github.com/araffin/aae-train-donkeycar
     - ae.wrapper.AutoencoderWrapper:
         ae_path: "logs/car_racing_rgb_160.pkl"
     - utils.wrappers.HistoryWrapper:
