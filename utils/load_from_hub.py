@@ -39,7 +39,7 @@ def download_from_hub(
     if repo_name is None:
         repo_name = f"{algo}-{env_id}"
 
-    repo_id = f"{organization}/{repo_name}"
+    repo_id = f"{organization}/{repo_name.replace('/', '-')}"
     print(f"Downloading from https://huggingface.co/{repo_id}")
 
     model_name = f"{algo}-{env_id}"
