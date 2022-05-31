@@ -6,7 +6,7 @@ pybullet
 gym-minigrid
 scikit-optimize
 optuna
-pytablewriter
+pytablewriter~=0.64
 seaborn
 pyyaml>=5.1
 cloudpickle>=1.5.0
