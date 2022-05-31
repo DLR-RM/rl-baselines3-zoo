@@ -133,10 +133,8 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
 results_df = pd.DataFrame(results)
 # Sort results
 results_df = results_df.sort_values(by=["algo", "env_id"])
-# Round results
-results_df = results_df.round({"mean_reward": 3, "std_reward": 3})
 
-writer = pytablewriter.MarkdownTableWriter()
+writer = pytablewriter.MarkdownTableWriter(max_precision=3)
 writer.from_dataframe(results_df)
 
 header = """
