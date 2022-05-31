@@ -142,7 +142,10 @@ def main():  # noqa: C901
             "clip_range": lambda _: 0.0,
         }
 
-    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=args.device, **kwargs)
+    if "HerReplayBuffer" in hyperparams.get("replay_buffer_class", ""):
+        kwargs["env"] = env
+
+    model = ALGOS[algo].load(model_path, custom_objects=custom_objects, device=args.device, **kwargs)
 
     obs = env.reset()
 

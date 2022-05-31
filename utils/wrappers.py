@@ -1,3 +1,5 @@
+from typing import Optional
+
 import gym
 import numpy as np
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
@@ -16,9 +18,10 @@ class DoneOnSuccessWrapper(gym.Wrapper):
         self.n_successes = n_successes
         self.current_successes = 0
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None):
         self.current_successes = 0
-        return self.env.reset()
+        kwargs = {} if seed is None else {"seed": seed}
+        return self.env.reset(**kwargs)
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
@@ -220,11 +223,12 @@ class HistoryWrapper(gym.Wrapper):
     def _create_obs_from_history(self):
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None):
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
-        obs = self.env.reset()
+        kwargs = {} if seed is None else {"seed": seed}
+        obs = self.env.reset(**kwargs)
         self.obs_history[..., -obs.shape[-1] :] = obs
         return self._create_obs_from_history()
 
@@ -279,11 +283,12 @@ class HistoryWrapperObsDict(gym.Wrapper):
     def _create_obs_from_history(self):
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None):
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
-        obs_dict = self.env.reset()
+        kwargs = {} if seed is None else {"seed": seed}
+        obs_dict = self.env.reset(**kwargs)
         obs = obs_dict["observation"]
         self.obs_history[..., -obs.shape[-1] :] = obs
 
