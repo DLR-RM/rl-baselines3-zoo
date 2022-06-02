@@ -110,17 +110,24 @@ Acrobot-v1:
 
 BipedalWalker-v3:
   normalize: true
-  n_envs: 16
+  n_envs: 32
   n_timesteps: !!float 5e6
   policy: 'MlpLstmPolicy'
-  n_steps: 2048
-  batch_size: 64
+  n_steps: 256
+  batch_size: 256
   gae_lambda: 0.95
-  gamma: 0.99
+  gamma: 0.999
   n_epochs: 10
-  ent_coef: 0.001
-  learning_rate: !!float 2.5e-4
-  clip_range: 0.2
+  ent_coef: 0.0
+  learning_rate: !!float 3e-4
+  clip_range: 0.18
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
 
 # TO BE TUNED
 BipedalWalkerHardcore-v3:
@@ -128,20 +135,24 @@ BipedalWalkerHardcore-v3:
   #   - utils.wrappers.FrameSkip:
   #       skip: 2
   normalize: true
-  n_envs: 16
+  n_envs: 32
   n_timesteps: !!float 10e7
   policy: 'MlpLstmPolicy'
-  n_steps: 512
-  batch_size: 64
+  n_steps: 256
+  batch_size: 256
   gae_lambda: 0.95
-  gamma: 0.99
+  gamma: 0.999
   n_epochs: 10
   ent_coef: 0.001
-  learning_rate: lin_2.5e-4
+  learning_rate: lin_3e-4
   clip_range: lin_0.2
-  policy_kwargs: "dict(enable_critic_lstm=False,
-                       lstm_hidden_size=256,
-                       )"
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
 
 # Tuned
 LunarLanderNoVel-v2: &lunar-defaults
