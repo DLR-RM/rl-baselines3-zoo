@@ -8,6 +8,9 @@ during this evaluation.
 
 It uses the deterministic policy except for Atari games.
 
+You can view each model card (it includes video and hyperparameters)
+on our Huggingface page: https://huggingface.co/sb3
+
 *NOTE: this is not a quantitative benchmark as it corresponds to only one run
 (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)).
 This benchmark is meant to check algorithm (maximal) performance, find potential bugs

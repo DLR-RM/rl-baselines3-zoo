@@ -138,6 +138,10 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
 results_df = pd.DataFrame(results)
 # Sort results
 results_df = results_df.sort_values(by=["algo", "env_id"])
+# Create links to Huggingface hub
+# links = [f"[{env_id}](https://huggingface.co/sb3/{algo}-{env_id})"
+#         for algo, env_id in zip(results_df["algo"], results_df["env_id"])]
+# results_df["env_id"] = links
 
 writer = pytablewriter.MarkdownTableWriter(max_precision=3)
 writer.from_dataframe(results_df)
@@ -151,6 +155,9 @@ it runs the trained agent (trained on `n_timesteps`) for `eval_timesteps` and th
 during this evaluation.
 
 It uses the deterministic policy except for Atari games.
+
+You can view each model card (it includes video and hyperparameters)
+on our Huggingface page: https://huggingface.co/sb3
 
 *NOTE: this is not a quantitative benchmark as it corresponds to only one run
 (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)).
