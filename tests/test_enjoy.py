@@ -28,6 +28,10 @@ def test_trained_agents(trained_model):
     if algo == "her":
         return
 
+    # skip car racing
+    if "CarRacing" in env_id:
+        return
+
     # Skip mujoco envs
     if "Fetch" in trained_model or "-v3" in trained_model:
         return
