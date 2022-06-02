@@ -12,6 +12,7 @@
 - Added `vec_env_wrapper` support in the config (works the same as `env_wrapper`)
 - Added Huggingface hub integration
 - Added `RecurrentPPO` support (aka `ppo_lstm`)
+- Added autodownload for "official" sb3 models from the hub
 
 ### Bug fixes
 - Fix `Reacher-v3` name in PPO hyperparameter file

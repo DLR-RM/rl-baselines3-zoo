@@ -11,6 +11,7 @@ from stable_baselines3.common.utils import set_random_seed
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_saved_hyperparams
 from utils.exp_manager import ExperimentManager
+from utils.load_from_hub import download_from_hub
 from utils.utils import StoreDict, get_model_path
 
 
@@ -70,15 +71,43 @@ def main():  # noqa: C901
     algo = args.algo
     folder = args.folder
 
-    _, model_path, log_path = get_model_path(
-        args.exp_id,
-        folder,
-        algo,
-        env_id,
-        args.load_best,
-        args.load_checkpoint,
-        args.load_last_checkpoint,
-    )
+    try:
+        _, model_path, log_path = get_model_path(
+            args.exp_id,
+            folder,
+            algo,
+            env_id,
+            args.load_best,
+            args.load_checkpoint,
+            args.load_last_checkpoint,
+        )
+    except (AssertionError, ValueError) as e:
+        # Special case for rl-trained agents
+        # auto-download from the hub
+        if folder != "rl-trained-agents":
+            raise e
+        else:
+            print("Pretrained model not found, trying to download it from sb3 Huggingface hub: https://huggingface.co/sb3")
+            # Auto-download
+            download_from_hub(
+                algo=algo,
+                env_id=env_id,
+                exp_id=args.exp_id,
+                folder=folder,
+                organization="sb3",
+                repo_name=None,
+                force=False,
+            )
+            # Try again
+            _, model_path, log_path = get_model_path(
+                args.exp_id,
+                folder,
+                algo,
+                env_id,
+                args.load_best,
+                args.load_checkpoint,
+                args.load_last_checkpoint,
+            )
 
     print(f"Loading {model_path}")
 
