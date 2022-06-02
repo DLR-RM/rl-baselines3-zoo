@@ -13,7 +13,7 @@ def _assert_eq(left, right):
 FOLDER = "rl-trained-agents/"
 N_STEPS = 100
 # Use local models
-trained_models = get_trained_models()
+trained_models = get_trained_models(FOLDER)
 # Use huggingface models too
 trained_models.update(get_hf_trained_models())
 

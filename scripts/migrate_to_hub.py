@@ -6,7 +6,7 @@ folder = "rl-trained-agents"
 orga = "sb3"
 trained_models_local = get_trained_models(folder)
 trained_models_hub = get_hf_trained_models(orga)
-remaining_models = set(trained_models_local.key()) - set(trained_models_hub.key())
+remaining_models = set(trained_models_local.keys()) - set(trained_models_hub.keys())
 
 for trained_model in list(remaining_models):
     algo, env_id = trained_models_local[trained_model]
