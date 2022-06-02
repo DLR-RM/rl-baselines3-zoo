@@ -3,7 +3,7 @@ import subprocess
 
 import pytest
 
-from utils import get_trained_models
+from utils.utils import get_hf_trained_models, get_trained_models
 
 
 def _assert_eq(left, right):
@@ -12,8 +12,10 @@ def _assert_eq(left, right):
 
 FOLDER = "rl-trained-agents/"
 N_STEPS = 100
-
-trained_models = get_trained_models(FOLDER)
+# Use local models
+trained_models = get_trained_models()
+# Use huggingface models too
+trained_models.update(get_hf_trained_models())
 
 
 @pytest.mark.parametrize("trained_model", trained_models.keys())
