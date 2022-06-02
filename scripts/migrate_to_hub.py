@@ -17,12 +17,6 @@ for trained_model in trained_models.keys():
     if algo == "her":
         continue
 
-    if algo != "a2c":
-        continue
-
-    if env_id != "CartPole-v1":
-        continue
-
     # if model doesn't exist already
     model_exists = False
     model_name = f"{algo}-{env_id}"
