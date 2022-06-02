@@ -40,7 +40,7 @@ def test_trained_agents(trained_model):
 
 
 def test_benchmark(tmp_path):
-    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode"]
+    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode", "--no-hub"]
 
     return_code = subprocess.call(["python", "-m", "utils.benchmark"] + args)
     _assert_eq(return_code, 0)

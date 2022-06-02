@@ -17,7 +17,6 @@ for trained_model in list(remaining_models):
         continue
 
     # if model doesn't exist already
-    model_name = f"{algo}-{env_id}"
     repo_name = f"{algo}-{env_id}"
     repo_id = f"{orga}/{repo_name}"
 
