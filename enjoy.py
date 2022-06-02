@@ -84,7 +84,7 @@ def main():  # noqa: C901
     except (AssertionError, ValueError) as e:
         # Special case for rl-trained agents
         # auto-download from the hub
-        if folder != "rl-trained-agents":
+        if "rl-trained-agents" not in folder:
             raise e
         else:
             print("Pretrained model not found, trying to download it from sb3 Huggingface hub: https://huggingface.co/sb3")
