@@ -205,7 +205,7 @@ for env in args.env:  # noqa: C901
 
 
 # Markdown Table
-writer = pytablewriter.MarkdownTableWriter()
+writer = pytablewriter.MarkdownTableWriter(max_precision=3)
 writer.table_name = "results_table"
 
 headers = ["Environments"]

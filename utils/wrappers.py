@@ -56,7 +56,7 @@ class DoneOnSuccessWrapper(gym.Wrapper):
     """
 
     def __init__(self, env: gym.Env, reward_offset: float = 0.0, n_successes: int = 1):
-        super(DoneOnSuccessWrapper, self).__init__(env)
+        super().__init__(env)
         self.reward_offset = reward_offset
         self.n_successes = n_successes
         self.current_successes = 0
@@ -86,12 +86,12 @@ class ActionNoiseWrapper(gym.Wrapper):
     Add gaussian noise to the action (without telling the agent),
     to test the robustness of the control.
 
-    :param env: (gym.Env)
-    :param noise_std: (float) Standard deviation of the noise
+    :param env:
+    :param noise_std: Standard deviation of the noise
     """
 
-    def __init__(self, env, noise_std=0.1):
-        super(ActionNoiseWrapper, self).__init__(env)
+    def __init__(self, env: gym.Env, noise_std: float = 0.1):
+        super().__init__(env)
         self.noise_std = noise_std
 
     def step(self, action):
@@ -140,13 +140,13 @@ class LowPassFilterWrapper(gym.Wrapper):
     """
     Butterworth-Lowpass
 
-    :param env: (gym.Env)
+    :param env:
     :param freq: Filter corner frequency.
     :param df: Sampling rate in Hz.
     """
 
-    def __init__(self, env, freq=5.0, df=25.0):
-        super(LowPassFilterWrapper, self).__init__(env)
+    def __init__(self, env: gym.Env, freq: float = 5.0, df: float = 25.0):
+        super().__init__(env)
         self.freq = freq
         self.df = df
         self.signal = []
@@ -168,12 +168,12 @@ class ActionSmoothingWrapper(gym.Wrapper):
     """
     Smooth the action using exponential moving average.
 
-    :param env: (gym.Env)
-    :param smoothing_coef: (float) Smoothing coefficient (0 no smoothing, 1 very smooth)
+    :param env:
+    :param smoothing_coef: Smoothing coefficient (0 no smoothing, 1 very smooth)
     """
 
-    def __init__(self, env, smoothing_coef: float = 0.0):
-        super(ActionSmoothingWrapper, self).__init__(env)
+    def __init__(self, env: gym.Env, smoothing_coef: float = 0.0):
+        super().__init__(env)
         self.smoothing_coef = smoothing_coef
         self.smoothed_action = None
         # from https://github.com/rail-berkeley/softlearning/issues/3
@@ -197,12 +197,12 @@ class DelayedRewardWrapper(gym.Wrapper):
     Delay the reward by `delay` steps, it makes the task harder but more realistic.
     The reward is accumulated during those steps.
 
-    :param env: (gym.Env)
-    :param delay: (int) Number of steps the reward should be delayed.
+    :param env:
+    :param delay: Number of steps the reward should be delayed.
     """
 
-    def __init__(self, env, delay=10):
-        super(DelayedRewardWrapper, self).__init__(env)
+    def __init__(self, env: gym.Env, delay: int = 10):
+        super().__init__(env)
         self.delay = delay
         self.current_step = 0
         self.accumulated_reward = 0.0
@@ -230,11 +230,11 @@ class HistoryWrapper(gym.Wrapper):
     """
     Stack past observations and actions to give an history to the agent.
 
-    :param env: (gym.Env)
-    :param horizon: (int) Number of steps to keep in the history.
+    :param env:
+    :param horizon:Number of steps to keep in the history.
     """
 
-    def __init__(self, env: gym.Env, horizon: int = 5):
+    def __init__(self, env: gym.Env, horizon: int = 2):
         assert isinstance(env.observation_space, gym.spaces.Box)
 
         wrapped_obs_space = env.observation_space
@@ -253,7 +253,7 @@ class HistoryWrapper(gym.Wrapper):
         # Overwrite the observation space
         env.observation_space = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
 
-        super(HistoryWrapper, self).__init__(env)
+        super().__init__(env)
 
         self.horizon = horizon
         self.low_action, self.high_action = low_action, high_action
@@ -289,11 +289,11 @@ class HistoryWrapperObsDict(gym.Wrapper):
     """
     History Wrapper for dict observation.
 
-    :param env: (gym.Env)
-    :param horizon: (int) Number of steps to keep in the history.
+    :param env:
+    :param horizon: Number of steps to keep in the history.
     """
 
-    def __init__(self, env, horizon=5):
+    def __init__(self, env: gym.Env, horizon: int = 2):
         assert isinstance(env.observation_space.spaces["observation"], gym.spaces.Box)
 
         wrapped_obs_space = env.observation_space.spaces["observation"]
@@ -312,7 +312,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
         # Overwrite the observation space
         env.observation_space.spaces["observation"] = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
 
-        super(HistoryWrapperObsDict, self).__init__(env)
+        super().__init__(env)
 
         self.horizon = horizon
         self.low_action, self.high_action = low_action, high_action
@@ -453,3 +453,72 @@ class ContinuityCostWrapper(gym.Wrapper):
         else:
             reward -= continuity_cost
         return obs, reward, done, info
+
+
+class FrameSkip(gym.Wrapper):
+    """
+    Return only every ``skip``-th frame (frameskipping)
+
+    :param env: the environment
+    :param skip: number of ``skip``-th frame
+    """
+
+    def __init__(self, env: gym.Env, skip: int = 4):
+        super().__init__(env)
+        self._skip = skip
+
+    def step(self, action: np.ndarray):
+        """
+        Step the environment with the given action
+        Repeat action, sum reward.
+
+        :param action: the action
+        :return: observation, reward, done, information
+        """
+        total_reward = 0.0
+        done = None
+        for _ in range(self._skip):
+            obs, reward, done, info = self.env.step(action)
+            total_reward += reward
+            if done:
+                break
+
+        return obs, total_reward, done, info
+
+    def reset(self):
+        return self.env.reset()
+
+
+class MaskVelocityWrapper(gym.ObservationWrapper):
+    """
+    Gym environment observation wrapper used to mask velocity terms in
+    observations. The intention is the make the MDP partially observable.
+    Adapted from https://github.com/LiuWenlin595/FinalProject.
+
+    :param env: Gym environment
+    """
+
+    # Supported envs
+    velocity_indices = {
+        "CartPole-v1": np.array([1, 3]),
+        "MountainCar-v0": np.array([1]),
+        "MountainCarContinuous-v0": np.array([1]),
+        "Pendulum-v1": np.array([2]),
+        "LunarLander-v2": np.array([2, 3, 5]),
+        "LunarLanderContinuous-v2": np.array([2, 3, 5]),
+    }
+
+    def __init__(self, env: gym.Env):
+        super().__init__(env)
+
+        env_id: str = env.unwrapped.spec.id
+        # By default no masking
+        self.mask = np.ones_like((env.observation_space.sample()))
+        try:
+            # Mask velocity
+            self.mask[self.velocity_indices[env_id]] = 0.0
+        except KeyError:
+            raise NotImplementedError(f"Velocity masking not implemented for {env_id}")
+
+    def observation(self, observation: np.ndarray) -> np.ndarray:
+        return observation * self.mask

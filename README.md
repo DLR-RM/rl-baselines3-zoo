@@ -76,7 +76,7 @@ python scripts/plot_train.py -a her -e Fetch -y success -f rl-trained-agents/ -w
 Plot evaluation reward curve for TQC, SAC and TD3 on the HalfCheetah and Ant PyBullet environments:
 
 ```
-python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f rl-trained-agents/
+python3 scripts/all_plots.py -a sac td3 tqc --env HalfCheetahBullet AntBullet -f rl-trained-agents/
 ```
 
 ## Plot with the rliable library
@@ -166,6 +166,19 @@ deterministic = args.pretrain_params.get("deterministic", True)
 
 ```
 python train.py --algo human --env donkey-generated-track-v0 --env-kwargs frame_skip:1 throttle_max:1.0 throttle_min:-1.0 steering_min:-1 steering_max:1 level:6 max_cte:100000  --num-threads 2 --eval-freq -1
+```
+
+## Huggingface Hub Integration
+
+Upload model to hub (same syntax as for `enjoy.py`):
+```
+python -m utils.push_to_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3 -m "Initial commit"
+```
+you can choose custom `repo-name` (default: `{algo}-{env_id}`) by passing a `--repo-name` argument.
+
+Download model from hub:
+```
+python -m utils.load_from_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3
 ```
 
 ## Hyperparameter yaml syntax
@@ -267,6 +280,17 @@ env_wrapper:
 
 Note that you can easily specify parameters too.
 
+## VecEnvWrapper
+
+You can specify which `VecEnvWrapper` to use in the config, the same way as for env wrappers (see above), using the `vec_env_wrapper` key:
+
+For instance:
+```yaml
+vec_env_wrapper: stable_baselines3.common.vec_env.VecMonitor
+```
+
+Note: `VecNormalize` is supported separately using `normalize` keyword, and `VecFrameStack` has a dedicated keyword `frame_stack`.
+
 ## Callbacks
 
 Following the same syntax as env wrappers, you can also add custom callbacks to use during training.
@@ -334,6 +358,8 @@ python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --d
 ## Current Collection: 150+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
+
+List and videos of trained agents can be found on our Huggingface page: https://huggingface.co/sb3
 
 *NOTE: this is not a quantitative benchmark as it corresponds to only one run (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)). This benchmark is meant to check algorithm (maximal) performance, find potential bugs and also allow users to have access to pretrained agents.*
 

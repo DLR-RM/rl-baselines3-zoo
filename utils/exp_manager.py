@@ -14,8 +14,10 @@ import torch as th
 import yaml
 import zmq
 from optuna.integration.skopt import SkoptSampler
-from optuna.pruners import BasePruner, MedianPruner, SuccessiveHalvingPruner
+from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
+from optuna.study import MaxTrialsCallback
+from optuna.trial import TrialState
 from optuna.visualization import plot_optimization_history, plot_param_importances
 from sb3_contrib.common.vec_env import AsyncEval
 
@@ -48,7 +50,7 @@ from utils.hyperparams_opt import HYPERPARAMS_SAMPLER
 from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
-class ExperimentManager(object):
+class ExperimentManager:
     """
     Experiment manager: read the hyperparameters,
     preprocess them, create the environment and the RL model.
@@ -74,6 +76,7 @@ class ExperimentManager(object):
         storage: Optional[str] = None,
         study_name: Optional[str] = None,
         n_trials: int = 1,
+        max_total_trials: Optional[int] = None,
         n_jobs: int = 1,
         sampler: str = "tpe",
         pruner: str = "median",
@@ -91,7 +94,7 @@ class ExperimentManager(object):
         no_optim_plots: bool = False,
         device: Union[th.device, str] = "auto",
     ):
-        super(ExperimentManager, self).__init__()
+        super().__init__()
         self.algo = algo
         self.env_id = env_id
         # Custom params
@@ -107,6 +110,7 @@ class ExperimentManager(object):
         self.vec_env_wrapper = None
 
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
+        self.vec_env_wrapper = None
 
         self.vec_env_kwargs = {}
         # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
@@ -135,6 +139,7 @@ class ExperimentManager(object):
         self.no_optim_plots = no_optim_plots
         # maximum number of trials for finding the best hyperparams
         self.n_trials = n_trials
+        self.max_total_trials = max_total_trials
         # number of parallel jobs when doing hyperparameter search
         self.n_jobs = n_jobs
         self.sampler = sampler
@@ -262,7 +267,7 @@ class ExperimentManager(object):
 
     def read_hyperparameters(self) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         # Load hyperparameters from yaml file
-        with open(f"hyperparams/{self.algo}.yml", "r") as f:
+        with open(f"hyperparams/{self.algo}.yml") as f:
             hyperparams_dict = yaml.safe_load(f)
             if self.env_id in list(hyperparams_dict.keys()):
                 hyperparams = hyperparams_dict[self.env_id]
@@ -346,7 +351,7 @@ class ExperimentManager(object):
 
         # Derive n_evaluations from number of timesteps if needed
         if self.n_evaluations is None and self.optimize_hyperparameters:
-            self.n_evaluations = self.n_timesteps // int(1e5)
+            self.n_evaluations = max(1, self.n_timesteps // int(1e5))
             print(
                 f"Doing {self.n_evaluations} intermediate evaluations for pruning based on the number of timesteps."
                 " (1 evaluation every 100k timesteps)"
@@ -376,6 +381,7 @@ class ExperimentManager(object):
         if "env_wrapper" in hyperparams.keys():
             del hyperparams["env_wrapper"]
 
+        # Same for VecEnvWrapper
         vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
         if "vec_env_wrapper" in hyperparams.keys():
             del hyperparams["vec_env_wrapper"]
@@ -459,17 +465,17 @@ class ExperimentManager(object):
 
     @staticmethod
     def is_atari(env_id: str) -> bool:
-        entry_point = gym.envs.registry.env_specs[env_id].entry_point
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
         return "AtariEnv" in str(entry_point)
 
     @staticmethod
     def is_bullet(env_id: str) -> bool:
-        entry_point = gym.envs.registry.env_specs[env_id].entry_point
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
         return "pybullet_envs" in str(entry_point)
 
     @staticmethod
     def is_robotics_env(env_id: str) -> bool:
-        entry_point = gym.envs.registry.env_specs[env_id].entry_point
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
         return "gym.envs.robotics" in str(entry_point) or "panda_gym.envs" in str(entry_point)
 
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
@@ -628,7 +634,7 @@ class ExperimentManager(object):
             pruner = MedianPruner(n_startup_trials=self.n_startup_trials, n_warmup_steps=self.n_evaluations // 3)
         elif pruner_method == "none":
             # Do not prune
-            pruner = MedianPruner(n_startup_trials=self.n_trials, n_warmup_steps=self.n_evaluations)
+            pruner = NopPruner()
         else:
             raise ValueError(f"Unknown pruner: {pruner_method}")
         return pruner
@@ -756,7 +762,28 @@ class ExperimentManager(object):
         )
 
         try:
-            study.optimize(self.objective, n_trials=self.n_trials, n_jobs=self.n_jobs)
+            if self.max_total_trials is not None:
+                # Note: we count already running trials here otherwise we get
+                #  (max_total_trials + number of workers) trials in total.
+                counted_states = [
+                    TrialState.COMPLETE,
+                    TrialState.RUNNING,
+                    TrialState.PRUNED,
+                ]
+                completed_trials = len(study.get_trials(states=counted_states))
+                if completed_trials < self.max_total_trials:
+                    study.optimize(
+                        self.objective,
+                        n_jobs=self.n_jobs,
+                        callbacks=[
+                            MaxTrialsCallback(
+                                self.max_total_trials,
+                                states=counted_states,
+                            )
+                        ],
+                    )
+            else:
+                study.optimize(self.objective, n_jobs=self.n_jobs, n_trials=self.n_trials)
         except KeyboardInterrupt:
             pass
 

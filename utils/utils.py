@@ -2,6 +2,7 @@ import argparse
 import glob
 import importlib
 import os
+import re
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import gym
@@ -9,7 +10,8 @@ import numpy as np
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
-from sb3_contrib import ARS, QRDQN, TQC, TRPO
+from huggingface_hub import HfApi
+from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -43,6 +45,7 @@ ALGOS = {
     "qrdqn": QRDQN,
     "tqc": TQC,
     "trpo": TRPO,
+    "ppo_lstm": RecurrentPPO,
 }
 
 
@@ -59,6 +62,8 @@ def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> 
     """
     Get one or more Gym environment wrapper class specified as a hyper parameter
     "env_wrapper".
+    Works also for VecEnvWrapper with the key "vec_env_wrapper".
+
     e.g.
     env_wrapper: gym_minigrid.wrappers.FlatObsWrapper
 
@@ -241,6 +246,12 @@ def create_test_env(
         vec_env_kwargs=vec_env_kwargs,
     )
 
+    if "vec_env_wrapper" in hyperparams.keys():
+
+        vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
+        env = vec_env_wrapper(env)
+        del hyperparams["vec_env_wrapper"]
+
     # Load saved stats for normalizing input and rewards
     # And optionally stack frames
     if stats_path is not None:
@@ -300,6 +311,29 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
     return trained_models
 
 
+def get_hf_trained_models(organization: str = "sb3") -> Dict[str, Tuple[str, str]]:
+    """
+    Get pretrained models,
+    available on the Hugginface hub for a given organization.
+
+    :param organization:
+    :return: Dict representing the trained agents
+    """
+    api = HfApi()
+    models = api.list_models(author=organization)
+    regex = re.compile(r"^(?P<algo>[a-z_0-9]+)-(?P<env_id>[a-zA-Z0-9]+-v[0-9]+)$")
+    trained_models = {}
+    for model in models:
+        # Remove organization
+        repo_id = model.modelId.split(f"{organization}/")[1]
+        result = regex.match(repo_id)
+        # Skip demo repo that does not fit the pattern
+        if result is not None:
+            algo, env_id = result.group("algo"), result.group("env_id")
+            trained_models[f"{algo}-{env_id}"] = (algo, env_id)
+    return trained_models
+
+
 def get_latest_run_id(log_path: str, env_id: str) -> int:
     """
     Returns the latest run number for the given log name and log path,
@@ -336,7 +370,7 @@ def get_saved_hyperparams(
         config_file = os.path.join(stats_path, "config.yml")
         if os.path.isfile(config_file):
             # Load saved hyperparameters
-            with open(os.path.join(stats_path, "config.yml"), "r") as f:
+            with open(os.path.join(stats_path, "config.yml")) as f:
                 hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
             hyperparams["normalize"] = hyperparams.get("normalize", False)
         else:
@@ -365,7 +399,7 @@ class StoreDict(argparse.Action):
 
     def __init__(self, option_strings, dest, nargs=None, **kwargs):
         self._nargs = nargs
-        super(StoreDict, self).__init__(option_strings, dest, nargs=nargs, **kwargs)
+        super().__init__(option_strings, dest, nargs=nargs, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
         arg_dict = {}
@@ -441,3 +475,54 @@ def evaluate_policy_add_to_buffer(
     if return_episode_rewards:
         return episode_rewards, episode_lengths
     return mean_reward, std_reward
+
+
+def get_model_path(
+    exp_id: int,
+    folder: str,
+    algo: str,
+    env_id: str,
+    load_best: bool = False,
+    load_checkpoint: Optional[str] = None,
+    load_last_checkpoint: bool = False,
+) -> Tuple[str, str, str]:
+
+    if exp_id == 0:
+        exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
+        print(f"Loading latest experiment, id={exp_id}")
+    # Sanity checks
+    if exp_id > 0:
+        log_path = os.path.join(folder, algo, f"{env_id}_{exp_id}")
+    else:
+        log_path = os.path.join(folder, algo)
+
+    assert os.path.isdir(log_path), f"The {log_path} folder was not found"
+
+    if load_best:
+        model_path = os.path.join(log_path, "best_model.zip")
+        name_prefix = f"best-model-{algo}-{env_id}"
+    elif load_checkpoint is not None:
+        model_path = os.path.join(log_path, f"rl_model_{load_checkpoint}_steps.zip")
+        name_prefix = f"checkpoint-{load_checkpoint}-{algo}-{env_id}"
+    elif load_last_checkpoint:
+        checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
+        if len(checkpoints) == 0:
+            raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
+
+        def step_count(checkpoint_path: str) -> int:
+            # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
+            return int(checkpoint_path.split("_")[-2])
+
+        checkpoints = sorted(checkpoints, key=step_count)
+        model_path = checkpoints[-1]
+        name_prefix = f"checkpoint-{step_count(model_path)}-{algo}-{env_id}"
+    else:
+        # Default: load latest model
+        model_path = os.path.join(log_path, f"{env_id}.zip")
+        name_prefix = f"final-model-{algo}-{env_id}"
+
+    found = os.path.isfile(model_path)
+    if not found:
+        raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
+
+    return name_prefix, model_path, log_path
