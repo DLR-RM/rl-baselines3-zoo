@@ -5,7 +5,7 @@
 - Derive number of intermediate pruning evaluations from number of time steps (1 evaluation per 100k time steps.) (@ernestum)
 - Updated default --eval-freq from 10k to 25k steps
 - Update default horizon to 2 for the `HistoryWrapper`
-- Upgrade to panda-gym 2.0.0
+- Upgrade to panda-gym >= 2.0.2 (@qgallouedec)
 
 ### New Features
 - Support setting PyTorch's device with thye `--device` flag (@gregwar)

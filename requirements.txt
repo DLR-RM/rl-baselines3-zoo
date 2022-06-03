@@ -11,7 +11,7 @@ seaborn
 pyyaml>=5.1
 cloudpickle>=1.5.0
 plotly
-panda-gym==2.0.0
+panda-gym>=2.0.2
 rliable>=1.0.5
 wandb
 ale-py==0.7.4 # tmp fix: until new SB3 version is released
