@@ -134,7 +134,7 @@ results_df = pd.DataFrame(results)
 # Sort results
 results_df = results_df.sort_values(by=["algo", "env_id"])
 
-writer = pytablewriter.MarkdownTableWriter()
+writer = pytablewriter.MarkdownTableWriter(max_precision=3)
 writer.from_dataframe(results_df)
 
 header = """
