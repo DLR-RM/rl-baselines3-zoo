@@ -148,8 +148,9 @@ python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-last-ch
 
 Upload model to hub (same syntax as for `enjoy.py`):
 ```
-python -m utils.push_to_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3
+python -m utils.push_to_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3 -m "Initial commit"
 ```
+you can choose custom `repo-name` (default: `{algo}-{env_id}`) by passing a `--repo-name` argument.
 
 Download model from hub:
 ```
@@ -333,6 +334,8 @@ python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --d
 ## Current Collection: 150+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
+
+List and videos of trained agents can be found on our Huggingface page: https://huggingface.co/sb3
 
 *NOTE: this is not a quantitative benchmark as it corresponds to only one run (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)). This benchmark is meant to check algorithm (maximal) performance, find potential bugs and also allow users to have access to pretrained agents.*
 

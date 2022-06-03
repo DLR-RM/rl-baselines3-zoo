@@ -2,12 +2,14 @@ import argparse
 import glob
 import importlib
 import os
+import re
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import gym
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
+from huggingface_hub import HfApi
 from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
@@ -287,6 +289,29 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
         for env_id in os.listdir(os.path.join(log_folder, algo)):
             # Retrieve env name
             env_id = env_id.split("_")[0]
+            trained_models[f"{algo}-{env_id}"] = (algo, env_id)
+    return trained_models
+
+
+def get_hf_trained_models(organization: str = "sb3") -> Dict[str, Tuple[str, str]]:
+    """
+    Get pretrained models,
+    available on the Hugginface hub for a given organization.
+
+    :param organization:
+    :return: Dict representing the trained agents
+    """
+    api = HfApi()
+    models = api.list_models(author=organization)
+    regex = re.compile(r"^(?P<algo>[a-z_0-9]+)-(?P<env_id>[a-zA-Z0-9]+-v[0-9]+)$")
+    trained_models = {}
+    for model in models:
+        # Remove organization
+        repo_id = model.modelId.split(f"{organization}/")[1]
+        result = regex.match(repo_id)
+        # Skip demo repo that does not fit the pattern
+        if result is not None:
+            algo, env_id = result.group("algo"), result.group("env_id")
             trained_models[f"{algo}-{env_id}"] = (algo, env_id)
     return trained_models
 
