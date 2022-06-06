@@ -275,3 +275,12 @@ CarRacing-v0:
 
 A1Walking-v0:
   <<: *pybullet-defaults
+
+RocketLander-v0:
+  n_timesteps: !!float 3e6
+  policy: 'MlpPolicy'
+  env_wrapper:
+    - utils.wrappers.FrameSkip:
+        skip: 4
+    - utils.wrappers.HistoryWrapper:
+        horizon: 2
