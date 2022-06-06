@@ -686,7 +686,6 @@ class ExperimentManager:
         #     assert model.nb_epochs is not None, "When using CEM, you must specify nb_epochs"
         #     optuna_eval_freq = max(int(model.nb_epochs / self.n_evaluations), 1)
 
-
         # Use non-deterministic eval for Atari
         path = None
         if self.optimization_log_path is not None:

@@ -550,6 +550,8 @@ def sample_cem_params(trial: optuna.Trial) -> Dict[str, Any]:
         "elit_frac_size": elit_frac_size,
         "noise_multiplier": noise_multiplier,
         "policy_kwargs": dict(net_arch=net_arch),
+    }
+
 
 def sample_ars_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
@@ -587,7 +589,6 @@ def sample_ars_params(trial: optuna.Trial) -> Dict[str, Any]:
         "n_top": n_top,
         "zero_policy": zero_policy,
         # "policy_kwargs": dict(net_arch=net_arch),
-
     }
 
 
@@ -604,5 +605,4 @@ HYPERPARAMS_SAMPLER = {
     "reinforce": sample_reinforce_params,
     "cem": sample_cem_params,
     "trpo": sample_trpo_params,
-
 }

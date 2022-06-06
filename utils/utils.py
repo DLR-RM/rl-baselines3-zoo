@@ -11,7 +11,7 @@ import torch as th  # noqa: F401
 import yaml
 from huggingface_hub import HfApi
 from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
-from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3, CEM, REINFORCE
+from stable_baselines3 import A2C, CEM, DDPG, DQN, PPO, REINFORCE, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
@@ -35,7 +35,7 @@ ALGOS = {
     "ppo_lstm": RecurrentPPO,
     # Formation RL
     "reinforce": REINFORCE,
-    "cem": CEM,    
+    "cem": CEM,
 }
 
 
