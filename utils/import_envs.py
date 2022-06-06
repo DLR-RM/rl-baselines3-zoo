@@ -1,3 +1,8 @@
+import gym
+from gym.envs.registration import register
+
+from utils.wrappers import MaskVelocityWrapper
+
 try:
     import pybullet_envs  # pytype: disable=import-error
 except ImportError:
@@ -42,3 +47,19 @@ try:
     import rocket_lander_gym  # pytype: disable=import-error
 except ImportError:
     rocket_lander_gym = None
+# Register no vel envs
+def create_no_vel_env(env_id: str):
+    def make_env():
+        env = gym.make(env_id)
+        env = MaskVelocityWrapper(env)
+        return env
+
+    return make_env
+
+
+for env_id in MaskVelocityWrapper.velocity_indices.keys():
+    name, version = env_id.split("-v")
+    register(
+        id=f"{name}NoVel-v{version}",
+        entry_point=create_no_vel_env(env_id),
+    )

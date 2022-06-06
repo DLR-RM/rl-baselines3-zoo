@@ -9,7 +9,7 @@ import pandas as pd
 import pytablewriter
 from stable_baselines3.common.results_plotter import load_results, ts2xy
 
-from utils.utils import get_latest_run_id, get_saved_hyperparams, get_trained_models
+from utils.utils import get_hf_trained_models, get_latest_run_id, get_saved_hyperparams, get_trained_models
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--log-dir", help="Root log folder", default="rl-trained-agents/", type=str)
@@ -19,11 +19,16 @@ parser.add_argument("--n-envs", help="number of environments", default=1, type=i
 parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
 parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
 parser.add_argument("--test-mode", action="store_true", default=False, help="Do only one experiment (useful for testing)")
-parser.add_argument("--with-mujoco", action="store_true", default=False, help="Run also MuJoCo envs (require a licence)")
+parser.add_argument("--with-mujoco", action="store_true", default=False, help="Run also MuJoCo envs")
+parser.add_argument("--no-hub", action="store_true", default=False, help="Do not download models from hub")
 parser.add_argument("--num-threads", help="Number of threads for PyTorch", default=2, type=int)
 args = parser.parse_args()
 
 trained_models = get_trained_models(args.log_dir)
+
+if not args.no_hub:
+    trained_models.update(get_hf_trained_models())
+
 n_experiments = len(trained_models)
 results = {
     "algo": [],
@@ -47,12 +52,6 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
     if algo in ["dqn", "qrdqn", "ddpg", "sac", "td3", "tqc"]:
         n_envs = 1
         n_timesteps *= args.n_envs
-
-    # Comment out to benchmark HER robotics env
-    # this requires a mujoco licence
-    if "Fetch" in env_id and not args.with_mujoco:
-        print(f"Skipping mujoco env: {env_id}")
-        continue
 
     reward_log = os.path.join(args.benchmark_dir, trained_model)
     arguments = [
@@ -87,6 +86,13 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
             skip_eval = len(x) > 0
         except (json.JSONDecodeError, pd.errors.EmptyDataError, TypeError):
             pass
+
+    # Comment out to benchmark HER robotics env
+    # this requires a mujoco licence
+    if "Fetch" in env_id and not args.with_mujoco:
+        print(f"Skipping mujoco env: {env_id}")
+        if not skip_eval:
+            continue
 
     if skip_eval:
         print("Skipping eval...")
@@ -132,8 +138,12 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
 results_df = pd.DataFrame(results)
 # Sort results
 results_df = results_df.sort_values(by=["algo", "env_id"])
+# Create links to Huggingface hub
+# links = [f"[{env_id}](https://huggingface.co/sb3/{algo}-{env_id})"
+#         for algo, env_id in zip(results_df["algo"], results_df["env_id"])]
+# results_df["env_id"] = links
 
-writer = pytablewriter.MarkdownTableWriter()
+writer = pytablewriter.MarkdownTableWriter(max_precision=3)
 writer.from_dataframe(results_df)
 
 header = """
@@ -145,6 +155,9 @@ it runs the trained agent (trained on `n_timesteps`) for `eval_timesteps` and th
 during this evaluation.
 
 It uses the deterministic policy except for Atari games.
+
+You can view each model card (it includes video and hyperparameters)
+on our Huggingface page: https://huggingface.co/sb3
 
 *NOTE: this is not a quantitative benchmark as it corresponds to only one run
 (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)).

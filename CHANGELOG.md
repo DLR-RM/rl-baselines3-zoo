@@ -1,3 +1,97 @@
+## Release 1.5.1a8 (WIP)
+
+### Breaking Changes
+- Change default value for number of hyperparameter optimization trials from 10 to 500. (@ernestum)
+- Derive number of intermediate pruning evaluations from number of time steps (1 evaluation per 100k time steps.) (@ernestum)
+- Updated default --eval-freq from 10k to 25k steps
+- Update default horizon to 2 for the `HistoryWrapper`
+
+### New Features
+- Support setting PyTorch's device with thye `--device` flag (@gregwar)
+- Add `--max-total-trials` parameter to help with distributed optimization. (@ernestum)
+- Added `vec_env_wrapper` support in the config (works the same as `env_wrapper`)
+- Added Huggingface hub integration
+- Added `RecurrentPPO` support (aka `ppo_lstm`)
+- Added autodownload for "official" sb3 models from the hub
+
+### Bug fixes
+- Fix `Reacher-v3` name in PPO hyperparameter file
+- Pinned ale-py==0.7.4 until new SB3 version is released
+- Fix enjoy / record videos with LSTM policy
+
+### Documentation
+
+### Other
+- When pruner is set to `"none"`, use `NopPruner` instead of diverted `MedianPruner` (@qgallouedec)
+
+## Release 1.5.0 (2022-03-25)
+
+**Support for Weight and Biases experiment tracking**
+
+### Breaking Changes
+- Upgrade to Stable-Baselines3 (SB3) >= 1.5.0
+- Upgrade to sb3-contrib >= 1.5.0
+- Upgraded to gym 0.21
+
+### New Features
+- Verbose mode for each trial (when doing hyperparam optimization) can now be activated using the debug mode (verbose == 2)
+- Support experiment tracking via Weights and Biases via the `--track` flag (@vwxyzjn)
+- Support tracking raw episodic stats via `RawStatisticsCallback` (@vwxyzjn, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/216)
+
+### Bug fixes
+- Policies saved during during optimization with distributed Optuna load on new systems (@jkterry)
+- Fixed script for recording video that was not up to date with the enjoy script
+
+### Documentation
+
+### Other
+
+## Release 1.4.0 (2022-01-19)
+
+### Breaking Changes
+- Dropped python 3.6 support
+- Upgrade to Stable-Baselines3 (SB3) >= 1.4.0
+- Upgrade to sb3-contrib >= 1.4.0
+
+### New Features
+- Added mujoco hyperparameters
+- Added MuJoCo pre-trained agents
+- Added script to parse best hyperparameters of an optuna study
+- Added TRPO support
+- Added ARS support and pre-trained agents
+
+### Bug fixes
+
+### Documentation
+- Replace front image
+
+### Other
+
+
+## Release 1.3.0 (2021-10-23)
+
+**rliable plots and bug fixes**
+
+**WARNING: This version will be the last one supporting Python 3.6 (end of life in Dec 2021). We highly recommended you to upgrade to Python >= 3.7.**
+
+### Breaking Changes
+- Upgrade to panda-gym 1.1.1
+- Upgrade to Stable-Baselines3 (SB3) >= 1.3.0
+- Upgrade to sb3-contrib >= 1.3.0
+
+### New Features
+- Added support for using rliable for performance comparison
+
+### Bug fixes
+- Fix training with Dict obs and channel last images
+
+### Documentation
+
+### Other
+- Updated docker image
+- constrained gym version: gym>=0.17,<0.20
+- Better hyperparameters for A2C/PPO on Pendulum
+
 ## Release 1.2.0 (2021-09-08)
 
 ### Breaking Changes
@@ -26,7 +120,7 @@
 - `HER` is now a replay buffer class and no more an algorithm
 - Removed `PlotNoiseRatioCallback`
 - Removed `PlotActionWrapper`
-- Changed `'lr'` key in Optuna param dict to `'learning_rate'` so the dict can be directly passed to SB3 methods (@justinkterry)
+- Changed `'lr'` key in Optuna param dict to `'learning_rate'` so the dict can be directly passed to SB3 methods (@jkterry)
 
 ### New Features
 - Add support for recording videos of best models and checkpoints (@mcres)
@@ -37,7 +131,7 @@
 - Added `--load-last-checkpoint` option for the enjoy script
 - Save Optuna study object at the end of hyperparameter optimization and plot the results (`plotly` package required)
 - Allow to pass multiple folders to `scripts/plot_train.py`
-- Flag to save logs and optimal policies from each training run (@justinkterry)
+- Flag to save logs and optimal policies from each training run (@jkterry)
 
 ### Bug fixes
 - Fixed video rendering for PyBullet envs on Linux
@@ -56,9 +150,9 @@
 - Minimum cloudpickle version added to `requirements.txt` (@amy12xx)
 - Fixed atari-py version (ROM missing in newest release)
 - Updated `SAC` and `TD3` search spaces
-- Cleanup eval_freq documentation and variable name changes (@justinkterry)
-- Add clarifying print statement when printing saved hyperparameters during optimization (@justinkterry)
-- Clarify n_evaluations help text (@justinkterry)
+- Cleanup eval_freq documentation and variable name changes (@jkterry)
+- Add clarifying print statement when printing saved hyperparameters during optimization (@jkterry)
+- Clarify n_evaluations help text (@jkterry)
 - Simplified hyperparameters files making use of defaults
 - Added new TQC+HER agents
 - Add `panda-gym`environments (@qgallouedec)

@@ -3,7 +3,7 @@ import subprocess
 
 import pytest
 
-from utils import get_trained_models
+from utils.utils import get_hf_trained_models, get_trained_models
 
 
 def _assert_eq(left, right):
@@ -12,8 +12,10 @@ def _assert_eq(left, right):
 
 FOLDER = "rl-trained-agents/"
 N_STEPS = 100
-
+# Use local models
 trained_models = get_trained_models(FOLDER)
+# Use huggingface models too
+trained_models.update(get_hf_trained_models())
 
 
 @pytest.mark.parametrize("trained_model", trained_models.keys())
@@ -26,8 +28,12 @@ def test_trained_agents(trained_model):
     if algo == "her":
         return
 
+    # skip car racing
+    if "CarRacing" in env_id:
+        return
+
     # Skip mujoco envs
-    if "Fetch" in trained_model:
+    if "Fetch" in trained_model or "-v3" in trained_model:
         return
 
     if "-MiniGrid-" in trained_model:
@@ -38,7 +44,7 @@ def test_trained_agents(trained_model):
 
 
 def test_benchmark(tmp_path):
-    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode"]
+    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode", "--no-hub"]
 
     return_code = subprocess.call(["python", "-m", "utils.benchmark"] + args)
     _assert_eq(return_code, 0)
@@ -81,14 +87,14 @@ def test_load(tmp_path):
 
 
 def test_record_video(tmp_path):
-    args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v0", "-o", str(tmp_path)]
+    args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v1", "-o", str(tmp_path)]
 
     # Skip if no X-Server
     pytest.importorskip("pyglet.gl")
 
     return_code = subprocess.call(["python", "-m", "utils.record_video"] + args)
     _assert_eq(return_code, 0)
-    video_path = str(tmp_path / "final-model-sac-Pendulum-v0-step-0-to-step-100.mp4")
+    video_path = str(tmp_path / "final-model-sac-Pendulum-v1-step-0-to-step-100.mp4")
     # File is not empty
     assert os.stat(video_path).st_size != 0, "Recorded video is empty"
 

@@ -1,16 +1,20 @@
+gym==0.21
 git+https://github.com/osigaud/stable-baselines3
+# sb3-contrib>=1.5.1a8
 box2d-py==2.3.8
 pybullet
 gym-minigrid
 scikit-optimize
 optuna
-pytablewriter
+pytablewriter~=0.64
 seaborn
 pyyaml>=5.1
-sb3-contrib>=1.2.0
 cloudpickle>=1.5.0
-# tmp fix: ROM missing in newest release
-atari-py==0.2.6
 plotly
-panda-gym
+panda-gym==1.1.1 # tmp fix: until compatibility with panda-gym v2
+rliable>=1.0.5
+wandb
+ale-py==0.7.4 # tmp fix: until new SB3 version is released
+# TODO: replace with release
+git+https://github.com/huggingface/huggingface_sb3
 git+https://github.com/sdsubhajitdas/Rocket_Lander_Gym

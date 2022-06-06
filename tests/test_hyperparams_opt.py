@@ -1,7 +1,10 @@
+import glob
 import os
 import subprocess
 
+import optuna
 import pytest
+from optuna.trial import TrialState
 
 
 def _assert_eq(left, right):
@@ -22,13 +25,13 @@ for algo in ALGOS:
         experiments[f"{algo}-{env_id}"] = (algo, env_id)
 
 # Test for SAC
-experiments["sac-Pendulum-v0"] = ("sac", "Pendulum-v0")
+experiments["sac-Pendulum-v1"] = ("sac", "Pendulum-v1")
 # Test for TD3
-experiments["td3-Pendulum-v0"] = ("td3", "Pendulum-v0")
+experiments["td3-Pendulum-v1"] = ("td3", "Pendulum-v1")
 # Test for HER
 experiments["tqc-parking-v0"] = ("tqc", "parking-v0")
 # Test for TQC
-experiments["tqc-Pendulum-v0"] = ("tqc", "Pendulum-v0")
+experiments["tqc-Pendulum-v1"] = ("tqc", "Pendulum-v1")
 
 
 @pytest.mark.parametrize("sampler", ["random", "tpe"])
@@ -103,3 +106,73 @@ def test_optimize_log_path(tmp_path):
     # Log folder of the first trial
     assert os.path.isdir(os.path.join(optimization_log_path, "trial_1"))
     assert os.path.isfile(os.path.join(optimization_log_path, "trial_1", "evaluations.npz"))
+
+    study_path = list(glob.glob(str(tmp_path / algo / "report_*.pkl")))[0]
+    print(study_path)
+    # Test reading best trials
+    args = [
+        "-i",
+        study_path,
+        "--print-n-best-trials",
+        str(N_TRIALS),
+        "--save-n-best-hyperparameters",
+        str(N_TRIALS),
+        "-f",
+        str(tmp_path / "best_hyperparameters"),
+    ]
+    return_code = subprocess.call(["python", "scripts/parse_study.py"] + args)
+    _assert_eq(return_code, 0)
+
+
+def test_multiple_workers(tmp_path):
+    study_name = "test-study"
+    storage = f"sqlite:///{tmp_path}/optuna.db"
+    # n trials per worker
+    n_trials = 2
+    # max total trials
+    max_trials = 3
+    # 1st worker will do 2 trials
+    # 2nd worker will do 1 trial
+    # 3rd worker will do nothing
+    n_workers = 3
+    args = [
+        "-optimize",
+        "--no-optim-plots",
+        "--storage",
+        storage,
+        "--n-trials",
+        str(n_trials),
+        "--max-total-trials",
+        str(max_trials),
+        "--study-name",
+        study_name,
+        "--n-evaluations",
+        str(1),
+        "-n",
+        str(100),
+        "--algo",
+        "a2c",
+        "--env",
+        "Pendulum-v1",
+        "--log-folder",
+        tmp_path,
+        "-params",
+        "n_envs:1",
+        "--seed",
+        "12",
+    ]
+
+    # Sequencial execution to avoid race conditions
+    workers = []
+    for _ in range(n_workers):
+        worker = subprocess.Popen(
+            ["python", "train.py"] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
+        )
+        worker.wait()
+        workers.append(worker)
+
+    study = optuna.load_study(study_name=study_name, storage=storage)
+    assert len(study.get_trials(states=(TrialState.COMPLETE, TrialState.PRUNED))) == max_trials
+
+    for worker in workers:
+        assert worker.returncode == 0, "STDOUT:\n{}\nSTDERR:\n{}\n".format(*worker.communicate())

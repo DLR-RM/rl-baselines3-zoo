@@ -4,7 +4,7 @@
 
 # RL Baselines3 Zoo: A Training Framework for Stable Baselines3 Reinforcement Learning Agents
 
-<img src="images/panda_pick.gif" align="right" width="35%"/>
+<img src="images/car.jpg" align="right" width="40%"/>
 
 RL Baselines3 Zoo is a training framework for Reinforcement Learning (RL), using [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3).
 
@@ -55,7 +55,7 @@ python train.py --algo a2c --env BreakoutNoFrameskip-v4 -i rl-trained-agents/a2c
 
 When using off-policy algorithms, you can also save the replay buffer after training:
 ```
-python train.py --algo sac --env Pendulum-v0 --save-replay-buffer
+python train.py --algo sac --env Pendulum-v1 --save-replay-buffer
 ```
 It will be automatically loaded if present when continuing training.
 
@@ -76,8 +76,33 @@ python scripts/plot_train.py -a her -e Fetch -y success -f rl-trained-agents/ -w
 Plot evaluation reward curve for TQC, SAC and TD3 on the HalfCheetah and Ant PyBullet environments:
 
 ```
-python scripts/all_plots.py -a sac td3 tqc --env HalfCheetah Ant -f rl-trained-agents/
+python3 scripts/all_plots.py -a sac td3 tqc --env HalfCheetahBullet AntBullet -f rl-trained-agents/
 ```
+
+## Plot with the rliable library
+
+The RL zoo integrates some of [rliable](https://agarwl.github.io/rliable/) library features.
+You can find a visual explanation of the tools used by rliable in this [blog post](https://araffin.github.io/post/rliable/).
+
+First, you need to install [rliable](https://github.com/google-research/rliable).
+
+Note: Python 3.7+ is required in that case.
+
+Then export your results to a file using the `all_plots.py` script (see above):
+```
+python scripts/all_plots.py -a sac td3 tqc --env Half Ant -f logs/ -o logs/offpolicy
+```
+
+You can now use the `plot_from_file.py` script with `--rliable`, `--versus` and `--iqm` arguments:
+```
+python scripts/plot_from_file.py -i logs/offpolicy.pkl --skip-timesteps --rliable --versus -l SAC TD3 TQC
+```
+
+Note: you may need to edit `plot_from_file.py`, in particular the `env_key_to_env_id` dictionary
+and the `scripts/score_normalization.py` which stores min and max score for each environment.
+
+Remark: plotting with the `--rliable` option is usually slow as confidence interval need to be computed using bootstrap sampling.
+
 
 ## Custom Environment
 
@@ -119,6 +144,19 @@ To load the latest checkpoint:
 python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-last-checkpoint
 ```
 
+## Huggingface Hub Integration
+
+Upload model to hub (same syntax as for `enjoy.py`):
+```
+python -m utils.push_to_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3 -m "Initial commit"
+```
+you can choose custom `repo-name` (default: `{algo}-{env_id}`) by passing a `--repo-name` argument.
+
+Download model from hub:
+```
+python -m utils.load_from_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3
+```
+
 ## Hyperparameter yaml syntax
 
 The syntax used in `hyperparameters/algo_name.yml` for setting hyperparameters (likewise the syntax to [overwrite hyperparameters](https://github.com/DLR-RM/rl-baselines3-zoo#overwrite-hyperparameters) on the cli) may be specialized if the argument is a function.  See examples in the `hyperparameters/` directory. For example:
@@ -142,8 +180,7 @@ Not all hyperparameters are tuned, and tuning enforces certain default hyperpara
 
 Hyperparameters not specified in [utils/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/utils/hyperparams_opt.py) are taken from the associated YAML file and fallback to the default values of SB3 if not present.
 
-Note: hyperparameters search is not implemented for DQN for now.
-when using SuccessiveHalvingPruner ("halving"), you must specify `--n-jobs > 1`
+Note: when using SuccessiveHalvingPruner ("halving"), you must specify `--n-jobs > 1`
 
 Budget of 1000 trials with a maximum of 50000 steps:
 
@@ -157,6 +194,13 @@ Distributed optimization using a shared database is also possible (see the corre
 python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage sqlite:///example.db
 ```
 
+Print and save best hyperparameters of an Optuna study:
+```
+python scripts/parse_study.py -i path/to/study.pkl --print-n-best-trials 10 --save-n-best-hyperparameters 10
+```
+
+The default budget for hyperparameter tuning is 500 trials and there is one intermediate evaluation for pruning/early stopping per 100k time steps.
+
 ### Hyperparameters search space
 
 Note that the default hyperparameters used in the zoo when tuning are not always the same as the defaults provided in [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/modules/base.html). Consult the latest source code to be sure of these settings. For example:
@@ -166,6 +210,20 @@ Note that the default hyperparameters used in the zoo when tuning are not always
 - Non-episodic rollout in TD3 and DDPG assumes `gradient_steps = train_freq` and so tunes only `train_freq` to reduce the search space.  
 
 When working with continuous actions, we recommend to enable [gSDE](https://arxiv.org/abs/2005.05719) by uncommenting lines in [utils/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/utils/hyperparams_opt.py).
+
+
+## Experiment tracking
+
+We support tracking experiment data such as learning curves and hyperparameters via [Weights and Biases](https://wandb.ai).
+
+The following command
+```
+python train.py --algo ppo --env CartPole-v1 --track --wandb-project-name sb3
+```
+
+yields a tracked experiment at this [URL](https://wandb.ai/openrlbenchmark/sb3/runs/1b65ldmh).
+
+
 
 ## Env normalization
 
@@ -197,6 +255,17 @@ env_wrapper:
 ```
 
 Note that you can easily specify parameters too.
+
+## VecEnvWrapper
+
+You can specify which `VecEnvWrapper` to use in the config, the same way as for env wrappers (see above), using the `vec_env_wrapper` key:
+
+For instance:
+```yaml
+vec_env_wrapper: stable_baselines3.common.vec_env.VecMonitor
+```
+
+Note: `VecNormalize` is supported separately using `normalize` keyword, and `VecFrameStack` has a dedicated keyword `frame_stack`.
 
 ## Callbacks
 
@@ -262,9 +331,11 @@ The previous command will create a `mp4` file. To convert this file to `gif` for
 python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
 ```
 
-## Current Collection: 100+ Trained Agents!
+## Current Collection: 150+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
+
+List and videos of trained agents can be found on our Huggingface page: https://huggingface.co/sb3
 
 *NOTE: this is not a quantitative benchmark as it corresponds to only one run (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)). This benchmark is meant to check algorithm (maximal) performance, find potential bugs and also allow users to have access to pretrained agents.*
 
@@ -291,22 +362,25 @@ Additional Atari Games (to be completed):
 
 ### Classic Control Environments
 
-|  RL Algo |  CartPole-v1 | MountainCar-v0 | Acrobot-v1 |  Pendulum-v0 | MountainCarContinuous-v0 |
-|----------|--------------|----------------|------------|--------------|--------------------------|
-| A2C      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
-| PPO      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
-| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A | N/A |
-| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A | N/A |
+|  RL Algo |  CartPole-v1 | MountainCar-v0 | Acrobot-v1 | Pendulum-v1 | MountainCarContinuous-v0 |
+|----------|--------------|----------------|------------|--------------------|--------------------------|
+| ARS      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| A2C      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A                | N/A |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A                | N/A |
 | DDPG     |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | SAC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | TD3      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | TQC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
+| TRPO     | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
 ### Box2D Environments
 
 |  RL Algo |  BipedalWalker-v3 | LunarLander-v2 | LunarLanderContinuous-v2 |  BipedalWalkerHardcore-v3 | CarRacing-v0 |
 |----------|--------------|----------------|------------|--------------|--------------------------|
+| ARS      |  | :heavy_check_mark: | | :heavy_check_mark: | |
 | A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | DQN      | N/A | :heavy_check_mark: | N/A | N/A | N/A |
@@ -315,22 +389,25 @@ Additional Atari Games (to be completed):
 | SAC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
 | TD3      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
 | TQC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |
+| TRPO     | | :heavy_check_mark: | :heavy_check_mark: | | |
 
 ### PyBullet Environments
 
 See https://github.com/bulletphysics/bullet3/tree/master/examples/pybullet/gym/pybullet_envs.
-Similar to [MuJoCo Envs](https://gym.openai.com/envs/#mujoco) but with a free simulator: pybullet. We are using `BulletEnv-v0` version.
+Similar to [MuJoCo Envs](https://gym.openai.com/envs/#mujoco) but with a ~free~ (MuJoCo 2.1.0+ is now free!) easy to install simulator: pybullet. We are using `BulletEnv-v0` version.
 
 Note: those environments are derived from [Roboschool](https://github.com/openai/roboschool) and are harder than the Mujoco version (see [Pybullet issue](https://github.com/bulletphysics/bullet3/issues/1718#issuecomment-393198883))
 
 |  RL Algo |  Walker2D | HalfCheetah | Ant | Reacher |  Hopper | Humanoid |
 |----------|-----------|-------------|-----|---------|---------|----------|
+| ARS      |  |  |  |  |  | |
 | A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | DDPG     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | TD3      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | TQC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| TRPO     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 
 PyBullet Envs (Continued)
 
@@ -343,6 +420,18 @@ PyBullet Envs (Continued)
 | TD3      | | | | |
 | TQC      | | | | |
 
+### MuJoCo Environments
+
+|  RL Algo |  Walker2d | HalfCheetah | Ant | Swimmer |  Hopper | Humanoid |
+|----------|-----------|-------------|-----|---------|---------|----------|
+| ARS      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |  |
+| A2C      |  | :heavy_check_mark: |  | :heavy_check_mark: | :heavy_check_mark: | |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+| DDPG     |  |  |  |  |  | |
+| SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| TD3      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| TQC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| TRPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |  |
 
 ### Robotics Environments
 
@@ -362,7 +451,7 @@ We used the v1 environments.
 
 See https://github.com/qgallouedec/panda-gym/.
 
-Similar to [MuJoCo Robotics Envs](https://gym.openai.com/envs/#robotics) but with a free simulator: pybullet.
+Similar to [MuJoCo Robotics Envs](https://gym.openai.com/envs/#robotics) but with a ~free~ easy to install simulator: pybullet.
 
 We used the v1 environments.
 
@@ -481,4 +570,4 @@ If you trained an agent that is not present in the RL Zoo, please submit a Pull 
 
 ## Contributors
 
-We would like to thanks our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres)
+We would like to thank our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres), [@ernestum](https://github.com/ernestum)

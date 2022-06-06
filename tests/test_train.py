@@ -23,11 +23,11 @@ for algo in ALGOS:
 # Test for vecnormalize and frame-stack
 experiments["ppo-BipedalWalkerHardcore-v3"] = ("ppo", "BipedalWalkerHardcore-v3")
 # Test for SAC
-experiments["sac-Pendulum-v0"] = ("sac", "Pendulum-v0")
+experiments["sac-Pendulum-v1"] = ("sac", "Pendulum-v1")
 # for TD3
-experiments["td3-Pendulum-v0"] = ("td3", "Pendulum-v0")
+experiments["td3-Pendulum-v1"] = ("td3", "Pendulum-v1")
 # for DDPG
-experiments["ddpg-Pendulum-v0"] = ("ddpg", "Pendulum-v0")
+experiments["ddpg-Pendulum-v1"] = ("ddpg", "Pendulum-v1")
 
 
 @pytest.mark.parametrize("experiment", experiments.keys())
@@ -59,7 +59,7 @@ def test_continue_training(tmp_path):
 
 
 def test_save_load_replay_buffer(tmp_path):
-    algo, env_id = "sac", "Pendulum-v0"
+    algo, env_id = "sac", "Pendulum-v1"
     args = [
         "-n",
         str(N_STEPS),
@@ -77,9 +77,9 @@ def test_save_load_replay_buffer(tmp_path):
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
 
-    assert os.path.isfile(os.path.join(tmp_path, "sac/Pendulum-v0_1/replay_buffer.pkl"))
+    assert os.path.isfile(os.path.join(tmp_path, "sac/Pendulum-v1_1/replay_buffer.pkl"))
 
-    args = args + ["-i", os.path.join(tmp_path, "sac/Pendulum-v0_1/Pendulum-v0.zip")]
+    args = args + ["-i", os.path.join(tmp_path, "sac/Pendulum-v1_1/Pendulum-v1.zip")]
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
@@ -92,7 +92,7 @@ def test_parallel_train(tmp_path):
         "--algo",
         "sac",
         "--env",
-        "Pendulum-v0",
+        "Pendulum-v1",
         "--log-folder",
         tmp_path,
         "-params",

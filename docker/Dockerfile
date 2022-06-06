@@ -21,12 +21,8 @@ RUN \
     mkdir -p ${CODE_DIR}/rl_zoo && \
     pip uninstall -y stable-baselines3 && \
     pip install -r /tmp/requirements.txt && \
-    pip install git+https://github.com/eleurent/highway-env && \
+    pip install pip install highway-env==1.5.0 && \
     rm -rf $HOME/.cache/pip
-
-# tmp fix: current pypi gym package is out of date
-# and create empty video files
-RUN pip install gym==0.17.3
 
 ENV PATH=$VENV/bin:$PATH
 

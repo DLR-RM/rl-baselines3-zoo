@@ -2,6 +2,7 @@ import argparse
 import difflib
 import importlib
 import os
+import time
 import uuid
 
 import gym
@@ -37,7 +38,7 @@ if __name__ == "__main__":  # noqa: C901
         "--eval-freq",
         help="Evaluate the agent every n steps (if negative, no evaluation). "
         "During hyperparameter optimization n-evaluations is used instead",
-        default=10000,
+        default=25000,
         type=int,
     )
     parser.add_argument(
@@ -55,11 +56,20 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("-f", "--log-folder", help="Log folder", type=str, default="logs")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=-1)
     parser.add_argument("--vec-env", help="VecEnv type", type=str, default="dummy", choices=["dummy", "subproc"])
+    parser.add_argument("--device", help="PyTorch device to be use (ex: cpu, cuda...)", default="auto", type=str)
     parser.add_argument(
         "--n-trials",
-        help="Number of trials for optimizing hyperparameters. This applies to each optimization runner, not the entire optimization process.",
+        help="Number of trials for optimizing hyperparameters. "
+        "This applies to each optimization runner, not the entire optimization process.",
         type=int,
-        default=10,
+        default=500,
+    )
+    parser.add_argument(
+        "--max-total-trials",
+        help="Number of (potentially pruned) trials for optimizing hyperparameters. "
+        "This applies to the entire optimization process and takes precedence over --n-trials if set.",
+        type=int,
+        default=None,
     )
     parser.add_argument(
         "-optimize", "--optimize-hyperparameters", action="store_true", default=False, help="Run hyperparameters search"
@@ -85,9 +95,10 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--n-startup-trials", help="Number of trials before using optuna sampler", type=int, default=10)
     parser.add_argument(
         "--n-evaluations",
-        help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization",
+        help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization."
+        "Default is 1 evaluation per 100k timesteps.",
         type=int,
-        default=20,
+        default=None,
     )
     parser.add_argument(
         "--storage", help="Database storage path if distributed optimization should be used", type=str, default=None
@@ -113,6 +124,14 @@ if __name__ == "__main__":  # noqa: C901
         help="Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)",
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
+    parser.add_argument(
+        "--track",
+        action="store_true",
+        default=False,
+        help="if toggled, this experiment will be tracked with Weights and Biases",
+    )
+    parser.add_argument("--wandb-project-name", type=str, default="sb3", help="the wandb's project name")
+    parser.add_argument("--wandb-entity", type=str, default=None, help="the entity (team) of wandb's project")
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -134,7 +153,7 @@ if __name__ == "__main__":  # noqa: C901
     uuid_str = f"_{uuid.uuid4()}" if args.uuid else ""
     if args.seed < 0:
         # Seed but with a random one
-        args.seed = np.random.randint(2 ** 32 - 1, dtype="int64").item()
+        args.seed = np.random.randint(2**32 - 1, dtype="int64").item()
 
     set_random_seed(args.seed)
 
@@ -151,6 +170,26 @@ if __name__ == "__main__":  # noqa: C901
 
     print("=" * 10, env_id, "=" * 10)
     print(f"Seed: {args.seed}")
+
+    if args.track:
+        try:
+            import wandb
+        except ImportError:
+            raise ImportError(
+                "if you want to use Weights & Biases to track experiment, please install W&B via `pip install wandb`"
+            )
+
+        run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
+        run = wandb.init(
+            name=run_name,
+            project=args.wandb_project_name,
+            entity=args.wandb_entity,
+            config=vars(args),
+            sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
+            monitor_gym=True,  # auto-upload the videos of agents playing the game
+            save_code=True,  # optional
+        )
+        args.tensorboard_log = f"runs/{run_name}"
 
     exp_manager = ExperimentManager(
         args,
@@ -169,6 +208,7 @@ if __name__ == "__main__":  # noqa: C901
         args.storage,
         args.study_name,
         args.n_trials,
+        args.max_total_trials,
         args.n_jobs,
         args.sampler,
         args.pruner,
@@ -184,14 +224,21 @@ if __name__ == "__main__":  # noqa: C901
         vec_env_type=args.vec_env,
         n_eval_envs=args.n_eval_envs,
         no_optim_plots=args.no_optim_plots,
+        device=args.device,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
-    model = exp_manager.setup_experiment()
+    results = exp_manager.setup_experiment()
+    if results is not None:
+        model, saved_hyperparams = results
+        if args.track:
+            # we need to save the loaded hyperparameters
+            args.saved_hyperparams = saved_hyperparams
+            run.config.setdefaults(vars(args))
 
-    # Normal training
-    if model is not None:
-        exp_manager.learn(model)
-        exp_manager.save_trained_model(model)
+        # Normal training
+        if model is not None:
+            exp_manager.learn(model)
+            exp_manager.save_trained_model(model)
     else:
         exp_manager.hyperparameters_optimization()

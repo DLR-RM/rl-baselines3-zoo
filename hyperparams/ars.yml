@@ -1,0 +1,218 @@
+# Tuned
+CartPole-v1:
+  n_envs: 1
+  n_timesteps: !!float 5e4
+  policy: 'LinearPolicy'
+  n_delta: 2
+
+# Tuned
+Pendulum-v1: &pendulum-params
+  n_envs: 1
+  n_timesteps: !!float 2e6
+  policy: 'MlpPolicy'
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  learning_rate: !!float 0.018
+  n_delta: 4
+  n_top: 1
+  delta_std: 0.1
+  policy_kwargs: "dict(net_arch=[16])"
+  zero_policy: False
+
+# TO BE Tuned
+LunarLander-v2:
+  <<: *pendulum-params
+  n_delta: 6
+  n_top: 1
+  n_timesteps: !!float 2e6
+
+# Tuned
+LunarLanderContinuous-v2:
+  <<: *pendulum-params
+  n_timesteps: !!float 2e6
+
+# Tuned
+Acrobot-v1:
+  <<: *pendulum-params
+  n_timesteps: !!float 5e5
+
+# Tuned
+MountainCar-v0:
+  <<: *pendulum-params
+  n_delta: 8
+  n_timesteps: !!float 5e5
+
+# Tuned
+MountainCarContinuous-v0:
+  <<: *pendulum-params
+  n_timesteps: !!float 5e5
+  delta_std: 0.2
+
+# === Pybullet Envs ===
+
+# Almost tuned
+HalfCheetahBulletEnv-v0: &pybullet-defaults
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.02
+  delta_std: !!float 0.03
+  n_delta: 8
+  n_top: 8
+  alive_bonus_offset: 0
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[64, 64])"
+  zero_policy: False
+
+# To be tuned
+AntBulletEnv-v0:
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.02
+  delta_std: !!float 0.03
+  n_delta: 32
+  n_top: 32
+  alive_bonus_offset: 0
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[128, 64])"
+  zero_policy: False
+
+
+Walker2DBulletEnv-v0:
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.03
+  delta_std: !!float 0.025
+  n_delta: 40
+  n_top: 30
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[64, 64])"
+  zero_policy: False
+
+# Tuned
+HopperBulletEnv-v0:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7e6
+  learning_rate: !!float 0.01
+  delta_std: !!float 0.025
+  n_delta: 8
+  n_top: 4
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+ReacherBulletEnv-v0:
+  <<: *pybullet-defaults
+  n_timesteps: !!float 1e6
+
+# === Mujoco Envs ===
+# Params closest to original paper
+Swimmer-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 2e6
+  learning_rate: !!float 0.02
+  delta_std: !!float 0.01
+  n_delta: 1
+  n_top: 1
+  alive_bonus_offset: 0
+  # normalize: "dict(norm_obs=True, norm_reward=False)"
+
+Hopper-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7e6
+  learning_rate: !!float 0.01
+  delta_std: !!float 0.025
+  n_delta: 8
+  n_top: 4
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+HalfCheetah-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 1.25e7
+  learning_rate: !!float 0.02
+  delta_std: !!float 0.03
+  n_delta: 32
+  n_top: 4
+  alive_bonus_offset: 0
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+Walker2d-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.03
+  delta_std: !!float 0.025
+  n_delta: 40
+  n_top: 30
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+Ant-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.015
+  delta_std: !!float 0.025
+  n_delta: 60
+  n_top: 20
+  alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+
+Humanoid-v3:
+  n_envs: 1
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 2.5e8
+  learning_rate: 0.02
+  delta_std: 0.0075
+  n_delta: 256
+  n_top: 256
+  alive_bonus_offset: -5
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+
+# Almost tuned
+BipedalWalker-v3:
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 1e8
+  learning_rate: 0.02
+  delta_std: 0.0075
+  n_delta: 64
+  n_top: 32
+  alive_bonus_offset: -0.1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[16])"
+
+# TO Be Tuned
+BipedalWalkerHardcore-v3:
+  n_envs: 1
+  policy: 'MlpPolicy'
+  n_timesteps: !!float 5e8
+  learning_rate: 0.02
+  delta_std: 0.0075
+  n_delta: 64
+  n_top: 32
+  alive_bonus_offset: -0.1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  policy_kwargs: "dict(net_arch=[16])"
+
+A1Walking-v0:
+  <<: *pendulum-params
+  n_timesteps: !!float 2e6
+
+A1Jumping-v0:
+  policy: 'LinearPolicy'
+  n_timesteps: !!float 7.5e7
+  learning_rate: !!float 0.03
+  delta_std: !!float 0.025
+  n_delta: 40
+  n_top: 30
+  # alive_bonus_offset: -1
+  normalize: "dict(norm_obs=True, norm_reward=False)"
+  # policy_kwargs: "dict(net_arch=[16])"
+

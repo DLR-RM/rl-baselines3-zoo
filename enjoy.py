@@ -1,5 +1,4 @@
 import argparse
-import glob
 import importlib
 import os
 import sys
@@ -10,9 +9,10 @@ import yaml
 from stable_baselines3.common.utils import set_random_seed
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
-from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
+from utils import ALGOS, create_test_env, get_saved_hyperparams
 from utils.exp_manager import ExperimentManager
-from utils.utils import StoreDict
+from utils.load_from_hub import download_from_hub
+from utils.utils import StoreDict, get_model_path
 
 
 def main():  # noqa: C901
@@ -29,6 +29,7 @@ def main():  # noqa: C901
         "--no-render", action="store_true", default=False, help="Do not render the environment (useful for tests)"
     )
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
+    parser.add_argument("--device", help="PyTorch device to be use (ex: cpu, cuda...)", default="auto", type=str)
     parser.add_argument(
         "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
     )
@@ -70,48 +71,43 @@ def main():  # noqa: C901
     algo = args.algo
     folder = args.folder
 
-    if args.exp_id == 0:
-        args.exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
-        print(f"Loading latest experiment, id={args.exp_id}")
-
-    # Sanity checks
-    if args.exp_id > 0:
-        log_path = os.path.join(folder, algo, f"{env_id}_{args.exp_id}")
-    else:
-        log_path = os.path.join(folder, algo)
-
-    assert os.path.isdir(log_path), f"The {log_path} folder was not found"
-
-    found = False
-    for ext in ["zip"]:
-        model_path = os.path.join(log_path, f"{env_id}.{ext}")
-        found = os.path.isfile(model_path)
-        if found:
-            break
-
-    if args.load_best:
-        model_path = os.path.join(log_path, "best_model.zip")
-        found = os.path.isfile(model_path)
-
-    if args.load_checkpoint is not None:
-        model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
-        found = os.path.isfile(model_path)
-
-    if args.load_last_checkpoint:
-        checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
-        if len(checkpoints) == 0:
-            raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
-
-        def step_count(checkpoint_path: str) -> int:
-            # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
-            return int(checkpoint_path.split("_")[-2])
-
-        checkpoints = sorted(checkpoints, key=step_count)
-        model_path = checkpoints[-1]
-        found = True
-
-    if not found:
-        raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
+    try:
+        _, model_path, log_path = get_model_path(
+            args.exp_id,
+            folder,
+            algo,
+            env_id,
+            args.load_best,
+            args.load_checkpoint,
+            args.load_last_checkpoint,
+        )
+    except (AssertionError, ValueError) as e:
+        # Special case for rl-trained agents
+        # auto-download from the hub
+        if "rl-trained-agents" not in folder:
+            raise e
+        else:
+            print("Pretrained model not found, trying to download it from sb3 Huggingface hub: https://huggingface.co/sb3")
+            # Auto-download
+            download_from_hub(
+                algo=algo,
+                env_id=env_id,
+                exp_id=args.exp_id,
+                folder=folder,
+                organization="sb3",
+                repo_name=None,
+                force=False,
+            )
+            # Try again
+            _, model_path, log_path = get_model_path(
+                args.exp_id,
+                folder,
+                algo,
+                env_id,
+                args.load_best,
+                args.load_checkpoint,
+                args.load_last_checkpoint,
+            )
 
     print(f"Loading {model_path}")
 
@@ -137,7 +133,7 @@ def main():  # noqa: C901
     env_kwargs = {}
     args_path = os.path.join(log_path, env_id, "args.yml")
     if os.path.isfile(args_path):
-        with open(args_path, "r") as f:
+        with open(args_path) as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
             if loaded_args["env_kwargs"] is not None:
                 env_kwargs = loaded_args["env_kwargs"]
@@ -175,7 +171,7 @@ def main():  # noqa: C901
             "clip_range": lambda _: 0.0,
         }
 
-    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
+    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=args.device, **kwargs)
 
     obs = env.reset()
 
@@ -183,16 +179,25 @@ def main():  # noqa: C901
     stochastic = args.stochastic or is_atari and not args.deterministic
     deterministic = not stochastic
 
-    state = None
     episode_reward = 0.0
     episode_rewards, episode_lengths = [], []
     ep_len = 0
     # For HER, monitor success rate
     successes = []
+    lstm_states = None
+    episode_start = np.ones((env.num_envs,), dtype=bool)
     try:
         for _ in range(args.n_timesteps):
-            action, state = model.predict(obs, state=state, deterministic=deterministic)
+            action, lstm_states = model.predict(
+                obs,
+                state=lstm_states,
+                episode_start=episode_start,
+                deterministic=deterministic,
+            )
             obs, reward, done, infos = env.step(action)
+
+            episode_start = done
+
             if not args.no_render:
                 env.render("human")
 
@@ -217,7 +222,6 @@ def main():  # noqa: C901
                     episode_lengths.append(ep_len)
                     episode_reward = 0.0
                     ep_len = 0
-                    state = None
 
                 # Reset also when the goal is achieved when using HER
                 if done and infos[0].get("is_success") is not None:
