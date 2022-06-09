@@ -28,5 +28,14 @@ donkey-mountain-track-v0: &defaults
   sde_sample_freq: 16
   policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=2, use_expln=True)"
 
-donkey-circuit-launch-track-v0:
+donkey-minimonaco-track-v0:
+  <<: *defaults
+
+donkey-avc-sparkfun-v0:
+  <<: *defaults
+
+donkey-generated-track-v0:
+  <<: *defaults
+
+donkey-warren-track-v0:
   <<: *defaults
