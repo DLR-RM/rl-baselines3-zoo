@@ -1,4 +1,4 @@
-gym==0.24
+gym==0.24.1
 # stable-baselines3[extra,tests,docs]>=1.5.1a7
 git+https://github.com/carlosluis/stable-baselines3@fix_tests#egg=stable_baselines3[extra,tests,docs]
 # sb3-contrib>=1.5.0
@@ -8,7 +8,7 @@ pybullet
 gym-minigrid
 scikit-optimize
 optuna
-pytablewriter
+pytablewriter~=0.64
 seaborn
 pyyaml>=5.1
 cloudpickle>=1.5.0
