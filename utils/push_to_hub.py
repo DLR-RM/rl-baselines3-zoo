@@ -178,9 +178,8 @@ def package_to_hub(
     api = HfApi()
 
     repo_url = api.create_repo(
-        name=repo_name,
         token=token,
-        organization=organization,
+        repo_id=repo_id,
         private=False,
         exist_ok=True,
     )
