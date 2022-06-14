@@ -6,10 +6,10 @@ git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/new-
 box2d-py==2.3.8
 pybullet
 gym-minigrid
-scikit-optimize
-optuna
+# scikit-optimize
+optuna~=2.10.1
 pytablewriter~=0.64
-seaborn==0.11.2
+seaborn~=0.11.2
 pyyaml>=5.1
 cloudpickle>=1.5.0
 plotly
