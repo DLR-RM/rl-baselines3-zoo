@@ -39,3 +39,6 @@ donkey-generated-track-v0:
 
 donkey-warren-track-v0:
   <<: *defaults
+
+donkey-generated-roads-v0:
+  <<: *defaults
