@@ -16,6 +16,7 @@
 - Added Huggingface hub integration
 - Added `RecurrentPPO` support (aka `ppo_lstm`)
 - Added autodownload for "official" sb3 models from the hub
+- Added Humanoid-v3, Ant-v3, Walker2d-v3 models for A2C (@pseudo-rnd-thoughts)
 
 ### Bug fixes
 - Fix `Reacher-v3` name in PPO hyperparameter file

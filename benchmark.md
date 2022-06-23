@@ -21,6 +21,7 @@ and also allow users to have access to pretrained agents.*
 |  algo  |           env_id            |mean_reward|std_reward|n_timesteps|eval_timesteps|eval_episodes|
 |--------|-----------------------------|----------:|---------:|-----------|-------------:|------------:|
 |a2c     |Acrobot-v1                   |    -83.353|    17.213|500k       |        149979|         1778|
+|a2c     |Ant-v3                       |    -44.023|    63.206|1M         |        149469|          761|
 |a2c     |AntBulletEnv-v0              |   2497.147|    37.359|2M         |        150000|          150|
 |a2c     |AsteroidsNoFrameskip-v4      |   1286.550|   423.750|10M        |        614138|          258|
 |a2c     |BeamRiderNoFrameskip-v4      |   2890.298|  1379.137|10M        |        591104|           47|
@@ -33,6 +34,7 @@ and also allow users to have access to pretrained agents.*
 |a2c     |HalfCheetahBulletEnv-v0      |   2107.384|    36.008|2M         |        150000|          150|
 |a2c     |Hopper-v3                    |    733.454|   376.574|1M         |        149987|          580|
 |a2c     |HopperBulletEnv-v0           |    815.355|   313.798|2M         |        149541|          254|
+|a2c     |Humanoid-v3                  |    388.321|    92.652|2M         |        149942|         1944|
 |a2c     |LunarLander-v2               |    155.751|    80.419|200k       |        149443|          297|
 |a2c     |LunarLanderContinuous-v2     |     84.225|   145.906|5M         |        149305|          256|
 |a2c     |MountainCar-v0               |   -111.263|    24.087|1M         |        149982|         1348|
@@ -46,6 +48,7 @@ and also allow users to have access to pretrained agents.*
 |a2c     |SpaceInvadersNoFrameskip-v4  |    627.160|   201.974|10M        |        604848|          162|
 |a2c     |Swimmer-v3                   |    200.627|     2.544|1M         |        150000|          150|
 |a2c     |Walker2DBulletEnv-v0         |    858.209|   333.116|2M         |        149156|          173|
+|a2c     |Walker2d-v3                  |    581.835|   127.597|1M         |        149782|          593|
 |ars     |Acrobot-v1                   |    -82.884|    23.825|500k       |        149985|         1788|
 |ars     |Ant-v3                       |   2333.773|    20.597|75M        |        150000|          150|
 |ars     |CartPole-v1                  |    500.000|     0.000|50k        |        150000|          300|
