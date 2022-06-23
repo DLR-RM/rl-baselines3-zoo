@@ -8,7 +8,7 @@ pybullet
 gym-minigrid
 # scikit-optimize
 optuna~=2.10.1
-scipy~=1.8.1
+scipy~=1.7.3
 pytablewriter~=0.64
 seaborn~=0.11.2
 pyyaml>=5.1
