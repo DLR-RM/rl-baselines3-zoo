@@ -371,6 +371,65 @@ def get_saved_hyperparams(
     return hyperparams, stats_path
 
 
+def update_args_from_custom_yaml(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+    """Update args with the arguments taken from the custom yaml file."""
+    des_dict = _get_desired_dict(args)
+    if _check_des_dict(parser, des_dict):
+        _update_args(args, des_dict)
+    else:
+        raise RuntimeError(f"unable to upload args from {args.yaml_file}")
+
+
+def _get_desired_dict(args: argparse.Namespace) -> dict:
+    """Returns the dictionary from the custom yaml file."""
+    args_path = args.yaml_file
+    train_args = args.__dict__.keys()
+    new_args = {}
+    if os.path.isfile(args_path):
+        with open(args_path) as f:
+            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+    for k, v in loaded_args.items():
+        if k in train_args:
+            new_args[k] = v
+        else:
+            print(f"WARNING: key argument {k} not supported yet for being uploaded by custom yaml file.")
+    return new_args
+
+
+def _check_des_dict(parser: argparse.ArgumentParser, des_dict: dict) -> bool:
+    """
+    Returns a boolean specifying if the desired dict values are consistent
+    with the ones specified in the parse.
+    """
+    check_value = True
+    relevant_actions = [a for a in parser._actions if a.dest in des_dict.keys()]
+    for action in relevant_actions:
+        value = des_dict[action.dest]
+        if value is not None:
+            if isinstance(action, StoreDict):
+                check_value = type(value) == dict
+            elif isinstance(action, argparse._StoreTrueAction):
+                check_value = type(value) == bool
+            else:
+                check_value = type(value) == action.type
+                parser._check_value(action, value)
+        if not (check_value):
+            print(f"unable to upload the value for {action.dest} arg.")
+            return check_value
+    return check_value
+
+
+def _update_args(args: argparse.Namespace, new_args: dict) -> None:
+    """Update the args in according to the new desired args."""
+    for k in new_args.keys():
+        old_arg = getattr(args, k)
+        new_arg = new_args[k]
+        if isinstance(old_arg, dict):
+            old_arg.update(new_arg)
+        else:
+            setattr(args, k, new_arg)
+
+
 class StoreDict(argparse.Action):
     """
     Custom argparse action for storing dict.
