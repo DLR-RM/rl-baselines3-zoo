@@ -388,11 +388,13 @@ def _get_desired_dict(args: argparse.Namespace) -> dict:
     if os.path.isfile(args_path):
         with open(args_path) as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
-    for k, v in loaded_args.items():
-        if k in train_args:
-            new_args[k] = v
-        else:
-            print(f"WARNING: key argument {k} not supported yet for being uploaded by custom yaml file.")
+        for k, v in loaded_args.items():
+            if k in train_args:
+                new_args[k] = v
+            else:
+                print(f"WARNING: key argument {k} not supported yet for being uploaded by custom yaml file.")
+    else:
+        raise RuntimeError(f"{args_path} file not found.")
     return new_args
 
 
