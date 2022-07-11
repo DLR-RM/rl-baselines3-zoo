@@ -309,17 +309,29 @@ def get_hf_trained_models(organization: str = "sb3") -> Dict[str, Tuple[str, str
     :return: Dict representing the trained agents
     """
     api = HfApi()
-    models = api.list_models(author=organization)
-    regex = re.compile(r"^(?P<algo>[a-z_0-9]+)-(?P<env_id>[a-zA-Z0-9]+-v[0-9]+)$")
+    models = api.list_models(author=organization, cardData=True)
+
     trained_models = {}
     for model in models:
-        # Remove organization
-        repo_id = model.modelId.split(f"{organization}/")[1]
-        result = regex.match(repo_id)
-        # Skip demo repo that does not fit the pattern
-        if result is not None:
-            algo, env_id = result.group("algo"), result.group("env_id")
-            trained_models[f"{algo}-{env_id}"] = (algo, env_id)
+
+        # Try to extract algorithm and environment id from model card
+        try:
+            env_id = model.cardData['model-index'][0]['results'][0]['dataset']['name']
+            algo = model.cardData['model-index'][0]['name'].lower()
+        except KeyError:
+            continue  # skip model if name env id or algo name could not be found
+        except IndexError:
+            continue # skip model if name env id or algo name could not be found
+
+        env_name = EnvironmentName(env_id)
+        model_name = ModelName(algo, env_name)
+
+        # check if there is a model file in the repo
+        if not any(f.rfilename == model_name.filename for f in api.model_info(model.modelId).siblings):
+            continue  # skip model if the repo contains no properly named model file
+
+        trained_models[model_name] = (algo, env_id)
+
     return trained_models
 
 
