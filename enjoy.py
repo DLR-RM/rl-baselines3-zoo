@@ -6,6 +6,7 @@ import sys
 import numpy as np
 import torch as th
 import yaml
+from huggingface_sb3 import EnvironmentName
 from stable_baselines3.common.utils import set_random_seed
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
@@ -17,7 +18,7 @@ from utils.utils import StoreDict, get_model_path
 
 def main():  # noqa: C901
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
+    parser.add_argument("--env", help="environment name", type=EnvironmentName, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
@@ -67,7 +68,7 @@ def main():  # noqa: C901
     for env_module in args.gym_packages:
         importlib.import_module(env_module)
 
-    env_id = args.env
+    env_name: EnvironmentName = args.env
     algo = args.algo
     folder = args.folder
 
@@ -76,7 +77,7 @@ def main():  # noqa: C901
             args.exp_id,
             folder,
             algo,
-            env_id,
+            env_name,
             args.load_best,
             args.load_checkpoint,
             args.load_last_checkpoint,
@@ -91,7 +92,7 @@ def main():  # noqa: C901
             # Auto-download
             download_from_hub(
                 algo=algo,
-                env_id=env_id,
+                env_name=env_name,
                 exp_id=args.exp_id,
                 folder=folder,
                 organization="sb3",
@@ -103,7 +104,7 @@ def main():  # noqa: C901
                 args.exp_id,
                 folder,
                 algo,
-                env_id,
+                env_name,
                 args.load_best,
                 args.load_checkpoint,
                 args.load_last_checkpoint,
@@ -124,14 +125,14 @@ def main():  # noqa: C901
             print(f"Setting torch.num_threads to {args.num_threads}")
         th.set_num_threads(args.num_threads)
 
-    is_atari = ExperimentManager.is_atari(env_id)
+    is_atari = ExperimentManager.is_atari(env_name)
 
-    stats_path = os.path.join(log_path, env_id)
+    stats_path = os.path.join(log_path, env_name)
     hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
 
     # load env_kwargs if existing
     env_kwargs = {}
-    args_path = os.path.join(log_path, env_id, "args.yml")
+    args_path = os.path.join(log_path, env_name, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path) as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
@@ -144,7 +145,7 @@ def main():  # noqa: C901
     log_dir = args.reward_log if args.reward_log != "" else None
 
     env = create_test_env(
-        env_id,
+        env_name,
         n_envs=args.n_envs,
         stats_path=stats_path,
         seed=args.seed,

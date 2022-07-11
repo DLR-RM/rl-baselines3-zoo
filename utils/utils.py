@@ -10,6 +10,7 @@ import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
 from huggingface_hub import HfApi
+from huggingface_sb3 import EnvironmentName, ModelName
 from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
@@ -316,20 +317,20 @@ def get_hf_trained_models(organization: str = "sb3") -> Dict[str, Tuple[str, str
     return trained_models
 
 
-def get_latest_run_id(log_path: str, env_id: str) -> int:
+def get_latest_run_id(log_path: str, env_name: EnvironmentName) -> int:
     """
     Returns the latest run number for the given log name and log path,
     by finding the greatest number in the directories.
 
     :param log_path: path to log folder
-    :param env_id:
+    :param env_name:
     :return: latest run number
     """
     max_run_id = 0
-    for path in glob.glob(os.path.join(log_path, env_id + "_[0-9]*")):
+    for path in glob.glob(os.path.join(log_path, env_name + "_[0-9]*")):
         run_id = path.split("_")[-1]
         path_without_run_id = path[: -len(run_id) - 1]
-        if path_without_run_id.endswith(env_id) and run_id.isdigit() and int(run_id) > max_run_id:
+        if path_without_run_id.endswith(env_name) and run_id.isdigit() and int(run_id) > max_run_id:
             max_run_id = int(run_id)
     return max_run_id
 
@@ -397,33 +398,35 @@ def get_model_path(
     exp_id: int,
     folder: str,
     algo: str,
-    env_id: str,
+    env_name: EnvironmentName,
     load_best: bool = False,
     load_checkpoint: Optional[str] = None,
     load_last_checkpoint: bool = False,
 ) -> Tuple[str, str, str]:
 
     if exp_id == 0:
-        exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
+        exp_id = get_latest_run_id(os.path.join(folder, algo), env_name)
         print(f"Loading latest experiment, id={exp_id}")
     # Sanity checks
     if exp_id > 0:
-        log_path = os.path.join(folder, algo, f"{env_id}_{exp_id}")
+        log_path = os.path.join(folder, algo, f"{env_name}_{exp_id}")
     else:
         log_path = os.path.join(folder, algo)
 
     assert os.path.isdir(log_path), f"The {log_path} folder was not found"
 
+    model_name = ModelName(algo, env_name)
+
     if load_best:
         model_path = os.path.join(log_path, "best_model.zip")
-        name_prefix = f"best-model-{algo}-{env_id}"
+        name_prefix = f"best-model-{model_name}"
     elif load_checkpoint is not None:
         model_path = os.path.join(log_path, f"rl_model_{load_checkpoint}_steps.zip")
-        name_prefix = f"checkpoint-{load_checkpoint}-{algo}-{env_id}"
+        name_prefix = f"checkpoint-{load_checkpoint}-{model_name}"
     elif load_last_checkpoint:
         checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
         if len(checkpoints) == 0:
-            raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
+            raise ValueError(f"No checkpoint found for {algo} on {env_name}, path: {log_path}")
 
         def step_count(checkpoint_path: str) -> int:
             # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
@@ -431,14 +434,14 @@ def get_model_path(
 
         checkpoints = sorted(checkpoints, key=step_count)
         model_path = checkpoints[-1]
-        name_prefix = f"checkpoint-{step_count(model_path)}-{algo}-{env_id}"
+        name_prefix = f"checkpoint-{step_count(model_path)}-{model_name}"
     else:
         # Default: load latest model
-        model_path = os.path.join(log_path, f"{env_id}.zip")
-        name_prefix = f"final-model-{algo}-{env_id}"
+        model_path = os.path.join(log_path, f"{env_name}.zip")
+        name_prefix = f"final-model-{model_name}"
 
     found = os.path.isfile(model_path)
     if not found:
-        raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
+        raise ValueError(f"No model found for {algo} on {env_name}, path: {model_path}")
 
     return name_prefix, model_path, log_path

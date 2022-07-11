@@ -5,7 +5,7 @@ import zipfile
 from pathlib import Path
 from typing import Optional
 
-from huggingface_sb3 import load_from_hub
+from huggingface_sb3 import EnvironmentName, ModelName, ModelRepoId, load_from_hub
 from requests.exceptions import HTTPError
 
 from utils import ALGOS, get_latest_run_id
@@ -13,7 +13,7 @@ from utils import ALGOS, get_latest_run_id
 
 def download_from_hub(
     algo: str,
-    env_id: str,
+    env_name: EnvironmentName,
     exp_id: int,
     folder: str,
     organization: str,
@@ -27,7 +27,7 @@ def download_from_hub(
     where repo_name = {algo}-{env_id}
 
     :param algo: Algorithm
-    :param env_id: Environment id
+    :param env_name: Environment name
     :param exp_id: Experiment id
     :param folder: Log folder
     :param organization: Huggingface organization
@@ -36,15 +36,15 @@ def download_from_hub(
         if it already exists.
     """
 
-    if repo_name is None:
-        repo_name = f"{algo}-{env_id}"
+    model_name = ModelName(algo, env_name)
 
-    repo_id = f"{organization}/{repo_name.replace('/', '-')}"
+    if repo_name is None:
+        repo_name = model_name
+
+    repo_id = ModelRepoId(organization, repo_name)
     print(f"Downloading from https://huggingface.co/{repo_id}")
 
-    model_name = f"{algo}-{env_id}"
-
-    checkpoint = load_from_hub(repo_id, f"{model_name}.zip")
+    checkpoint = load_from_hub(repo_id, model_name.filename)
     config_path = load_from_hub(repo_id, "config.yml")
 
     # If VecNormalize, download
@@ -59,10 +59,10 @@ def download_from_hub(
     train_eval_metrics = load_from_hub(repo_id, "train_eval_metrics.zip")
 
     if exp_id == 0:
-        exp_id = get_latest_run_id(os.path.join(folder, algo), env_id) + 1
+        exp_id = get_latest_run_id(os.path.join(folder, algo), env_name) + 1
     # Sanity checks
     if exp_id > 0:
-        log_path = os.path.join(folder, algo, f"{env_id}_{exp_id}")
+        log_path = os.path.join(folder, algo, f"{env_name}_{exp_id}")
     else:
         log_path = os.path.join(folder, algo)
 
@@ -82,11 +82,11 @@ def download_from_hub(
     print(f"Saving to {log_path}")
     # Create folder structure
     os.makedirs(log_path, exist_ok=True)
-    config_folder = os.path.join(log_path, env_id)
+    config_folder = os.path.join(log_path, env_name)
     os.makedirs(config_folder, exist_ok=True)
 
     # Copy config files and saved stats
-    shutil.copy(checkpoint, os.path.join(log_path, f"{env_id}.zip"))
+    shutil.copy(checkpoint, os.path.join(log_path, f"{env_name}.zip"))
     shutil.copy(saved_args, os.path.join(config_folder, "args.yml"))
     shutil.copy(config_path, os.path.join(config_folder, "config.yml"))
     shutil.copy(env_kwargs, os.path.join(config_folder, "env_kwargs.yml"))
@@ -100,7 +100,7 @@ def download_from_hub(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=str, required=True)
+    parser.add_argument("--env", help="environment name", type=EnvironmentName, required=True)
     parser.add_argument("-f", "--folder", help="Log folder", type=str, required=True)
     parser.add_argument("-orga", "--organization", help="Huggingface hub organization", default="sb3")
     parser.add_argument("-name", "--repo-name", help="Huggingface hub repository name, by default 'algo-env_id'", type=str)
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     download_from_hub(
         algo=args.algo,
-        env_id=args.env,
+        env_name=args.env,
         exp_id=args.exp_id,
         folder=args.folder,
         organization=args.organization,
