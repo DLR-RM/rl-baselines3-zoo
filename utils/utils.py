@@ -316,12 +316,12 @@ def get_hf_trained_models(organization: str = "sb3") -> Dict[str, Tuple[str, str
 
         # Try to extract algorithm and environment id from model card
         try:
-            env_id = model.cardData['model-index'][0]['results'][0]['dataset']['name']
-            algo = model.cardData['model-index'][0]['name'].lower()
+            env_id = model.cardData["model-index"][0]["results"][0]["dataset"]["name"]
+            algo = model.cardData["model-index"][0]["name"].lower()
         except KeyError:
             continue  # skip model if name env id or algo name could not be found
         except IndexError:
-            continue # skip model if name env id or algo name could not be found
+            continue  # skip model if name env id or algo name could not be found
 
         env_name = EnvironmentName(env_id)
         model_name = ModelName(algo, env_name)
