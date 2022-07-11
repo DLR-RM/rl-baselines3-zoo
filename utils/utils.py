@@ -1,6 +1,7 @@
 import argparse
 import glob
 import importlib
+import json
 import os
 import re
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
@@ -287,10 +288,15 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
     for algo in os.listdir(log_folder):
         if not os.path.isdir(os.path.join(log_folder, algo)):
             continue
-        for env_id in os.listdir(os.path.join(log_folder, algo)):
+        for model_folder in os.listdir(os.path.join(log_folder, algo)):
             # Retrieve env name
-            env_id = env_id.split("_")[0]
-            trained_models[f"{algo}-{env_id}"] = (algo, env_id)
+            with open(os.path.join(log_folder, algo, model_folder, "0.monitor.csv"), "r") as fh:
+                # Note: first line of the monitor log looks like this:
+                # `#{"t_start": 1651240811.8007917, "env_id": "seals/CartPole-v0"}`
+                #  so we just parse the json after removing the leading hash
+                env_id = json.loads(fh.readline()[1:])["env_id"]
+            model_name = ModelName(algo, EnvironmentName(env_id))
+            trained_models[model_name] = (algo, env_id)
     return trained_models
 
 
