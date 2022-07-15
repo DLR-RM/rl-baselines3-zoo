@@ -19,6 +19,9 @@
 - Fix `Reacher-v3` name in PPO hyperparameter file
 - Pinned ale-py==0.7.4 until new SB3 version is released
 - Fix enjoy / record videos with LSTM policy
+- Changed `optimize_memory_usage` to `False` for DQN/QR-DQN on Atari games,
+  if you want to save RAM, you need to deactivate `handle_timeout_termination`
+  in the `replay_buffer_kwargs`
 
 ### Documentation
 
