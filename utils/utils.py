@@ -289,12 +289,11 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
         if not os.path.isdir(os.path.join(log_folder, algo)):
             continue
         for model_folder in os.listdir(os.path.join(log_folder, algo)):
-            # Retrieve env name
-            with open(os.path.join(log_folder, algo, model_folder, "0.monitor.csv"), "r") as fh:
-                # Note: first line of the monitor log looks like this:
-                # `#{"t_start": 1651240811.8007917, "env_id": "seals/CartPole-v0"}`
-                #  so we just parse the json after removing the leading hash
-                env_id = json.loads(fh.readline()[1:])["env_id"]
+            args_files = glob.glob(os.path.join(log_folder, algo, model_folder, "*/args.yml"))
+            if len(args_files) != 1: continue  # we expect only one subfolder with an args.yml file
+            with open(args_files[0], "r") as fh:
+                env_id = yaml.load(fh, Loader=yaml.UnsafeLoader)['env']
+
             model_name = ModelName(algo, EnvironmentName(env_id))
             trained_models[model_name] = (algo, env_id)
     return trained_models
