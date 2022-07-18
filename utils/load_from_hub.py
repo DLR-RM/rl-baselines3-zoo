@@ -39,8 +39,9 @@ def download_from_hub(
     model_name = ModelName(algo, env_name)
 
     if repo_name is None:
-        repo_name = model_name
+        repo_name = model_name  # Note: model name is {algo}-{env_name}
 
+    # Note: repo id is {organization}/{repo_name}
     repo_id = ModelRepoId(organization, repo_name)
     print(f"Downloading from https://huggingface.co/{repo_id}")
 
