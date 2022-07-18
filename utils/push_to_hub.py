@@ -266,7 +266,7 @@ def package_to_hub(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment name", type=EnvironmentName, required=True)
+    parser.add_argument("--env", help="environment ID", type=EnvironmentName, required=True)
     parser.add_argument("-f", "--folder", help="Log folder", type=str, required=True)
     parser.add_argument("--algo", help="RL Algorithm", type=str, required=True, choices=list(ALGOS.keys()))
     parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)

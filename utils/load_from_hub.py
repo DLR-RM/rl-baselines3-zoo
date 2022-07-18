@@ -100,7 +100,7 @@ def download_from_hub(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment name", type=EnvironmentName, required=True)
+    parser.add_argument("--env", help="environment ID", type=EnvironmentName, required=True)
     parser.add_argument("-f", "--folder", help="Log folder", type=str, required=True)
     parser.add_argument("-orga", "--organization", help="Huggingface hub organization", default="sb3")
     parser.add_argument("-name", "--repo-name", help="Huggingface hub repository name, by default 'algo-env_id'", type=str)
