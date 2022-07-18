@@ -20,6 +20,9 @@
 - Pinned ale-py==0.7.4 until new SB3 version is released
 - Fix enjoy / record videos with LSTM policy
 - Fix bug with environments that have a slash in their name (@ernestum)
+- Changed `optimize_memory_usage` to `False` for DQN/QR-DQN on Atari games,
+  if you want to save RAM, you need to deactivate `handle_timeout_termination`
+  in the `replay_buffer_kwargs`
 
 ### Documentation
 

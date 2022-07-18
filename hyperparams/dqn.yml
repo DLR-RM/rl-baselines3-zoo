@@ -13,7 +13,9 @@ atari:
   gradient_steps: 1
   exploration_fraction: 0.1
   exploration_final_eps: 0.01
-  optimize_memory_usage: True
+  # If True, you need to deactivate handle_timeout_termination
+  # in the replay_buffer_kwargs
+  optimize_memory_usage: False
 
 # Almost Tuned
 CartPole-v1:
