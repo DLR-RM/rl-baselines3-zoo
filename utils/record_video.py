@@ -4,6 +4,7 @@ import sys
 
 import numpy as np
 import yaml
+from huggingface_sb3 import EnvironmentName
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import VecVideoRecorder
 
@@ -12,7 +13,7 @@ from utils.utils import ALGOS, StoreDict, create_test_env, get_model_path, get_s
 
 if __name__ == "__main__":  # noqa: C901
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
+    parser.add_argument("--env", help="environment ID", type=EnvironmentName, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
     parser.add_argument("-o", "--output-folder", help="Output folder", type=str)
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
@@ -44,7 +45,7 @@ if __name__ == "__main__":  # noqa: C901
     )
     args = parser.parse_args()
 
-    env_id = args.env
+    env_name: EnvironmentName = args.env
     algo = args.algo
     folder = args.folder
     video_folder = args.output_folder
@@ -56,7 +57,7 @@ if __name__ == "__main__":  # noqa: C901
         args.exp_id,
         folder,
         algo,
-        env_id,
+        env_name,
         args.load_best,
         args.load_checkpoint,
         args.load_last_checkpoint,
@@ -67,14 +68,14 @@ if __name__ == "__main__":  # noqa: C901
 
     set_random_seed(args.seed)
 
-    is_atari = ExperimentManager.is_atari(env_id)
+    is_atari = ExperimentManager.is_atari(env_name.gym_id)
 
-    stats_path = os.path.join(log_path, env_id)
+    stats_path = os.path.join(log_path, env_name)
     hyperparams, stats_path = get_saved_hyperparams(stats_path)
 
     # load env_kwargs if existing
     env_kwargs = {}
-    args_path = os.path.join(log_path, env_id, "args.yml")
+    args_path = os.path.join(log_path, env_name, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path) as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
@@ -85,7 +86,7 @@ if __name__ == "__main__":  # noqa: C901
         env_kwargs.update(args.env_kwargs)
 
     env = create_test_env(
-        env_id,
+        env_name.gym_id,
         n_envs=n_envs,
         stats_path=stats_path,
         seed=seed,
