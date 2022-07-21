@@ -531,7 +531,11 @@ class ExperimentManager:
 
         monitor_kwargs = {}
         # Special case for GoalEnvs: log success rate too
-        if "Neck" in self.env_name.gym_id or self.is_robotics_env(self.env_name.gym_id) or "parking-v0" in self.env_name.gym_id:
+        if (
+            "Neck" in self.env_name.gym_id
+            or self.is_robotics_env(self.env_name.gym_id)
+            or "parking-v0" in self.env_name.gym_id
+        ):
             monitor_kwargs = dict(info_keywords=("is_success",))
 
         # On most env, SubprocVecEnv does not help and is quite memory hungry
