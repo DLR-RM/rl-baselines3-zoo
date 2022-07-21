@@ -12,6 +12,7 @@ import numpy as np
 import optuna
 import torch as th
 import yaml
+from huggingface_sb3 import EnvironmentName
 from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
@@ -95,7 +96,7 @@ class ExperimentManager:
     ):
         super().__init__()
         self.algo = algo
-        self.env_id = env_id
+        self.env_name = EnvironmentName(env_id)
         # Custom params
         self.custom_hyperparams = hyperparams
         self.env_kwargs = {} if env_kwargs is None else env_kwargs
@@ -144,12 +145,12 @@ class ExperimentManager:
         self.pruner = pruner
         self.n_startup_trials = n_startup_trials
         self.n_evaluations = n_evaluations
-        self.deterministic_eval = not self.is_atari(self.env_id)
+        self.deterministic_eval = not self.is_atari(env_id)
         self.device = device
 
         # Logging
         self.log_folder = log_folder
-        self.tensorboard_log = None if tensorboard_log == "" else os.path.join(tensorboard_log, env_id)
+        self.tensorboard_log = None if tensorboard_log == "" else os.path.join(tensorboard_log, self.env_name)
         self.verbose = verbose
         self.args = args
         self.log_interval = log_interval
@@ -157,9 +158,9 @@ class ExperimentManager:
 
         self.log_path = f"{log_folder}/{self.algo}/"
         self.save_path = os.path.join(
-            self.log_path, f"{self.env_id}_{get_latest_run_id(self.log_path, self.env_id) + 1}{uuid_str}"
+            self.log_path, f"{self.env_name}_{get_latest_run_id(self.log_path, self.env_name) + 1}{uuid_str}"
         )
-        self.params_path = f"{self.save_path}/{self.env_id}"
+        self.params_path = f"{self.save_path}/{self.env_name}"
 
     def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
         """
@@ -235,7 +236,7 @@ class ExperimentManager:
         :param model:
         """
         print(f"Saving to {self.save_path}")
-        model.save(f"{self.save_path}/{self.env_id}")
+        model.save(f"{self.save_path}/{self.env_name}")
 
         if hasattr(model, "save_replay_buffer") and self.save_replay_buffer:
             print("Saving replay buffer")
@@ -267,12 +268,12 @@ class ExperimentManager:
         # Load hyperparameters from yaml file
         with open(f"hyperparams/{self.algo}.yml") as f:
             hyperparams_dict = yaml.safe_load(f)
-            if self.env_id in list(hyperparams_dict.keys()):
-                hyperparams = hyperparams_dict[self.env_id]
+            if self.env_name.gym_id in list(hyperparams_dict.keys()):
+                hyperparams = hyperparams_dict[self.env_name.gym_id]
             elif self._is_atari:
                 hyperparams = hyperparams_dict["atari"]
             else:
-                raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_id}")
+                raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_name.gym_id}")
 
         if self.custom_hyperparams is not None:
             # Overwrite hyperparams if needed
@@ -486,7 +487,7 @@ class ExperimentManager:
         :return:
         """
         # Pretrained model, load normalization
-        path_ = os.path.join(os.path.dirname(self.trained_agent), self.env_id)
+        path_ = os.path.join(os.path.dirname(self.trained_agent), self.env_name)
         path_ = os.path.join(path_, "vecnormalize.pkl")
 
         if os.path.exists(path_):
@@ -530,13 +531,13 @@ class ExperimentManager:
 
         monitor_kwargs = {}
         # Special case for GoalEnvs: log success rate too
-        if "Neck" in self.env_id or self.is_robotics_env(self.env_id) or "parking-v0" in self.env_id:
+        if "Neck" in self.env_name.gym_id or self.is_robotics_env(self.env_name.gym_id) or "parking-v0" in self.env_name.gym_id:
             monitor_kwargs = dict(info_keywords=("is_success",))
 
         # On most env, SubprocVecEnv does not help and is quite memory hungry
         # therefore we use DummyVecEnv by default
         env = make_vec_env(
-            env_id=self.env_id,
+            env_id=self.env_name.gym_id,
             n_envs=n_envs,
             seed=self.seed,
             env_kwargs=self.env_kwargs,
@@ -797,7 +798,7 @@ class ExperimentManager:
             print(f"    {key}: {value}")
 
         report_name = (
-            f"report_{self.env_id}_{self.n_trials}-trials-{self.n_timesteps}"
+            f"report_{self.env_name}_{self.n_trials}-trials-{self.n_timesteps}"
             f"-{self.sampler}-{self.pruner}_{int(time.time())}"
         )
 
