@@ -290,9 +290,10 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
             continue
         for model_folder in os.listdir(os.path.join(log_folder, algo)):
             args_files = glob.glob(os.path.join(log_folder, algo, model_folder, "*/args.yml"))
-            if len(args_files) != 1: continue  # we expect only one subfolder with an args.yml file
+            if len(args_files) != 1:
+                continue  # we expect only one sub-folder with an args.yml file
             with open(args_files[0], "r") as fh:
-                env_id = yaml.load(fh, Loader=yaml.UnsafeLoader)['env']
+                env_id = yaml.load(fh, Loader=yaml.UnsafeLoader)["env"]
 
             model_name = ModelName(algo, EnvironmentName(env_id))
             trained_models[model_name] = (algo, env_id)
