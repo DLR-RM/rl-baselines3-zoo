@@ -1,9 +1,7 @@
 import argparse
 import glob
 import importlib
-import json
 import os
-import re
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import gym
@@ -300,12 +298,16 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
     return trained_models
 
 
-def get_hf_trained_models(organization: str = "sb3") -> Dict[str, Tuple[str, str]]:
+def get_hf_trained_models(organization: str = "sb3", check_filename: bool = False) -> Dict[str, Tuple[str, str]]:
     """
     Get pretrained models,
     available on the Hugginface hub for a given organization.
 
-    :param organization:
+    :param organization: Huggingface organization
+        Stable-Baselines (SB3) one is the default.
+    :param check_filename: Perform additional check per model
+        to be sure they match the RL Zoo convention.
+        (this will slow down things as it requires one API call per model)
     :return: Dict representing the trained agents
     """
     api = HfApi()
@@ -313,21 +315,22 @@ def get_hf_trained_models(organization: str = "sb3") -> Dict[str, Tuple[str, str
 
     trained_models = {}
     for model in models:
-
         # Try to extract algorithm and environment id from model card
         try:
             env_id = model.cardData["model-index"][0]["results"][0]["dataset"]["name"]
             algo = model.cardData["model-index"][0]["name"].lower()
-        except KeyError:
-            continue  # skip model if name env id or algo name could not be found
-        except IndexError:
+            # RecurrentPPO alias is "ppo_lstm" in the rl zoo
+            if algo == "recurrentppo":
+                algo = "ppo_lstm"
+        except (KeyError, IndexError):
+            print(f"Skipping {model.modelId}")
             continue  # skip model if name env id or algo name could not be found
 
         env_name = EnvironmentName(env_id)
         model_name = ModelName(algo, env_name)
 
         # check if there is a model file in the repo
-        if not any(f.rfilename == model_name.filename for f in api.model_info(model.modelId).siblings):
+        if check_filename and not any(f.rfilename == model_name.filename for f in api.model_info(model.modelId).siblings):
             continue  # skip model if the repo contains no properly named model file
 
         trained_models[model_name] = (algo, env_id)
