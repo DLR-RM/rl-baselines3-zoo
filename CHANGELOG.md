@@ -1,10 +1,12 @@
-## Release 1.5.1a8 (WIP)
+## Release 1.6.0 (2022-08-05)
 
 ### Breaking Changes
 - Change default value for number of hyperparameter optimization trials from 10 to 500. (@ernestum)
 - Derive number of intermediate pruning evaluations from number of time steps (1 evaluation per 100k time steps.) (@ernestum)
 - Updated default --eval-freq from 10k to 25k steps
 - Update default horizon to 2 for the `HistoryWrapper`
+- Upgrade to Stable-Baselines3 (SB3) >= 1.6.0
+- Upgrade to sb3-contrib >= 1.6.0
 
 ### New Features
 - Support setting PyTorch's device with thye `--device` flag (@gregwar)
@@ -14,6 +16,7 @@
 - Added `RecurrentPPO` support (aka `ppo_lstm`)
 - Added autodownload for "official" sb3 models from the hub
 - Added Humanoid-v3, Ant-v3, Walker2d-v3 models for A2C (@pseudo-rnd-thoughts)
+- Added MsPacman models
 
 ### Bug fixes
 - Fix `Reacher-v3` name in PPO hyperparameter file
