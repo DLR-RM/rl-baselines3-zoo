@@ -331,7 +331,7 @@ The previous command will create a `mp4` file. To convert this file to `gif` for
 python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
 ```
 
-## Current Collection: 150+ Trained Agents!
+## Current Collection: 195+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
 
@@ -354,10 +354,10 @@ Additional Atari Games (to be completed):
 
 |  RL Algo |  MsPacman   | Asteroids | RoadRunner |
 |----------|-------------|-----------|------------|
-| A2C      |  | :heavy_check_mark: | :heavy_check_mark: |
-| PPO      |  | :heavy_check_mark: | :heavy_check_mark: |
-| DQN      |  | :heavy_check_mark: | :heavy_check_mark: |
-| QR-DQN   |  | :heavy_check_mark: | :heavy_check_mark: |
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
 ### Classic Control Environments
