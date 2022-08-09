@@ -505,9 +505,11 @@ class ExperimentManager:
             if eval_env:
                 if len(local_normalize_kwargs) > 0:
                     local_normalize_kwargs["norm_reward"] = False
+                    local_normalize_kwargs["training"] = False
                 else:
-                    local_normalize_kwargs = {"norm_reward": False}
-
+                    local_normalize_kwargs = {"norm_reward": False,
+                                              "training": False}
+                    
             if self.verbose > 0:
                 if len(local_normalize_kwargs) > 0:
                     print(f"Normalization activated: {local_normalize_kwargs}")
