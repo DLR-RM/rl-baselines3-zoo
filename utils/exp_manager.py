@@ -501,15 +501,11 @@ class ExperimentManager:
         elif self.normalize:
             # Copy to avoid changing default values by reference
             local_normalize_kwargs = self.normalize_kwargs.copy()
-            # Do not normalize reward for env used for evaluation
+            # In eval env: turn off reward normalization and normalization stats updates.
             if eval_env:
-                if len(local_normalize_kwargs) > 0:
-                    local_normalize_kwargs["norm_reward"] = False
-                    local_normalize_kwargs["training"] = False
-                else:
-                    local_normalize_kwargs = {"norm_reward": False,
-                                              "training": False}
-                    
+                local_normalize_kwargs["norm_reward"] = False
+                local_normalize_kwargs["training"] = False
+
             if self.verbose > 0:
                 if len(local_normalize_kwargs) > 0:
                     print(f"Normalization activated: {local_normalize_kwargs}")
