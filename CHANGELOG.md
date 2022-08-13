@@ -1,3 +1,9 @@
+## Release 1.6.1 (2022-08-13)
+
+### Bug fixes
+- In `ExperimentManager` `_maybe_normalize` set `training` to `False` for eval envs, 
+  to prevent normalization stats from being updated in eval envs (e.g. in EvalCallbck).
+
 ## Release 1.6.0 (2022-08-05)
 
 ### Breaking Changes
