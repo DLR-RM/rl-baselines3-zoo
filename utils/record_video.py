@@ -100,6 +100,11 @@ if __name__ == "__main__":  # noqa: C901
     if algo in off_policy_algos:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
+        # Hack due to breaking change in v1.6
+        # handle_timeout_termination cannot be at the same time
+        # with optimize_memory_usage
+        if "optimize_memory_usage" in hyperparams:
+            kwargs.update(optimize_memory_usage=False)
 
     # Check if we are running python 3.8+
     # we need to patch saved model under python 3.6/3.7 to load them
