@@ -43,6 +43,10 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
     )
+    parser.add_argument(
+        "--custom-objects", action="store_true", default=False, help="Use custom objects to solve loading issues"
+    )
+
     args = parser.parse_args()
 
     env_name: EnvironmentName = args.env
@@ -111,7 +115,7 @@ if __name__ == "__main__":  # noqa: C901
     newer_python_version = sys.version_info.major == 3 and sys.version_info.minor >= 8
 
     custom_objects = {}
-    if newer_python_version:
+    if newer_python_version or args.custom_objects:
         custom_objects = {
             "learning_rate": 0.0,
             "lr_schedule": lambda _: 0.0,
