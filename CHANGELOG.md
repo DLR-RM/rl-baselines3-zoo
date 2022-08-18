@@ -5,6 +5,8 @@
 ### New Features
 
 ### Bug fixes
+- Added `custom_object` parameter on record_video.py (@Affonso-Gui)
+- Changed `optimize_memory_usage` to `False` for DQN/QR-DQN on record_video.py (@Affonso-Gui)
 - In `ExperimentManager` `_maybe_normalize` set `training` to `False` for eval envs,
   to prevent normalization stats from being updated in eval envs (e.g. in EvalCallback) (@pchalasani).
 

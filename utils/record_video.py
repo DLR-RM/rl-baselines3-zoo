@@ -43,6 +43,10 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
     )
+    parser.add_argument(
+        "--custom-objects", action="store_true", default=False, help="Use custom objects to solve loading issues"
+    )
+
     args = parser.parse_args()
 
     env_name: EnvironmentName = args.env
@@ -100,13 +104,18 @@ if __name__ == "__main__":  # noqa: C901
     if algo in off_policy_algos:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
+        # Hack due to breaking change in v1.6
+        # handle_timeout_termination cannot be at the same time
+        # with optimize_memory_usage
+        if "optimize_memory_usage" in hyperparams:
+            kwargs.update(optimize_memory_usage=False)
 
     # Check if we are running python 3.8+
     # we need to patch saved model under python 3.6/3.7 to load them
     newer_python_version = sys.version_info.major == 3 and sys.version_info.minor >= 8
 
     custom_objects = {}
-    if newer_python_version:
+    if newer_python_version or args.custom_objects:
         custom_objects = {
             "learning_rate": 0.0,
             "lr_schedule": lambda _: 0.0,
