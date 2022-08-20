@@ -91,7 +91,7 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   learning_starts: 10000
   # replay_buffer_kwargs: "dict(handle_timeout_termination=True)"
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], dropout_rate=0.01, layer_norm=True)"
 
 # Tuned
 AntBulletEnv-v0:
