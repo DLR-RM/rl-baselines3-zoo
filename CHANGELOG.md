@@ -3,7 +3,7 @@
 ### Breaking Changes
 
 ### New Features
-
+- Added `--yaml-file` argument option for `train.py`to read hyperparameters from custom yaml files (@JohannesUl)
 ### Bug fixes
 - Added `custom_object` parameter on record_video.py (@Affonso-Gui)
 - Changed `optimize_memory_usage` to `False` for DQN/QR-DQN on record_video.py (@Affonso-Gui)
