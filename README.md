@@ -33,6 +33,11 @@ If the environment exists in this file, then you can train an agent using:
 python train.py --algo algo_name --env env_id
 ```
 
+Using a custom yaml file (which contains a `env_id` entry):
+```
+python train.py --algo algo_name --env env_id --yaml-file my_yaml.yml
+```
+
 For example (with tensorboard support):
 ```
 python train.py --algo ppo --env CartPole-v1 --tensorboard-log /tmp/stable-baselines/
@@ -106,7 +111,7 @@ Remark: plotting with the `--rliable` option is usually slow as confidence inter
 
 ## Custom Environment
 
-The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml`).
+The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml` or a custom yaml file that you can specify using `--yaml-file` argument).
 
 ## Enjoy a Trained Agent
 
