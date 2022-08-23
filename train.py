@@ -124,7 +124,7 @@ if __name__ == "__main__":  # noqa: C901
         help="Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)",
     )
     parser.add_argument(
-        "--yaml-file", type=str, default=None, help="Custom .yml file from which the hyperparameters will be loaded"
+        "-yaml", "--yaml-file", type=str, default=None, help="Custom yaml file from which the hyperparameters will be loaded"
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
     parser.add_argument(

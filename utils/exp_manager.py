@@ -100,7 +100,7 @@ class ExperimentManager:
         self.env_name = EnvironmentName(env_id)
         # Custom params
         self.custom_hyperparams = hyperparams
-        self.yaml_file = yaml_file if yaml_file is not None else f"hyperparams/{self.algo}.yml"
+        self.yaml_file = yaml_file or f"hyperparams/{self.algo}.yml"
         self.env_kwargs = {} if env_kwargs is None else env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False
