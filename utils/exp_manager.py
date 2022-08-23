@@ -93,7 +93,7 @@ class ExperimentManager:
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
         device: Union[th.device, str] = "auto",
-        yaml_file: Optional[str] = None
+        yaml_file: Optional[str] = None,
     ):
         super().__init__()
         self.algo = algo
