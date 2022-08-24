@@ -101,3 +101,27 @@ def test_parallel_train(tmp_path):
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
+
+
+def test_custom_yaml(tmp_path):
+    # Use A2C hyperparams for ppo
+    args = [
+        "-n",
+        str(N_STEPS),
+        "--algo",
+        "ppo",
+        "--env",
+        "CartPole-v1",
+        "--log-folder",
+        tmp_path,
+        "-yaml",
+        "hyperparams/a2c.yml",
+        "-params",
+        "n_envs:2",
+        "n_steps:50",
+        "n_epochs:2",
+        "batch_size:4",
+    ]
+
+    return_code = subprocess.call(["python", "train.py"] + args)
+    _assert_eq(return_code, 0)

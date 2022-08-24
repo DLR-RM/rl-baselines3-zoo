@@ -93,12 +93,14 @@ class ExperimentManager:
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
         device: Union[th.device, str] = "auto",
+        yaml_file: Optional[str] = None,
     ):
         super().__init__()
         self.algo = algo
         self.env_name = EnvironmentName(env_id)
         # Custom params
         self.custom_hyperparams = hyperparams
+        self.yaml_file = yaml_file or f"hyperparams/{self.algo}.yml"
         self.env_kwargs = {} if env_kwargs is None else env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False
@@ -266,7 +268,8 @@ class ExperimentManager:
 
     def read_hyperparameters(self) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         # Load hyperparameters from yaml file
-        with open(f"hyperparams/{self.algo}.yml") as f:
+        print(f"Loading hyperparameters from: {self.yaml_file}")
+        with open(self.yaml_file) as f:
             hyperparams_dict = yaml.safe_load(f)
             if self.env_name.gym_id in list(hyperparams_dict.keys()):
                 hyperparams = hyperparams_dict[self.env_name.gym_id]
