@@ -178,7 +178,7 @@ class ExperimentManager:
         self.create_callbacks()
 
         # Create env to have access to action space for action noise
-        n_envs = 1 if self.algo == "ars" else self.n_envs
+        n_envs = 1 if self.algo == "ars" or self.optimize_hyperparameters else self.n_envs
         env = self.create_envs(n_envs, no_log=False)
 
         self._hyperparams = self._preprocess_action_noise(hyperparams, saved_hyperparams, env)
@@ -186,6 +186,7 @@ class ExperimentManager:
         if self.continue_training:
             model = self._load_pretrained_agent(self._hyperparams, env)
         elif self.optimize_hyperparameters:
+            env.close()
             return None
         else:
             # Train an agent from scratch
