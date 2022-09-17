@@ -21,3 +21,21 @@ def test_raw_stat_callback(tmp_path):
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
+
+
+def test_tqdm_callback(tmp_path):
+    args = [
+        "-n",
+        str(200),
+        "--algo",
+        "ppo",
+        "--env",
+        "CartPole-v1",
+        "-params",
+        "callback:'utils.callbacks.TQDMCallback'",
+        "--tensorboard-log",
+        f"{tmp_path}",
+    ]
+
+    return_code = subprocess.call(["python", "train.py"] + args)
+    _assert_eq(return_code, 0)
