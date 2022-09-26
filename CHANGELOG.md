@@ -1,17 +1,48 @@
-## Release 1.5.1a0 (WIP)
+## Release 1.6.1a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+- Added `--yaml-file` argument option for `train.py`to read hyperparameters from custom yaml files (@JohannesUl)
+### Bug fixes
+- Added `custom_object` parameter on record_video.py (@Affonso-Gui)
+- Changed `optimize_memory_usage` to `False` for DQN/QR-DQN on record_video.py (@Affonso-Gui)
+- In `ExperimentManager` `_maybe_normalize` set `training` to `False` for eval envs,
+  to prevent normalization stats from being updated in eval envs (e.g. in EvalCallback) (@pchalasani).
+- Only one env is used to get the action space while optimizing hyperparameters and it is correctly closed (@SammyRamone)
+
+### Documentation
+
+### Other
+
+## Release 1.6.0 (2022-08-05)
 
 ### Breaking Changes
 - Change default value for number of hyperparameter optimization trials from 10 to 500. (@ernestum)
 - Derive number of intermediate pruning evaluations from number of time steps (1 evaluation per 100k time steps.) (@ernestum)
 - Updated default --eval-freq from 10k to 25k steps
 - Update default horizon to 2 for the `HistoryWrapper`
+- Upgrade to Stable-Baselines3 (SB3) >= 1.6.0
+- Upgrade to sb3-contrib >= 1.6.0
 
 ### New Features
 - Support setting PyTorch's device with thye `--device` flag (@gregwar)
+- Add `--max-total-trials` parameter to help with distributed optimization. (@ernestum)
+- Added `vec_env_wrapper` support in the config (works the same as `env_wrapper`)
+- Added Huggingface hub integration
+- Added `RecurrentPPO` support (aka `ppo_lstm`)
+- Added autodownload for "official" sb3 models from the hub
+- Added Humanoid-v3, Ant-v3, Walker2d-v3 models for A2C (@pseudo-rnd-thoughts)
+- Added MsPacman models
 
 ### Bug fixes
 - Fix `Reacher-v3` name in PPO hyperparameter file
 - Pinned ale-py==0.7.4 until new SB3 version is released
+- Fix enjoy / record videos with LSTM policy
+- Fix bug with environments that have a slash in their name (@ernestum)
+- Changed `optimize_memory_usage` to `False` for DQN/QR-DQN on Atari games,
+  if you want to save RAM, you need to deactivate `handle_timeout_termination`
+  in the `replay_buffer_kwargs`
 
 ### Documentation
 

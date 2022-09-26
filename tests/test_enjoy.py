@@ -3,7 +3,7 @@ import subprocess
 
 import pytest
 
-from utils import get_trained_models
+from utils.utils import get_hf_trained_models, get_trained_models
 
 
 def _assert_eq(left, right):
@@ -12,8 +12,10 @@ def _assert_eq(left, right):
 
 FOLDER = "rl-trained-agents/"
 N_STEPS = 100
-
+# Use local models
 trained_models = get_trained_models(FOLDER)
+# Use huggingface models too
+trained_models.update(get_hf_trained_models())
 
 
 @pytest.mark.parametrize("trained_model", trained_models.keys())
@@ -24,6 +26,10 @@ def test_trained_agents(trained_model):
 
     # Since SB3 >= 1.1.0, HER is no more an algorithm but a replay buffer class
     if algo == "her":
+        return
+
+    # skip car racing
+    if "CarRacing" in env_id:
         return
 
     # Skip mujoco envs
@@ -38,7 +44,7 @@ def test_trained_agents(trained_model):
 
 
 def test_benchmark(tmp_path):
-    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode"]
+    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode", "--no-hub"]
 
     return_code = subprocess.call(["python", "-m", "utils.benchmark"] + args)
     _assert_eq(return_code, 0)

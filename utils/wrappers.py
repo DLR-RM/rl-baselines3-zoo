@@ -305,3 +305,72 @@ class HistoryWrapperObsDict(gym.Wrapper):
         obs_dict["observation"] = self._create_obs_from_history()
 
         return obs_dict, reward, done, info
+
+
+class FrameSkip(gym.Wrapper):
+    """
+    Return only every ``skip``-th frame (frameskipping)
+
+    :param env: the environment
+    :param skip: number of ``skip``-th frame
+    """
+
+    def __init__(self, env: gym.Env, skip: int = 4):
+        super().__init__(env)
+        self._skip = skip
+
+    def step(self, action: np.ndarray):
+        """
+        Step the environment with the given action
+        Repeat action, sum reward.
+
+        :param action: the action
+        :return: observation, reward, done, information
+        """
+        total_reward = 0.0
+        done = None
+        for _ in range(self._skip):
+            obs, reward, done, info = self.env.step(action)
+            total_reward += reward
+            if done:
+                break
+
+        return obs, total_reward, done, info
+
+    def reset(self):
+        return self.env.reset()
+
+
+class MaskVelocityWrapper(gym.ObservationWrapper):
+    """
+    Gym environment observation wrapper used to mask velocity terms in
+    observations. The intention is the make the MDP partially observable.
+    Adapted from https://github.com/LiuWenlin595/FinalProject.
+
+    :param env: Gym environment
+    """
+
+    # Supported envs
+    velocity_indices = {
+        "CartPole-v1": np.array([1, 3]),
+        "MountainCar-v0": np.array([1]),
+        "MountainCarContinuous-v0": np.array([1]),
+        "Pendulum-v1": np.array([2]),
+        "LunarLander-v2": np.array([2, 3, 5]),
+        "LunarLanderContinuous-v2": np.array([2, 3, 5]),
+    }
+
+    def __init__(self, env: gym.Env):
+        super().__init__(env)
+
+        env_id: str = env.unwrapped.spec.id
+        # By default no masking
+        self.mask = np.ones_like((env.observation_space.sample()))
+        try:
+            # Mask velocity
+            self.mask[self.velocity_indices[env_id]] = 0.0
+        except KeyError:
+            raise NotImplementedError(f"Velocity masking not implemented for {env_id}")
+
+    def observation(self, observation: np.ndarray) -> np.ndarray:
+        return observation * self.mask

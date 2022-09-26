@@ -1,5 +1,4 @@
 import argparse
-import glob
 import importlib
 import os
 import sys
@@ -7,18 +6,20 @@ import sys
 import numpy as np
 import torch as th
 import yaml
+from huggingface_sb3 import EnvironmentName
 from stable_baselines3.common.utils import set_random_seed
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
-from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
+from utils import ALGOS, create_test_env, get_saved_hyperparams
 from utils.cpp_exporter import CppExporter
 from utils.exp_manager import ExperimentManager
-from utils.utils import StoreDict
+from utils.load_from_hub import download_from_hub
+from utils.utils import StoreDict, get_model_path
 
 
 def main():  # noqa: C901
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
+    parser.add_argument("--env", help="environment ID", type=EnvironmentName, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
@@ -63,13 +64,17 @@ def main():  # noqa: C901
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
     )
+    parser.add_argument(
+        "--custom-objects", action="store_true", default=False, help="Use custom objects to solve loading issues"
+    )
+
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
     for env_module in args.gym_packages:
         importlib.import_module(env_module)
 
-    env_id = args.env
+    env_name: EnvironmentName = args.env
     algo = args.algo
     folder = args.folder
     device = args.device
@@ -77,48 +82,43 @@ def main():  # noqa: C901
     if args.export_cpp:
         device = "cpu"
 
-    if args.exp_id == 0:
-        args.exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
-        print(f"Loading latest experiment, id={args.exp_id}")
-
-    # Sanity checks
-    if args.exp_id > 0:
-        log_path = os.path.join(folder, algo, f"{env_id}_{args.exp_id}")
-    else:
-        log_path = os.path.join(folder, algo)
-
-    assert os.path.isdir(log_path), f"The {log_path} folder was not found"
-
-    found = False
-    for ext in ["zip"]:
-        model_path = os.path.join(log_path, f"{env_id}.{ext}")
-        found = os.path.isfile(model_path)
-        if found:
-            break
-
-    if args.load_best:
-        model_path = os.path.join(log_path, "best_model.zip")
-        found = os.path.isfile(model_path)
-
-    if args.load_checkpoint is not None:
-        model_path = os.path.join(log_path, f"rl_model_{args.load_checkpoint}_steps.zip")
-        found = os.path.isfile(model_path)
-
-    if args.load_last_checkpoint:
-        checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
-        if len(checkpoints) == 0:
-            raise ValueError(f"No checkpoint found for {algo} on {env_id}, path: {log_path}")
-
-        def step_count(checkpoint_path: str) -> int:
-            # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
-            return int(checkpoint_path.split("_")[-2])
-
-        checkpoints = sorted(checkpoints, key=step_count)
-        model_path = checkpoints[-1]
-        found = True
-
-    if not found:
-        raise ValueError(f"No model found for {algo} on {env_id}, path: {model_path}")
+    try:
+        _, model_path, log_path = get_model_path(
+            args.exp_id,
+            folder,
+            algo,
+            env_name,
+            args.load_best,
+            args.load_checkpoint,
+            args.load_last_checkpoint,
+        )
+    except (AssertionError, ValueError) as e:
+        # Special case for rl-trained agents
+        # auto-download from the hub
+        if "rl-trained-agents" not in folder:
+            raise e
+        else:
+            print("Pretrained model not found, trying to download it from sb3 Huggingface hub: https://huggingface.co/sb3")
+            # Auto-download
+            download_from_hub(
+                algo=algo,
+                env_name=env_name,
+                exp_id=args.exp_id,
+                folder=folder,
+                organization="sb3",
+                repo_name=None,
+                force=False,
+            )
+            # Try again
+            _, model_path, log_path = get_model_path(
+                args.exp_id,
+                folder,
+                algo,
+                env_name,
+                args.load_best,
+                args.load_checkpoint,
+                args.load_last_checkpoint,
+            )
 
     print(f"Loading {model_path}")
 
@@ -135,14 +135,14 @@ def main():  # noqa: C901
             print(f"Setting torch.num_threads to {args.num_threads}")
         th.set_num_threads(args.num_threads)
 
-    is_atari = ExperimentManager.is_atari(env_id)
+    is_atari = ExperimentManager.is_atari(env_name.gym_id)
 
-    stats_path = os.path.join(log_path, env_id)
+    stats_path = os.path.join(log_path, env_name)
     hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
 
     # load env_kwargs if existing
     env_kwargs = {}
-    args_path = os.path.join(log_path, env_id, "args.yml")
+    args_path = os.path.join(log_path, env_name, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path) as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
@@ -155,7 +155,7 @@ def main():  # noqa: C901
     log_dir = args.reward_log if args.reward_log != "" else None
 
     env = create_test_env(
-        env_id,
+        env_name.gym_id,
         n_envs=args.n_envs,
         stats_path=stats_path,
         seed=args.seed,
@@ -169,13 +169,18 @@ def main():  # noqa: C901
     if algo in off_policy_algos:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
+        # Hack due to breaking change in v1.6
+        # handle_timeout_termination cannot be at the same time
+        # with optimize_memory_usage
+        if "optimize_memory_usage" in hyperparams:
+            kwargs.update(optimize_memory_usage=False)
 
     # Check if we are running python 3.8+
     # we need to patch saved model under python 3.6/3.7 to load them
     newer_python_version = sys.version_info.major == 3 and sys.version_info.minor >= 8
 
     custom_objects = {}
-    if newer_python_version:
+    if newer_python_version or args.custom_objects:
         custom_objects = {
             "learning_rate": 0.0,
             "lr_schedule": lambda _: 0.0,
@@ -196,16 +201,25 @@ def main():  # noqa: C901
     stochastic = args.stochastic or is_atari and not args.deterministic
     deterministic = not stochastic
 
-    state = None
     episode_reward = 0.0
     episode_rewards, episode_lengths = [], []
     ep_len = 0
     # For HER, monitor success rate
     successes = []
+    lstm_states = None
+    episode_start = np.ones((env.num_envs,), dtype=bool)
     try:
         for _ in range(args.n_timesteps):
-            action, state = model.predict(obs, state=state, deterministic=deterministic)
+            action, lstm_states = model.predict(
+                obs,
+                state=lstm_states,
+                episode_start=episode_start,
+                deterministic=deterministic,
+            )
             obs, reward, done, infos = env.step(action)
+
+            episode_start = done
+
             if not args.no_render:
                 env.render("human")
 
@@ -230,7 +244,6 @@ def main():  # noqa: C901
                     episode_lengths.append(ep_len)
                     episode_reward = 0.0
                     ep_len = 0
-                    state = None
 
                 # Reset also when the goal is achieved when using HER
                 if done and infos[0].get("is_success") is not None:

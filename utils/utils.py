@@ -8,7 +8,9 @@ import gym
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
-from sb3_contrib import ARS, QRDQN, TQC, TRPO
+from huggingface_hub import HfApi
+from huggingface_sb3 import EnvironmentName, ModelName
+from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -30,6 +32,7 @@ ALGOS = {
     "qrdqn": QRDQN,
     "tqc": TQC,
     "trpo": TRPO,
+    "ppo_lstm": RecurrentPPO,
 }
 
 
@@ -42,10 +45,12 @@ def flatten_dict_observations(env: gym.Env) -> gym.Env:
         return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
 
 
-def get_wrapper_class(hyperparams: Dict[str, Any]) -> Optional[Callable[[gym.Env], gym.Env]]:
+def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
     """
     Get one or more Gym environment wrapper class specified as a hyper parameter
     "env_wrapper".
+    Works also for VecEnvWrapper with the key "vec_env_wrapper".
+
     e.g.
     env_wrapper: gym_minigrid.wrappers.FlatObsWrapper
 
@@ -67,8 +72,8 @@ def get_wrapper_class(hyperparams: Dict[str, Any]) -> Optional[Callable[[gym.Env
     def get_class_name(wrapper_name):
         return wrapper_name.split(".")[-1]
 
-    if "env_wrapper" in hyperparams.keys():
-        wrapper_name = hyperparams.get("env_wrapper")
+    if key in hyperparams.keys():
+        wrapper_name = hyperparams.get(key)
 
         if wrapper_name is None:
             return None
@@ -223,6 +228,12 @@ def create_test_env(
         vec_env_kwargs=vec_env_kwargs,
     )
 
+    if "vec_env_wrapper" in hyperparams.keys():
+
+        vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
+        env = vec_env_wrapper(env)
+        del hyperparams["vec_env_wrapper"]
+
     # Load saved stats for normalizing input and rewards
     # And optionally stack frames
     if stats_path is not None:
@@ -275,28 +286,73 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
     for algo in os.listdir(log_folder):
         if not os.path.isdir(os.path.join(log_folder, algo)):
             continue
-        for env_id in os.listdir(os.path.join(log_folder, algo)):
-            # Retrieve env name
-            env_id = env_id.split("_")[0]
-            trained_models[f"{algo}-{env_id}"] = (algo, env_id)
+        for model_folder in os.listdir(os.path.join(log_folder, algo)):
+            args_files = glob.glob(os.path.join(log_folder, algo, model_folder, "*/args.yml"))
+            if len(args_files) != 1:
+                continue  # we expect only one sub-folder with an args.yml file
+            with open(args_files[0], "r") as fh:
+                env_id = yaml.load(fh, Loader=yaml.UnsafeLoader)["env"]
+
+            model_name = ModelName(algo, EnvironmentName(env_id))
+            trained_models[model_name] = (algo, env_id)
     return trained_models
 
 
-def get_latest_run_id(log_path: str, env_id: str) -> int:
+def get_hf_trained_models(organization: str = "sb3", check_filename: bool = False) -> Dict[str, Tuple[str, str]]:
+    """
+    Get pretrained models,
+    available on the Hugginface hub for a given organization.
+
+    :param organization: Huggingface organization
+        Stable-Baselines (SB3) one is the default.
+    :param check_filename: Perform additional check per model
+        to be sure they match the RL Zoo convention.
+        (this will slow down things as it requires one API call per model)
+    :return: Dict representing the trained agents
+    """
+    api = HfApi()
+    models = api.list_models(author=organization, cardData=True)
+
+    trained_models = {}
+    for model in models:
+        # Try to extract algorithm and environment id from model card
+        try:
+            env_id = model.cardData["model-index"][0]["results"][0]["dataset"]["name"]
+            algo = model.cardData["model-index"][0]["name"].lower()
+            # RecurrentPPO alias is "ppo_lstm" in the rl zoo
+            if algo == "recurrentppo":
+                algo = "ppo_lstm"
+        except (KeyError, IndexError):
+            print(f"Skipping {model.modelId}")
+            continue  # skip model if name env id or algo name could not be found
+
+        env_name = EnvironmentName(env_id)
+        model_name = ModelName(algo, env_name)
+
+        # check if there is a model file in the repo
+        if check_filename and not any(f.rfilename == model_name.filename for f in api.model_info(model.modelId).siblings):
+            continue  # skip model if the repo contains no properly named model file
+
+        trained_models[model_name] = (algo, env_id)
+
+    return trained_models
+
+
+def get_latest_run_id(log_path: str, env_name: EnvironmentName) -> int:
     """
     Returns the latest run number for the given log name and log path,
     by finding the greatest number in the directories.
 
     :param log_path: path to log folder
-    :param env_id:
+    :param env_name:
     :return: latest run number
     """
     max_run_id = 0
-    for path in glob.glob(os.path.join(log_path, env_id + "_[0-9]*")):
-        file_name = os.path.basename(path)
-        ext = file_name.split("_")[-1]
-        if env_id == "_".join(file_name.split("_")[:-1]) and ext.isdigit() and int(ext) > max_run_id:
-            max_run_id = int(ext)
+    for path in glob.glob(os.path.join(log_path, env_name + "_[0-9]*")):
+        run_id = path.split("_")[-1]
+        path_without_run_id = path[: -len(run_id) - 1]
+        if path_without_run_id.endswith(env_name) and run_id.isdigit() and int(run_id) > max_run_id:
+            max_run_id = int(run_id)
     return max_run_id
 
 
@@ -357,3 +413,56 @@ class StoreDict(argparse.Action):
             # Evaluate the string as python code
             arg_dict[key] = eval(value)
         setattr(namespace, self.dest, arg_dict)
+
+
+def get_model_path(
+    exp_id: int,
+    folder: str,
+    algo: str,
+    env_name: EnvironmentName,
+    load_best: bool = False,
+    load_checkpoint: Optional[str] = None,
+    load_last_checkpoint: bool = False,
+) -> Tuple[str, str, str]:
+
+    if exp_id == 0:
+        exp_id = get_latest_run_id(os.path.join(folder, algo), env_name)
+        print(f"Loading latest experiment, id={exp_id}")
+    # Sanity checks
+    if exp_id > 0:
+        log_path = os.path.join(folder, algo, f"{env_name}_{exp_id}")
+    else:
+        log_path = os.path.join(folder, algo)
+
+    assert os.path.isdir(log_path), f"The {log_path} folder was not found"
+
+    model_name = ModelName(algo, env_name)
+
+    if load_best:
+        model_path = os.path.join(log_path, "best_model.zip")
+        name_prefix = f"best-model-{model_name}"
+    elif load_checkpoint is not None:
+        model_path = os.path.join(log_path, f"rl_model_{load_checkpoint}_steps.zip")
+        name_prefix = f"checkpoint-{load_checkpoint}-{model_name}"
+    elif load_last_checkpoint:
+        checkpoints = glob.glob(os.path.join(log_path, "rl_model_*_steps.zip"))
+        if len(checkpoints) == 0:
+            raise ValueError(f"No checkpoint found for {algo} on {env_name}, path: {log_path}")
+
+        def step_count(checkpoint_path: str) -> int:
+            # path follow the pattern "rl_model_*_steps.zip", we count from the back to ignore any other _ in the path
+            return int(checkpoint_path.split("_")[-2])
+
+        checkpoints = sorted(checkpoints, key=step_count)
+        model_path = checkpoints[-1]
+        name_prefix = f"checkpoint-{step_count(model_path)}-{model_name}"
+    else:
+        # Default: load latest model
+        model_path = os.path.join(log_path, f"{env_name}.zip")
+        name_prefix = f"final-model-{model_name}"
+
+    found = os.path.isfile(model_path)
+    if not found:
+        raise ValueError(f"No model found for {algo} on {env_name}, path: {model_path}")
+
+    return name_prefix, model_path, log_path
