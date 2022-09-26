@@ -32,6 +32,12 @@ If the environment exists in this file, then you can train an agent using:
 ```
 python train.py --algo algo_name --env env_id
 ```
+You can use `-P` (`--progress`) option to display a progress bar.
+
+Using a custom yaml file (which contains a `env_id` entry):
+```
+python train.py --algo algo_name --env env_id --yaml-file my_yaml.yml
+```
 
 For example (with tensorboard support):
 ```
@@ -106,7 +112,7 @@ Remark: plotting with the `--rliable` option is usually slow as confidence inter
 
 ## Custom Environment
 
-The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml`).
+The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml` or a custom yaml file that you can specify using `--yaml-file` argument).
 
 ## Enjoy a Trained Agent
 
@@ -331,7 +337,7 @@ The previous command will create a `mp4` file. To convert this file to `gif` for
 python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
 ```
 
-## Current Collection: 150+ Trained Agents!
+## Current Collection: 195+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
 
@@ -354,10 +360,10 @@ Additional Atari Games (to be completed):
 
 |  RL Algo |  MsPacman   | Asteroids | RoadRunner |
 |----------|-------------|-----------|------------|
-| A2C      |  | :heavy_check_mark: | :heavy_check_mark: |
-| PPO      |  | :heavy_check_mark: | :heavy_check_mark: |
-| DQN      |  | :heavy_check_mark: | :heavy_check_mark: |
-| QR-DQN   |  | :heavy_check_mark: | :heavy_check_mark: |
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
 ### Classic Control Environments

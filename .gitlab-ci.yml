@@ -6,15 +6,11 @@ variables:
 
 type-check:
   script:
-  - pip install git+https://github.com/huggingface/huggingface_sb3
   - make type
 
 pytest:
   script:
   # MKL_THREADING_LAYER=GNU to avoid MKL_THREADING_LAYER=INTEL incompatibility error
-  # tmp fix to have RecurrentPPO, will be fixed with new image
-  - pip install git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
-  - pip install git+https://github.com/huggingface/huggingface_sb3
   - MKL_THREADING_LAYER=GNU make pytest
   coverage: '/^TOTAL.+?(\d+\%)$/'
 
@@ -22,9 +18,6 @@ check-trained-agents:
   script:
   # MKL_THREADING_LAYER=GNU to avoid MKL_THREADING_LAYER=INTEL incompatibility error
   - pip install pickle5  # Add support for pickle5 protocol
-  - pip install git+https://github.com/huggingface/huggingface_sb3
-  # tmp fix to have RecurrentPPO, will be fixed with new image
-  - pip install git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
   - MKL_THREADING_LAYER=GNU make check-trained-agents
 
 lint:
