@@ -11,6 +11,7 @@ from stable_baselines3.common.utils import set_random_seed
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_saved_hyperparams
+from utils.callbacks import tqdm
 from utils.exp_manager import ExperimentManager
 from utils.load_from_hub import download_from_hub
 from utils.utils import StoreDict, get_model_path
@@ -65,7 +66,13 @@ def main():  # noqa: C901
     parser.add_argument(
         "--custom-objects", action="store_true", default=False, help="Use custom objects to solve loading issues"
     )
-
+    parser.add_argument(
+        "-P",
+        "--progress",
+        action="store_true",
+        default=False,
+        help="if toggled, display a progress bar using tqdm and rich",
+    )
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -196,8 +203,13 @@ def main():  # noqa: C901
     successes = []
     lstm_states = None
     episode_start = np.ones((env.num_envs,), dtype=bool)
+
+    generator = range(args.n_timesteps)
+    if args.progress:
+        generator = tqdm(generator)
+
     try:
-        for _ in range(args.n_timesteps):
+        for _ in generator:
             action, lstm_states = model.predict(
                 obs,
                 state=lstm_states,

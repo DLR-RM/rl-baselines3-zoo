@@ -1,4 +1,4 @@
-## Release 1.6.1a0 (WIP)
+## Release 1.6.1a4 (WIP)
 
 ### Breaking Changes
 
@@ -10,6 +10,7 @@
 - In `ExperimentManager` `_maybe_normalize` set `training` to `False` for eval envs,
   to prevent normalization stats from being updated in eval envs (e.g. in EvalCallback) (@pchalasani).
 - Only one env is used to get the action space while optimizing hyperparameters and it is correctly closed (@SammyRamone)
+- Added progress bar via the `-P` argument using tqdm and rich
 
 ### Documentation
 

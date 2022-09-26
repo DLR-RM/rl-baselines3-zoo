@@ -32,6 +32,7 @@ If the environment exists in this file, then you can train an agent using:
 ```
 python train.py --algo algo_name --env env_id
 ```
+You can use `-P` (`--progress`) option to display a progress bar.
 
 Using a custom yaml file (which contains a `env_id` entry):
 ```

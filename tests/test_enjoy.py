@@ -67,6 +67,7 @@ def test_load(tmp_path):
         str(500),
         "--save-freq",
         str(500),
+        "-P",  # Enable progress bar
     ]
     # Train and save checkpoints and best model
     return_code = subprocess.call(["python", "train.py"] + args)
@@ -74,7 +75,8 @@ def test_load(tmp_path):
 
     # Load best model
     args = ["-n", str(N_STEPS), "-f", tmp_path, "--algo", algo, "--env", env_id, "--no-render"]
-    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-best"])
+    # Test with progress bar
+    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-best", "-P"])
     _assert_eq(return_code, 0)
 
     # Load checkpoint
