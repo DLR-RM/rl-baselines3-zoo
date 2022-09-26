@@ -66,6 +66,13 @@ if __name__ == "__main__":  # noqa: C901
     )
     parser.add_argument("--n-models", help="Number of models for optimizing hyperparameters.", type=int, default=1)
     parser.add_argument(
+        "--max-total-trials",
+        help="Number of (potentially pruned) trials for optimizing hyperparameters. "
+        "This applies to the entire optimization process and takes precedence over --n-trials if set.",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
         "-optimize", "--optimize-hyperparameters", action="store_true", default=False, help="Run hyperparameters search"
     )
     parser.add_argument(
@@ -116,6 +123,9 @@ if __name__ == "__main__":  # noqa: C901
         nargs="+",
         action=StoreDict,
         help="Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)",
+    )
+    parser.add_argument(
+        "-yaml", "--yaml-file", type=str, default=None, help="Custom yaml file from which the hyperparameters will be loaded"
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
     parser.add_argument(
@@ -203,6 +213,7 @@ if __name__ == "__main__":  # noqa: C901
         args.study_name,
         args.n_trials,
         args.n_models,
+        args.max_total_trials,
         args.n_jobs,
         args.sampler,
         args.pruner,
@@ -219,6 +230,7 @@ if __name__ == "__main__":  # noqa: C901
         n_eval_envs=args.n_eval_envs,
         no_optim_plots=args.no_optim_plots,
         device=args.device,
+        yaml_file=args.yaml_file,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed

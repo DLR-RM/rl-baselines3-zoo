@@ -79,7 +79,7 @@ with open(filename, "rb") as file_handler:
     results = pickle.load(file_handler)
 
 # Plot table
-writer = pytablewriter.MarkdownTableWriter()
+writer = pytablewriter.MarkdownTableWriter(max_precision=3)
 writer.table_name = "results_table"
 writer.headers = results["results_table"]["headers"]
 writer.value_matrix = results["results_table"]["value_matrix"]

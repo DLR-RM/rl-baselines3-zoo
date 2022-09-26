@@ -5,7 +5,9 @@ atari:
   policy: 'CnnPolicy'
   n_timesteps: !!float 1e7
   exploration_fraction: 0.025  # explore 250k steps = 10M * 0.025
-  optimize_memory_usage: True
+  # If True, you need to deactivate handle_timeout_termination
+  # in the replay_buffer_kwargs
+  optimize_memory_usage: False
 
 # Tuned
 CartPole-v1:

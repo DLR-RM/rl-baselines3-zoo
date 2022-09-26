@@ -33,6 +33,11 @@ If the environment exists in this file, then you can train an agent using:
 python train.py --algo algo_name --env env_id
 ```
 
+Using a custom yaml file (which contains a `env_id` entry):
+```
+python train.py --algo algo_name --env env_id --yaml-file my_yaml.yml
+```
+
 For example (with tensorboard support):
 ```
 python train.py --algo ppo --env CartPole-v1 --tensorboard-log /tmp/stable-baselines/
@@ -106,7 +111,7 @@ Remark: plotting with the `--rliable` option is usually slow as confidence inter
 
 ## Custom Environment
 
-The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml`).
+The easiest way to add support for a custom environment is to edit `utils/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml` or a custom yaml file that you can specify using `--yaml-file` argument).
 
 ## Enjoy a Trained Agent
 
@@ -142,6 +147,19 @@ python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-checkpo
 To load the latest checkpoint:
 ```
 python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-last-checkpoint
+```
+
+## Huggingface Hub Integration
+
+Upload model to hub (same syntax as for `enjoy.py`):
+```
+python -m utils.push_to_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3 -m "Initial commit"
+```
+you can choose custom `repo-name` (default: `{algo}-{env_id}`) by passing a `--repo-name` argument.
+
+Download model from hub:
+```
+python -m utils.load_from_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3
 ```
 
 ## Hyperparameter yaml syntax
@@ -243,6 +261,17 @@ env_wrapper:
 
 Note that you can easily specify parameters too.
 
+## VecEnvWrapper
+
+You can specify which `VecEnvWrapper` to use in the config, the same way as for env wrappers (see above), using the `vec_env_wrapper` key:
+
+For instance:
+```yaml
+vec_env_wrapper: stable_baselines3.common.vec_env.VecMonitor
+```
+
+Note: `VecNormalize` is supported separately using `normalize` keyword, and `VecFrameStack` has a dedicated keyword `frame_stack`.
+
 ## Callbacks
 
 Following the same syntax as env wrappers, you can also add custom callbacks to use during training.
@@ -307,9 +336,11 @@ The previous command will create a `mp4` file. To convert this file to `gif` for
 python -m utils.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
 ```
 
-## Current Collection: 150+ Trained Agents!
+## Current Collection: 195+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m utils.benchmark`.
+
+List and videos of trained agents can be found on our Huggingface page: https://huggingface.co/sb3
 
 *NOTE: this is not a quantitative benchmark as it corresponds to only one run (cf [issue #38](https://github.com/araffin/rl-baselines-zoo/issues/38)). This benchmark is meant to check algorithm (maximal) performance, find potential bugs and also allow users to have access to pretrained agents.*
 
@@ -328,10 +359,10 @@ Additional Atari Games (to be completed):
 
 |  RL Algo |  MsPacman   | Asteroids | RoadRunner |
 |----------|-------------|-----------|------------|
-| A2C      |  | :heavy_check_mark: | :heavy_check_mark: |
-| PPO      |  | :heavy_check_mark: | :heavy_check_mark: |
-| DQN      |  | :heavy_check_mark: | :heavy_check_mark: |
-| QR-DQN   |  | :heavy_check_mark: | :heavy_check_mark: |
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
 ### Classic Control Environments
@@ -399,7 +430,7 @@ PyBullet Envs (Continued)
 |  RL Algo |  Walker2d | HalfCheetah | Ant | Swimmer |  Hopper | Humanoid |
 |----------|-----------|-------------|-----|---------|---------|----------|
 | ARS      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |  |
-| A2C      |  | :heavy_check_mark: |  | :heavy_check_mark: | :heavy_check_mark: | |
+| A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | DDPG     |  |  |  |  |  | |
 | SAC      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
