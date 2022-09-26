@@ -1,6 +1,7 @@
 import os
 import tempfile
 import time
+import warnings
 from copy import deepcopy
 from functools import wraps
 from threading import Thread
@@ -14,6 +15,9 @@ from stable_baselines3.common.logger import TensorBoardOutputFormat
 from stable_baselines3.common.vec_env import VecEnv
 
 try:
+    from tqdm import TqdmExperimentalWarning
+
+    warnings.filterwarnings("ignore", category=TqdmExperimentalWarning)
     from tqdm.rich import tqdm
 except ImportError:
     # Rich not supported
