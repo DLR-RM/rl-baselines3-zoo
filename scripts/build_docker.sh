@@ -3,7 +3,7 @@
 PARENT=stablebaselines/stable-baselines3
 
 TAG=stablebaselines/rl-baselines3-zoo
-VERSION=1.4.1a0
+VERSION=1.5.1a6
 
 if [[ ${USE_GPU} == "True" ]]; then
   PARENT="${PARENT}:${VERSION}"
