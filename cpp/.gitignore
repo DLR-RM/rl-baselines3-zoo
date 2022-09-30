@@ -1,0 +1,10 @@
+assets/*
+!assets/.gitkeep
+
+include/baselines3_models/*
+!include/baselines3_models/predictor.h
+!include/baselines3_models/preprocessing.h
+
+src/baselines3_models/*
+!src/baselines3_models/predictor.cpp
+!src/baselines3_models/preprocessing.cpp

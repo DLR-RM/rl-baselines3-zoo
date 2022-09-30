@@ -11,7 +11,9 @@ from stable_baselines3.common.utils import set_random_seed
 
 import utils.import_envs  # noqa: F401 pylint: disable=unused-import
 from utils import ALGOS, create_test_env, get_saved_hyperparams
+from utils.cpp_exporter import CppExporter
 from utils.callbacks import tqdm
+
 from utils.exp_manager import ExperimentManager
 from utils.load_from_hub import download_from_hub
 from utils.utils import StoreDict, get_model_path
@@ -32,6 +34,7 @@ def main():  # noqa: C901
     )
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
     parser.add_argument("--device", help="PyTorch device to be use (ex: cpu, cuda...)", default="auto", type=str)
+    parser.add_argument("--export-cpp", help="Export to C++ code", default="", type=str)
     parser.add_argument(
         "--load-best", action="store_true", default=False, help="Load best model instead of last model if available"
     )
@@ -82,6 +85,10 @@ def main():  # noqa: C901
     env_name: EnvironmentName = args.env
     algo = args.algo
     folder = args.folder
+    device = args.device
+
+    if args.export_cpp:
+        device = "cpu"
 
     try:
         _, model_path, log_path = get_model_path(
@@ -188,9 +195,15 @@ def main():  # noqa: C901
             "clip_range": lambda _: 0.0,
         }
 
-    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=args.device, **kwargs)
+    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=device, **kwargs)
 
     obs = env.reset()
+
+    if args.export_cpp:
+        print("Exporting to C++...")
+        exporter = CppExporter(model, args.export_cpp, args.env)
+        exporter.export()
+        exit()
 
     # Deterministic by default except for atari games
     stochastic = args.stochastic or is_atari and not args.deterministic
