@@ -1,6 +1,6 @@
 import subprocess
 
-from utils.utils import get_hf_trained_models, get_trained_models
+from rl_zoo.utils import get_hf_trained_models, get_trained_models
 
 folder = "rl-trained-agents"
 orga = "sb3"

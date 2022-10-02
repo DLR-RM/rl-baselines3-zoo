@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from huggingface_sb3 import EnvironmentName
 
-from utils.utils import ALGOS, get_latest_run_id
+from rl_zoo.utils import ALGOS, get_latest_run_id
 
 if __name__ == "__main__":  # noqa: C901
     parser = argparse.ArgumentParser()
