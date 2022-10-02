@@ -5,8 +5,8 @@ from stable_baselines3 import A2C
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.env_util import DummyVecEnv
 
-from utils.utils import get_wrapper_class
-from utils.wrappers import ActionNoiseWrapper, DelayedRewardWrapper, HistoryWrapper, TimeFeatureWrapper
+from rl_zoo.utils import get_wrapper_class
+from rl_zoo.wrappers import ActionNoiseWrapper, DelayedRewardWrapper, HistoryWrapper, TimeFeatureWrapper
 
 
 def test_wrappers():

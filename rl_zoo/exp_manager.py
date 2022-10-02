@@ -4,6 +4,7 @@ import pickle as pkl
 import time
 import warnings
 from collections import OrderedDict
+from pathlib import Path
 from pprint import pprint
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -44,10 +45,10 @@ from stable_baselines3.common.vec_env import (
 from torch import nn as nn  # noqa: F401
 
 # Register custom envs
-import utils.import_envs  # noqa: F401 pytype: disable=import-error
-from utils.callbacks import SaveVecNormalizeCallback, TQDMCallback, TrialEvalCallback
-from utils.hyperparams_opt import HYPERPARAMS_SAMPLER
-from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
+import rl_zoo.import_envs  # noqa: F401 pytype: disable=import-error
+from rl_zoo.callbacks import SaveVecNormalizeCallback, TQDMCallback, TrialEvalCallback
+from rl_zoo.hyperparams_opt import HYPERPARAMS_SAMPLER
+from rl_zoo.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
 class ExperimentManager:
@@ -101,7 +102,8 @@ class ExperimentManager:
         self.env_name = EnvironmentName(env_id)
         # Custom params
         self.custom_hyperparams = hyperparams
-        self.yaml_file = yaml_file or f"hyperparams/{self.algo}.yml"
+        default_path = Path(__file__).parent.parent
+        self.yaml_file = yaml_file or str(default_path / f"hyperparams/{self.algo}.yml")
         self.env_kwargs = {} if env_kwargs is None else env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False

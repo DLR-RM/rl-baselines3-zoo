@@ -1,4 +1,4 @@
-LINT_PATHS = *.py tests/ scripts/ utils/
+LINT_PATHS = *.py tests/ scripts/ rl_zoo/
 
 # Run pytest and coverage report
 pytest:
@@ -42,4 +42,16 @@ docker-cpu:
 docker-gpu:
 	USE_GPU=True ./scripts/build_docker.sh
 
-.PHONY: docker lint type pytest
+# PyPi package release
+release:
+	python setup.py sdist
+	python setup.py bdist_wheel
+	twine upload dist/*
+
+# Test PyPi package release
+test-release:
+	python setup.py sdist
+	python setup.py bdist_wheel
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+.PHONY: lint format check-codestyle commit-checks doc spelling  docker type pytest

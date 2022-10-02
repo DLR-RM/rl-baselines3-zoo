@@ -3,7 +3,7 @@ import subprocess
 
 import pytest
 
-from utils.utils import get_hf_trained_models, get_trained_models
+from rl_zoo.utils import get_hf_trained_models, get_trained_models
 
 
 def _assert_eq(left, right):

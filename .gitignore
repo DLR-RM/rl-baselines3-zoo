@@ -18,3 +18,12 @@ runs
 hub
 *.mp4
 *.json
+
+# Setuptools distribution and build folders.
+/dist/
+/build
+keys/
+*.egg-info
+.cache
+*.lprof
+*.prof
