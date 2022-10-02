@@ -19,18 +19,15 @@ setup(
         "rl_zoo": [
             "py.typed",
             "version.txt",
-            "../train.py",
-            "../enjoy.py",
             "../scripts/*.py",
         ]
     },
     scripts=[
-        "train.py",
-        "enjoy.py",
         "./scripts/all_plots.py",
         "./scripts/plot_train.py",
         "./scripts/plot_from_file.py",
     ],
+    entry_points={"console_scripts": ["rl_zoo_train=rl_zoo.train:train", "rl_zoo=rl_zoo.cli:main"]},
     install_requires=[
         # TODO: add all dependencies
         "sb3-contrib>=1.6.1",
