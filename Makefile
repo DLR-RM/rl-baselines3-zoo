@@ -10,7 +10,7 @@ check-trained-agents:
 
 # Type check
 type:
-	pytype -j auto rl_zoo/ tests/ scripts/
+	pytype -j auto rl_zoo/ tests/ scripts/ -d import-error
 
 lint:
 	# stop the build if there are Python syntax errors or undefined names
