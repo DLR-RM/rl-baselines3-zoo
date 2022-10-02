@@ -22,8 +22,8 @@ def test_wrappers():
     "env_wrapper",
     [
         None,
-        {"utils.wrappers.HistoryWrapper": dict(horizon=2)},
-        [{"utils.wrappers.HistoryWrapper": dict(horizon=3)}, "utils.wrappers.TimeFeatureWrapper"],
+        {"rl_zoo.wrappers.HistoryWrapper": dict(horizon=2)},
+        [{"rl_zoo.wrappers.HistoryWrapper": dict(horizon=3)}, "rl_zoo.wrappers.TimeFeatureWrapper"],
     ],
 )
 def test_get_wrapper(env_wrapper):

@@ -46,7 +46,7 @@ def test_trained_agents(trained_model):
 def test_benchmark(tmp_path):
     args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode", "--no-hub"]
 
-    return_code = subprocess.call(["python", "-m", "utils.benchmark"] + args)
+    return_code = subprocess.call(["python", "-m", "rl_zoo.benchmark"] + args)
     _assert_eq(return_code, 0)
 
 
@@ -94,7 +94,7 @@ def test_record_video(tmp_path):
     # Skip if no X-Server
     pytest.importorskip("pyglet.gl")
 
-    return_code = subprocess.call(["python", "-m", "utils.record_video"] + args)
+    return_code = subprocess.call(["python", "-m", "rl_zoo.record_video"] + args)
     _assert_eq(return_code, 0)
     video_path = str(tmp_path / "final-model-sac-Pendulum-v1-step-0-to-step-100.mp4")
     # File is not empty
@@ -135,7 +135,7 @@ def test_record_training(tmp_path):
     return_code = subprocess.call(["python", "train.py"] + args_training)
     _assert_eq(return_code, 0)
 
-    return_code = subprocess.call(["python", "-m", "utils.record_training"] + args_recording)
+    return_code = subprocess.call(["python", "-m", "rl_zoo.record_training"] + args_recording)
     _assert_eq(return_code, 0)
     mp4_path = str(videos_tmp_path / "training.mp4")
     gif_path = str(videos_tmp_path / "training.gif")

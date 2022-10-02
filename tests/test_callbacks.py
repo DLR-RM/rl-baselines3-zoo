@@ -14,7 +14,7 @@ def test_raw_stat_callback(tmp_path):
         "--env",
         "CartPole-v1",
         "-params",
-        "callback:'utils.callbacks.RawStatisticsCallback'",
+        "callback:'rl_zoo.callbacks.RawStatisticsCallback'",
         "--tensorboard-log",
         f"{tmp_path}",
     ]
@@ -32,7 +32,7 @@ def test_tqdm_callback(tmp_path):
         "--env",
         "CartPole-v1",
         "-params",
-        "callback:'utils.callbacks.TQDMCallback'",
+        "callback:'rl_zoo.callbacks.TQDMCallback'",
         "--tensorboard-log",
         f"{tmp_path}",
     ]
