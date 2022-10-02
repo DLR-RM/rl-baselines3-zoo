@@ -30,8 +30,14 @@ setup(
     ],
     entry_points={"console_scripts": ["rl_zoo_train=rl_zoo.train:train", "rl_zoo=rl_zoo.cli:main"]},
     install_requires=[
-        # TODO: add all dependencies
         "sb3-contrib>=1.6.1",
+        "huggingface_sb3>=2.2.1, <3.*",
+        "tqdm",
+        "rich",
+        "optuna",
+        "pyyaml>=5.1",
+        "pytablewriter~=0.64",
+        # TODO: add test dependencies
     ],
     description="A Training Framework for Stable Baselines3 Reinforcement Learning Agents",
     author="Antonin Raffin",

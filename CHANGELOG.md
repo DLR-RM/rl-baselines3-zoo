@@ -1,3 +1,18 @@
+## Release 1.6.2 (2022-10-02)
+
+### Breaking Changes
+- RL Zoo is now a python package
+- low pass filter was removed
+
+### New Features
+- RL Zoo cli: `rl_zoo train` and `rl_zoo enjoy`
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
 ## Release 1.6.1 (2022-09-30)
 
 **Progress bar and custom yaml file**
