@@ -20,6 +20,7 @@ setup(
             "py.typed",
             "version.txt",
             "../scripts/*.py",
+            "../hyperparams/*.yml",
         ]
     },
     scripts=[
