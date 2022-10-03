@@ -1,10 +1,15 @@
 import os
+import shutil
 
 from setuptools import find_packages, setup
 
-with open(os.path.join("rl_zoo", "version.txt")) as file_handler:
+with open(os.path.join("rl_zoo3", "version.txt")) as file_handler:
     __version__ = file_handler.read().strip()
 
+# Copy hyperparams files for packaging
+shutil.copytree("hyperparams", os.path.join("rl_zoo3", "hyperparams"))
+# Copy plot scripts for packaging
+shutil.copytree("scripts", os.path.join("rl_zoo3", "scripts"))
 
 long_description = """
 # RL Baselines3 Zoo: A Training Framework for Stable Baselines3 Reinforcement Learning Agents
@@ -13,22 +18,17 @@ See https://github.com/DLR-RM/rl-baselines3-zoo
 """
 
 setup(
-    name="rl_zoo",
-    packages=[package for package in find_packages() if package.startswith("rl_zoo")],
+    name="rl_zoo3",
+    packages=["rl_zoo3", "rl_zoo3.plots"],
     package_data={
-        "rl_zoo": [
+        "rl_zoo3": [
             "py.typed",
             "version.txt",
-            "../scripts/*.py",
-            "../hyperparams/*.yml",
+            "hyperparams/*.yml",
+            "scripts/*.py",
         ]
     },
-    scripts=[
-        "./scripts/all_plots.py",
-        "./scripts/plot_train.py",
-        "./scripts/plot_from_file.py",
-    ],
-    entry_points={"console_scripts": ["rl_zoo_train=rl_zoo.train:train", "rl_zoo=rl_zoo.cli:main"]},
+    entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
         "sb3-contrib>=1.6.1",
         "huggingface_sb3>=2.2.1, <3.*",
@@ -58,6 +58,11 @@ setup(
         "Programming Language :: Python :: 3.9",
     ],
 )
+
+# Remove copied files after packaging
+shutil.rmtree(os.path.join("rl_zoo3", "hyperparams"))
+shutil.rmtree(os.path.join("rl_zoo3", "scripts"))
+
 
 # python setup.py sdist
 # python setup.py bdist_wheel

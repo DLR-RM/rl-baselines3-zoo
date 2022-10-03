@@ -1,7 +1,7 @@
 import sys
 
-from rl_zoo.enjoy import enjoy
-from rl_zoo.train import train
+from rl_zoo3.enjoy import enjoy
+from rl_zoo3.train import train
 
 
 def main():

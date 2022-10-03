@@ -19,10 +19,10 @@ from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import VecEnv, unwrap_vec_normalize
 from wasabi import Printer
 
-import rl_zoo.import_envs  # noqa: F401 pylint: disable=unused-import
-from rl_zoo import ALGOS, create_test_env, get_saved_hyperparams
-from rl_zoo.exp_manager import ExperimentManager
-from rl_zoo.utils import StoreDict, get_model_path
+import rl_zoo3.import_envs  # noqa: F401 pylint: disable=unused-import
+from rl_zoo3 import ALGOS, create_test_env, get_saved_hyperparams
+from rl_zoo3.exp_manager import ExperimentManager
+from rl_zoo3.utils import StoreDict, get_model_path
 
 msg = Printer()
 

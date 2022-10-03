@@ -5,7 +5,7 @@
 - low pass filter was removed
 
 ### New Features
-- RL Zoo cli: `rl_zoo train` and `rl_zoo enjoy`
+- RL Zoo cli: `rl_zoo3 train` and `rl_zoo3 enjoy`
 
 ### Bug fixes
 

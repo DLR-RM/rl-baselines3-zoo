@@ -15,7 +15,7 @@ try:
 except ImportError:
     rly = None
 
-from score_normalization import normalize_score
+from rl_zoo3.plots.score_normalization import normalize_score
 
 
 # From https://github.com/mwaskom/seaborn/blob/master/seaborn/categorical.py

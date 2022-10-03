@@ -1,6 +1,6 @@
 import os
 
-from rl_zoo.utils import (
+from rl_zoo3.utils import (
     ALGOS,
     create_test_env,
     get_latest_run_id,
