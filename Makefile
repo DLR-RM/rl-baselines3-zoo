@@ -44,14 +44,14 @@ docker-gpu:
 
 # PyPi package release
 release:
-	rm -r build/
+	# rm -r build/* dist/*
 	python setup.py sdist
 	python setup.py bdist_wheel
 	twine upload dist/*
 
 # Test PyPi package release
 test-release:
-	rm -r build/
+	# rm -r build/* dist/*
 	python setup.py sdist
 	python setup.py bdist_wheel
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*

@@ -1,15 +1,13 @@
 import os
 import shutil
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 with open(os.path.join("rl_zoo3", "version.txt")) as file_handler:
     __version__ = file_handler.read().strip()
 
 # Copy hyperparams files for packaging
 shutil.copytree("hyperparams", os.path.join("rl_zoo3", "hyperparams"))
-# Copy plot scripts for packaging
-shutil.copytree("scripts", os.path.join("rl_zoo3", "scripts"))
 
 long_description = """
 # RL Baselines3 Zoo: A Training Framework for Stable Baselines3 Reinforcement Learning Agents
@@ -25,7 +23,6 @@ setup(
             "py.typed",
             "version.txt",
             "hyperparams/*.yml",
-            "scripts/*.py",
         ]
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
@@ -39,6 +36,9 @@ setup(
         "pytablewriter~=0.64",
         # TODO: add test dependencies
     ],
+    extras_require={
+        "plots": ["seaborn", "rliable>=1.0.5", "scipy~=1.7.3"],
+    },
     description="A Training Framework for Stable Baselines3 Reinforcement Learning Agents",
     author="Antonin Raffin",
     url="https://github.com/DLR-RM/rl-baselines3-zoo",
@@ -61,7 +61,6 @@ setup(
 
 # Remove copied files after packaging
 shutil.rmtree(os.path.join("rl_zoo3", "hyperparams"))
-shutil.rmtree(os.path.join("rl_zoo3", "scripts"))
 
 
 # python setup.py sdist
