@@ -11,9 +11,9 @@ import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
 # Register custom envs
-import rl_zoo.import_envs  # noqa: F401 pytype: disable=import-error
-from rl_zoo.exp_manager import ExperimentManager
-from rl_zoo.utils import ALGOS, StoreDict
+import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
+from rl_zoo3.exp_manager import ExperimentManager
+from rl_zoo3.utils import ALGOS, StoreDict
 
 
 def train():

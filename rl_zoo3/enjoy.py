@@ -9,12 +9,12 @@ import yaml
 from huggingface_sb3 import EnvironmentName
 from stable_baselines3.common.utils import set_random_seed
 
-import rl_zoo.import_envs  # noqa: F401 pylint: disable=unused-import
-from rl_zoo import ALGOS, create_test_env, get_saved_hyperparams
-from rl_zoo.callbacks import tqdm
-from rl_zoo.exp_manager import ExperimentManager
-from rl_zoo.load_from_hub import download_from_hub
-from rl_zoo.utils import StoreDict, get_model_path
+import rl_zoo3.import_envs  # noqa: F401 pylint: disable=unused-import
+from rl_zoo3 import ALGOS, create_test_env, get_saved_hyperparams
+from rl_zoo3.callbacks import tqdm
+from rl_zoo3.exp_manager import ExperimentManager
+from rl_zoo3.load_from_hub import download_from_hub
+from rl_zoo3.utils import StoreDict, get_model_path
 
 
 def enjoy():  # noqa: C901
