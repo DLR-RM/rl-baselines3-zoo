@@ -6,12 +6,12 @@ donkey-mountain-track-v0: &defaults
     - gym.wrappers.time_limit.TimeLimit:
         max_episode_steps: 10000
     - ae.wrapper.AutoencoderWrapper
-    - utils.wrappers.HistoryWrapper:
+    - rl_zoo3.wrappers.HistoryWrapper:
         horizon: 2
   callback:
-    - utils.callbacks.ParallelTrainCallback:
+    - rl_zoo3.callbacks.ParallelTrainCallback:
         gradient_steps: 200
-    - utils.callbacks.LapTimeCallback
+    - rl_zoo3.callbacks.LapTimeCallback
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
   learning_rate: !!float 7.3e-4
