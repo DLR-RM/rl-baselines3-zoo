@@ -96,7 +96,7 @@ def test_parallel_train(tmp_path):
         "--log-folder",
         tmp_path,
         "-params",
-        "callback:'utils.callbacks.ParallelTrainCallback'",
+        "callback:'rl_zoo3.callbacks.ParallelTrainCallback'",
     ]
 
     return_code = subprocess.call(["python", "train.py"] + args)

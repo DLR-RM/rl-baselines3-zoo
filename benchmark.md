@@ -2,7 +2,7 @@
 ## Performance of trained agents
 
 Final performance of the trained agents can be found in the table below.
-This was computed by running `python -m utils.benchmark`:
+This was computed by running `python -m rl_zoo3.benchmark`:
 it runs the trained agent (trained on `n_timesteps`) for `eval_timesteps` and then reports the mean episode reward
 during this evaluation.
 

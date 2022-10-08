@@ -1,6 +1,6 @@
 import subprocess
 
-from utils.utils import get_hf_trained_models, get_trained_models
+from rl_zoo3.utils import get_hf_trained_models, get_trained_models
 
 folder = "rl-trained-agents"
 orga = "sb3"
@@ -16,4 +16,4 @@ for trained_model in list(remaining_models):
     if algo == "her":
         continue
 
-    return_code = subprocess.call(["python", "-m", "utils.push_to_hub"] + args)
+    return_code = subprocess.call(["python", "-m", "rl_zoo3.push_to_hub"] + args)

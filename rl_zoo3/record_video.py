@@ -8,8 +8,8 @@ from huggingface_sb3 import EnvironmentName
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import VecVideoRecorder
 
-from utils.exp_manager import ExperimentManager
-from utils.utils import ALGOS, StoreDict, create_test_env, get_model_path, get_saved_hyperparams
+from rl_zoo3.exp_manager import ExperimentManager
+from rl_zoo3.utils import ALGOS, StoreDict, create_test_env, get_model_path, get_saved_hyperparams
 
 if __name__ == "__main__":  # noqa: C901
     parser = argparse.ArgumentParser()

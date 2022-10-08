@@ -4,6 +4,7 @@ import pickle as pkl
 import time
 import warnings
 from collections import OrderedDict
+from pathlib import Path
 from pprint import pprint
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -13,7 +14,6 @@ import optuna
 import torch as th
 import yaml
 from huggingface_sb3 import EnvironmentName
-from optuna.integration.skopt import SkoptSampler
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
 from optuna.study import MaxTrialsCallback
@@ -44,10 +44,10 @@ from stable_baselines3.common.vec_env import (
 from torch import nn as nn  # noqa: F401
 
 # Register custom envs
-import utils.import_envs  # noqa: F401 pytype: disable=import-error
-from utils.callbacks import SaveVecNormalizeCallback, TQDMCallback, TrialEvalCallback
-from utils.hyperparams_opt import HYPERPARAMS_SAMPLER
-from utils.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
+import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
+from rl_zoo3.callbacks import SaveVecNormalizeCallback, TQDMCallback, TrialEvalCallback
+from rl_zoo3.hyperparams_opt import HYPERPARAMS_SAMPLER
+from rl_zoo3.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
 class ExperimentManager:
@@ -101,7 +101,14 @@ class ExperimentManager:
         self.env_name = EnvironmentName(env_id)
         # Custom params
         self.custom_hyperparams = hyperparams
-        self.yaml_file = yaml_file or f"hyperparams/{self.algo}.yml"
+        if (Path(__file__).parent / "hyperparams").is_dir():
+            # Package version
+            default_path = Path(__file__).parent
+        else:
+            # Take the root folder
+            default_path = Path(__file__).parent.parent
+
+        self.yaml_file = yaml_file or str(default_path / f"hyperparams/{self.algo}.yml")
         self.env_kwargs = {} if env_kwargs is None else env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False
@@ -287,9 +294,9 @@ class ExperimentManager:
         # Sort hyperparams that will be saved
         saved_hyperparams = OrderedDict([(key, hyperparams[key]) for key in sorted(hyperparams.keys())])
 
-        if self.verbose > 0:
-            print("Default hyperparameters for environment (ones being tuned will be overridden):")
-            pprint(saved_hyperparams)
+        # Always print used hyperparameters
+        print("Default hyperparameters for environment (ones being tuned will be overridden):")
+        pprint(saved_hyperparams)
 
         return hyperparams, saved_hyperparams
 
@@ -629,6 +636,8 @@ class ExperimentManager:
         elif sampler_method == "tpe":
             sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed, multivariate=True)
         elif sampler_method == "skopt":
+            from optuna.integration.skopt import SkoptSampler
+
             # cf https://scikit-optimize.github.io/#skopt.Optimizer
             # GP: gaussian process
             # Gradient boosted regression: GBRT

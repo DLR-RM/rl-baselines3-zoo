@@ -8,7 +8,7 @@ from typing import Optional
 from huggingface_sb3 import EnvironmentName, ModelName, ModelRepoId, load_from_hub
 from requests.exceptions import HTTPError
 
-from utils import ALGOS, get_latest_run_id
+from rl_zoo3 import ALGOS, get_latest_run_id
 
 
 def download_from_hub(

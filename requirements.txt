@@ -1,13 +1,12 @@
 gym==0.21
-stable-baselines3[extra,tests,docs]>=1.6.0
-sb3-contrib>=1.6.0
+stable-baselines3[extra,tests,docs]>=1.6.1
+sb3-contrib>=1.6.1
 box2d-py==2.3.8
 pybullet
 gym-minigrid
 scikit-optimize
 optuna
 pytablewriter~=0.64
-seaborn
 pyyaml>=5.1
 cloudpickle>=1.5.0
 plotly
@@ -18,3 +17,4 @@ huggingface_sb3>=2.2.1, <3.*
 seaborn
 tqdm
 rich
+importlib-metadata~=4.13 # flake8 not compatible with importlib-metadata>5.0
