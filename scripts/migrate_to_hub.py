@@ -16,8 +16,4 @@ for trained_model in list(remaining_models):
     if algo == "her":
         continue
 
-    # if model doesn't exist already
-    repo_name = f"{algo}-{env_id}"
-    repo_id = f"{orga}/{repo_name}"
-
     return_code = subprocess.call(["python", "-m", "utils.push_to_hub"] + args)

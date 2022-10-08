@@ -39,6 +39,7 @@ and also allow users to have access to pretrained agents.*
 |a2c     |LunarLanderContinuous-v2     |     84.225|   145.906|5M         |        149305|          256|
 |a2c     |MountainCar-v0               |   -111.263|    24.087|1M         |        149982|         1348|
 |a2c     |MountainCarContinuous-v0     |     91.166|     0.255|100k       |        149923|         1659|
+|a2c     |MsPacmanNoFrameskip-v4       |   1671.730|   612.918|10M        |        602450|          185|
 |a2c     |Pendulum-v1                  |   -162.965|   103.210|1M         |        150000|          750|
 |a2c     |PongNoFrameskip-v4           |     17.292|     3.214|10M        |        594910|           65|
 |a2c     |QbertNoFrameskip-v4          |   3882.345|  1223.327|10M        |        610670|          194|
@@ -77,6 +78,7 @@ and also allow users to have access to pretrained agents.*
 |dqn     |EnduroNoFrameskip-v4         |    830.929|   194.544|10M        |        599040|           14|
 |dqn     |LunarLander-v2               |    154.382|    79.241|100k       |        149373|          200|
 |dqn     |MountainCar-v0               |   -100.849|     9.925|120k       |        149962|         1487|
+|dqn     |MsPacmanNoFrameskip-v4       |   2682.929|   492.567|10M        |        599952|          140|
 |dqn     |PongNoFrameskip-v4           |     20.602|     0.613|10M        |        598998|           88|
 |dqn     |QbertNoFrameskip-v4          |   9496.774|  5399.633|10M        |        605844|          124|
 |dqn     |RoadRunnerNoFrameskip-v4     |  40396.350|  7069.131|10M        |        603257|          137|
@@ -100,6 +102,7 @@ and also allow users to have access to pretrained agents.*
 |ppo     |LunarLanderContinuous-v2     |    270.863|    32.072|1M         |        149956|          526|
 |ppo     |MountainCar-v0               |   -110.423|    19.473|1M         |        149954|         1358|
 |ppo     |MountainCarContinuous-v0     |     88.343|     2.572|20k        |        149983|          633|
+|ppo     |MsPacmanNoFrameskip-v4       |   1754.356|   172.783|10M        |        600822|          163|
 |ppo     |Pendulum-v1                  |   -172.225|   104.159|100k       |        150000|          750|
 |ppo     |PongNoFrameskip-v4           |     20.989|     0.105|10M        |        599902|           90|
 |ppo     |QbertNoFrameskip-v4          |  15627.108|  3313.538|10M        |        600248|           83|
@@ -122,6 +125,7 @@ and also allow users to have access to pretrained agents.*
 |qrdqn   |EnduroNoFrameskip-v4         |   3231.200|  1311.801|10M        |        585728|            5|
 |qrdqn   |LunarLander-v2               |     70.236|   225.491|100k       |        149957|          522|
 |qrdqn   |MountainCar-v0               |   -106.042|    15.536|120k       |        149943|         1414|
+|qrdqn   |MsPacmanNoFrameskip-v4       |    997.867|   877.130|10M        |        604914|          225|
 |qrdqn   |PongNoFrameskip-v4           |     20.492|     0.687|10M        |        597443|           63|
 |qrdqn   |QbertNoFrameskip-v4          |  14799.728|  2917.629|10M        |        600773|           92|
 |qrdqn   |RoadRunnerNoFrameskip-v4     |  42325.424|  8361.161|10M        |        591016|           59|
