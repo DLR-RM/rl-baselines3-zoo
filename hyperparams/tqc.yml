@@ -42,3 +42,6 @@ donkey-warren-track-v0:
 
 donkey-generated-roads-v0:
   <<: *defaults
+
+donkey-roboracingleague-track-v0":
+  <<: *defaults
