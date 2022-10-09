@@ -3,29 +3,35 @@ donkey-mountain-track-v0: &defaults
   # Normalize AE (+ the rest)
   normalize: "{'norm_obs': True, 'norm_reward': False}"
   env_wrapper:
+    - gym.wrappers.RescaleAction:
+        min_action: -1
+        max_action: 1
     - ae.wrapper.AutoencoderWrapper
     - rl_zoo3.wrappers.HistoryWrapper:
         horizon: 2
   callback:
+    # - rl_zoo3.callbacks.ParallelTrainCallback:
+    #     gradient_steps: 20
     - rl_zoo3.callbacks.LapTimeCallback
   n_timesteps: !!float 2e6
   policy: 'MlpPolicy'
-  learning_rate: !!float 7.3e-4
-  buffer_size: 200000
+  # learning_rate: !!float 7.3e-4
+  # buffer_size: 300000
   batch_size: 256
   ent_coef: 'auto'
-  gamma: 0.99
-  tau: 0.02
+  gamma: 0.995
+  # tau: 0.02
+  # tau: 0.01
   # train_freq: 200
-  train_freq: 1
   gradient_steps: 10
+  train_freq: 1
   policy_delay: 10
-  learning_starts: 500
+  learning_starts: 1000
   # use_sde_at_warmup: True
   # use_sde: True
-  # sde_sample_freq: 16
+  # sde_sample_freq: 2
   # policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=2, use_expln=True)"
-  policy_kwargs: "dict(net_arch=[256, 256], n_critics=2, dropout_rate=0.01, layer_norm=True)"
+  policy_kwargs: "dict(net_arch=[256, 256], dropout_rate=0.01, layer_norm=True)"
 
 donkey-minimonaco-track-v0:
   <<: *defaults

@@ -14,6 +14,8 @@ from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
 from stable_baselines3.common.logger import TensorBoardOutputFormat
 from stable_baselines3.common.vec_env import VecEnv, sync_envs_normalization
+from sbx import SAC as SACX
+from sbx import TQC as TQCX
 
 try:
     from tqdm import TqdmExperimentalWarning
@@ -170,7 +172,7 @@ class ParallelTrainCallback(BaseCallback):
                 pickle.dump(self.model.get_vec_normalize_env(), file_handler)
 
         # TODO: add support for other algorithms
-        for model_class in [SAC, TQC]:
+        for model_class in [SAC, TQC, SACX, TQCX]:
             if isinstance(self.model, model_class):
                 self.model_class = model_class
                 break
