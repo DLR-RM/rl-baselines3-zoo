@@ -1,0 +1,280 @@
+# Tuned
+MountainCarContinuous-v0:
+  n_timesteps: !!float 50000
+  policy: 'MlpPolicy'
+  learning_rate: !!float 3e-4
+  buffer_size: 50000
+  batch_size: 512
+  ent_coef: 0.1
+  train_freq: 32
+  gradient_steps: 32
+  gamma: 0.9999
+  tau: 0.01
+  learning_starts: 0
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64])"
+
+Pendulum-v1:
+  # callback:
+  #   - rl_zoo3.callbacks.ParallelTrainCallback
+  n_timesteps: 20000
+  policy: 'MlpPolicy'
+  learning_rate: !!float 1e-3
+
+
+LunarLanderContinuous-v2:
+  n_timesteps: !!float 5e5
+  policy: 'MlpPolicy'
+  batch_size: 256
+  learning_rate: lin_7.3e-4
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  gamma: 0.99
+  tau: 0.01
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 10000
+  policy_kwargs: "dict(net_arch=[400, 300])"
+
+
+# Tuned
+BipedalWalker-v3:
+  n_timesteps: !!float 5e5
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 64
+  gradient_steps: 64
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+
+# Almost tuned
+BipedalWalkerHardcore-v3:
+  n_timesteps: !!float 1e7
+  policy: 'MlpPolicy'
+  learning_rate: lin_7.3e-4
+  buffer_size: 1000000
+  batch_size: 256
+  ent_coef: 0.005
+  gamma: 0.99
+  tau: 0.01
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 10000
+  policy_kwargs: "dict(net_arch=[400, 300])"
+
+# === Bullet envs ===
+
+# Tuned
+HalfCheetahBulletEnv-v0: &pybullet-defaults
+  # env_wrapper:
+  #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
+  #   - rl_zoo3.wrappers.DelayedRewardWrapper:
+  #       delay: 10
+  #   - rl_zoo3.wrappers.HistoryWrapper:
+  #       horizon: 10
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  tau: 0.02
+  train_freq: 8
+  gradient_steps: 8
+  learning_starts: 10000
+  # replay_buffer_kwargs: "dict(handle_timeout_termination=True)"
+  use_sde: True
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+
+# Tuned
+AntBulletEnv-v0:
+  <<: *pybullet-defaults
+
+HopperBulletEnv-v0:
+  <<: *pybullet-defaults
+  learning_rate: lin_7.3e-4
+
+Walker2DBulletEnv-v0:
+  <<: *pybullet-defaults
+  learning_rate: lin_7.3e-4
+
+
+# Tuned
+ReacherBulletEnv-v0:
+  <<: *pybullet-defaults
+  n_timesteps: !!float 3e5
+
+HumanoidBulletEnv-v0:
+  normalize: "{'norm_obs': True, 'norm_reward': False}"
+  n_timesteps: !!float 2e7
+  policy: 'MlpPolicy'
+  learning_rate: lin_3e-4
+  buffer_size: 1000000
+  batch_size: 64
+  ent_coef: 'auto'
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 1000
+
+# Tuned
+InvertedDoublePendulumBulletEnv-v0:
+  <<: *pybullet-defaults
+  n_timesteps: !!float 5e5
+
+
+# Tuned
+InvertedPendulumSwingupBulletEnv-v0:
+  <<: *pybullet-defaults
+  n_timesteps: !!float 3e5
+
+# To be tuned
+MinitaurBulletEnv-v0:
+  # normalize: "{'norm_obs': True, 'norm_reward': False}"
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 3e-4
+  buffer_size: 100000
+  batch_size: 256
+  ent_coef: 'auto'
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 10000
+
+
+# To be tuned
+MinitaurBulletDuckEnv-v0:
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 3e-4
+  buffer_size: 1000000
+  batch_size: 256
+  ent_coef: 'auto'
+  train_freq: 1
+  gradient_steps: 1
+  learning_starts: 10000
+
+# To be tuned
+CarRacing-v0:
+  env_wrapper:
+    - rl_zoo3.wrappers.FrameSkip:
+        skip: 2
+    # wrapper from https://github.com/araffin/aae-train-donkeycar
+    - ae.wrapper.AutoencoderWrapper:
+        ae_path: "logs/car_racing_rgb_160.pkl"
+    - rl_zoo3.wrappers.HistoryWrapper:
+        horizon: 2
+  # frame_stack: 4
+  normalize: True
+  n_envs: 2
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.99
+  tau: 0.02
+  train_freq: 8
+  gradient_steps: 10
+  learning_starts: 1000
+  use_sde: True
+  use_sde_at_warmup: True
+
+# === Mujoco Envs ===
+
+HalfCheetah-v3: &mujoco-defaults
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_starts: 10000
+
+Ant-v3:
+  <<: *mujoco-defaults
+
+Hopper-v3:
+  <<: *mujoco-defaults
+
+Walker2d-v3:
+  <<: *mujoco-defaults
+
+Humanoid-v3:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+
+Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+
+# === HER Robotics GoalEnvs ===
+
+FetchReach-v1:
+  n_timesteps: !!float 20000
+  policy: 'MultiInputPolicy'
+  buffer_size: 1000000
+  ent_coef: 'auto'
+  batch_size: 256
+  gamma: 0.95
+  learning_rate: 0.001
+  learning_starts: 1000
+  normalize: True
+  replay_buffer_class: HerReplayBuffer
+  replay_buffer_kwargs: "dict(
+    online_sampling=True,
+    goal_selection_strategy='future',
+    n_sampled_goal=4
+  )"
+  policy_kwargs: "dict(net_arch=[64, 64])"
+
+
+# ==== Custom Envs ===
+
+donkey-generated-track-v0:
+  env_wrapper:
+    - gym.wrappers.time_limit.TimeLimit:
+        max_episode_steps: 500
+    - rl_zoo3.wrappers.HistoryWrapper:
+        horizon: 5
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.99
+  tau: 0.02
+  # train_freq: 64
+  train_freq: [1, "episode"]
+  # gradient_steps: -1
+  gradient_steps: 64
+  learning_starts: 500
+  use_sde_at_warmup: True
+  use_sde: True
+  sde_sample_freq: 64
+  policy_kwargs: "dict(log_std_init=-2, net_arch=[64, 64])"
+
+# === Real Robot envs
+NeckEnvRelative-v2:
+  <<: *pybullet-defaults
+  env_wrapper:
+    - rl_zoo3.wrappers.HistoryWrapper:
+        horizon: 2
+    # - rl_zoo3.wrappers.LowPassFilterWrapper:
+    #     freq: 2.0
+    #     df: 25.0
+  n_timesteps: !!float 1e6
+  buffer_size: 100000
+  gamma: 0.99
+  train_freq: [1, "episode"]
+  gradient_steps: -1
+  # 10 episodes of warm-up
+  learning_starts: 3000
+  use_sde_at_warmup: True
+  use_sde: True
+  sde_sample_freq: 64
+  policy_kwargs: "dict(log_std_init=-2, net_arch=[256, 256])"
