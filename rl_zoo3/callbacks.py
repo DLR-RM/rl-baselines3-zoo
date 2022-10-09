@@ -10,12 +10,12 @@ from typing import Optional
 
 import optuna
 from sb3_contrib import TQC
+from sbx import SAC as SACX
+from sbx import TQC as TQCX
 from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
 from stable_baselines3.common.logger import TensorBoardOutputFormat
 from stable_baselines3.common.vec_env import VecEnv, sync_envs_normalization
-from sbx import SAC as SACX
-from sbx import TQC as TQCX
 
 try:
     from tqdm import TqdmExperimentalWarning
