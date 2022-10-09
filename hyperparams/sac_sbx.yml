@@ -21,8 +21,6 @@ donkey-mountain-track-v0: &defaults
   ent_coef: 'auto'
   gamma: 0.995
   tau: 0.02
-  # tau: 0.01
-  # train_freq: 200
   gradient_steps: 10
   train_freq: 1
   policy_delay: 10

@@ -227,8 +227,11 @@ class ParallelTrainCallback(BaseCallback):
     def _on_rollout_end(self) -> None:
         if self._model_ready:
             self._model.replay_buffer = deepcopy(self.model.replay_buffer)
-            self.model.set_parameters(deepcopy(self._model.get_parameters()))
-            self.model.actor = self.model.policy.actor
+            if self.model_class in [SACX, TQCX]:
+                self.model.policy = self._model.policy
+            else:
+                self.model.set_parameters(deepcopy(self._model.get_parameters()))
+                self.model.actor = self.model.policy.actor
             # Sync VecNormalize
             if self.model.get_vec_normalize_env() is not None:
                 sync_envs_normalization(self.model.get_vec_normalize_env(), self._model._vec_normalize_env)
