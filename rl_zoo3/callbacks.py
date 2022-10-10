@@ -1,7 +1,6 @@
 import os
 import tempfile
 import time
-import warnings
 from copy import deepcopy
 from functools import wraps
 from threading import Thread
@@ -13,6 +12,7 @@ from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
 from stable_baselines3.common.logger import TensorBoardOutputFormat
 from stable_baselines3.common.vec_env import VecEnv
+
 
 class TrialEvalCallback(EvalCallback):
     """

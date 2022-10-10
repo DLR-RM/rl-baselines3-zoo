@@ -57,8 +57,8 @@ def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> 
     for multiple, specify a list:
 
     env_wrapper:
-        - utils.wrappers.PlotActionWrapper
-        - utils.wrappers.TimeFeatureWrapper
+        - rl_zoo3.wrappers.PlotActionWrapper
+        - rl_zoo3.wrappers.TimeFeatureWrapper
 
 
     :param hyperparams:
@@ -128,7 +128,7 @@ def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
     for multiple, specify a list:
 
     callback:
-        - utils.callbacks.PlotActionWrapper
+        - rl_zoo3.callbacks.PlotActionWrapper
         - stable_baselines3.common.callbacks.CheckpointCallback
 
     :param hyperparams:

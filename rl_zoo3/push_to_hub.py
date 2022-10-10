@@ -86,15 +86,21 @@ SB3 Contrib: https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
 
 ```
 # Download model and save it into the logs/ folder
-python -m utils.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
+python -m rl_zoo3.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
 python enjoy.py --algo {algo_name} --env {env_id}  -f logs/
+```
+
+If you installed the RL Zoo3 via pip (`pip install rl_zoo3`), from anywhere you can do:
+```
+python -m rl_zoo3.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
+rl_zoo3 enjoy --algo {algo_name} --env {env_id}  -f logs/
 ```
 
 ## Training (with the RL Zoo)
 ```
 python train.py --algo {algo_name} --env {env_id} -f logs/
 # Upload the model and generate video (when possible)
-python -m utils.push_to_hub --algo {algo_name} --env {env_id} -f logs/ -orga {organization}
+python -m rl_zoo3.push_to_hub --algo {algo_name} --env {env_id} -f logs/ -orga {organization}
 ```
 
 ## Hyperparameters
