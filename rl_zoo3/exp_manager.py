@@ -24,7 +24,7 @@ from sb3_contrib.common.vec_env import AsyncEval
 # For using HER with GoalEnv
 from stable_baselines3 import HerReplayBuffer  # noqa: F401
 from stable_baselines3.common.base_class import BaseAlgorithm
-from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
+from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback, ProgressBarCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
@@ -45,7 +45,7 @@ from torch import nn as nn  # noqa: F401
 
 # Register custom envs
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
-from rl_zoo3.callbacks import SaveVecNormalizeCallback, TQDMCallback, TrialEvalCallback
+from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from rl_zoo3.hyperparams_opt import HYPERPARAMS_SAMPLER
 from rl_zoo3.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
 
@@ -234,6 +234,9 @@ class ExperimentManager:
             # this allows to save the model when interrupting training
             pass
         finally:
+            # Clean progress bar
+            if len(self.callbacks) > 0:
+                self.callbacks[0].on_training_end()
             # Release resources
             try:
                 model.env.close()
@@ -443,7 +446,7 @@ class ExperimentManager:
     def create_callbacks(self):
 
         if self.show_progress:
-            self.callbacks.append(TQDMCallback())
+            self.callbacks.append(ProgressBarCallback())
 
         if self.save_freq > 0:
             # Account for the number of parallel environments
