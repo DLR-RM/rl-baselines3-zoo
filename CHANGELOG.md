@@ -1,8 +1,11 @@
-## Release 1.6.2 (2022-10-02)
+## Release 1.6.2.post2 (2022-10-10)
 
 ### Breaking Changes
 - RL Zoo is now a python package
 - low pass filter was removed
+- Upgraded to Stable-Baselines3 (SB3) >= 1.6.2
+- Upgraded to sb3-contrib >= 1.6.2
+- Use now built-in SB3 `ProgressBarCallback` instead of `TQDMCallback`
 
 ### New Features
 - RL Zoo cli: `rl_zoo3 train` and `rl_zoo3 enjoy`

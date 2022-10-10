@@ -2,7 +2,6 @@ import os
 import pickle
 import tempfile
 import time
-import warnings
 from copy import deepcopy
 from functools import wraps
 from threading import Thread
@@ -16,39 +15,6 @@ from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
 from stable_baselines3.common.logger import TensorBoardOutputFormat
 from stable_baselines3.common.vec_env import VecEnv, sync_envs_normalization
-
-try:
-    from tqdm import TqdmExperimentalWarning
-
-    warnings.filterwarnings("ignore", category=TqdmExperimentalWarning)
-    from tqdm.rich import tqdm
-except ImportError:
-    # Rich not supported
-    from tqdm import tqdm
-
-
-class TQDMCallback(BaseCallback):
-    """
-    TQDM progress bar for SB3 training
-    using rich progress bar by default.
-    """
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.pbar = None
-
-    def _on_training_start(self):
-        # Initialize progress bar
-        self.pbar = tqdm(total=self.locals["total_timesteps"])
-
-    def _on_step(self) -> bool:
-        # Update progress bar
-        self.pbar.update(self.training_env.num_envs)
-        return True
-
-    def _on_training_end(self):
-        # Close progress bar
-        self.pbar.close()
 
 
 class TrialEvalCallback(EvalCallback):
