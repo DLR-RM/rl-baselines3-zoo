@@ -503,6 +503,20 @@ import gym_minigrid
 
 You can train agents online using [colab notebook](https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/rl-baselines-zoo.ipynb).
 
+### Passing arguments in an interactive environment
+
+The zoo is not meant to be executed from an interactive computational environment (e.g: Jupyter Notebooks, IPython), however, it can be done by modifying `sys.argv` and adding the desired arguments. 
+
+*Example*
+```python
+import sys
+from rl_zoo3.train import train
+
+sys.argv = ["python", "--algo", "ppo", "--env", "MountainCar-v0"]
+
+train()
+```
+
 ## Installation
 
 ### Stable-Baselines3 PyPi Package

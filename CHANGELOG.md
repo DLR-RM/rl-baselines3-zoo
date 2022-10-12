@@ -13,6 +13,7 @@
 ### Bug fixes
 
 ### Documentation
+- Added instructions and examples on passing arguments in an interactive computation platform (@richter43)
 
 ### Other
 
