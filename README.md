@@ -26,6 +26,31 @@ Goals of this repository:
 
 This is the SB3 version of the original SB2 [rl-zoo](https://github.com/araffin/rl-baselines-zoo).
 
+## Installation
+
+### Minimal installation
+
+From source:
+```
+pip install -e .
+```
+
+As a python package:
+```
+pip install rl_zoo3
+```
+
+Note: you can do `python -m rl_zoo3.train` from any folder and you have access to `rl_zoo3` command line interface, for instance, `rl_zoo3 train` is equivalent to `python train.py`
+
+### Full installation (with extra envs and test dependencies)
+
+```
+apt-get install swig cmake ffmpeg
+pip install -r requirements.txt
+```
+
+Please see [Stable Baselines3 documentation](https://stable-baselines3.readthedocs.io/en/master/) for alternatives to install stable baselines3.
+
 ## Train an Agent
 
 The hyperparameters for each environment are defined in `hyperparameters/algo_name.yml`.
@@ -503,18 +528,20 @@ import gym_minigrid
 
 You can train agents online using [colab notebook](https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/rl-baselines-zoo.ipynb).
 
-## Installation
+### Passing arguments in an interactive session
 
-### Stable-Baselines3 PyPi Package
+The zoo is not meant to be executed from an interactive session (e.g: Jupyter Notebooks, IPython), however, it can be done by modifying `sys.argv` and adding the desired arguments.
 
-We recommend using stable-baselines3 and sb3_contrib master versions.
+*Example*
+```python
+import sys
+from rl_zoo3.train import train
 
+sys.argv = ["python", "--algo", "ppo", "--env", "MountainCar-v0"]
+
+train()
 ```
-apt-get install swig cmake ffmpeg
-pip install -r requirements.txt
-```
 
-Please see [Stable Baselines3 documentation](https://stable-baselines3.readthedocs.io/en/master/) for alternatives.
 
 ### Docker Images
 

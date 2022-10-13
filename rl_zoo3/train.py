@@ -253,3 +253,6 @@ def train():
             exp_manager.save_trained_model(model)
     else:
         exp_manager.hyperparameters_optimization()
+
+if __name__ == '__main__':
+    train()

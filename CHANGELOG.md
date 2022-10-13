@@ -1,3 +1,17 @@
+## Release 1.6.3 (2022-10-13)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+- `python3 -m rl_zoo3.train` now works as expected
+
+### Documentation
+- Added instructions and examples on passing arguments in an interactive session (@richter43)
+
+### Other
+
 ## Release 1.6.2.post2 (2022-10-10)
 
 ### Breaking Changes
