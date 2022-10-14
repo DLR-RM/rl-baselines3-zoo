@@ -11,6 +11,7 @@
 - Added instructions and examples on passing arguments in an interactive session (@richter43)
 
 ### Other
+- Used issue forms instead of issue templates
 
 ## Release 1.6.2.post2 (2022-10-10)
 
