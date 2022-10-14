@@ -254,5 +254,6 @@ def train():
     else:
         exp_manager.hyperparameters_optimization()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     train()
