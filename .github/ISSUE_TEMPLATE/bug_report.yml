@@ -60,7 +60,9 @@ body:
       options:
         - label: I have checked that there is no similar [issue](https://github.com/DLR-RM/rl-baselines3-zoo/issues) in the repo
           required: true
-        - label: I have read the [documentation](https://stable-baselines3.readthedocs.io/en/master/)
+        - label: I have read the [SB3 documentation](https://stable-baselines3.readthedocs.io/en/master/)
+          required: true
+        - label: I have read the [RL Zoo README](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/README.md)
           required: true
         - label: I have provided a minimal working example to reproduce the bug
           required: true
