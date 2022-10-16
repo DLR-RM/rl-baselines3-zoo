@@ -18,7 +18,7 @@ donkey-mountain-track-v0: &defaults
   learning_rate: !!float 7.3e-4
   # buffer_size: 300000
   batch_size: 256
-  ent_coef: 'auto'
+  ent_coef: 'auto_0.1'
   gamma: 0.995
   tau: 0.02
   gradient_steps: 10

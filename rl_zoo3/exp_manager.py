@@ -210,10 +210,18 @@ class ExperimentManager:
 
         # "logs/sac/donkey-mountain-track-v0_22/replay_buffer.pkl"
         # replay_path = "logs/human/donkey-mountain-track-v0_3/replay_buffer.pkl"
-        # print(f"Loading replay buffer from {replay_path}")
-        # model.load_replay_buffer(replay_path)
-        # model.replay_buffer.device = "cpu"
-        # print(f"{model.replay_buffer.pos} transitions in the buffer")
+        replay_path = "logs/human/donkey-mountain-track-v0_35/replay_buffer.pkl"
+        print(f"Loading replay buffer from {replay_path}")
+        model.load_replay_buffer(replay_path)
+        model.replay_buffer.device = "cpu"
+        print(f"{model.replay_buffer.pos} transitions in the buffer")
+        # Pretrain steps
+        # model.learn(1)
+        # print("Pretraining...")
+        # from tqdm.rich import tqdm
+        # for _ in tqdm(range(1000)):
+        #     model.train(model.batch_size, model.gradient_steps)
+        # print("Pretraining done.")
 
         self._save_config(saved_hyperparams)
         return model, saved_hyperparams
