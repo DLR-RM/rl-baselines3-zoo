@@ -242,7 +242,7 @@ class ExperimentManager:
             pass
         finally:
             # Clean progress bar
-            if len(self.callbacks) > 0:
+            if len(self.callbacks) > 0 and hasattr(self.callbacks[0], "pbar") and self.callbacks[0].pbar is not None:
                 self.callbacks[0].on_training_end()
             # Release resources
             try:

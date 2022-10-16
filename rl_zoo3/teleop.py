@@ -81,6 +81,7 @@ class HumanTeleop(BaseAlgorithm):
         _init_setup_model=False,
         scale_human=1.0,
         scale_model=0.0,
+        use_pd=False,
         model_path=os.environ.get("MODEL_PATH"),
         deterministic=True,
     ):
@@ -109,6 +110,10 @@ class HumanTeleop(BaseAlgorithm):
         # self.start_process()
         self.model = None
         self.deterministic = deterministic
+        self.use_pd = use_pd
+        self.last_error = 0
+        self.Kp = 0.5
+        self.Kd = 0.6
         # Pretrained model
         if model_path is not None:
             self.model = TQC.load(model_path)
@@ -200,6 +205,7 @@ class HumanTeleop(BaseAlgorithm):
 
         n_steps = 0
         buffer_action = np.array([[0.0, 0.0]])
+        error = 0
 
         while not self.exit_thread:
             x, theta = 0, 0
@@ -217,13 +223,30 @@ class HumanTeleop(BaseAlgorithm):
             control_throttle, control_steering = control(x, theta, control_throttle, control_steering)
             scaled_action = np.array([[-control_steering, control_throttle]]).astype(np.float32)
 
-            # Use trained RL model action
-            if self.model is not None:
-                _, buffer_action_model = self._sample_action()
+            if self.use_pd:
+                dt = 1 / 20  # control freq: 20Hz
+                steering = -np.clip(self.Kp * error + self.Kd * (error - self.last_error) / dt, -1, 1)
+                # Constant throttle for now
+                throttle = 0.2
+                # max_error = 8
+                # t = 1 - np.clip(error / max_error, 0, 1)
+                # interpolate between min and max throttle
+                # depending on the error
+                # throttle = 0.2 * t + (1 - t) * 0.5
+
+                buffer_action = np.array([[steering, throttle]]).astype(np.float32)
+                scaled_action = buffer_action
+                # print(f"Error {error} - steering {steering} - throttle {throttle}")
+                self.last_error = error
+
             else:
-                buffer_action_model = 0.0
-            scaled_action = self.scale_human * scaled_action + self.scale_model * buffer_action_model
-            scaled_action = np.clip(scaled_action, -1.0, 1.0)
+                # Use trained RL model action
+                if self.model is not None:
+                    _, buffer_action_model = self._sample_action()
+                else:
+                    buffer_action_model = 0.0
+                scaled_action = self.scale_human * scaled_action + self.scale_model * buffer_action_model
+                scaled_action = np.clip(scaled_action, -1.0, 1.0)
 
             # We store the scaled action in the buffer
             buffer_action = scaled_action
@@ -251,6 +274,8 @@ class HumanTeleop(BaseAlgorithm):
             next_obs = new_obs
             if done and infos[0].get("terminal_observation") is not None:
                 next_obs = infos[0]["terminal_observation"]
+
+            error = infos[0]["cte"]
 
             self.replay_buffer.add(self._last_obs, next_obs, buffer_action, reward, done, infos)
 
