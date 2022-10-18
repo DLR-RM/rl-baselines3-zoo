@@ -47,7 +47,7 @@ from torch import nn as nn  # noqa: F401
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
 from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from rl_zoo3.hyperparams_opt import HYPERPARAMS_SAMPLER
-from rl_zoo3.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
+from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
 class ExperimentManager:
@@ -389,6 +389,10 @@ class ExperimentManager:
         if "frame_stack" in hyperparams.keys():
             self.frame_stack = hyperparams["frame_stack"]
             del hyperparams["frame_stack"]
+
+        # import the policy when using a custom policy
+        if "policy" in hyperparams and "." in hyperparams["policy"]:
+            hyperparams["policy"] = get_class_by_name(hyperparams["policy"])
 
         # obtain a class object from a wrapper name string in hyperparams
         # and delete the entry
