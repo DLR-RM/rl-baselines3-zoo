@@ -4,6 +4,7 @@
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)
+- Added ``monitor_kwargs`` parameter
 
 ### Bug fixes
 
