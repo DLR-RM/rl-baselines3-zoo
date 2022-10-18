@@ -1,3 +1,17 @@
+## Release 1.7.0a0 (WIP)
+
+### Breaking Changes
+
+### New Features
+- Specifying custom policies in yaml file is now supported (@Rick-v-E)
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
 ## Release 1.6.3 (2022-10-13)
 
 ### Breaking Changes
@@ -12,6 +26,7 @@
 
 ### Other
 - Used issue forms instead of issue templates
+
 
 ## Release 1.6.2.post2 (2022-10-10)
 
