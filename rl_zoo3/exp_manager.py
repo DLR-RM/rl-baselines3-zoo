@@ -384,7 +384,10 @@ class ExperimentManager:
 
         # Preprocess monitor kwargs
         if "monitor_kwargs" in hyperparams.keys():
-            self.monitor_kwargs = eval(hyperparams["monitor_kwargs"])
+            self.monitor_kwargs = hyperparams["monitor_kwargs"]
+            # Convert str to python code
+            if isinstance(self.monitor_kwargs, str):
+                self.monitor_kwargs = eval(self.monitor_kwargs)
             del hyperparams["monitor_kwargs"]
 
         # Delete keys so the dict can be pass to the model constructor

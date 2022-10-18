@@ -289,6 +289,16 @@ env_wrapper:
 
 Note that you can easily specify parameters too.
 
+By default, the environment is wrapped with a `Monitor` wrapper to record episode statistics.
+You can specify arguments to it using `monitor_kwargs` parameter to log additional data that *must* be present
+in the info dictionary.
+For instance, for recording success with goal envs (e.g. `FetchReach-v1`):
+
+```yaml
+monitor_kwargs: dict(info_keywords=('is_success',))
+```
+
+
 ## VecEnvWrapper
 
 You can specify which `VecEnvWrapper` to use in the config, the same way as for env wrappers (see above), using the `vec_env_wrapper` key:
