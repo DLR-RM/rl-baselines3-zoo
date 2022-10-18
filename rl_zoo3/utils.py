@@ -2,7 +2,7 @@ import argparse
 import glob
 import importlib
 import os
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 import gym
 import stable_baselines3 as sb3  # noqa: F401
@@ -118,6 +118,26 @@ def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> 
         return None
 
 
+def get_class_by_name(name: str) -> Type:
+    """
+    Imports and returns a class given the name, e.g. passing
+    'stable_baselines3.common.callbacks.CheckpointCallback' returns the
+    CheckpointCallback class.
+
+    :param name:
+    :return:
+    """
+
+    def get_module_name(name: str) -> str:
+        return ".".join(name.split(".")[:-1])
+
+    def get_class_name(name: str) -> str:
+        return name.split(".")[-1]
+
+    module = importlib.import_module(get_module_name(name))
+    return getattr(module, get_class_name(name))
+
+
 def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
     """
     Get one or more Callback class specified as a hyper-parameter
@@ -134,12 +154,6 @@ def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
     :param hyperparams:
     :return:
     """
-
-    def get_module_name(callback_name):
-        return ".".join(callback_name.split(".")[:-1])
-
-    def get_class_name(callback_name):
-        return callback_name.split(".")[-1]
 
     callbacks = []
 
@@ -168,8 +182,8 @@ def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
                 kwargs = callback_dict[callback_name]
             else:
                 kwargs = {}
-            callback_module = importlib.import_module(get_module_name(callback_name))
-            callback_class = getattr(callback_module, get_class_name(callback_name))
+
+            callback_class = get_class_by_name(callback_name)
             callbacks.append(callback_class(**kwargs))
 
     return callbacks

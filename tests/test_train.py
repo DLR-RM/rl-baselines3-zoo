@@ -123,6 +123,8 @@ def test_custom_yaml(tmp_path):
         "n_steps:50",
         "n_epochs:2",
         "batch_size:4",
+        # Test custom policy
+        "policy:'stable_baselines3.ppo.MlpPolicy'",
     ]
 
     return_code = subprocess.call(["python", "train.py"] + args)
