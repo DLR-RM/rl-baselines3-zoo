@@ -3,6 +3,7 @@
 ### Breaking Changes
 
 ### New Features
+- Specifying custom policies in yaml file is now supported (@Rick-v-E)
 
 ### Bug fixes
 - `python3 -m rl_zoo3.train` now works as expected
