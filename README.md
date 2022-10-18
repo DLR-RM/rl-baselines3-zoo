@@ -206,6 +206,13 @@ Specify a different activation function for the network:
   policy_kwargs: "dict(activation_fn=nn.ReLU)"
 ```
 
+For a custom policy:
+
+```yaml
+  policy: my_package.MyCustomPolicy  # for instance stable_baselines3.ppo.MlpPolicy
+```
+
+
 ## Hyperparameter Tuning
 
 We use [Optuna](https://optuna.org/) for optimizing the hyperparameters.
