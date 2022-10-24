@@ -297,14 +297,21 @@ env_wrapper:
 Note that you can easily specify parameters too.
 
 By default, the environment is wrapped with a `Monitor` wrapper to record episode statistics.
-You can specify arguments to it using `monitor_kwargs` parameter to log additional data that *must* be present
-in the info dictionary.
+You can specify arguments to it using `monitor_kwargs` parameter to log additional data.
+That data *must* be present in the info dictionary at the last step of each episode.
+
 For instance, for recording success with goal envs (e.g. `FetchReach-v1`):
 
 ```yaml
 monitor_kwargs: dict(info_keywords=('is_success',))
 ```
 
+or recording final x position with `Ant-v3`:
+```yaml
+monitor_kwargs: dict(info_keywords=('x_position',))
+```
+
+Note: for known `GoalEnv` like `FetchReach`, `info_keywords=('is_success',)` is actually the default.
 
 ## VecEnvWrapper
 
