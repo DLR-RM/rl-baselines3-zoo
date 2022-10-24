@@ -1,11 +1,13 @@
-## Release 1.7.0a0 (WIP)
+## Release 1.7.0a1 (WIP)
 
 ### Breaking Changes
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)
+- Added ``monitor_kwargs`` parameter
 
 ### Bug fixes
+- Allow `python -m rl_zoo3.cli` to be called directly
 
 ### Documentation
 

@@ -135,6 +135,7 @@ class ExperimentManager:
         self.n_envs = 1  # it will be updated when reading hyperparams
         self.n_actions = None  # For DDPG/TD3 action noise objects
         self._hyperparams = {}
+        self.monitor_kwargs = {}
 
         self.trained_agent = trained_agent
         self.continue_training = trained_agent.endswith(".zip") and os.path.isfile(trained_agent)
@@ -381,6 +382,14 @@ class ExperimentManager:
             if kwargs_key in hyperparams.keys() and isinstance(hyperparams[kwargs_key], str):
                 hyperparams[kwargs_key] = eval(hyperparams[kwargs_key])
 
+        # Preprocess monitor kwargs
+        if "monitor_kwargs" in hyperparams.keys():
+            self.monitor_kwargs = hyperparams["monitor_kwargs"]
+            # Convert str to python code
+            if isinstance(self.monitor_kwargs, str):
+                self.monitor_kwargs = eval(self.monitor_kwargs)
+            del hyperparams["monitor_kwargs"]
+
         # Delete keys so the dict can be pass to the model constructor
         if "n_envs" in hyperparams.keys():
             del hyperparams["n_envs"]
@@ -550,14 +559,14 @@ class ExperimentManager:
         # Do not log eval env (issue with writing the same file)
         log_dir = None if eval_env or no_log else self.save_path
 
-        monitor_kwargs = {}
         # Special case for GoalEnvs: log success rate too
         if (
             "Neck" in self.env_name.gym_id
             or self.is_robotics_env(self.env_name.gym_id)
             or "parking-v0" in self.env_name.gym_id
+            and len(self.monitor_kwargs) == 0  # do not overwrite custom kwargs
         ):
-            monitor_kwargs = dict(info_keywords=("is_success",))
+            self.monitor_kwargs = dict(info_keywords=("is_success",))
 
         # On most env, SubprocVecEnv does not help and is quite memory hungry
         # therefore we use DummyVecEnv by default
@@ -570,7 +579,7 @@ class ExperimentManager:
             wrapper_class=self.env_wrapper,
             vec_env_cls=self.vec_env_class,
             vec_env_kwargs=self.vec_env_kwargs,
-            monitor_kwargs=monitor_kwargs,
+            monitor_kwargs=self.monitor_kwargs,
         )
 
         if self.vec_env_wrapper is not None:

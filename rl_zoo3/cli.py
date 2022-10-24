@@ -20,3 +20,7 @@ def main():
     if script_name not in known_scripts.keys():
         raise ValueError(f"The script {script_name} is unknown, please use one of {known_scripts.keys()}")
     known_scripts[script_name]()
+
+
+if __name__ == "__main__":
+    main()
