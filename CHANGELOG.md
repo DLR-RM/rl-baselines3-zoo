@@ -1,4 +1,4 @@
-## Release 1.7.0a0 (WIP)
+## Release 1.7.0a1 (WIP)
 
 ### Breaking Changes
 
@@ -7,6 +7,7 @@
 - Added ``monitor_kwargs`` parameter
 
 ### Bug fixes
+- Allow `python -m rl_zoo3.cli` to be called directly
 
 ### Documentation
 
