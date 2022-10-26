@@ -132,7 +132,7 @@ BipedalWalker-v3:
 # TO BE TUNED
 BipedalWalkerHardcore-v3:
   # env_wrapper:
-  #   - utils.wrappers.FrameSkip:
+  #   - rl_zoo3.wrappers.FrameSkip:
   #       skip: 2
   normalize: true
   n_envs: 32
@@ -285,7 +285,7 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 CarRacing-v0:
   env_wrapper:
-    # - utils.wrappers.FrameSkip:
+    # - rl_zoo3.wrappers.FrameSkip:
     #     skip: 2
     - gym.wrappers.resize_observation.ResizeObservation:
         shape: 64

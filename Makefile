@@ -1,4 +1,4 @@
-LINT_PATHS = *.py tests/ scripts/ utils/
+LINT_PATHS = *.py tests/ scripts/ rl_zoo3/
 
 # Run pytest and coverage report
 pytest:
@@ -10,7 +10,7 @@ check-trained-agents:
 
 # Type check
 type:
-	pytype -j auto ${LINT_PATHS}
+	pytype -j auto rl_zoo3/ tests/ scripts/ -d import-error
 
 lint:
 	# stop the build if there are Python syntax errors or undefined names
@@ -42,4 +42,18 @@ docker-cpu:
 docker-gpu:
 	USE_GPU=True ./scripts/build_docker.sh
 
-.PHONY: docker lint type pytest
+# PyPi package release
+release:
+	# rm -r build/* dist/*
+	python setup.py sdist
+	python setup.py bdist_wheel
+	twine upload dist/*
+
+# Test PyPi package release
+test-release:
+	# rm -r build/* dist/*
+	python setup.py sdist
+	python setup.py bdist_wheel
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+.PHONY: lint format check-codestyle commit-checks doc spelling  docker type pytest

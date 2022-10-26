@@ -2,7 +2,8 @@
 branch = False
 omit =
     tests/*
-    utils/plot.py
+    rl_zoo3/plots/*
+    scripts/*
 
 [report]
 exclude_lines =

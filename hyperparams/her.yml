@@ -59,7 +59,7 @@ FetchSlide-v1:
 FetchPickAndPlace-v1:
   env_wrapper:
     - sb3_contrib.common.wrappers.TimeFeatureWrapper
-    # - utils.wrappers.DoneOnSuccessWrapper:
+    # - rl_zoo3.wrappers.DoneOnSuccessWrapper:
     #     reward_offset: 0
     #     n_successes: 4
     # - stable_baselines3.common.monitor.Monitor
@@ -96,7 +96,7 @@ FetchReach-v1:
 NeckGoalEnvRelativeSparse-v2:
   model_class: 'sac'
   # env_wrapper:
-  #   - utils.wrappers.HistoryWrapper:
+  #   - rl_zoo3.wrappers.HistoryWrapper:
   #       horizon: 2
   #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
@@ -122,7 +122,7 @@ NeckGoalEnvRelativeSparse-v2:
 NeckGoalEnvRelativeDense-v2:
   model_class: 'sac'
   env_wrapper:
-    - utils.wrappers.HistoryWrapperObsDict:
+    - rl_zoo3.wrappers.HistoryWrapperObsDict:
         horizon: 2
   #   - sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6

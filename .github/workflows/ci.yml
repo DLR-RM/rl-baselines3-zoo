@@ -36,6 +36,7 @@ jobs:
         pip install opencv-python-headless
         # install parking-env to test HER (pinned so it works with gym 0.21)
         pip install highway-env==1.5.0
+        pip install -e .
     - name: Type check
       run: |
         make type

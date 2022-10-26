@@ -38,6 +38,7 @@ jobs:
         pip install highway-env==1.5.0
         # Add support for pickle5 protocol
         pip install pickle5
+        pip install -e .
     - name: Check trained agents
       run: |
         make check-trained-agents

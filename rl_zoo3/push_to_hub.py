@@ -12,16 +12,17 @@ import torch as th
 import yaml
 from huggingface_hub import HfApi, Repository
 from huggingface_hub.repocard import metadata_save
+from huggingface_sb3 import EnvironmentName, ModelName, ModelRepoId
 from huggingface_sb3.push_to_hub import _evaluate_agent, _generate_replay, generate_metadata
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import VecEnv, unwrap_vec_normalize
 from wasabi import Printer
 
-import utils.import_envs  # noqa: F401 pylint: disable=unused-import
-from utils import ALGOS, create_test_env, get_saved_hyperparams
-from utils.exp_manager import ExperimentManager
-from utils.utils import StoreDict, get_model_path
+import rl_zoo3.import_envs  # noqa: F401 pylint: disable=unused-import
+from rl_zoo3 import ALGOS, create_test_env, get_saved_hyperparams
+from rl_zoo3.exp_manager import ExperimentManager
+from rl_zoo3.utils import StoreDict, get_model_path
 
 msg = Printer()
 
@@ -56,7 +57,7 @@ def generate_model_card(
     Generate the model card for the Hub
 
     :param algo_class_name: name of the algorithm class
-    :param env_id: name of the environment
+    :param env_id: gym id of the environment
     :param mean_reward: mean reward of the agent
     :param std_reward: standard deviation of the mean reward of the agent
     :return: Model card (readme) and metadata (performance, algo/env id, tags)
@@ -85,15 +86,21 @@ SB3 Contrib: https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
 
 ```
 # Download model and save it into the logs/ folder
-python -m utils.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
+python -m rl_zoo3.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
 python enjoy.py --algo {algo_name} --env {env_id}  -f logs/
+```
+
+If you installed the RL Zoo3 via pip (`pip install rl_zoo3`), from anywhere you can do:
+```
+python -m rl_zoo3.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
+rl_zoo3 enjoy --algo {algo_name} --env {env_id}  -f logs/
 ```
 
 ## Training (with the RL Zoo)
 ```
 python train.py --algo {algo_name} --env {env_id} -f logs/
 # Upload the model and generate video (when possible)
-python -m utils.push_to_hub --algo {algo_name} --env {env_id} -f logs/ -orga {organization}
+python -m rl_zoo3.push_to_hub --algo {algo_name} --env {env_id} -f logs/ -orga {organization}
 ```
 
 ## Hyperparameters
@@ -114,15 +121,15 @@ python -m utils.push_to_hub --algo {algo_name} --env {env_id} -f logs/ -orga {or
 
 def package_to_hub(
     model: BaseAlgorithm,
-    model_name: str,
+    model_name: ModelName,
     algo_name: str,
     algo_class_name: str,
     log_path: Path,
     hyperparams: Dict[str, Any],
     env_kwargs: Dict[str, Any],
-    env_id: str,
+    env_name: EnvironmentName,
     eval_env: VecEnv,
-    repo_id: str,
+    repo_id: ModelRepoId,
     commit_message: str,
     is_deterministic: bool = True,
     n_eval_episodes=10,
@@ -143,7 +150,7 @@ def package_to_hub(
     use `push_to_hub` method.
 
     :param model: trained model
-    :param model_name: name of the model zip file
+    :param model_name: name of the model
     :param algo_name: alias used in the zoo for the algorithm,
         usually lower case of the class (a2c, ars, ppo, ppo_lstm)
     :param algo_class_name: name of the architecture of your model
@@ -154,7 +161,7 @@ def package_to_hub(
         includes wrappers.
     :param env_kwargs: Additional keyword arguments that were passed
         to the environment.
-    :param env_id: name of the environment
+    :param env_name: name of the environment
     :param eval_env: environment used to evaluate the agent
     :param repo_id: id of the model repository from the Hugging Face Hub
     :param commit_message: commit message
@@ -192,6 +199,7 @@ def package_to_hub(
     repo.lfs_track(["*.mp4"])
 
     # Step 1: Save the model
+    print("Saving model to:", repo_local_path / model_name)
     model.save(repo_local_path / model_name)
 
     # Retrieve VecNormalize wrapper if it exists
@@ -207,12 +215,12 @@ def package_to_hub(
         maybe_vec_normalize.norm_reward = False
 
     # Unzip the model
-    with zipfile.ZipFile(repo_local_path / f"{model_name}.zip", "r") as zip_ref:
+    with zipfile.ZipFile(repo_local_path / model_name.filename, "r") as zip_ref:
         zip_ref.extractall(repo_local_path / model_name)
 
     # Step 2: Copy config files
-    args_path = log_path / env_id / "args.yml"
-    config_path = log_path / env_id / "config.yml"
+    args_path = log_path / env_name / "args.yml"
+    config_path = log_path / env_name / "config.yml"
 
     shutil.copy(args_path, repo_local_path / "args.yml")
     shutil.copy(config_path, repo_local_path / "config.yml")
@@ -246,7 +254,7 @@ def package_to_hub(
         algo_name,
         algo_class_name,
         organization,
-        env_id,
+        env_name.gym_id,
         mean_reward,
         std_reward,
         hyperparams,
@@ -264,7 +272,7 @@ def package_to_hub(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=str, required=True)
+    parser.add_argument("--env", help="environment ID", type=EnvironmentName, required=True)
     parser.add_argument("-f", "--folder", help="Log folder", type=str, required=True)
     parser.add_argument("--algo", help="RL Algorithm", type=str, required=True, choices=list(ALGOS.keys()))
     parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
@@ -298,11 +306,11 @@ if __name__ == "__main__":
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
     )
     parser.add_argument("-orga", "--organization", help="Huggingface hub organization", type=str, required=True)
-    parser.add_argument("-name", "--repo-name", help="Huggingface hub repository name, by default 'algo-env_id'", type=str)
+    parser.add_argument("-name", "--repo-name", help="Huggingface hub repository name, by default 'algo-env'", type=str)
     parser.add_argument("-m", "--commit-message", help="Commit message", default="Initial commit", type=str)
 
     args = parser.parse_args()
-    env_id = args.env
+    env_name: EnvironmentName = args.env
     algo = args.algo
 
     _, model_path, log_path = get_model_path(
@@ -330,14 +338,14 @@ if __name__ == "__main__":
             print(f"Setting torch.num_threads to {args.num_threads}")
         th.set_num_threads(args.num_threads)
 
-    is_atari = ExperimentManager.is_atari(env_id)
+    is_atari = ExperimentManager.is_atari(env_name.gym_id)
 
-    stats_path = os.path.join(log_path, env_id)
+    stats_path = os.path.join(log_path, env_name)
     hyperparams, stats_path = get_saved_hyperparams(stats_path, test_mode=True)
 
     # load env_kwargs if existing
     env_kwargs = {}
-    args_path = os.path.join(log_path, env_id, "args.yml")
+    args_path = os.path.join(log_path, env_name, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path) as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
@@ -348,7 +356,7 @@ if __name__ == "__main__":
         env_kwargs.update(args.env_kwargs)
 
     eval_env = create_test_env(
-        env_id,
+        env_name.gym_id,
         n_envs=args.n_envs,
         stats_path=stats_path,
         seed=args.seed,
@@ -372,13 +380,13 @@ if __name__ == "__main__":
     stochastic = args.stochastic or is_atari and not args.deterministic
     deterministic = not stochastic
 
-    # Default model name, the model will be saved under "{algo}-{env_id}.zip"
-    model_name = f"{algo}-{env_id}"
+    # Default model name, the model will be saved under "{algo}-{env_name}.zip"
+    model_name = ModelName(algo, env_name)
 
     if args.repo_name is None:
         args.repo_name = model_name
 
-    repo_id = f"{args.organization}/{args.repo_name}"
+    repo_id = ModelRepoId(args.organization, args.repo_name)
     print(f"Uploading to {repo_id}, make sure to have the rights")
 
     package_to_hub(
@@ -389,7 +397,7 @@ if __name__ == "__main__":
         Path(log_path),
         hyperparams,
         env_kwargs,
-        env_id,
+        env_name,
         eval_env,
         repo_id=repo_id,
         commit_message=args.commit_message,

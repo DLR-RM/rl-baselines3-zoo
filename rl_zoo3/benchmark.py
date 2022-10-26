@@ -9,7 +9,7 @@ import pandas as pd
 import pytablewriter
 from stable_baselines3.common.results_plotter import load_results, ts2xy
 
-from utils.utils import get_hf_trained_models, get_latest_run_id, get_saved_hyperparams, get_trained_models
+from rl_zoo3.utils import get_hf_trained_models, get_latest_run_id, get_saved_hyperparams, get_trained_models
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--log-dir", help="Root log folder", default="rl-trained-agents/", type=str)
