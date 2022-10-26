@@ -155,8 +155,6 @@ if __name__ == "__main__":  # noqa: C901
             )
             obs, _, dones, _ = env.step(action)
             episode_starts = dones
-            if not args.no_render:
-                env.render()
     except KeyboardInterrupt:
         pass
 
