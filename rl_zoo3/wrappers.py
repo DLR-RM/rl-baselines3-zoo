@@ -3,7 +3,7 @@ from typing import Dict, Optional, Tuple
 import gym
 import numpy as np
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
-from stable_baselines3.common.type_aliases import Gym26ResetReturn
+from stable_baselines3.common.type_aliases import Gym26ResetReturn, Gym26StepReturn
 
 
 class TruncatedOnSuccessWrapper(gym.Wrapper):
@@ -22,7 +22,7 @@ class TruncatedOnSuccessWrapper(gym.Wrapper):
         self.current_successes = 0
         return self.env.reset(seed, options)
 
-    def step(self, action):
+    def step(self, action) -> Gym26StepReturn:
         obs, reward, terminated, truncated, info = self.env.step(action)
         if info.get("is_success", False):
             self.current_successes += 1
@@ -51,7 +51,7 @@ class ActionNoiseWrapper(gym.Wrapper):
         super().__init__(env)
         self.noise_std = noise_std
 
-    def step(self, action):
+    def step(self, action) -> Gym26StepReturn:
         noise = np.random.normal(np.zeros_like(action), np.ones_like(action) * self.noise_std)
         noisy_action = action + noise
         return self.env.step(noisy_action)
@@ -78,7 +78,7 @@ class ActionSmoothingWrapper(gym.Wrapper):
         self.smoothed_action = None
         return self.env.reset(seed, options)
 
-    def step(self, action):
+    def step(self, action) -> Gym26StepReturn:
         if self.smoothed_action is None:
             self.smoothed_action = np.zeros_like(action)
         self.smoothed_action = self.smoothing_coef * self.smoothed_action + (1 - self.smoothing_coef) * action
@@ -105,7 +105,7 @@ class DelayedRewardWrapper(gym.Wrapper):
         self.accumulated_reward = 0.0
         return self.env.reset(seed, options)
 
-    def step(self, action):
+    def step(self, action) -> Gym26StepReturn:
         obs, reward, terminated, truncated, info = self.env.step(action)
 
         self.accumulated_reward += reward
@@ -166,7 +166,7 @@ class HistoryWrapper(gym.Wrapper):
         self.obs_history[..., -obs.shape[-1] :] = obs
         return self._create_obs_from_history(), info
 
-    def step(self, action):
+    def step(self, action) -> Tuple[np.ndarray, float, bool, bool, Dict]:
         obs, reward, terminated, truncated, info = self.env.step(action)
         last_ax_size = obs.shape[-1]
 
@@ -229,7 +229,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
 
         return obs_dict, info
 
-    def step(self, action):
+    def step(self, action)-> Tuple[Dict[str, np.ndarray], float, bool, bool, Dict]:
         obs_dict, reward, terminated, truncated, info = self.env.step(action)
         obs = obs_dict["observation"]
         last_ax_size = obs.shape[-1]
@@ -257,7 +257,7 @@ class FrameSkip(gym.Wrapper):
         super().__init__(env)
         self._skip = skip
 
-    def step(self, action: np.ndarray):
+    def step(self, action) -> Gym26StepReturn:
         """
         Step the environment with the given action
         Repeat action, sum reward.
