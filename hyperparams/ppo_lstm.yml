@@ -1,0 +1,534 @@
+atari:
+  env_wrapper:
+    - stable_baselines3.common.atari_wrappers.AtariWrapper:
+        terminal_on_life_loss: False
+  frame_stack: 4
+  policy: 'CnnLstmPolicy'
+  n_envs: 8
+  n_steps: 128
+  n_epochs: 4
+  batch_size: 256
+  n_timesteps: !!float 1e7
+  learning_rate: lin_2.5e-4
+  clip_range: lin_0.1
+  vf_coef: 0.5
+  ent_coef: 0.01
+  policy_kwargs: "dict(enable_critic_lstm=False,
+                       lstm_hidden_size=128,
+                       )"
+
+# Tuned
+PendulumNoVel-v1:
+  normalize: True
+  n_envs: 4
+  n_timesteps: !!float 1e5
+  policy: 'MlpLstmPolicy'
+  n_steps: 1024
+  gae_lambda: 0.95
+  gamma: 0.9
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: !!float 1e-3
+  clip_range: 0.2
+  use_sde: True
+  sde_sample_freq: 4
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
+
+# Tuned
+CartPoleNoVel-v1:
+  normalize: True
+  n_envs: 8
+  n_timesteps: !!float 1e5
+  policy: 'MlpLstmPolicy'
+  n_steps: 32
+  batch_size: 256
+  gae_lambda: 0.8
+  gamma: 0.98
+  n_epochs: 20
+  ent_coef: 0.0
+  learning_rate: lin_0.001
+  clip_range: lin_0.2
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
+
+# TO BE TUNED
+MountainCarNoVel-v0:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpLstmPolicy'
+  n_steps: 16
+  gae_lambda: 0.98
+  gamma: 0.99
+  n_epochs: 4
+  ent_coef: 0.0
+
+# Tuned
+MountainCarContinuousNoVel-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 3e5
+  policy: 'MlpLstmPolicy'
+  batch_size: 256
+  n_steps: 1024
+  gamma: 0.9999
+  learning_rate: !!float 7.77e-05
+  ent_coef: 0.00429
+  clip_range: 0.1
+  n_epochs: 10
+  gae_lambda: 0.9
+  max_grad_norm: 5
+  vf_coef: 0.19
+  use_sde: True
+  sde_sample_freq: 8
+  policy_kwargs: "dict(log_std_init=0.0, ortho_init=False,
+                       lstm_hidden_size=32,
+                       enable_critic_lstm=True,
+                       net_arch=[dict(pi=[64], vf=[64])])"
+
+Acrobot-v1:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpLstmPolicy'
+  n_steps: 256
+  gae_lambda: 0.94
+  gamma: 0.99
+  n_epochs: 4
+  ent_coef: 0.0
+
+BipedalWalker-v3:
+  normalize: true
+  n_envs: 32
+  n_timesteps: !!float 5e6
+  policy: 'MlpLstmPolicy'
+  n_steps: 256
+  batch_size: 256
+  gae_lambda: 0.95
+  gamma: 0.999
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: !!float 3e-4
+  clip_range: 0.18
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
+
+# TO BE TUNED
+BipedalWalkerHardcore-v3:
+  # env_wrapper:
+  #   - rl_zoo3.wrappers.FrameSkip:
+  #       skip: 2
+  normalize: true
+  n_envs: 32
+  n_timesteps: !!float 10e7
+  policy: 'MlpLstmPolicy'
+  n_steps: 256
+  batch_size: 256
+  gae_lambda: 0.95
+  gamma: 0.999
+  n_epochs: 10
+  ent_coef: 0.001
+  learning_rate: lin_3e-4
+  clip_range: lin_0.2
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
+
+# Tuned
+LunarLanderNoVel-v2: &lunar-defaults
+  normalize: True
+  n_envs: 32
+  n_timesteps: !!float 5e6
+  policy: 'MlpLstmPolicy'
+  n_steps: 512
+  batch_size: 128
+  gae_lambda: 0.98
+  gamma: 0.999
+  n_epochs: 4
+  ent_coef: 0.01
+  policy_kwargs: "dict(
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    lstm_hidden_size=64,
+                    enable_critic_lstm=True,
+                    net_arch=[dict(pi=[64], vf=[64])]
+                  )"
+
+LunarLanderContinuousNoVel-v2:
+  <<: *lunar-defaults
+
+
+HalfCheetahBulletEnv-v0: &pybullet-defaults
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 2e6
+  policy: 'MlpLstmPolicy'
+  batch_size: 128
+  n_steps: 256
+  gamma: 0.99
+  gae_lambda: 0.9
+  n_epochs: 10
+  policy_kwargs: "dict(ortho_init=False,
+                       activation_fn=nn.ReLU,
+                       net_arch=[dict(pi=[], vf=[])],
+                       enable_critic_lstm=True,
+                       lstm_hidden_size=128,
+                       )"
+
+AntBulletEnv-v0:
+  <<: *pybullet-defaults
+
+Walker2DBulletEnv-v0:
+  <<: *pybullet-defaults
+  clip_range: lin_0.4
+
+HopperBulletEnv-v0:
+  <<: *pybullet-defaults
+  clip_range: lin_0.4
+
+
+ReacherBulletEnv-v0:
+  <<: *pybullet-defaults
+  clip_range: lin_0.4
+
+MinitaurBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpLstmPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+MinitaurBulletDuckEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpLstmPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+# To be tuned
+HumanoidBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 1e7
+  policy: 'MlpLstmPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+InvertedDoublePendulumBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpLstmPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+InvertedPendulumSwingupBulletEnv-v0:
+  normalize: true
+  n_envs: 8
+  n_timesteps: !!float 2e6
+  policy: 'MlpLstmPolicy'
+  n_steps: 2048
+  batch_size: 64
+  gae_lambda: 0.95
+  gamma: 0.99
+  n_epochs: 10
+  ent_coef: 0.0
+  learning_rate: 2.5e-4
+  clip_range: 0.2
+
+
+CarRacing-v0:
+  env_wrapper:
+    # - rl_zoo3.wrappers.FrameSkip:
+    #     skip: 2
+    - gym.wrappers.resize_observation.ResizeObservation:
+        shape: 64
+    - gym.wrappers.gray_scale_observation.GrayScaleObservation:
+        keep_dim: true
+  frame_stack: 2
+  normalize: "{'norm_obs': False, 'norm_reward': True}"
+  n_envs: 8
+  n_timesteps: !!float 4e6
+  policy: 'CnnLstmPolicy'
+  batch_size: 128
+  n_steps: 512
+  gamma: 0.99
+  gae_lambda: 0.95
+  n_epochs: 10
+  ent_coef: 0.0
+  sde_sample_freq: 4
+  max_grad_norm: 0.5
+  vf_coef: 0.5
+  learning_rate: lin_1e-4
+  use_sde: True
+  clip_range: 0.2
+  policy_kwargs: "dict(log_std_init=-2,
+                       ortho_init=False,
+                       enable_critic_lstm=False,
+                       activation_fn=nn.GELU,
+                       lstm_hidden_size=128,
+                       )"
+
+# === Mujoco Envs ===
+# HalfCheetah-v3: &mujoco-defaults
+#   normalize: true
+#   n_timesteps: !!float 1e6
+#   policy: 'MlpLstmPolicy'
+
+Ant-v3: &mujoco-defaults
+  normalize: true
+  n_timesteps: !!float 1e6
+  policy: 'MlpLstmPolicy'
+
+# Hopper-v3:
+#   <<: *mujoco-defaults
+#
+# Walker2d-v3:
+#   <<: *mujoco-defaults
+#
+# Humanoid-v3:
+#   <<: *mujoco-defaults
+#   n_timesteps: !!float 2e6
+#
+Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+
+
+# 10 mujoco envs
+
+HalfCheetah-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 64
+  n_steps: 512
+  gamma: 0.98
+  learning_rate: 2.0633e-05
+  ent_coef: 0.000401762
+  clip_range: 0.1
+  n_epochs: 20
+  gae_lambda: 0.92
+  max_grad_norm: 0.8
+  vf_coef: 0.58096
+  policy_kwargs: "dict(
+                    log_std_init=-2,
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                  )"
+
+# Ant-v3:
+#   normalize: true
+#   n_envs: 1
+#   policy: 'MlpLstmPolicy'
+#   n_timesteps: !!float 1e7
+#   batch_size: 32
+#   n_steps: 512
+#   gamma: 0.98
+#   learning_rate: 1.90609e-05
+#   ent_coef: 4.9646e-07
+#   clip_range: 0.1
+#   n_epochs: 10
+#   gae_lambda: 0.8
+#   max_grad_norm: 0.6
+#   vf_coef: 0.677239
+
+Hopper-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 32
+  n_steps: 512
+  gamma: 0.999
+  learning_rate: 9.80828e-05
+  ent_coef: 0.00229519
+  clip_range: 0.2
+  n_epochs: 5
+  gae_lambda: 0.99
+  max_grad_norm: 0.7
+  vf_coef: 0.835671
+  policy_kwargs: "dict(
+                    log_std_init=-2,
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                  )"
+
+HumanoidStandup-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e7
+  batch_size: 32
+  n_steps: 512
+  gamma: 0.99
+  learning_rate: 2.55673e-05
+  ent_coef: 3.62109e-06
+  clip_range: 0.3
+  n_epochs: 20
+  gae_lambda: 0.9
+  max_grad_norm: 0.7
+  vf_coef: 0.430793
+  policy_kwargs: "dict(
+                    log_std_init=-2,
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                  )"
+
+Humanoid-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e7
+  batch_size: 256
+  n_steps: 512
+  gamma: 0.95
+  learning_rate: 3.56987e-05
+  ent_coef: 0.00238306
+  clip_range: 0.3
+  n_epochs: 5
+  gae_lambda: 0.9
+  max_grad_norm: 2
+  vf_coef: 0.431892
+  policy_kwargs: "dict(
+                    log_std_init=-2,
+                    ortho_init=False,
+                    activation_fn=nn.ReLU,
+                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                  )"
+
+InvertedDoublePendulum-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 512
+  n_steps: 128
+  gamma: 0.98
+  learning_rate: 0.000155454
+  ent_coef: 1.05057e-06
+  clip_range: 0.4
+  n_epochs: 10
+  gae_lambda: 0.8
+  max_grad_norm: 0.5
+  vf_coef: 0.695929
+
+InvertedPendulum-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 64
+  n_steps: 32
+  gamma: 0.999
+  learning_rate: 0.000222425
+  ent_coef: 1.37976e-07
+  clip_range: 0.4
+  n_epochs: 5
+  gae_lambda: 0.9
+  max_grad_norm: 0.3
+  vf_coef: 0.19816
+
+Reacher-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 32
+  n_steps: 512
+  gamma: 0.9
+  learning_rate: 0.000104019
+  ent_coef: 7.52585e-08
+  clip_range: 0.3
+  n_epochs: 5
+  gae_lambda: 1.0
+  max_grad_norm: 0.9
+  vf_coef: 0.950368
+
+# Swimmer-v3:
+#   normalize: true
+#   n_envs: 1
+#   policy: 'MlpLstmPolicy'
+#   n_timesteps: !!float 1e6
+#   batch_size: 32
+#   n_steps: 512
+#   gamma: 0.9999
+#   learning_rate: 5.49717e-05
+#   ent_coef: 0.0554757
+#   clip_range: 0.3
+#   n_epochs: 10
+#   gae_lambda: 0.95
+#   max_grad_norm: 0.6
+#   vf_coef: 0.38782
+#   policy_kwargs: "dict(
+#                     log_std_init=-2,
+#                     ortho_init=False,
+#                     activation_fn=nn.ReLU,
+#                     net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+#                   )"
+
+Walker2d-v3:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 32
+  n_steps: 512
+  gamma: 0.99
+  learning_rate: 5.05041e-05
+  ent_coef: 0.000585045
+  clip_range: 0.1
+  n_epochs: 20
+  gae_lambda: 0.95
+  max_grad_norm: 1
+  vf_coef: 0.871923

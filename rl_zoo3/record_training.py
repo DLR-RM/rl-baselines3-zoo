@@ -5,11 +5,13 @@ import shutil
 import subprocess
 from copy import deepcopy
 
-from utils.utils import ALGOS, get_latest_run_id
+from huggingface_sb3 import EnvironmentName
+
+from rl_zoo3.utils import ALGOS, get_latest_run_id
 
 if __name__ == "__main__":  # noqa: C901
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=str, default="CartPole-v1")
+    parser.add_argument("--env", help="environment ID", type=EnvironmentName, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
     parser.add_argument("-o", "--output-folder", help="Output folder", type=str)
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
@@ -21,7 +23,7 @@ if __name__ == "__main__":  # noqa: C901
     parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
     args = parser.parse_args()
 
-    env_id = args.env
+    env_name: EnvironmentName = args.env
     algo = args.algo
     folder = args.folder
     n_timesteps = args.n_timesteps
@@ -32,11 +34,11 @@ if __name__ == "__main__":  # noqa: C901
     convert_to_gif = args.gif
 
     if args.exp_id == 0:
-        args.exp_id = get_latest_run_id(os.path.join(folder, algo), env_id)
+        args.exp_id = get_latest_run_id(os.path.join(folder, algo), env_name)
         print(f"Loading latest experiment, id={args.exp_id}")
     # Sanity checks
     if args.exp_id > 0:
-        log_path = os.path.join(folder, algo, f"{env_id}_{args.exp_id}")
+        log_path = os.path.join(folder, algo, f"{env_name}_{args.exp_id}")
     else:
         log_path = os.path.join(folder, algo)
 
@@ -55,7 +57,7 @@ if __name__ == "__main__":  # noqa: C901
 
     args_final_model = [
         "--env",
-        env_id,
+        env_name.gym_id,
         "--algo",
         algo,
         "--exp-id",
@@ -76,20 +78,20 @@ if __name__ == "__main__":  # noqa: C901
     if deterministic is not None:
         args_final_model.append("--deterministic")
 
-    if os.path.exists(os.path.join(log_path, f"{env_id}.zip")):
-        return_code = subprocess.call(["python", "-m", "utils.record_video"] + args_final_model)
+    if os.path.exists(os.path.join(log_path, f"{env_name}.zip")):
+        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args_final_model)
         assert return_code == 0, "Failed to record the final model"
 
     if os.path.exists(os.path.join(log_path, "best_model.zip")):
         args_best_model = args_final_model + ["--load-best"]
-        return_code = subprocess.call(["python", "-m", "utils.record_video"] + args_best_model)
+        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args_best_model)
         assert return_code == 0, "Failed to record the best model"
 
     args_checkpoint = args_final_model + ["--load-checkpoint"]
     args_checkpoint.append("0")
     for checkpoint in checkpoints:
         args_checkpoint[-1] = str(checkpoint)
-        return_code = subprocess.call(["python", "-m", "utils.record_video"] + args_checkpoint)
+        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args_checkpoint)
         assert return_code == 0, f"Failed to record the {checkpoint} checkpoint model"
 
     # add text to each video

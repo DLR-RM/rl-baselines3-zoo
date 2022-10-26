@@ -1,9 +1,7 @@
 import os
 import subprocess
 
-import optuna
 import pytest
-from optuna.trial import TrialState
 
 
 def _assert_eq(left, right):
@@ -98,64 +96,36 @@ def test_parallel_train(tmp_path):
         "--log-folder",
         tmp_path,
         "-params",
-        "callback:'utils.callbacks.ParallelTrainCallback'",
+        # Test custom argument for the monitor too
+        "monitor_kwargs:'dict(info_keywords=(\"TimeLimit.truncated\",))'",
+        "callback:'rl_zoo3.callbacks.ParallelTrainCallback'",
     ]
 
     return_code = subprocess.call(["python", "train.py"] + args)
     _assert_eq(return_code, 0)
 
 
-def is_redis_available():
-    try:
-        import redis
-    except ImportError:
-        return False
-    try:
-        return redis.Redis(host='localhost', port=6379).ping()
-    except (redis.ConnectionError, ImportError):
-        return False
-
-
-@pytest.mark.skipif(not is_redis_available(), reason="Redis not installed or no Redis server reachable")
-def test_multiple_workers(tmp_path):
-    study_name = "test-study"
-    storage = "redis://localhost:6379"
-    n_trials = 6
+def test_custom_yaml(tmp_path):
+    # Use A2C hyperparams for ppo
     args = [
-        "-optimize",
-        "--no-optim-plots",
-        "--storage",
-        storage,
-        "--max-total-trials",
-        str(n_trials),
-        "--study-name",
-        study_name,
-        "--n-evaluations",
-        str(1),
         "-n",
-        str(100),
+        str(N_STEPS),
         "--algo",
         "ppo",
         "--env",
-        "Pendulum-v1",
+        "CartPole-v1",
         "--log-folder",
         tmp_path,
+        "-yaml",
+        "hyperparams/a2c.yml",
+        "-params",
+        "n_envs:2",
+        "n_steps:50",
+        "n_epochs:2",
+        "batch_size:4",
+        # Test custom policy
+        "policy:'stable_baselines3.ppo.MlpPolicy'",
     ]
 
-    p1 = subprocess.Popen(["python", "train.py"] + args)
-    p2 = subprocess.Popen(["python", "train.py"] + args)
-    p3 = subprocess.Popen(["python", "train.py"] + args)
-    p4 = subprocess.Popen(["python", "train.py"] + args)
-
-    return_code1 = p1.wait()
-    return_code2 = p2.wait()
-    return_code3 = p3.wait()
-    return_code4 = p4.wait()
-
-    study = optuna.load_study(study_name=study_name, storage=storage)
-    assert sum(t.state in (TrialState.COMPLETE, TrialState.PRUNED) for t in study.trials) == n_trials
-
-    assert return_code1 == 0
-    assert return_code2 == 0
-    assert return_code3 == 0
-    assert return_code4 == 0
+    return_code = subprocess.call(["python", "train.py"] + args)
+    _assert_eq(return_code, 0)

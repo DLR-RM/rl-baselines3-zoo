@@ -3,7 +3,7 @@ import subprocess
 
 import pytest
 
-from utils import get_trained_models
+from rl_zoo3.utils import get_hf_trained_models, get_trained_models
 
 
 def _assert_eq(left, right):
@@ -12,8 +12,10 @@ def _assert_eq(left, right):
 
 FOLDER = "rl-trained-agents/"
 N_STEPS = 100
-
+# Use local models
 trained_models = get_trained_models(FOLDER)
+# Use huggingface models too
+trained_models.update(get_hf_trained_models())
 
 
 @pytest.mark.parametrize("trained_model", trained_models.keys())
@@ -24,6 +26,10 @@ def test_trained_agents(trained_model):
 
     # Since SB3 >= 1.1.0, HER is no more an algorithm but a replay buffer class
     if algo == "her":
+        return
+
+    # skip car racing
+    if "CarRacing" in env_id:
         return
 
     # Skip mujoco envs
@@ -38,9 +44,9 @@ def test_trained_agents(trained_model):
 
 
 def test_benchmark(tmp_path):
-    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode"]
+    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode", "--no-hub"]
 
-    return_code = subprocess.call(["python", "-m", "utils.benchmark"] + args)
+    return_code = subprocess.call(["python", "-m", "rl_zoo3.benchmark"] + args)
     _assert_eq(return_code, 0)
 
 
@@ -61,6 +67,7 @@ def test_load(tmp_path):
         str(500),
         "--save-freq",
         str(500),
+        "-P",  # Enable progress bar
     ]
     # Train and save checkpoints and best model
     return_code = subprocess.call(["python", "train.py"] + args)
@@ -68,7 +75,8 @@ def test_load(tmp_path):
 
     # Load best model
     args = ["-n", str(N_STEPS), "-f", tmp_path, "--algo", algo, "--env", env_id, "--no-render"]
-    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-best"])
+    # Test with progress bar
+    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-best", "-P"])
     _assert_eq(return_code, 0)
 
     # Load checkpoint
@@ -86,7 +94,7 @@ def test_record_video(tmp_path):
     # Skip if no X-Server
     pytest.importorskip("pyglet.gl")
 
-    return_code = subprocess.call(["python", "-m", "utils.record_video"] + args)
+    return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args)
     _assert_eq(return_code, 0)
     video_path = str(tmp_path / "final-model-sac-Pendulum-v1-step-0-to-step-100.mp4")
     # File is not empty
@@ -127,7 +135,7 @@ def test_record_training(tmp_path):
     return_code = subprocess.call(["python", "train.py"] + args_training)
     _assert_eq(return_code, 0)
 
-    return_code = subprocess.call(["python", "-m", "utils.record_training"] + args_recording)
+    return_code = subprocess.call(["python", "-m", "rl_zoo3.record_training"] + args_recording)
     _assert_eq(return_code, 0)
     mp4_path = str(videos_tmp_path / "training.mp4")
     gif_path = str(videos_tmp_path / "training.gif")
