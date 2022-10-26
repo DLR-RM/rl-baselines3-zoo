@@ -220,9 +220,9 @@ def enjoy():  # noqa: C901
                 episode_start=episode_start,
                 deterministic=deterministic,
             )
-            obs, reward, done, infos = env.step(action)
+            obs, reward, termination, truncation, infos = env.step(action)
 
-            episode_start = done
+            episode_start = termination or truncation
 
             if not args.no_render:
                 env.render("human")
@@ -238,8 +238,8 @@ def enjoy():  # noqa: C901
                     if episode_infos is not None:
                         print(f"Atari Episode Score: {episode_infos['r']:.2f}")
                         print("Atari Episode Length", episode_infos["l"])
-
-                if done and not is_atari and args.verbose > 0:
+                # TODO: episode_start is a confusing name here, should we rename to episode_end?
+                if episode_start and not is_atari and args.verbose > 0: 
                     # NOTE: for env using VecNormalize, the mean reward
                     # is a normalized reward when `--norm_reward` flag is passed
                     print(f"Episode Reward: {episode_reward:.2f}")
@@ -250,7 +250,8 @@ def enjoy():  # noqa: C901
                     ep_len = 0
 
                 # Reset also when the goal is achieved when using HER
-                if done and infos[0].get("is_success") is not None:
+                # TODO: episode_start is a confusing name here, should we rename to episode_end?
+                if episode_start and infos[0].get("is_success") is not None:
                     if args.verbose > 1:
                         print("Success?", infos[0].get("is_success", False))
 

@@ -5,7 +5,7 @@ import numpy as np
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 
 
-class DoneOnSuccessWrapper(gym.Wrapper):
+class TruncatedOnSuccessWrapper(gym.Wrapper):
     """
     Reset on success and offsets the reward.
     Useful for GoalEnv.
@@ -23,15 +23,15 @@ class DoneOnSuccessWrapper(gym.Wrapper):
         return self.env.reset(**kwargs)
 
     def step(self, action):
-        obs, reward, done, info = self.env.step(action)
+        obs, reward, terminated, truncated, info = self.env.step(action)
         if info.get("is_success", False):
             self.current_successes += 1
         else:
             self.current_successes = 0
         # number of successes in a row
-        done = done or self.current_successes >= self.n_successes
+        truncated = truncated or self.current_successes >= self.n_successes
         reward += self.reward_offset
-        return obs, reward, done, info
+        return obs, reward, terminated, truncated, info
 
     def compute_reward(self, achieved_goal, desired_goal, info):
         reward = self.env.compute_reward(achieved_goal, desired_goal, info)
@@ -106,17 +106,17 @@ class DelayedRewardWrapper(gym.Wrapper):
         return self.env.reset()
 
     def step(self, action):
-        obs, reward, done, info = self.env.step(action)
+        obs, reward, terminated, truncated, info = self.env.step(action)
 
         self.accumulated_reward += reward
         self.current_step += 1
 
-        if self.current_step % self.delay == 0 or done:
+        if self.current_step % self.delay == 0 or terminated or truncated:
             reward = self.accumulated_reward
             self.accumulated_reward = 0.0
         else:
             reward = 0.0
-        return obs, reward, done, info
+        return obs, reward, terminated, truncated, info
 
 
 class HistoryWrapper(gym.Wrapper):
@@ -168,7 +168,7 @@ class HistoryWrapper(gym.Wrapper):
         return self._create_obs_from_history()
 
     def step(self, action):
-        obs, reward, done, info = self.env.step(action)
+        obs, reward, terminated, truncated, info = self.env.step(action)
         last_ax_size = obs.shape[-1]
 
         self.obs_history = np.roll(self.obs_history, shift=-last_ax_size, axis=-1)
@@ -176,7 +176,7 @@ class HistoryWrapper(gym.Wrapper):
 
         self.action_history = np.roll(self.action_history, shift=-action.shape[-1], axis=-1)
         self.action_history[..., -action.shape[-1] :] = action
-        return self._create_obs_from_history(), reward, done, info
+        return self._create_obs_from_history(), reward, terminated, truncated, info
 
 
 class HistoryWrapperObsDict(gym.Wrapper):
@@ -232,7 +232,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
         return obs_dict
 
     def step(self, action):
-        obs_dict, reward, done, info = self.env.step(action)
+        obs_dict, reward, terminated, truncated, info = self.env.step(action)
         obs = obs_dict["observation"]
         last_ax_size = obs.shape[-1]
 
@@ -244,7 +244,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
 
         obs_dict["observation"] = self._create_obs_from_history()
 
-        return obs_dict, reward, done, info
+        return obs_dict, reward, terminated, truncated, info
 
 
 class FrameSkip(gym.Wrapper):
@@ -265,17 +265,16 @@ class FrameSkip(gym.Wrapper):
         Repeat action, sum reward.
 
         :param action: the action
-        :return: observation, reward, done, information
+        :return: observation, reward, terminated, truncated, information
         """
         total_reward = 0.0
-        done = None
         for _ in range(self._skip):
-            obs, reward, done, info = self.env.step(action)
+            obs, reward, terminated, truncated, info = self.env.step(action)
             total_reward += reward
-            if done:
+            if terminated or truncated:
                 break
 
-        return obs, total_reward, done, info
+        return obs, total_reward, terminated, truncated, info
 
     def reset(self):
         return self.env.reset()

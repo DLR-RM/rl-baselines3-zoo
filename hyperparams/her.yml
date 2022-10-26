@@ -59,7 +59,7 @@ FetchSlide-v1:
 FetchPickAndPlace-v1:
   env_wrapper:
     - sb3_contrib.common.wrappers.TimeFeatureWrapper
-    # - rl_zoo3.wrappers.DoneOnSuccessWrapper:
+    # - rl_zoo3.wrappers.TruncatedOnSuccessWrapper:
     #     reward_offset: 0
     #     n_successes: 4
     # - stable_baselines3.common.monitor.Monitor
