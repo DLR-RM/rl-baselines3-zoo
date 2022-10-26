@@ -232,7 +232,7 @@ def create_test_env(
         vec_env_cls = SubprocVecEnv
         # start_method = 'spawn' for thread safe
 
-    # Fix for gym 0.24, to keep old behavior
+    # Fix for gym 0.26, to keep old behavior
     env_kwargs = deepcopy(env_kwargs)
     env_kwargs.update(disable_env_checker=True)
     env_kwargs.update(render_mode="human" if should_render else None)

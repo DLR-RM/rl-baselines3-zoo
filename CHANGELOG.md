@@ -1,7 +1,7 @@
 ## Release 1.7.0a1 (WIP)
 
 ### Breaking Changes
-- Upgraded to gym 0.24
+- Upgraded to gym 0.26
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)
