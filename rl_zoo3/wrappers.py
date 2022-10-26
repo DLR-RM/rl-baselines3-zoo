@@ -1,8 +1,9 @@
-from typing import Optional
+from typing import Dict, Optional, Tuple
 
 import gym
 import numpy as np
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
+from stable_baselines3.common.type_aliases import Gym26ResetReturn
 
 
 class TruncatedOnSuccessWrapper(gym.Wrapper):
@@ -17,10 +18,9 @@ class TruncatedOnSuccessWrapper(gym.Wrapper):
         self.n_successes = n_successes
         self.current_successes = 0
 
-    def reset(self, seed: Optional[int] = None):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
         self.current_successes = 0
-        kwargs = {} if seed is None else {"seed": seed}
-        return self.env.reset(**kwargs)
+        return self.env.reset(seed, options)
 
     def step(self, action):
         obs, reward, terminated, truncated, info = self.env.step(action)
@@ -74,9 +74,9 @@ class ActionSmoothingWrapper(gym.Wrapper):
         # self.alpha = self.smoothing_coef
         # self.beta = np.sqrt(1 - self.alpha ** 2) / (1 - self.alpha)
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
         self.smoothed_action = None
-        return self.env.reset()
+        return self.env.reset(seed, options)
 
     def step(self, action):
         if self.smoothed_action is None:
@@ -100,10 +100,10 @@ class DelayedRewardWrapper(gym.Wrapper):
         self.current_step = 0
         self.accumulated_reward = 0.0
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
         self.current_step = 0
         self.accumulated_reward = 0.0
-        return self.env.reset()
+        return self.env.reset(seed, options)
 
     def step(self, action):
         obs, reward, terminated, truncated, info = self.env.step(action)
@@ -155,17 +155,16 @@ class HistoryWrapper(gym.Wrapper):
         self.obs_history = np.zeros(low_obs.shape, low_obs.dtype)
         self.action_history = np.zeros(low_action.shape, low_action.dtype)
 
-    def _create_obs_from_history(self):
+    def _create_obs_from_history(self) -> np.ndarray:
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self, seed: Optional[int] = None):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[np.ndarray, Dict]:
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
-        kwargs = {} if seed is None else {"seed": seed}
-        obs = self.env.reset(**kwargs)
+        obs, info = self.env.reset(seed, options)
         self.obs_history[..., -obs.shape[-1] :] = obs
-        return self._create_obs_from_history()
+        return self._create_obs_from_history(), info
 
     def step(self, action):
         obs, reward, terminated, truncated, info = self.env.step(action)
@@ -215,21 +214,20 @@ class HistoryWrapperObsDict(gym.Wrapper):
         self.obs_history = np.zeros(low_obs.shape, low_obs.dtype)
         self.action_history = np.zeros(low_action.shape, low_action.dtype)
 
-    def _create_obs_from_history(self):
+    def _create_obs_from_history(self) -> np.ndarray:
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self, seed: Optional[int] = None):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[Dict[str, np.ndarray], Dict]:
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
-        kwargs = {} if seed is None else {"seed": seed}
-        obs_dict = self.env.reset(**kwargs)
+        obs_dict, info = self.env.reset(seed, options)
         obs = obs_dict["observation"]
         self.obs_history[..., -obs.shape[-1] :] = obs
 
         obs_dict["observation"] = self._create_obs_from_history()
 
-        return obs_dict
+        return obs_dict, info
 
     def step(self, action):
         obs_dict, reward, terminated, truncated, info = self.env.step(action)
@@ -275,9 +273,6 @@ class FrameSkip(gym.Wrapper):
                 break
 
         return obs, total_reward, terminated, truncated, info
-
-    def reset(self):
-        return self.env.reset()
 
 
 class MaskVelocityWrapper(gym.ObservationWrapper):
