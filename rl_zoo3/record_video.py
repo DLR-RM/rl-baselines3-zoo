@@ -153,8 +153,8 @@ if __name__ == "__main__":  # noqa: C901
                 episode_start=episode_starts,
                 deterministic=deterministic,
             )
-            obs, _, terminated, truncated, _ = env.step(action)
-            episode_starts = np.logical_or(terminated, truncated)
+            obs, _, dones, _ = env.step(action)
+            episode_starts = dones
             if not args.no_render:
                 env.render()
     except KeyboardInterrupt:
