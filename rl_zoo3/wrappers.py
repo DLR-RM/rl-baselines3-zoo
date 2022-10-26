@@ -229,7 +229,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
 
         return obs_dict, info
 
-    def step(self, action)-> Tuple[Dict[str, np.ndarray], float, bool, bool, Dict]:
+    def step(self, action) -> Tuple[Dict[str, np.ndarray], float, bool, bool, Dict]:
         obs_dict, reward, terminated, truncated, info = self.env.step(action)
         obs = obs_dict["observation"]
         last_ax_size = obs.shape[-1]
