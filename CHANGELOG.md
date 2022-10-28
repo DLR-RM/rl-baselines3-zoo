@@ -1,4 +1,4 @@
-## Release 1.7.0a1 (WIP)
+## Release 1.7.0a2 (WIP)
 
 ### Breaking Changes
 
@@ -8,6 +8,7 @@
 
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
+- Fix a bug where custom environments were not found despite passing ``--gym-package`` when using subprocesses
 
 ### Documentation
 
