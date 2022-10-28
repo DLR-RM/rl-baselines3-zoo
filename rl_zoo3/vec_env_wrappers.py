@@ -1,5 +1,6 @@
 from typing import Optional
 
+import gym
 import numpy as np
 from envpool.python.protocol import EnvPool
 from stable_baselines3.common.vec_env import VecEnvWrapper
@@ -17,6 +18,9 @@ class EnvPoolAdapter(VecEnvWrapper):
         # Retrieve the number of environments from the config
         venv.num_envs = venv.spec.config.num_envs
         super().__init__(venv=venv)
+        # Tmp fix for https://github.com/DLR-RM/stable-baselines3/issues/1145
+        if isinstance(self.action_space, gym.spaces.Box) and self.action_space.dtype == np.float64:
+            self.action_space.dtype = np.dtype(np.float32)
 
     def step_async(self, actions: np.ndarray) -> None:
         self.actions = actions
