@@ -140,7 +140,13 @@ def train():
         default=False,
         help="if toggled, display a progress bar using tqdm and rich",
     )
-
+    parser.add_argument(
+        "-envpool",
+        "--use-envpool",
+        action="store_true",
+        default=False,
+        help="if toggled, try to use EnvPool to run the env, env_wrappers are not supported.",
+    )
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -236,6 +242,7 @@ def train():
         device=args.device,
         yaml_file=args.yaml_file,
         show_progress=args.progress,
+        use_envpool=args.use_envpool,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
