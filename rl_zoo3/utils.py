@@ -233,9 +233,10 @@ def create_test_env(
         # start_method = 'spawn' for thread safe
 
     # Fix for gym 0.26, to keep old behavior
+    env_kwargs = env_kwargs or {}
     env_kwargs = deepcopy(env_kwargs)
-    env_kwargs.update(disable_env_checker=True)
-    env_kwargs.update(render_mode="human" if should_render else None)
+    if "render_mode" not in env_kwargs:
+        env_kwargs.update(render_mode="human" if should_render else None)
 
     env = make_vec_env(
         env_id,

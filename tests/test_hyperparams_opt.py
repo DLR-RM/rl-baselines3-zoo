@@ -29,7 +29,8 @@ experiments["sac-Pendulum-v1"] = ("sac", "Pendulum-v1")
 # Test for TD3
 experiments["td3-Pendulum-v1"] = ("td3", "Pendulum-v1")
 # Test for HER
-experiments["tqc-parking-v0"] = ("tqc", "parking-v0")
+# FIXME: https://github.com/eleurent/highway-env/issues/379
+# experiments["tqc-parking-v0"] = ("tqc", "parking-v0")
 # Test for TQC
 experiments["tqc-Pendulum-v1"] = ("tqc", "Pendulum-v1")
 

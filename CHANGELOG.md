@@ -1,7 +1,21 @@
-## Release 1.7.0a2 (WIP)
+## Release 2.0.0a0 (WIP)
 
 ### Breaking Changes
 - Upgraded to gym 0.26
+- Fixed bug in HistoryWrapper, now returns the correct obs space limits
+
+### New Features
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
+## Release 1.7.0a2 (WIP)
+
+### Breaking Changes
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)

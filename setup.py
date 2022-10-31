@@ -27,7 +27,7 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
-        "sb3-contrib>=1.6.2",
+        "sb3_contrib @ https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/new-gym-version",
         "huggingface_sb3>=2.2.1, <3.*",
         "tqdm",
         "rich",

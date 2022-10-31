@@ -1,5 +1,11 @@
 import gym
-import pybullet_envs  # noqa: F401
+
+try:
+    import pybullet_envs  # pytype: disable=import-error
+except (ImportError, AttributeError):
+    # FIXME: Gym breaks pybullet envs by breaking change
+    # in its registry :'(
+    pybullet_envs = None
 import pytest
 from stable_baselines3 import A2C
 from stable_baselines3.common.env_checker import check_env
@@ -10,7 +16,10 @@ from rl_zoo3.wrappers import ActionNoiseWrapper, DelayedRewardWrapper, HistoryWr
 
 
 def test_wrappers():
-    env = gym.make("AntBulletEnv-v0")
+    if pybullet_envs is not None:
+        env = gym.make("AntBulletEnv-v0")
+    else:
+        env = gym.make("BipedalWalker-v3")
     env = DelayedRewardWrapper(env)
     env = ActionNoiseWrapper(env)
     env = HistoryWrapper(env)
@@ -27,7 +36,10 @@ def test_wrappers():
     ],
 )
 def test_get_wrapper(env_wrapper):
-    env = gym.make("AntBulletEnv-v0")
+    if pybullet_envs is not None:
+        env = gym.make("AntBulletEnv-v0")
+    else:
+        env = gym.make("BipedalWalker-v3")
     hyperparams = {"env_wrapper": env_wrapper}
     wrapper_class = get_wrapper_class(hyperparams)
     if env_wrapper is not None:
@@ -44,7 +56,12 @@ def test_get_wrapper(env_wrapper):
     ],
 )
 def test_get_vec_env_wrapper(vec_env_wrapper):
-    env = DummyVecEnv([lambda: gym.make("AntBulletEnv-v0")])
+    if pybullet_envs is not None:
+        env = gym.make("AntBulletEnv-v0")
+    else:
+        env = gym.make("BipedalWalker-v3")
+
+    env = DummyVecEnv([lambda: env])
     hyperparams = {"vec_env_wrapper": vec_env_wrapper}
     wrapper_class = get_wrapper_class(hyperparams, "vec_env_wrapper")
     if wrapper_class is not None:

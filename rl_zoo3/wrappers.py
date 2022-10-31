@@ -20,7 +20,8 @@ class TruncatedOnSuccessWrapper(gym.Wrapper):
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
         self.current_successes = 0
-        return self.env.reset(seed, options)
+        assert options is None, "Options not supported for now"
+        return self.env.reset(seed=seed)
 
     def step(self, action) -> Gym26StepReturn:
         obs, reward, terminated, truncated, info = self.env.step(action)
@@ -53,7 +54,7 @@ class ActionNoiseWrapper(gym.Wrapper):
 
     def step(self, action) -> Gym26StepReturn:
         noise = np.random.normal(np.zeros_like(action), np.ones_like(action) * self.noise_std)
-        noisy_action = action + noise
+        noisy_action = np.clip(action + noise, self.action_space.low, self.action_space.high)
         return self.env.step(noisy_action)
 
 
@@ -76,7 +77,8 @@ class ActionSmoothingWrapper(gym.Wrapper):
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
         self.smoothed_action = None
-        return self.env.reset(seed, options)
+        assert options is None, "Options not supported for now"
+        return self.env.reset(seed=seed)
 
     def step(self, action) -> Gym26StepReturn:
         if self.smoothed_action is None:
@@ -103,7 +105,8 @@ class DelayedRewardWrapper(gym.Wrapper):
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
         self.current_step = 0
         self.accumulated_reward = 0.0
-        return self.env.reset(seed, options)
+        assert options is None, "Options not supported for now"
+        return self.env.reset(seed=seed)
 
     def step(self, action) -> Gym26StepReturn:
         obs, reward, terminated, truncated, info = self.env.step(action)
@@ -133,12 +136,11 @@ class HistoryWrapper(gym.Wrapper):
         wrapped_obs_space = env.observation_space
         wrapped_action_space = env.action_space
 
-        # TODO: double check, it seems wrong when we have different low and highs
-        low_obs = np.repeat(wrapped_obs_space.low, horizon, axis=-1)
-        high_obs = np.repeat(wrapped_obs_space.high, horizon, axis=-1)
+        low_obs = np.tile(wrapped_obs_space.low, horizon)
+        high_obs = np.tile(wrapped_obs_space.high, horizon)
 
-        low_action = np.repeat(wrapped_action_space.low, horizon, axis=-1)
-        high_action = np.repeat(wrapped_action_space.high, horizon, axis=-1)
+        low_action = np.tile(wrapped_action_space.low, horizon)
+        high_action = np.tile(wrapped_action_space.high, horizon)
 
         low = np.concatenate((low_obs, low_action))
         high = np.concatenate((high_obs, high_action))
@@ -162,7 +164,8 @@ class HistoryWrapper(gym.Wrapper):
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
-        obs, info = self.env.reset(seed, options)
+        assert options is None, "Options not supported for now"
+        obs, info = self.env.reset(seed=seed)
         self.obs_history[..., -obs.shape[-1] :] = obs
         return self._create_obs_from_history(), info
 
@@ -192,12 +195,11 @@ class HistoryWrapperObsDict(gym.Wrapper):
         wrapped_obs_space = env.observation_space.spaces["observation"]
         wrapped_action_space = env.action_space
 
-        # TODO: double check, it seems wrong when we have different low and highs
-        low_obs = np.repeat(wrapped_obs_space.low, horizon, axis=-1)
-        high_obs = np.repeat(wrapped_obs_space.high, horizon, axis=-1)
+        low_obs = np.tile(wrapped_obs_space.low, horizon)
+        high_obs = np.tile(wrapped_obs_space.high, horizon)
 
-        low_action = np.repeat(wrapped_action_space.low, horizon, axis=-1)
-        high_action = np.repeat(wrapped_action_space.high, horizon, axis=-1)
+        low_action = np.tile(wrapped_action_space.low, horizon)
+        high_action = np.tile(wrapped_action_space.high, horizon)
 
         low = np.concatenate((low_obs, low_action))
         high = np.concatenate((high_obs, high_action))
@@ -221,7 +223,8 @@ class HistoryWrapperObsDict(gym.Wrapper):
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
-        obs_dict, info = self.env.reset(seed, options)
+        assert options is None, "Options not supported for now"
+        obs_dict, info = self.env.reset(seed=seed)
         obs = obs_dict["observation"]
         self.obs_history[..., -obs.shape[-1] :] = obs
 

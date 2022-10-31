@@ -97,7 +97,9 @@ def test_parallel_train(tmp_path):
         tmp_path,
         "-params",
         # Test custom argument for the monitor too
-        "monitor_kwargs:'dict(info_keywords=(\"TimeLimit.truncated\",))'",
+        # FIXME: info key was removed in gym 0.26 :(
+        # https://github.com/openai/gym/issues/3102
+        # "monitor_kwargs:'dict(info_keywords=(\"TimeLimit.truncated\",))'",
         "callback:'rl_zoo3.callbacks.ParallelTrainCallback'",
     ]
 

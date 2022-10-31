@@ -32,6 +32,15 @@ def test_trained_agents(trained_model):
     if "CarRacing" in env_id:
         return
 
+    # FIXME: skip Bullet env
+    # broken by gym 0.26...
+    if "Bullet" in env_id:
+        return
+
+    # FIXME: https://github.com/eleurent/highway-env/issues/379
+    if "parking" in env_id:
+        return
+
     # Skip mujoco envs
     if "Fetch" in trained_model or "-v3" in trained_model:
         return

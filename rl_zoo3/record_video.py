@@ -89,6 +89,9 @@ if __name__ == "__main__":  # noqa: C901
     if args.env_kwargs is not None:
         env_kwargs.update(args.env_kwargs)
 
+    # Force rgb_array rendering (gym 0.26+)
+    env_kwargs.update(render_mode="rgb_array")
+
     env = create_test_env(
         env_name.gym_id,
         n_envs=n_envs,

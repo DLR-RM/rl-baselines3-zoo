@@ -21,3 +21,4 @@ seaborn~=0.11.2
 tqdm
 rich
 importlib-metadata~=4.13 # flake8 not compatible with importlib-metadata>5.0
+moviepy
