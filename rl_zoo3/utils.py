@@ -232,7 +232,10 @@ def create_test_env(
         # start_method = 'spawn' for thread safe
 
     if ExperimentManager.is_panda_gym(env_id) and should_render:
-        env_kwargs["render"] = True
+        if env_kwargs is None:
+            env_kwargs = {"render": True}
+        else:
+            env_kwargs["render"] = True
 
     env = make_vec_env(
         env_id,
