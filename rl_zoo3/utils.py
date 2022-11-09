@@ -231,6 +231,9 @@ def create_test_env(
         vec_env_cls = SubprocVecEnv
         # start_method = 'spawn' for thread safe
 
+    if ExperimentManager.is_panda_gym(env_id) and should_render:
+        env_kwargs["render"] = True
+
     env = make_vec_env(
         env_id,
         n_envs=n_envs,
