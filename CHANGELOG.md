@@ -9,6 +9,7 @@
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
 - Fix a bug where custom environments were not found despite passing ``--gym-package`` when using subprocesses
+- Fix a bug when using `normalize=True` on images with `HxWxC` format (@Rick-v-E)
 
 ### Documentation
 

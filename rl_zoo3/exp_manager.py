@@ -594,17 +594,7 @@ class ExperimentManager:
         if self.vec_env_wrapper is not None:
             env = self.vec_env_wrapper(env)
 
-        # Wrap the env into a VecNormalize wrapper if needed
-        # and load saved statistics when present
-        env = self._maybe_normalize(env, eval_env)
-
-        # Optional Frame-stacking
-        if self.frame_stack is not None:
-            n_stack = self.frame_stack
-            env = VecFrameStack(env, n_stack)
-            if self.verbose > 0:
-                print(f"Stacking {n_stack} frames")
-
+        # When needed, VecTransposeImage should be applied before VecNormalize, see issue #312
         if not is_vecenv_wrapped(env, VecTransposeImage):
             wrap_with_vectranspose = False
             if isinstance(env.observation_space, gym.spaces.Dict):
@@ -624,6 +614,17 @@ class ExperimentManager:
                 if self.verbose >= 1:
                     print("Wrapping the env in a VecTransposeImage.")
                 env = VecTransposeImage(env)
+
+        # Wrap the env into a VecNormalize wrapper if needed
+        # and load saved statistics when present
+        env = self._maybe_normalize(env, eval_env)
+
+        # Optional Frame-stacking
+        if self.frame_stack is not None:
+            n_stack = self.frame_stack
+            env = VecFrameStack(env, n_stack)
+            if self.verbose > 0:
+                print(f"Stacking {n_stack} frames")
 
         return env
 
