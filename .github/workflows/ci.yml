@@ -30,12 +30,11 @@ jobs:
         python -m pip install --upgrade pip
         # cpu version of pytorch - faster to download
         pip install torch==1.11.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
-        pip install pybullet==3.1.9
+        pip install pybullet==3.2.5
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
-        # FIXME: https://github.com/eleurent/highway-env/issues/379
-        pip install highway-env==1.6.0
+        pip install highway-env==1.7.0
         pip install -e .
     - name: Type check
       run: |

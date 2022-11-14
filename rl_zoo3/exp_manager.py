@@ -580,14 +580,11 @@ class ExperimentManager:
 
         # On most env, SubprocVecEnv does not help and is quite memory hungry
         # therefore we use DummyVecEnv by default
-        # Fix for gym 0.26, to keep old behavior
-        env_kwargs = deepcopy(self.env_kwargs)
-        env_kwargs.update(disable_env_checker=True)
         env = make_vec_env(
             make_env,
             n_envs=n_envs,
             seed=self.seed,
-            env_kwargs=env_kwargs,
+            env_kwargs=self.env_kwargs,
             monitor_dir=log_dir,
             wrapper_class=self.env_wrapper,
             vec_env_cls=self.vec_env_class,
