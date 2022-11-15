@@ -231,6 +231,7 @@ def create_test_env(
         vec_env_cls = SubprocVecEnv
         # start_method = 'spawn' for thread safe
 
+    # panda-gym is based on pybullet, whose rendering requires to be configure at initialization
     if ExperimentManager.is_panda_gym(env_id) and should_render:
         if env_kwargs is None:
             env_kwargs = {"render": True}
