@@ -240,7 +240,7 @@
 - Clarify n_evaluations help text (@jkterry)
 - Simplified hyperparameters files making use of defaults
 - Added new TQC+HER agents
-- Add `panda-gym`environments (@qgallouedec)
+- Add `panda-gym` environments (@qgallouedec)
 
 ## Release 1.0 (2021-03-17)
 
