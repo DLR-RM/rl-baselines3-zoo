@@ -509,6 +509,11 @@ class ExperimentManager:
         entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
         return "gym.envs.robotics" in str(entry_point) or "panda_gym.envs" in str(entry_point)
 
+    @staticmethod
+    def is_panda_gym(env_id: str) -> bool:
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
+        return "panda_gym.envs" in str(entry_point)
+
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """
         Wrap the env into a VecNormalize wrapper if needed
@@ -568,10 +573,19 @@ class ExperimentManager:
         ):
             self.monitor_kwargs = dict(info_keywords=("is_success",))
 
+        # Define make_env here so it works with subprocesses
+        # when the registry was modified with `--gym-packages`
+        # See https://github.com/HumanCompatibleAI/imitation/pull/160
+        spec = gym.spec(self.env_name.gym_id)
+
+        def make_env(**kwargs) -> gym.Env:
+            env = spec.make(**kwargs)
+            return env
+
         # On most env, SubprocVecEnv does not help and is quite memory hungry
         # therefore we use DummyVecEnv by default
         env = make_vec_env(
-            env_id=self.env_name.gym_id,
+            make_env,
             n_envs=n_envs,
             seed=self.seed,
             env_kwargs=self.env_kwargs,
