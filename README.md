@@ -516,8 +516,6 @@ We used the v1 environments.
 |----------|-------------|-------------------|-----------|------------|------------|
 | HER+TQC | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
-To visualize the result, you can pass `--env-kwargs render:True` to the enjoy script.
-
 
 ### MiniGrid Envs
 
