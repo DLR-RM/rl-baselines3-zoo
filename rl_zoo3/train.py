@@ -122,7 +122,8 @@ def train():
         help="Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)",
     )
     parser.add_argument(
-        "-yaml", "--yaml-file", type=str, default=None, help="Custom yaml file from which the hyperparameters will be loaded"
+        "-conf", "--conf-file", type=str, default=None, help="Custom yaml file or python package from which the hyperparameters will be loaded."
+                                                             "We expect that python packages contain a dictionary called 'hyperparams' which contains a key for each environment."
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
     parser.add_argument(
@@ -234,7 +235,7 @@ def train():
         n_eval_envs=args.n_eval_envs,
         no_optim_plots=args.no_optim_plots,
         device=args.device,
-        yaml_file=args.yaml_file,
+        config=args.conf_file,
         show_progress=args.progress,
     )
 

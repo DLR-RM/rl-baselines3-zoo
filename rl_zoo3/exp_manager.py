@@ -1,4 +1,5 @@
 import argparse
+import importlib
 import os
 import pickle as pkl
 import time
@@ -93,7 +94,7 @@ class ExperimentManager:
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
         device: Union[th.device, str] = "auto",
-        yaml_file: Optional[str] = None,
+        config: Optional[str] = None,
         show_progress: bool = False,
     ):
         super().__init__()
@@ -108,7 +109,7 @@ class ExperimentManager:
             # Take the root folder
             default_path = Path(__file__).parent.parent
 
-        self.yaml_file = yaml_file or str(default_path / f"hyperparams/{self.algo}.yml")
+        self.config = config or str(default_path / f"hyperparams/{self.algo}.yml")
         self.env_kwargs = {} if env_kwargs is None else env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False
@@ -281,16 +282,21 @@ class ExperimentManager:
         print(f"Log path: {self.save_path}")
 
     def read_hyperparameters(self) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        # Load hyperparameters from yaml file
-        print(f"Loading hyperparameters from: {self.yaml_file}")
-        with open(self.yaml_file) as f:
-            hyperparams_dict = yaml.safe_load(f)
-            if self.env_name.gym_id in list(hyperparams_dict.keys()):
-                hyperparams = hyperparams_dict[self.env_name.gym_id]
-            elif self._is_atari:
-                hyperparams = hyperparams_dict["atari"]
-            else:
-                raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_name.gym_id}")
+        print(f"Loading hyperparameters from: {self.config}")
+
+        if self.config.endswith(".yml"):
+            # Load hyperparameters from yaml file
+            with open(self.config) as f:
+                hyperparams_dict = yaml.safe_load(f)
+        else:
+            # Load hyperparameters from python package
+            hyperparams_dict = importlib.import_module(self.config).hyperparams
+        if self.env_name.gym_id in list(hyperparams_dict.keys()):
+            hyperparams = hyperparams_dict[self.env_name.gym_id]
+        elif self._is_atari:
+            hyperparams = hyperparams_dict["atari"]
+        else:
+            raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_name.gym_id} in {self.config}")
 
         if self.custom_hyperparams is not None:
             # Overwrite hyperparams if needed
@@ -334,6 +340,10 @@ class ExperimentManager:
             # ex: "dict(norm_obs=False, norm_reward=True)"
             if isinstance(self.normalize, str):
                 self.normalize_kwargs = eval(self.normalize)
+                self.normalize = True
+
+            if isinstance(self.normalize, dict):
+                self.normalize_kwargs = self.normalize
                 self.normalize = True
 
             # Use the same discount factor as for the algorithm
