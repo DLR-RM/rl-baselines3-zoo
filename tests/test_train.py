@@ -116,7 +116,7 @@ def test_custom_yaml(tmp_path):
         "CartPole-v1",
         "--log-folder",
         tmp_path,
-        "-yaml",
+        "-conf",
         "hyperparams/a2c.yml",
         "-params",
         "n_envs:2",
@@ -125,6 +125,25 @@ def test_custom_yaml(tmp_path):
         "batch_size:4",
         # Test custom policy
         "policy:'stable_baselines3.ppo.MlpPolicy'",
+    ]
+
+    return_code = subprocess.call(["python", "train.py"] + args)
+    _assert_eq(return_code, 0)
+
+
+def test_python_config_file(tmp_path):
+    # Use the example python config file for training
+    args = [
+        "-n",
+        str(N_STEPS),
+        "--algo",
+        "ppo",
+        "--env",
+        "MountainCarContinuous-v0",
+        "--log-folder",
+        tmp_path,
+        "-conf",
+        "hyperparams.ppo_python_config_example"
     ]
 
     return_code = subprocess.call(["python", "train.py"] + args)
