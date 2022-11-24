@@ -143,7 +143,7 @@ def test_python_config_file(tmp_path):
         "--log-folder",
         tmp_path,
         "-conf",
-        "hyperparams.ppo_python_config_example"
+        "hyperparams.ppo_python_config_example",
     ]
 
     return_code = subprocess.call(["python", "train.py"] + args)

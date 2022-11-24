@@ -122,8 +122,12 @@ def train():
         help="Overwrite hyperparameter (e.g. learning_rate:0.01 train_freq:10)",
     )
     parser.add_argument(
-        "-conf", "--conf-file", type=str, default=None, help="Custom yaml file or python package from which the hyperparameters will be loaded."
-                                                             "We expect that python packages contain a dictionary called 'hyperparams' which contains a key for each environment."
+        "-conf",
+        "--conf-file",
+        type=str,
+        default=None,
+        help="Custom yaml file or python package from which the hyperparameters will be loaded."
+        "We expect that python packages contain a dictionary called 'hyperparams' which contains a key for each environment.",
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
     parser.add_argument(
