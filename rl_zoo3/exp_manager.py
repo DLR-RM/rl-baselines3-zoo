@@ -284,13 +284,20 @@ class ExperimentManager:
     def read_hyperparameters(self) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         print(f"Loading hyperparameters from: {self.config}")
 
-        if self.config.endswith(".yml"):
+        if self.config.endswith(".yml") or self.config.endswith(".yaml"):
             # Load hyperparameters from yaml file
             with open(self.config) as f:
                 hyperparams_dict = yaml.safe_load(f)
+        elif self.config.endswith(".py"):
+            global_variables = {}
+            # Load hyperparameters from python file
+            exec(Path(self.config).read_text(), global_variables)
+            hyperparams_dict = global_variables["hyperparams"]
         else:
             # Load hyperparameters from python package
             hyperparams_dict = importlib.import_module(self.config).hyperparams
+            # raise ValueError(f"Unsupported config file format: {self.config}")
+
         if self.env_name.gym_id in list(hyperparams_dict.keys()):
             hyperparams = hyperparams_dict[self.env_name.gym_id]
         elif self._is_atari:
