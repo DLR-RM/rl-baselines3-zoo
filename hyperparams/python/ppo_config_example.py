@@ -2,8 +2,6 @@
 using python scripts instead of yaml files."""
 import torch
 
-print(torch.__version__)
-
 hyperparams = {
     "MountainCarContinuous-v0": dict(
         env_wrapper=[{"gym.wrappers.TimeLimit": {"max_episode_steps": 100}}],
