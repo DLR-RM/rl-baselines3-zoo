@@ -55,15 +55,16 @@ def make_swa_opt_class(optimizer, opt_kwargs, swa_kwargs):
     class MySWA(SWA):
         def __init__(self, params, **kwargs):
             # tease out which kwargs are for the base opt, and which for SWA.
-            opt_kwargs_ = {k: v for k,v in kwargs.items() if k in opt_kwargs}
-            swa_kwargs_ = {k: v for k,v in kwargs.items() if k in swa_kwargs}
+            opt_kwargs_ = {k: v for k, v in kwargs.items() if k in opt_kwargs}
+            swa_kwargs_ = {k: v for k, v in kwargs.items() if k in swa_kwargs}
             opt = optimizer(params, **opt_kwargs_)
             super().__init__(opt, **swa_kwargs_)
             # we need to set the various attribs, else we get errors like
             # saying things like "defaults" is not defined for MySWA, etc.
-            attrs = [a for a in dir(opt) if not a.startswith('__') and not callable(getattr(opt, a))]
+            attrs = [a for a in dir(opt) if not a.startswith("__") and not callable(getattr(opt, a))]
             for attr in attrs:
                 setattr(self, attr, getattr(opt, attr))
+
     return MySWA
 
 
@@ -216,7 +217,7 @@ class ExperimentManager:
             env.close()
             return None
         else:
-            if self._hyperparams.get("policy_kwargs", {}).get("swa", {"swa_start": -1})["swa_start"]  > 0:
+            if self._hyperparams.get("policy_kwargs", {}).get("swa", {"swa_start": -1})["swa_start"] > 0:
                 # Assume swa_start < 0 means we don't want to use SWA
                 p_kwargs = self._hyperparams["policy_kwargs"]
                 swa_kwargs = p_kwargs["swa"]
@@ -225,9 +226,9 @@ class ExperimentManager:
                 p_kwargs["optimizer_class"] = make_swa_opt_class(base_opt_class, base_opt_kwargs, swa_kwargs)
                 p_kwargs["optimizer_kwargs"] = {**base_opt_kwargs, **swa_kwargs}
 
-            self._hyperparams["policy_kwargs"].pop("swa", None) # remove swa if it exists
+            self._hyperparams["policy_kwargs"].pop("swa", None)  # remove swa if it exists
 
-    # Train an agent from scratch
+            # Train an agent from scratch
             model = ALGOS[self.algo](
                 env=env,
                 tensorboard_log=self.tensorboard_log,
