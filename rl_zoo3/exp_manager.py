@@ -262,7 +262,7 @@ class ExperimentManager:
         try:
             model.learn(self.n_timesteps, **kwargs)
             if self.use_swa:
-                self.model.policy.optimizer.swap_swa_sgd()
+                model.policy.optimizer.swap_swa_sgd()
 
         except KeyboardInterrupt:
             # this allows to save the model when interrupting training
