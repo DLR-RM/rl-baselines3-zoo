@@ -12,7 +12,6 @@ import gym
 import numpy as np
 import optuna
 import torch as th
-from torchcontrib.optim import SWA
 import yaml
 from huggingface_sb3 import EnvironmentName
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
@@ -43,12 +42,14 @@ from stable_baselines3.common.vec_env import (
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401
+from torchcontrib.optim import SWA
 
 # Register custom envs
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
 from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from rl_zoo3.hyperparams_opt import HYPERPARAMS_SAMPLER
 from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_latest_run_id, get_wrapper_class, linear_schedule
+
 
 def make_swa_opt_class(optimizer, opt_kwargs, swa_kwargs):
     class MySWA(SWA):
