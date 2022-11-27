@@ -191,6 +191,7 @@ class ExperimentManager:
             self.log_path, f"{self.env_name}_{get_latest_run_id(self.log_path, self.env_name) + 1}{uuid_str}"
         )
         self.params_path = f"{self.save_path}/{self.env_name}"
+        self.use_swa = self.custom_hyperparams.get("policy_kwargs", {}).get("swa", {"swa_start": -1})["swa_start"]  > 0
 
     def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
         """
@@ -217,7 +218,7 @@ class ExperimentManager:
             env.close()
             return None
         else:
-            if self._hyperparams.get("policy_kwargs", {}).get("swa", {"swa_start": -1})["swa_start"] > 0:
+            if self.use_swa:
                 # Assume swa_start < 0 means we don't want to use SWA
                 p_kwargs = self._hyperparams["policy_kwargs"]
                 swa_kwargs = p_kwargs["swa"]
@@ -260,6 +261,9 @@ class ExperimentManager:
 
         try:
             model.learn(self.n_timesteps, **kwargs)
+            if self.use_swa:
+                self.model.policy.optimizer.swap_swa_sgd()
+
         except KeyboardInterrupt:
             # this allows to save the model when interrupting training
             pass
