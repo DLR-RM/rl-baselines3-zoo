@@ -237,6 +237,9 @@ def create_test_env(
     env_kwargs = deepcopy(env_kwargs)
     if "render_mode" not in env_kwargs:
         env_kwargs.update(render_mode="human" if should_render else None)
+    # panda-gym is based on pybullet, whose rendering requires to be configure at initialization
+    if ExperimentManager.is_panda_gym(env_id) and should_render:
+        env_kwargs["render"] = True
 
     env = make_vec_env(
         env_id,

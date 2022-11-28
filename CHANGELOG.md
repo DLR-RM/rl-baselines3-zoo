@@ -20,6 +20,7 @@
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)
 - Added ``monitor_kwargs`` parameter
+- Handle the `env_kwargs` of `render:True` under the hood for panda-gym v1 envs in `enjoy` replay to match visualzation behavior of other envs
 
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
@@ -254,7 +255,7 @@
 - Clarify n_evaluations help text (@jkterry)
 - Simplified hyperparameters files making use of defaults
 - Added new TQC+HER agents
-- Add `panda-gym`environments (@qgallouedec)
+- Add `panda-gym` environments (@qgallouedec)
 
 ## Release 1.0 (2021-03-17)
 
