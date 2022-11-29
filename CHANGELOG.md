@@ -1,11 +1,13 @@
 ## Release 1.7.0a2 (WIP)
 
 ### Breaking Changes
+- Renaming the `--yaml-file` parameter to `--conf-file`
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)
 - Added ``monitor_kwargs`` parameter
 - Handle the `env_kwargs` of `render:True` under the hood for panda-gym v1 envs in `enjoy` replay to match visualzation behavior of other envs
+- The new `--conf-file` parameter accepts python packages in addition to yaml files.
 
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
