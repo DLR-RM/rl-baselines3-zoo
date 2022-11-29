@@ -129,6 +129,13 @@ def train():
         help="Custom yaml file or python package from which the hyperparameters will be loaded."
         "We expect that python packages contain a dictionary called 'hyperparams' which contains a key for each environment.",
     )
+    parser.add_argument(
+        "-yaml",
+        "--yaml-file",
+        type=str,
+        default=None,
+        help="This parameter is deprecated, please use `--conf-file` instead",
+    )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
     parser.add_argument(
         "--track",
@@ -154,6 +161,11 @@ def train():
 
     env_id = args.env
     registered_envs = set(gym.envs.registry.env_specs.keys())  # pytype: disable=module-attr
+
+    if args.yaml_file is not None:
+        raise ValueError(
+            "The`--yaml-file` parameter is deprecated and will be removed in RL Zoo3 v1.8, please use `--conf-file` instead",
+        )
 
     # If the environment is not found, suggest the closest match
     if env_id not in registered_envs:

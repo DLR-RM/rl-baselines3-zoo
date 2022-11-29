@@ -131,7 +131,8 @@ def test_custom_yaml(tmp_path):
     _assert_eq(return_code, 0)
 
 
-def test_python_config_file(tmp_path):
+@pytest.mark.parametrize("config_file", ["hyperparams.python.ppo_config_example", "hyperparams/python/ppo_config_example.py"])
+def test_python_config_file(tmp_path, config_file):
     # Use the example python config file for training
     args = [
         "-n",
@@ -143,7 +144,7 @@ def test_python_config_file(tmp_path):
         "--log-folder",
         tmp_path,
         "-conf",
-        "hyperparams.ppo_python_config_example",
+        config_file,
     ]
 
     return_code = subprocess.call(["python", "train.py"] + args)
