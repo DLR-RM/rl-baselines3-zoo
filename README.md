@@ -61,10 +61,22 @@ python train.py --algo algo_name --env env_id
 ```
 You can use `-P` (`--progress`) option to display a progress bar.
 
-Using a custom yaml file (which contains a `env_id` entry):
+Using a custom config file when it is a yaml file with a which contains a `env_id` entry:
 ```
-python train.py --algo algo_name --env env_id --yaml-file my_yaml.yml
+python train.py --algo algo_name --env env_id --conf-file my_yaml.yml
 ```
+
+You can also use a python file that contains a dictionary called `hyperparams` with an entry for each `env_id`.
+(see `hyperparams/python/ppo_config_example.py` for an example)
+```bash
+# You can pass a path to a python file
+python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams/python/ppo_config_example.py
+# Or pass a path to a file from a module (for instance my_package.my_file
+python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams.python.ppo_config_example
+```
+The advantage of this approach is that you can specify arbitrary python dictionaries
+and ensure that all their dependencies are imported in the config file itself.
+
 
 For example (with tensorboard support):
 ```
@@ -139,7 +151,7 @@ Remark: plotting with the `--rliable` option is usually slow as confidence inter
 
 ## Custom Environment
 
-The easiest way to add support for a custom environment is to edit `rl_zoo3/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml` or a custom yaml file that you can specify using `--yaml-file` argument).
+The easiest way to add support for a custom environment is to edit `rl_zoo3/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml` or a custom yaml file that you can specify using `--conf-file` argument).
 
 ## Enjoy a Trained Agent
 
