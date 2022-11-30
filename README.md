@@ -68,8 +68,10 @@ python train.py --algo algo_name --env env_id --conf-file my_yaml.yml
 
 You can also use a python file that contains a dictionary called `hyperparams` with an entry for each `env_id`.
 (see `hyperparams/python/ppo_config_example.py` for an example)
-```commandline
+```bash
+# You can pass a path to a python file
 python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams/python/ppo_config_example.py
+# Or pass a path to a file from a module (for instance my_package.my_file
 python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams.python.ppo_config_example
 ```
 The advantage of this approach is that you can specify arbitrary python dictionaries
