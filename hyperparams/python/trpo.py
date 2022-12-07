@@ -1,0 +1,136 @@
+import imitation
+
+hyperparams = {
+    "seals/CartPole-v0": dict(
+        n_envs=2,
+        n_timesteps=100000.0,
+        policy="MlpPolicy",
+        n_steps=512,
+        batch_size=512,
+        cg_damping=0.001,
+        gae_lambda=0.98,
+        gamma=0.99,
+        learning_rate=0.001,
+        n_critic_updates=20,
+    ),
+    "seals/MountainCar-v0": dict(
+        normalize=dict(norm_obs=False, norm_reward=True),
+        n_envs=2,
+        n_timesteps=100000.0,
+        policy="MlpPolicy",
+        n_steps=1024,
+        n_critic_updates=20,
+        policy_kwargs=dict(
+            features_extractor_class=imitation.policies.base.NormalizeFeaturesExtractor
+        ),
+    ),
+    "seals/Ant-v0": dict(
+        normalize=dict(norm_obs=False, norm_reward=True),
+        n_envs=2,
+        n_timesteps=1000000.0,
+        policy="MlpPolicy",
+        batch_size=128,
+        n_steps=1024,
+        gamma=0.99,
+        gae_lambda=0.95,
+        sub_sampling_factor=1,
+        cg_max_steps=25,
+        cg_damping=0.1,
+        n_critic_updates=20,
+        learning_rate=0.001,
+        policy_kwargs=dict(
+            features_extractor_class=imitation.policies.base.NormalizeFeaturesExtractor
+        ),
+    ),
+    "seals/HalfCheetah-v0": dict(
+        normalize=dict(norm_obs=False, norm_reward=True),
+        n_envs=2,
+        n_timesteps=1000000.0,
+        policy="MlpPolicy",
+        batch_size=128,
+        n_steps=1024,
+        gamma=0.99,
+        gae_lambda=0.95,
+        sub_sampling_factor=1,
+        cg_max_steps=25,
+        cg_damping=0.1,
+        n_critic_updates=20,
+        learning_rate=0.001,
+        target_kl=0.04,
+        policy_kwargs=dict(
+            features_extractor_class=imitation.policies.base.NormalizeFeaturesExtractor
+        ),
+    ),
+    "seals/Hopper-v0": dict(
+        normalize=dict(norm_obs=False, norm_reward=True),
+        n_envs=2,
+        n_timesteps=1000000.0,
+        policy="MlpPolicy",
+        batch_size=128,
+        n_steps=1024,
+        gamma=0.99,
+        gae_lambda=0.95,
+        sub_sampling_factor=1,
+        cg_max_steps=25,
+        cg_damping=0.1,
+        n_critic_updates=20,
+        learning_rate=0.001,
+        policy_kwargs=dict(
+            features_extractor_class=imitation.policies.base.NormalizeFeaturesExtractor
+        ),
+    ),
+    "seals/Walker2d-v0": dict(
+        normalize=dict(norm_obs=False, norm_reward=True),
+        n_envs=2,
+        n_timesteps=1000000.0,
+        policy="MlpPolicy",
+        batch_size=128,
+        n_steps=1024,
+        gamma=0.99,
+        gae_lambda=0.95,
+        sub_sampling_factor=1,
+        cg_max_steps=25,
+        cg_damping=0.1,
+        n_critic_updates=20,
+        learning_rate=0.001,
+        policy_kwargs=dict(
+            features_extractor_class=imitation.policies.base.NormalizeFeaturesExtractor
+        ),
+    ),
+    "seals/Humanoid-v0": dict(
+        normalize=dict(norm_obs=False, norm_reward=True),
+        n_envs=2,
+        n_timesteps=2000000.0,
+        policy="MlpPolicy",
+        batch_size=128,
+        n_steps=1024,
+        gamma=0.99,
+        gae_lambda=0.95,
+        sub_sampling_factor=1,
+        cg_max_steps=25,
+        cg_damping=0.1,
+        n_critic_updates=20,
+        learning_rate=0.001,
+        policy_kwargs=dict(
+            features_extractor_class=imitation.policies.base.NormalizeFeaturesExtractor
+        ),
+    ),
+    "seals/Swimmer-v0": dict(
+        normalize=dict(norm_obs=False, norm_reward=True),
+        n_envs=2,
+        n_timesteps=1000000.0,
+        policy="MlpPolicy",
+        batch_size=128,
+        n_steps=1024,
+        gamma=0.9999,
+        gae_lambda=0.95,
+        sub_sampling_factor=1,
+        cg_max_steps=25,
+        cg_damping=0.1,
+        n_critic_updates=20,
+        learning_rate=0.001,
+        policy_kwargs=dict(
+            features_extractor_class=imitation.policies.base.NormalizeFeaturesExtractor
+        ),
+    ),
+}
