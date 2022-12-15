@@ -547,7 +547,7 @@ There are 19 environment groups (variations for each) in total.
 Note that you need to specify `--gym-packages gym_minigrid` with `enjoy.py` and `train.py` as it is not a standard Gym environment, as well as installing the custom Gym package module or putting it in python path.
 
 ```
-pip install gym-minigrid
+pip install gym-minigrid==1.0.3
 python train.py --algo ppo --env MiniGrid-DoorKey-5x5-v0 --gym-packages gym_minigrid
 ```
 
