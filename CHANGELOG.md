@@ -16,6 +16,7 @@
 ### Documentation
 
 ### Other
+- `scripts/plot_train.py` plots models such that newer models appear on top of older ones.
 
 
 ## Release 1.6.3 (2022-10-13)
