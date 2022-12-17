@@ -57,13 +57,9 @@ def plot_train():
     dirs = []
 
     for env in envs:
-        dirs.extend(
-            [
-                os.path.join(log_path, folder)
-                for folder in os.listdir(log_path)
-                if (env in folder and os.path.isdir(os.path.join(log_path, folder)))
-            ]
-        )
+        # Sort by last modification
+        entries = sorted(os.scandir(log_path), key=lambda entry: entry.stat().st_mtime)
+        dirs.extend(entry.path for entry in entries if env in entry.name and entry.is_dir())
 
     plt.figure(y_label, figsize=args.figsize)
     plt.title(y_label, fontsize=args.fontsize)
