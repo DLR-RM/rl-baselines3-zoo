@@ -593,8 +593,13 @@ class ExperimentManager:
 
         if self.use_envpool:
             # TODO: warning if env wrapper is passed
-            # TODO: check that log10(self.seed) <= 9
-            env = envpool.make(self.env_name.gym_id, env_type="gym", num_envs=n_envs, seed=self.seed)
+            # Convert Atari game names
+            # See https://github.com/sail-sg/envpool/issues/14
+            env_id = self.env_name.gym_id
+            if self._is_atari and "NoFrameskip-v4" in env_id:
+                env_id = env_id.split("NoFrameskip-v4")[0] + "-v5"
+
+            env = envpool.make(env_id, env_type="gym", num_envs=n_envs, seed=self.seed)
             env.spec.id = self.env_name.gym_id
             env = EnvPoolAdapter(env)
             filename = None if log_dir is None else f"{log_dir}/monitor.csv"
