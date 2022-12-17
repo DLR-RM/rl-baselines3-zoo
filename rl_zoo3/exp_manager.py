@@ -43,12 +43,30 @@ from stable_baselines3.common.vec_env import (
 
 # For custom activation fn
 from torch import nn as nn  # noqa: F401
+from torchcontrib.optim import SWA
 
 # Register custom envs
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
 from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from rl_zoo3.hyperparams_opt import HYPERPARAMS_SAMPLER
 from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_latest_run_id, get_wrapper_class, linear_schedule
+
+
+def make_swa_opt_class(optimizer, opt_kwargs, swa_kwargs):
+    class MySWA(SWA):
+        def __init__(self, params, **kwargs):
+            # tease out which kwargs are for the base opt, and which for SWA.
+            opt_kwargs_ = {k: v for k, v in kwargs.items() if k in opt_kwargs}
+            swa_kwargs_ = {k: v for k, v in kwargs.items() if k in swa_kwargs}
+            opt = optimizer(params, **opt_kwargs_)
+            super().__init__(opt, **swa_kwargs_)
+            # we need to set the various attribs, else we get errors like
+            # saying things like "defaults" is not defined for MySWA, etc.
+            attrs = [a for a in dir(opt) if not a.startswith("__") and not callable(getattr(opt, a))]
+            for attr in attrs:
+                setattr(self, attr, getattr(opt, attr))
+
+    return MySWA
 
 
 class ExperimentManager:
@@ -174,6 +192,7 @@ class ExperimentManager:
             self.log_path, f"{self.env_name}_{get_latest_run_id(self.log_path, self.env_name) + 1}{uuid_str}"
         )
         self.params_path = f"{self.save_path}/{self.env_name}"
+        self.use_swa = self.custom_hyperparams.get("policy_kwargs", {}).get("swa", {"swa_start": -1})["swa_start"]  > 0
 
     def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
         """
@@ -200,6 +219,17 @@ class ExperimentManager:
             env.close()
             return None
         else:
+            if self.use_swa:
+                # Assume swa_start < 0 means we don't want to use SWA
+                p_kwargs = self._hyperparams["policy_kwargs"]
+                swa_kwargs = p_kwargs["swa"]
+                base_opt_class = p_kwargs.get("optimizer_class", th.optim.Adam)
+                base_opt_kwargs = p_kwargs.get("optimizer_kwargs", {})
+                p_kwargs["optimizer_class"] = make_swa_opt_class(base_opt_class, base_opt_kwargs, swa_kwargs)
+                p_kwargs["optimizer_kwargs"] = {**base_opt_kwargs, **swa_kwargs}
+
+            self._hyperparams["policy_kwargs"].pop("swa", None)  # remove swa if it exists
+
             # Train an agent from scratch
             model = ALGOS[self.algo](
                 env=env,
@@ -232,6 +262,9 @@ class ExperimentManager:
 
         try:
             model.learn(self.n_timesteps, **kwargs)
+            if self.use_swa:
+                model.policy.optimizer.swap_swa_sgd()
+
         except KeyboardInterrupt:
             # this allows to save the model when interrupting training
             pass
