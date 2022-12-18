@@ -529,7 +529,7 @@ class ExperimentManager:
 
     @staticmethod
     def is_panda_gym(env_id: str) -> bool:
-        entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
+        entry_point = gym.envs.registry[env_id].entry_point  # pytype: disable=module-attr
         return "panda_gym.envs" in str(entry_point)
 
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
