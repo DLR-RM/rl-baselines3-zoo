@@ -5,7 +5,6 @@ import pickle as pkl
 import time
 import warnings
 from collections import OrderedDict
-from copy import deepcopy
 from pathlib import Path
 from pprint import pprint
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
