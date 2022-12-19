@@ -38,13 +38,19 @@ def test_trained_agents(trained_model):
         return
 
     # FIXME: skip Panda gym envs
+    # need panda gym >= 3.0.1 and gymnasium
     if "Panda" in env_id:
+        return
+
+    # FIXME: skip highway env
+    if "parking" in env_id:
         return
 
     # Skip mujoco envs
     if "Fetch" in trained_model or "-v3" in trained_model:
         return
 
+    # FIXME: switch to MiniGrid package
     if "-MiniGrid-" in trained_model:
         args = args + ["--gym-packages", "gym_minigrid"]
 

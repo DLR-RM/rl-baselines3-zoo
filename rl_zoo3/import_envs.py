@@ -49,8 +49,8 @@ except ImportError:
 
 
 # Register no vel envs
-def create_no_vel_env(env_id: str, render_mode: Optional[str] = None):
-    def make_env():
+def create_no_vel_env(env_id: str):
+    def make_env(render_mode: Optional[str] = None):
         env = gym.make(env_id, render_mode=render_mode)
         env = MaskVelocityWrapper(env)
         return env
