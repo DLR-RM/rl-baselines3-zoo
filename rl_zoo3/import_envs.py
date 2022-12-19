@@ -1,3 +1,5 @@
+from typing import Optional
+
 import gym
 from gym.envs.registration import register
 
@@ -47,9 +49,9 @@ except ImportError:
 
 
 # Register no vel envs
-def create_no_vel_env(env_id: str):
+def create_no_vel_env(env_id: str, render_mode: Optional[str] = None):
     def make_env():
-        env = gym.make(env_id)
+        env = gym.make(env_id, render_mode=render_mode)
         env = MaskVelocityWrapper(env)
         return env
 
