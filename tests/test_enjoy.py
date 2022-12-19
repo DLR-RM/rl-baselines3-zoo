@@ -37,6 +37,10 @@ def test_trained_agents(trained_model):
     if "Bullet" in env_id:
         return
 
+    # FIXME: skip Panda gym envs
+    if "Panda" in env_id:
+        return
+
     # Skip mujoco envs
     if "Fetch" in trained_model or "-v3" in trained_model:
         return
