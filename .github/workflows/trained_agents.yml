@@ -34,7 +34,7 @@ jobs:
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
-        pip install highway-env==1.7.0
+        pip install highway-env==1.7.1
         # Add support for pickle5 protocol
         pip install pickle5
         pip install -e .

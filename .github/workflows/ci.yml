@@ -34,7 +34,7 @@ jobs:
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
-        pip install highway-env==1.7.0
+        pip install highway-env==1.7.1
         pip install -e .
     - name: Type check
       run: |
