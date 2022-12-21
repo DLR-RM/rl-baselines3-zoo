@@ -187,6 +187,7 @@
 - Upgrade to sb3-contrib >= 1.2.0
 
 ### New Features
+- Added support for Python 3.10
 
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)
