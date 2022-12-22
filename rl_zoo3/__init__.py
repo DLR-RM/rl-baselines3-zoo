@@ -1,5 +1,12 @@
 import os
 
+# Important: import gym patches before everything
+# isort: off
+
+import rl_zoo3.gym_patches  # noqa: F401
+
+# isort: on
+
 from rl_zoo3.utils import (
     ALGOS,
     create_test_env,

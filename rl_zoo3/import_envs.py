@@ -7,9 +7,7 @@ from rl_zoo3.wrappers import MaskVelocityWrapper
 
 try:
     import pybullet_envs  # pytype: disable=import-error
-except (ImportError, AttributeError):
-    # FIXME: Gym breaks pybullet envs by breaking change
-    # in its registry :'(
+except ImportError:
     pybullet_envs = None
 
 try:

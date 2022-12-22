@@ -595,6 +595,10 @@ class ExperimentManager:
         # See https://github.com/HumanCompatibleAI/imitation/pull/160
         spec = gym.spec(self.env_name.gym_id)
 
+        # Make Pybullet compatible with gym 0.26
+        if self.is_bullet(self.env_name.gym_id):
+            self.env_kwargs.update(dict(apply_api_compatibility=True))
+
         def make_env(**kwargs) -> gym.Env:
             env = spec.make(**kwargs)
             return env

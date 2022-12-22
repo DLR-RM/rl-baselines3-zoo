@@ -156,6 +156,8 @@ if __name__ == "__main__":  # noqa: C901
                 episode_start=episode_starts,
                 deterministic=deterministic,
             )
+            if not args.no_render:
+                env.render()
             obs, _, dones, _ = env.step(action)
             episode_starts = dones
     except KeyboardInterrupt:

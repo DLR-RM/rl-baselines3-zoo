@@ -238,6 +238,9 @@ def create_test_env(
     if "render_mode" not in env_kwargs and should_render:
         env_kwargs.update(render_mode="human")
 
+    if ExperimentManager.is_bullet(env_id):
+        env_kwargs.update(apply_api_compatibility=True)
+
     env = make_vec_env(
         env_id,
         n_envs=n_envs,

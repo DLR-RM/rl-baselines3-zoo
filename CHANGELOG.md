@@ -1,10 +1,11 @@
 ## Release 2.0.0a0 (WIP)
 
 ### Breaking Changes
-- Upgraded to gym 0.26
+- Upgraded to gym 0.26+
 - Fixed bug in HistoryWrapper, now returns the correct obs space limits
 
 ### New Features
+- Gym 0.26+ patches to continue working with pybullet and TimeLimit wrapper
 
 ### Bug fixes
 

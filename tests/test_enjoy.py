@@ -32,11 +32,6 @@ def test_trained_agents(trained_model):
     if "CarRacing" in env_id:
         return
 
-    # FIXME: skip Bullet env
-    # broken by gym 0.26...
-    if "Bullet" in env_id:
-        return
-
     # FIXME: skip Panda gym envs
     # need panda gym >= 3.0.1 and gymnasium
     if "Panda" in env_id:
