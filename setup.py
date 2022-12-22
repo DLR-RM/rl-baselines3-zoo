@@ -44,7 +44,7 @@ setup(
     url="https://github.com/DLR-RM/rl-baselines3-zoo",
     author_email="antonin.raffin@dlr.de",
     keywords="reinforcement-learning-algorithms reinforcement-learning machine-learning "
-    "gym openai stable baselines toolbox python data-science",
+    "gym gymnasium openai stable baselines toolbox python data-science",
     license="MIT",
     long_description=long_description,
     long_description_content_type="text/markdown",

@@ -9,7 +9,7 @@ import numpy as np
 # Deprecation warning with gym 0.26 and numpy 1.24
 np.bool8 = np.bool_
 
-import gym
+import gym  # noqa: E402
 
 
 class PatchedRegistry(dict):
