@@ -4,6 +4,11 @@ Patches for gym 0.26+ so RL Zoo3 keeps working as before
 """
 from typing import Any, Dict
 
+import numpy as np
+
+# Deprecation warning with gym 0.26 and numpy 1.24
+np.bool8 = np.bool_
+
 import gym
 
 
