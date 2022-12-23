@@ -12,7 +12,8 @@
 
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
-- Fix a bug where custom environments were not found despite passing ``--gym-package`` when using subprocesses
+- Fixed a bug where custom environments were not found despite passing ``--gym-package`` when using subprocesses
+- Fixed TRPO hyperparameters for MinitaurBulletEnv-v0, MinitaurBulletDuckEnv-v0, HumanoidBulletEnv-v0, InvertedDoublePendulumBulletEnv-v0 and InvertedPendulumSwingupBulletEnv
 
 ### Documentation
 
@@ -63,7 +64,7 @@
 - Upgraded to sb3-contrib >= 1.6.1
 
 ### New Features
-- Added `--yaml-file` argument option for `train.py`to read hyperparameters from custom yaml files (@JohannesUl)
+- Added `--yaml-file` argument option for `train.py` to read hyperparameters from custom yaml files (@JohannesUl)
 
 ### Bug fixes
 - Added `custom_object` parameter on record_video.py (@Affonso-Gui)
