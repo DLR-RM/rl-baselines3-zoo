@@ -98,7 +98,8 @@ def test_record_video(tmp_path):
     args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v1", "-o", str(tmp_path)]
 
     # Skip if no X-Server
-    pytest.importorskip("pyglet.gl")
+    if not os.environ.get("DISPLAY"):
+        pytest.skip("No X-Server")
 
     return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args)
     _assert_eq(return_code, 0)
@@ -136,7 +137,8 @@ def test_record_training(tmp_path):
     ]
 
     # Skip if no X-Server
-    pytest.importorskip("pyglet.gl")
+    if not os.environ.get("DISPLAY"):
+        pytest.skip("No X-Server")
 
     return_code = subprocess.call(["python", "train.py"] + args_training)
     _assert_eq(return_code, 0)
