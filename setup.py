@@ -27,7 +27,7 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
-        "sb3-contrib>=1.6.2",
+        "sb3-contrib>=1.7.0a10",
         "huggingface_sb3>=2.2.1, <3.*",
         "tqdm",
         "rich",
@@ -56,6 +56,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
 )
 
