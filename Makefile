@@ -12,7 +12,7 @@ pytype:
 	pytype -j auto ${LINT_PATHS} -d import-error
 
 mypy:
-	mypy ${LINT_PATHS}
+	mypy ${LINT_PATHS} --install-types --non-interactive
 
 type: pytype mypy
 
