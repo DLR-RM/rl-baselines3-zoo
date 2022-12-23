@@ -1,7 +1,8 @@
-## Release 1.7.0a2 (WIP)
+## Release 1.7.0a10 (WIP)
 
 ### Breaking Changes
 - `--yaml-file` argument was renamed to `-conf` (`--conf-file`) as now python file are supported too
+- Upgraded to SB3 >= 1.7.0a10
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)
@@ -187,6 +188,7 @@
 - Upgrade to sb3-contrib >= 1.2.0
 
 ### New Features
+- Added support for Python 3.10
 
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)
