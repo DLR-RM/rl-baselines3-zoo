@@ -381,14 +381,14 @@ def get_saved_hyperparams(
     stats_path: str,
     norm_reward: bool = False,
     test_mode: bool = False,
-) -> Tuple[Dict[str, Any], str]:
+) -> Tuple[Dict[str, Any], Optional[str]]:
     """
     :param stats_path:
     :param norm_reward:
     :param test_mode:
     :return:
     """
-    hyperparams = {}
+    hyperparams: Dict[str, Any] = {}
     if not os.path.isdir(stats_path):
         stats_path = None
     else:
