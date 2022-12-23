@@ -19,6 +19,7 @@
 
 ### Other
 - `scripts/plot_train.py` plots models such that newer models appear on top of older ones.
+- Added additional type checking using mypy
 
 
 ## Release 1.6.3 (2022-10-13)

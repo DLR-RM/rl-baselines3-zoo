@@ -5,9 +5,10 @@ import pickle
 from pprint import pprint
 
 import optuna
+from optuna.trial import FrozenTrial
 
 
-def value_key(trial: optuna.trial.Trial) -> float:
+def value_key(trial: FrozenTrial) -> float:
     # Returns value of trial object for sorting
     if trial.value is None:
         return float("-inf")

@@ -155,7 +155,7 @@ def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
     :return:
     """
 
-    callbacks = []
+    callbacks: List[BaseCallback] = []
 
     if "callback" in hyperparams.keys():
         callback_name = hyperparams.get("callback")
@@ -216,6 +216,7 @@ def create_test_env(
     from rl_zoo3.exp_manager import ExperimentManager
 
     # Create the environment and wrap it if necessary
+    assert hyperparams is not None
     env_wrapper = get_wrapper_class(hyperparams)
 
     hyperparams = {} if hyperparams is None else hyperparams
@@ -223,12 +224,12 @@ def create_test_env(
     if "env_wrapper" in hyperparams.keys():
         del hyperparams["env_wrapper"]
 
-    vec_env_kwargs = {}
+    vec_env_kwargs: Dict[str, Any] = {}
     vec_env_cls = DummyVecEnv
     if n_envs > 1 or (ExperimentManager.is_bullet(env_id) and should_render):
         # HACK: force SubprocVecEnv for Bullet env
         # as Pybullet envs does not follow gym.render() interface
-        vec_env_cls = SubprocVecEnv
+        vec_env_cls = SubprocVecEnv  # type: ignore[assignment]
         # start_method = 'spawn' for thread safe
 
     # panda-gym is based on pybullet, whose rendering requires to be configure at initialization
@@ -252,6 +253,7 @@ def create_test_env(
     if "vec_env_wrapper" in hyperparams.keys():
 
         vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
+        assert vec_env_wrapper is not None
         env = vec_env_wrapper(env)
         del hyperparams["vec_env_wrapper"]
 
@@ -284,8 +286,8 @@ def linear_schedule(initial_value: Union[float, str]) -> Callable[[float], float
     :param initial_value: (float or str)
     :return: (function)
     """
-    if isinstance(initial_value, str):
-        initial_value = float(initial_value)
+    # Force convertion to float
+    initial_value_ = float(initial_value)
 
     def func(progress_remaining: float) -> float:
         """
@@ -293,7 +295,7 @@ def linear_schedule(initial_value: Union[float, str]) -> Callable[[float], float
         :param progress_remaining: (float)
         :return: (float)
         """
-        return progress_remaining * initial_value
+        return progress_remaining * initial_value_
 
     return func
 
@@ -383,6 +385,9 @@ def get_saved_hyperparams(
     test_mode: bool = False,
 ) -> Tuple[Dict[str, Any], Optional[str]]:
     """
+    Retrieve saved hyperparameters given a path.
+    Return empty dict and None if the path is not valid.
+
     :param stats_path:
     :param norm_reward:
     :param test_mode:
@@ -390,7 +395,7 @@ def get_saved_hyperparams(
     """
     hyperparams: Dict[str, Any] = {}
     if not os.path.isdir(stats_path):
-        stats_path = None
+        return hyperparams, None
     else:
         config_file = os.path.join(stats_path, "config.yml")
         if os.path.isfile(config_file):

@@ -2,6 +2,7 @@
 Run multiple experiments on a single machine.
 """
 import subprocess
+from typing import List
 
 import numpy as np
 
@@ -31,6 +32,6 @@ for algo in ALGOS:
                     "-f",
                     log_folder,
                 ]
-                args = list(map(str, args))
+                arg_str_list: List[str] = list(map(str, args))
 
-                ok = subprocess.call(["python", "train.py"] + args)
+                ok = subprocess.call(["python", "train.py"] + arg_str_list)
