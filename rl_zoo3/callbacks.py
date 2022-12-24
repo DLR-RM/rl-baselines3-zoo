@@ -4,7 +4,7 @@ import time
 from copy import deepcopy
 from functools import wraps
 from threading import Thread
-from typing import Optional, Union
+from typing import Optional, Type, Union
 
 import optuna
 from sb3_contrib import TQC
@@ -120,7 +120,7 @@ class ParallelTrainCallback(BaseCallback):
         self._model: Union[SAC, TQC]
         self.gradient_steps = gradient_steps
         self.process: Thread
-        self.model_class = None
+        self.model_class: Union[Type[SAC], Type[TQC]]
         self.sleep_time = sleep_time
 
     def _init_callback(self) -> None:
@@ -157,7 +157,7 @@ class ParallelTrainCallback(BaseCallback):
 
         # Add logger for parallel training
         self._model.set_logger(self.model.logger)
-        self.model.train = patch_train(self.model.train)
+        self.model.train = patch_train(self.model.train)  # type: ignore[assignment]
 
         # Hack: Re-add correct values at save time
         def patch_save(function):
@@ -167,7 +167,7 @@ class ParallelTrainCallback(BaseCallback):
 
             return wrapper
 
-        self.model.save = patch_save(self.model.save)
+        self.model.save = patch_save(self.model.save)  # type: ignore[assignment]
 
     def train(self) -> None:
         self._model_ready = False
