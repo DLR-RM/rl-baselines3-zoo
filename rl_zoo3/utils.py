@@ -287,7 +287,7 @@ def linear_schedule(initial_value: Union[float, str]) -> Callable[[float], float
     :param initial_value: (float or str)
     :return: (function)
     """
-    # Force convertion to float
+    # Force conversion to float
     initial_value_ = float(initial_value)
 
     def func(progress_remaining: float) -> float:

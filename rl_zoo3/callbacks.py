@@ -139,11 +139,11 @@ class ParallelTrainCallback(BaseCallback):
         # TODO: add support for other algorithms
         for model_class in [SAC, TQC]:
             if isinstance(self.model, model_class):
-                self.model_class = model_class
+                self.model_class = model_class  # type: ignore[assignment]
                 break
 
         assert self.model_class is not None, f"{self.model} is not supported for parallel training"
-        self._model = self.model_class.load(temp_file)
+        self._model = self.model_class.load(temp_file)  # type: ignore[arg-type]
 
         self.batch_size = self._model.batch_size
 
@@ -191,7 +191,7 @@ class ParallelTrainCallback(BaseCallback):
         if self._model_ready:
             self._model.replay_buffer = deepcopy(self.model.replay_buffer)
             self.model.set_parameters(deepcopy(self._model.get_parameters()))
-            self.model.actor = self.model.policy.actor  # type: ignore[union-attr]
+            self.model.actor = self.model.policy.actor  # type: ignore[union-attr, attr-defined]
             if self.num_timesteps >= self._model.learning_starts:
                 self.train()
             # Do not wait for the training loop to finish

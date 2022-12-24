@@ -213,7 +213,7 @@ def enjoy() -> None:  # noqa: C901
     try:
         for _ in generator:
             action, lstm_states = model.predict(
-                obs,
+                obs,  # type: ignore[arg-type]
                 state=lstm_states,
                 episode_start=episode_start,
                 deterministic=deterministic,

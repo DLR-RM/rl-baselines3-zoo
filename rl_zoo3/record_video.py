@@ -148,7 +148,7 @@ if __name__ == "__main__":  # noqa: C901
     try:
         for _ in range(video_length + 1):
             action, lstm_states = model.predict(
-                obs,
+                obs,  # type: ignore[arg-type]
                 state=lstm_states,
                 episode_start=episode_starts,
                 deterministic=deterministic,
