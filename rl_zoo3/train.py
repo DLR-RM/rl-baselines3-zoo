@@ -7,6 +7,7 @@ import uuid
 
 import gym
 import numpy as np
+import stable_baselines3 as sb3
 import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
@@ -152,6 +153,12 @@ def train():
         default=False,
         help="if toggled, display a progress bar using tqdm and rich",
     )
+    parser.add_argument(
+        "--tags",
+        type=str,
+        default="",
+        help="Comma-separated list of tags for wandb run, e.g.: --tag 'optimized, pr-123'",
+    )
 
     args = parser.parse_args()
 
@@ -206,10 +213,12 @@ def train():
             )
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
+        tags = [f"v{sb3.__version__}"] + ([tag.strip() for tag in args.tags.split(",")] if args.tags else [])
         run = wandb.init(
             name=run_name,
             project=args.wandb_project_name,
             entity=args.wandb_entity,
+            tags=tags,
             config=vars(args),
             sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
             monitor_gym=True,  # auto-upload the videos of agents playing the game
