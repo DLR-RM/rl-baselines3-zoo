@@ -9,6 +9,7 @@
 - Added ``monitor_kwargs`` parameter
 - Handle the `env_kwargs` of `render:True` under the hood for panda-gym v1 envs in `enjoy` replay to match visualzation behavior of other envs
 - Added support for python config file
+- tuned hyperparameters for PPO on Swimmer
 
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
