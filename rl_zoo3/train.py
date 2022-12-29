@@ -153,12 +153,7 @@ def train():
         default=False,
         help="if toggled, display a progress bar using tqdm and rich",
     )
-    parser.add_argument(
-        "--tags",
-        type=str,
-        default="",
-        help="Comma-separated list of tags for wandb run, e.g.: --tag 'optimized, pr-123'",
-    )
+    parser.add_argument("--tags", type=str, default="", nargs="+", help="Tags for wandb run, e.g.: --tags optimized pr-123")
 
     args = parser.parse_args()
 
@@ -213,7 +208,7 @@ def train():
             )
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
-        tags = [f"v{sb3.__version__}"] + ([tag.strip() for tag in args.tags.split(",")] if args.tags else [])
+        tags = [f"v{sb3.__version__}"] + (args.tags if args.tags else [])
         run = wandb.init(
             name=run_name,
             project=args.wandb_project_name,
