@@ -192,7 +192,6 @@
 
 ### New Features
 - Added support for Python 3.10
-- Added 
 
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)
