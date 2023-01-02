@@ -160,7 +160,6 @@ MinitaurBulletEnv-v0:
   batch_size: 64
   gae_lambda: 0.95
   gamma: 0.99
-  n_epochs: 10
   learning_rate: 2.5e-4
 
 
@@ -174,7 +173,6 @@ MinitaurBulletDuckEnv-v0:
   batch_size: 64
   gae_lambda: 0.95
   gamma: 0.99
-  n_epochs: 10
   learning_rate: 2.5e-4
 
 # To be tuned
@@ -187,7 +185,6 @@ HumanoidBulletEnv-v0:
   batch_size: 64
   gae_lambda: 0.95
   gamma: 0.99
-  n_epochs: 10
   learning_rate: 2.5e-4
 
 # To be tuned
@@ -200,7 +197,6 @@ InvertedDoublePendulumBulletEnv-v0:
   batch_size: 64
   gae_lambda: 0.95
   gamma: 0.99
-  n_epochs: 10
   learning_rate: 2.5e-4
 
 # To be tuned
@@ -213,5 +209,4 @@ InvertedPendulumSwingupBulletEnv-v0:
   batch_size: 64
   gae_lambda: 0.95
   gamma: 0.99
-  n_epochs: 10
   learning_rate: 2.5e-4

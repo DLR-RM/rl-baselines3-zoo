@@ -14,25 +14,29 @@
 ### Other
 
 
-## Release 1.7.0a2 (WIP)
+## Release 1.7.0a10 (WIP)
 
 ### Breaking Changes
 - `--yaml-file` argument was renamed to `-conf` (`--conf-file`) as now python file are supported too
+- Upgraded to SB3 >= 1.7.0a10
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)
 - Added ``monitor_kwargs`` parameter
 - Handle the `env_kwargs` of `render:True` under the hood for panda-gym v1 envs in `enjoy` replay to match visualzation behavior of other envs
 - Added support for python config file
+- Tuned hyperparameters for PPO on Swimmer
 
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
-- Fix a bug where custom environments were not found despite passing ``--gym-package`` when using subprocesses
+- Fixed a bug where custom environments were not found despite passing ``--gym-package`` when using subprocesses
+- Fixed TRPO hyperparameters for MinitaurBulletEnv-v0, MinitaurBulletDuckEnv-v0, HumanoidBulletEnv-v0, InvertedDoublePendulumBulletEnv-v0 and InvertedPendulumSwingupBulletEnv
 
 ### Documentation
 
 ### Other
 - `scripts/plot_train.py` plots models such that newer models appear on top of older ones.
+- Added additional type checking using mypy
 
 
 ## Release 1.6.3 (2022-10-13)
@@ -78,7 +82,7 @@
 - Upgraded to sb3-contrib >= 1.6.1
 
 ### New Features
-- Added `--yaml-file` argument option for `train.py`to read hyperparameters from custom yaml files (@JohannesUl)
+- Added `--yaml-file` argument option for `train.py` to read hyperparameters from custom yaml files (@JohannesUl)
 
 ### Bug fixes
 - Added `custom_object` parameter on record_video.py (@Affonso-Gui)
@@ -203,6 +207,7 @@
 - Upgrade to sb3-contrib >= 1.2.0
 
 ### New Features
+- Added support for Python 3.10
 
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)

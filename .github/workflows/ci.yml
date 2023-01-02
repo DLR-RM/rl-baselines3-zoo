@@ -11,12 +11,15 @@ on:
 
 jobs:
   build:
+    env:
+      TERM: xterm-256color
+      FORCE_COLOR: 1
     # Skip CI if [ci skip] in the commit message
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
     steps:
     - uses: actions/checkout@v2
       with:
