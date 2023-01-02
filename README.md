@@ -275,7 +275,7 @@ python train.py --algo ppo --env CartPole-v1 --track --wandb-project-name sb3
 
 yields a tracked experiment at this [URL](https://wandb.ai/openrlbenchmark/sb3/runs/1b65ldmh).
 
-
+To add a tag to the run, (for example `optimized`), you can add the argument `--wandb-tags optimized`.
 
 ## Env normalization
 
