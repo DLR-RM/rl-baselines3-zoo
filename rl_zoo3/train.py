@@ -206,7 +206,7 @@ def train() -> None:
             )
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
-        run = wandb.init(
+        run = wandb.init(  # type: ignore[attr-defined]
             name=run_name,
             project=args.wandb_project_name,
             entity=args.wandb_entity,

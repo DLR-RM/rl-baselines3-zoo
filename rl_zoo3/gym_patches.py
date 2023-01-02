@@ -7,7 +7,7 @@ from typing import Any, Dict
 import numpy as np
 
 # Deprecation warning with gym 0.26 and numpy 1.24
-np.bool8 = np.bool_
+np.bool8 = np.bool_  # type: ignore[attr-defined]
 
 import gym  # noqa: E402
 
@@ -53,6 +53,6 @@ patched_registry = PatchedRegistry()
 patched_registry.update(gym.envs.registration.registry)
 gym.envs.registry = patched_registry
 gym.envs.registration.registry = patched_registry
-gym.wrappers.TimeLimit = PatchedTimeLimit
-gym.wrappers.time_limit.TimeLimit = PatchedTimeLimit
-gym.envs.registration.TimeLimit = PatchedTimeLimit
+gym.wrappers.TimeLimit = PatchedTimeLimit  # type: ignore[misc]
+gym.wrappers.time_limit.TimeLimit = PatchedTimeLimit  # type: ignore[misc]
+gym.envs.registration.TimeLimit = PatchedTimeLimit  # type: ignore[misc]

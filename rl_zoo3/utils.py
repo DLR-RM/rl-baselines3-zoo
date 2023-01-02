@@ -40,11 +40,7 @@ ALGOS: Dict[str, Type[BaseAlgorithm]] = {
 
 def flatten_dict_observations(env: gym.Env) -> gym.Env:
     assert isinstance(env.observation_space, gym.spaces.Dict)
-    try:
-        return gym.wrappers.FlattenObservation(env)
-    except AttributeError:
-        keys = env.observation_space.spaces.keys()
-        return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
+    return gym.wrappers.FlattenObservation(env)
 
 
 def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
@@ -258,7 +254,7 @@ def create_test_env(
 
         vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
         assert vec_env_wrapper is not None
-        env = vec_env_wrapper(env)
+        env = vec_env_wrapper(env)  # type: ignore[assignment, arg-type]
         del hyperparams["vec_env_wrapper"]
 
     # Load saved stats for normalizing input and rewards
