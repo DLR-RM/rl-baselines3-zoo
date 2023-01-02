@@ -8,9 +8,13 @@ pytest:
 check-trained-agents:
 	python -m pytest -v tests/test_enjoy.py -k trained_agent --color=yes
 
-# Type check
-type:
-	pytype -j auto rl_zoo3/ tests/ scripts/ -d import-error
+pytype:
+	pytype -j auto ${LINT_PATHS} -d import-error
+
+mypy:
+	mypy ${LINT_PATHS} --install-types --non-interactive
+
+type: pytype mypy
 
 lint:
 	# stop the build if there are Python syntax errors or undefined names

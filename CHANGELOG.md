@@ -20,6 +20,7 @@
 
 ### Other
 - `scripts/plot_train.py` plots models such that newer models appear on top of older ones.
+- Added additional type checking using mypy
 - Standardized the use of ``from gym import spaces``
 
 
