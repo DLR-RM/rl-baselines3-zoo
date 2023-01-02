@@ -208,7 +208,7 @@ def train():
             )
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
-        tags = [f"v{sb3.__version__}"] + (args.tags if args.tags else [])
+        tags = args.tags + [f"v{sb3.__version__}"]
         run = wandb.init(
             name=run_name,
             project=args.wandb_project_name,
