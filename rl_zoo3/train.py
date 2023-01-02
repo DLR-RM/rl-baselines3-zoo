@@ -153,7 +153,7 @@ def train():
         default=False,
         help="if toggled, display a progress bar using tqdm and rich",
     )
-    parser.add_argument("--tags", type=str, default="", nargs="+", help="Tags for wandb run, e.g.: --tags optimized pr-123")
+    parser.add_argument("--tags", type=str, default=[], nargs="+", help="Tags for wandb run, e.g.: --tags optimized pr-123")
 
     args = parser.parse_args()
 
