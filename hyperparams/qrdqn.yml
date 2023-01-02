@@ -25,8 +25,38 @@ CartPole-v1:
   exploration_final_eps: 0.04
   policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=10)"
 
+seals/CartPole-v0:
+  n_timesteps: !!float 5e4
+  policy: 'MlpPolicy'
+  learning_rate: !!float 2.3e-3
+  batch_size: 64
+  buffer_size: 100000
+  learning_starts: 1000
+  gamma: 0.99
+  target_update_interval: 10
+  train_freq: 256
+  gradient_steps: 128
+  exploration_fraction: 0.16
+  exploration_final_eps: 0.04
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=10)"
+
 # Tuned
 MountainCar-v0:
+  n_timesteps: !!float 1.2e5
+  policy: 'MlpPolicy'
+  learning_rate: !!float 4e-3
+  batch_size: 128
+  buffer_size: 10000
+  learning_starts: 1000
+  gamma: 0.98
+  target_update_interval: 600
+  train_freq: 16
+  gradient_steps: 8
+  exploration_fraction: 0.2
+  exploration_final_eps: 0.07
+  policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=25)"
+
+seals/MountainCar-v0:
   n_timesteps: !!float 1.2e5
   policy: 'MlpPolicy'
   learning_rate: !!float 4e-3

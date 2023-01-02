@@ -19,6 +19,12 @@ CartPole-v1:
   policy: 'MlpPolicy'
   ent_coef: 0.0
 
+seals/CartPole-v0:
+  n_envs: 8
+  n_timesteps: !!float 5e5
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+
 LunarLander-v2:
   n_envs: 8
   n_timesteps: !!float 2e5
@@ -29,6 +35,13 @@ LunarLander-v2:
   ent_coef: 0.00001
 
 MountainCar-v0:
+  normalize: true
+  n_envs: 16
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  ent_coef: .0
+
+seals/MountainCar-v0:
   normalize: true
   n_envs: 16
   n_timesteps: !!float 1e6
@@ -170,19 +183,39 @@ HalfCheetah-v3: &mujoco-defaults
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
 
+seals/HalfCheetah-v0:
+  <<: *mujoco-defaults
+
 Ant-v3:
+  <<: *mujoco-defaults
+
+seals/Ant-v0:
   <<: *mujoco-defaults
 
 Hopper-v3:
   <<: *mujoco-defaults
 
+seals/Hopper-v0:
+  <<: *mujoco-defaults
+
 Walker2d-v3:
+  <<: *mujoco-defaults
+
+seals/Walker2d-v0:
   <<: *mujoco-defaults
 
 Humanoid-v3:
   <<: *mujoco-defaults
   n_timesteps: !!float 2e6
 
+seals/Humanoid-v0:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+
 Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+
+seals/Swimmer-v0:
   <<: *mujoco-defaults
   gamma: 0.9999

@@ -11,6 +11,18 @@ CartPole-v1:
   learning_rate: !!float 1e-3
   n_critic_updates: 20
 
+seals/CartPole-v0:
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 512
+  batch_size: 512
+  cg_damping: !!float 1e-3
+  gae_lambda: 0.98
+  gamma: 0.99
+  learning_rate: !!float 1e-3
+  n_critic_updates: 20
+
 # Tuned
 Pendulum-v1:
   n_envs: 2
@@ -53,6 +65,14 @@ Acrobot-v1:
 
 # Tuned
 MountainCar-v0:
+  normalize: true
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 1024
+  n_critic_updates: 20
+
+seals/MountainCar-v0:
   normalize: true
   n_envs: 2
   n_timesteps: !!float 1e5
@@ -122,22 +142,46 @@ Ant-v3: &mujoco-defaults
   <<: *pybullet-defaults
   n_timesteps: !!float 1e6
 
+seals/Ant-v0:
+  <<: *mujoco-defaults
+
 # Tuned
 HalfCheetah-v3:
   <<: *mujoco-defaults
   target_kl: 0.04
+
+seals/HalfCheetah-v0:
+  <<: *mujoco-defaults
+  target_kl: 0.04
+
 # Tuned
 Hopper-v3:
   <<: *mujoco-defaults
+
+seals/Hopper-v0:
+  <<: *mujoco-defaults
+
 # Tuned
 Walker2d-v3:
+  <<: *mujoco-defaults
+
+seals/Walker2d-v0:
   <<: *mujoco-defaults
 
 Humanoid-v3:
   <<: *mujoco-defaults
   n_timesteps: !!float 2e6
+
+seals/Humanoid-v0:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+
 # Tuned
 Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+
+seals/Swimmer-v0:
   <<: *mujoco-defaults
   gamma: 0.9999
 

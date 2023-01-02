@@ -133,7 +133,13 @@ HalfCheetah-v3: &mujoco-defaults
   noise_type: 'normal'
   noise_std: 0.1
 
+seals/HalfCheetah-v0:
+  <<: *mujoco-defaults
+
 Ant-v3:
+  <<: *mujoco-defaults
+
+seals/Ant-v0:
   <<: *mujoco-defaults
 
 Hopper-v3:
@@ -144,7 +150,18 @@ Hopper-v3:
   learning_rate: !!float 3e-4
   batch_size: 256
 
+seals/Hopper-v0:
+  <<: *mujoco-defaults
+  # SAC Hyperparams
+  train_freq: 1
+  gradient_steps: 1
+  learning_rate: !!float 3e-4
+  batch_size: 256
+
 Walker2d-v3:
+  <<: *mujoco-defaults
+
+seals/Walker2d-v0:
   <<: *mujoco-defaults
 
 Humanoid-v3:
@@ -156,8 +173,23 @@ Humanoid-v3:
   learning_rate: !!float 3e-4
   batch_size: 256
 
+seals/Humanoid-v0:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 2e6
+  # SAC Hyperparams
+  train_freq: 1
+  gradient_steps: 1
+  learning_rate: !!float 3e-4
+  batch_size: 256
+
 # Tuned
 Swimmer-v3:
+  <<: *mujoco-defaults
+  gamma: 0.9999
+  train_freq: 1
+  gradient_steps: 1
+
+seals/Swimmer-v0:
   <<: *mujoco-defaults
   gamma: 0.9999
   train_freq: 1
