@@ -8,6 +8,7 @@ import gym
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
+from gym import spaces
 from huggingface_hub import HfApi
 from huggingface_sb3 import EnvironmentName, ModelName
 from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
@@ -38,7 +39,7 @@ ALGOS: Dict[str, Type[BaseAlgorithm]] = {
 
 
 def flatten_dict_observations(env: gym.Env) -> gym.Env:
-    assert isinstance(env.observation_space, gym.spaces.Dict)
+    assert isinstance(env.observation_space, spaces.Dict)
     try:
         return gym.wrappers.FlattenObservation(env)
     except AttributeError:
