@@ -17,7 +17,7 @@ from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
 
 
-def train():
+def train() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
@@ -183,7 +183,7 @@ def train():
     uuid_str = f"_{uuid.uuid4()}" if args.uuid else ""
     if args.seed < 0:
         # Seed but with a random one
-        args.seed = np.random.randint(2**32 - 1, dtype="int64").item()
+        args.seed = np.random.randint(2**32 - 1, dtype="int64").item()  # type: ignore[attr-defined]
 
     set_random_seed(args.seed)
 
@@ -268,6 +268,7 @@ def train():
         if args.track:
             # we need to save the loaded hyperparameters
             args.saved_hyperparams = saved_hyperparams
+            assert run is not None  # make mypy happy
             run.config.setdefaults(vars(args))
 
         # Normal training
