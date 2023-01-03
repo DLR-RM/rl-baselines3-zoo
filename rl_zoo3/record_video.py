@@ -75,7 +75,7 @@ if __name__ == "__main__":  # noqa: C901
     is_atari = ExperimentManager.is_atari(env_name.gym_id)
 
     stats_path = os.path.join(log_path, env_name)
-    hyperparams, stats_path = get_saved_hyperparams(stats_path)
+    hyperparams, maybe_stats_path = get_saved_hyperparams(stats_path)
 
     # load env_kwargs if existing
     env_kwargs = {}
@@ -92,7 +92,7 @@ if __name__ == "__main__":  # noqa: C901
     env = create_test_env(
         env_name.gym_id,
         n_envs=n_envs,
-        stats_path=stats_path,
+        stats_path=maybe_stats_path,
         seed=seed,
         log_dir=None,
         should_render=not args.no_render,
@@ -148,12 +148,12 @@ if __name__ == "__main__":  # noqa: C901
     try:
         for _ in range(video_length + 1):
             action, lstm_states = model.predict(
-                obs,
+                obs,  # type: ignore[arg-type]
                 state=lstm_states,
                 episode_start=episode_starts,
                 deterministic=deterministic,
             )
-            obs, _, dones, _ = env.step(action)
+            obs, _, dones, _ = env.step(action)  # type: ignore[assignment]
             episode_starts = dones
             if not args.no_render:
                 env.render()

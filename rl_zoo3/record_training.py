@@ -51,8 +51,8 @@ if __name__ == "__main__":  # noqa: C901
 
     # record a video of every model
     models_dir_entries = [dir_ent.name for dir_ent in os.scandir(log_path) if dir_ent.is_file()]
-    checkpoints = list(filter(lambda x: x.startswith("rl_model_"), models_dir_entries))
-    checkpoints = list(map(lambda x: int(re.findall(r"\d+", x)[0]), checkpoints))
+    checkpoints_names = list(filter(lambda x: x.startswith("rl_model_"), models_dir_entries))
+    checkpoints = list(map(lambda x: int(re.findall(r"\d+", x)[0]), checkpoints_names))
     checkpoints.sort()
 
     args_final_model = [
@@ -102,7 +102,7 @@ if __name__ == "__main__":  # noqa: C901
     # sort checkpoints by the number of steps
     def get_number_from_checkpoint_filename(filename: str) -> int:
         match = re.search("checkpoint-(.*?)-", filename)
-        number = 0
+        number = "0"
         if match is not None:
             number = match.group(1)
 
