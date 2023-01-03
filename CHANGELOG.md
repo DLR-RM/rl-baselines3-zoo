@@ -10,6 +10,8 @@
 - Handle the `env_kwargs` of `render:True` under the hood for panda-gym v1 envs in `enjoy` replay to match visualzation behavior of other envs
 - Added support for python config file
 - Tuned hyperparameters for PPO on Swimmer
+- Added ``-tags/--wandb-tags`` argument to ``train.py`` to add tags to the wandb run
+- Added a sb3 version tag to the wandb run
 
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
