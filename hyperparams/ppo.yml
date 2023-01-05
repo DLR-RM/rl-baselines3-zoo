@@ -154,7 +154,7 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
-                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       net_arch=dict(pi=[256, 256], vf=[256, 256])
                        )"
 
 # Tuned
@@ -164,7 +164,7 @@ AntBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-1,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
-                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       net_arch=dict(pi=[256, 256], vf=[256, 256])
                        )"
 
 # Tuned
@@ -175,7 +175,7 @@ Walker2DBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
-                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       net_arch=dict(pi=[256, 256], vf=[256, 256])
                        )"
 
 # Tuned
@@ -186,7 +186,7 @@ HopperBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
-                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       net_arch=dict(pi=[256, 256], vf=[256, 256])
                        )"
 
 # Tuned
@@ -210,7 +210,7 @@ ReacherBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-2.7,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
-                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       net_arch=dict(pi=[256, 256], vf=[256, 256])
                        )"
 
 MinitaurBulletEnv-v0:
@@ -345,7 +345,7 @@ CarRacing-v0:
   policy_kwargs: "dict(log_std_init=-2,
                        ortho_init=False,
                        activation_fn=nn.GELU,
-                       net_arch=[dict(pi=[256], vf=[256])],
+                       net_arch=dict(pi=[256], vf=[256]),
                        )"
 
 
@@ -402,7 +402,7 @@ HalfCheetah-v3:
                     log_std_init=-2,
                     ortho_init=False,
                     activation_fn=nn.ReLU,
-                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                    net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
 # Ant-v3:
@@ -440,7 +440,7 @@ Hopper-v3:
                     log_std_init=-2,
                     ortho_init=False,
                     activation_fn=nn.ReLU,
-                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                    net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
 HumanoidStandup-v3:
@@ -462,7 +462,7 @@ HumanoidStandup-v3:
                     log_std_init=-2,
                     ortho_init=False,
                     activation_fn=nn.ReLU,
-                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                    net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
 Humanoid-v3:
@@ -484,7 +484,7 @@ Humanoid-v3:
                     log_std_init=-2,
                     ortho_init=False,
                     activation_fn=nn.ReLU,
-                    net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                    net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
 InvertedDoublePendulum-v3:
