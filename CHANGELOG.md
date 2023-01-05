@@ -1,8 +1,8 @@
-## Release 1.7.0a11 (WIP)
+## Release 1.7.0a12 (WIP)
 
 ### Breaking Changes
 - `--yaml-file` argument was renamed to `-conf` (`--conf-file`) as now python file are supported too
-- Upgraded to SB3 >= 1.7.0a11
+- Upgraded to SB3 >= 1.7.0a12 (changed `net_arch=[dict(pi=.., vf=..)]` to `net_arch=dict(pi=.., vf=..)`)
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)
