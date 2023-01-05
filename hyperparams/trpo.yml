@@ -98,7 +98,7 @@ Walker2DBulletEnv-v0:
   # policy_kwargs: "dict(log_std_init=-2,
   #                      ortho_init=False,
   #                      activation_fn=nn.ReLU,
-  #                      net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+  #                      net_arch=dict(pi=[256, 256], vf=[256, 256])
   #                      )"
 
 # Tuned
@@ -113,7 +113,7 @@ ReacherBulletEnv-v0:
   policy_kwargs: "dict(log_std_init=-1,
                        ortho_init=False,
                        activation_fn=nn.ReLU,
-                       net_arch=[dict(pi=[256, 256], vf=[256, 256])]
+                       net_arch=dict(pi=[256, 256], vf=[256, 256])
                        )"
 
 # === Mujoco Envs ===
