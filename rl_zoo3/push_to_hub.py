@@ -84,21 +84,26 @@ RL Zoo: https://github.com/DLR-RM/rl-baselines3-zoo<br/>
 SB3: https://github.com/DLR-RM/stable-baselines3<br/>
 SB3 Contrib: https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
 
+Install the RL Zoo (with SB3 and SB3-Contrib):
+```bash
+pip install rl_zoo3
+```
+
 ```
 # Download model and save it into the logs/ folder
 python -m rl_zoo3.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
-python enjoy.py --algo {algo_name} --env {env_id}  -f logs/
+python -m rl_zoo3.enjoy --algo {algo_name} --env {env_id}  -f logs/
 ```
 
 If you installed the RL Zoo3 via pip (`pip install rl_zoo3`), from anywhere you can do:
 ```
 python -m rl_zoo3.load_from_hub --algo {algo_name} --env {env_id} -orga {organization} -f logs/
-rl_zoo3 enjoy --algo {algo_name} --env {env_id}  -f logs/
+python -m rl_zoo3.enjoy --algo {algo_name} --env {env_id}  -f logs/
 ```
 
 ## Training (with the RL Zoo)
 ```
-python train.py --algo {algo_name} --env {env_id} -f logs/
+python -m rl_zoo3.train --algo {algo_name} --env {env_id} -f logs/
 # Upload the model and generate video (when possible)
 python -m rl_zoo3.push_to_hub --algo {algo_name} --env {env_id} -f logs/ -orga {organization}
 ```
@@ -341,7 +346,7 @@ if __name__ == "__main__":
     is_atari = ExperimentManager.is_atari(env_name.gym_id)
 
     stats_path = os.path.join(log_path, env_name)
-    hyperparams, stats_path = get_saved_hyperparams(stats_path, test_mode=True)
+    hyperparams, maybe_stats_path = get_saved_hyperparams(stats_path, test_mode=True)
 
     # load env_kwargs if existing
     env_kwargs = {}
@@ -358,7 +363,7 @@ if __name__ == "__main__":
     eval_env = create_test_env(
         env_name.gym_id,
         n_envs=args.n_envs,
-        stats_path=stats_path,
+        stats_path=maybe_stats_path,
         seed=args.seed,
         log_dir=None,
         should_render=not args.no_render,
@@ -373,7 +378,7 @@ if __name__ == "__main__":
 
     # Note: we assume that we push models using the same machine (same python version)
     # that trained them, if not, we would need to pass custom object as in enjoy.py
-    custom_objects = {}
+    custom_objects: Dict[str, Any] = {}
     model = ALGOS[algo].load(model_path, env=eval_env, custom_objects=custom_objects, device=args.device, **kwargs)
 
     # Deterministic by default except for atari games

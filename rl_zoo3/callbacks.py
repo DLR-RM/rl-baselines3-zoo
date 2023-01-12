@@ -5,7 +5,7 @@ import time
 from copy import deepcopy
 from functools import wraps
 from threading import Thread
-from typing import Optional
+from typing import Optional, Type, Union
 
 import optuna
 from sb3_contrib import TQC
@@ -83,13 +83,16 @@ class SaveVecNormalizeCallback(BaseCallback):
             os.makedirs(self.save_path, exist_ok=True)
 
     def _on_step(self) -> bool:
+        # make mypy happy
+        assert self.model is not None
+
         if self.n_calls % self.save_freq == 0:
             if self.name_prefix is not None:
                 path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps.pkl")
             else:
                 path = os.path.join(self.save_path, "vecnormalize.pkl")
             if self.model.get_vec_normalize_env() is not None:
-                self.model.get_vec_normalize_env().save(path)
+                self.model.get_vec_normalize_env().save(path)  # type: ignore[union-attr]
                 if self.verbose > 1:
                     print(f"Saving VecNormalize to {path}")
         return True
@@ -115,10 +118,10 @@ class ParallelTrainCallback(BaseCallback):
         super().__init__(verbose)
         self.batch_size = 0
         self._model_ready = True
-        self._model = None
+        self._model: Union[SAC, TQC]
         self.gradient_steps = gradient_steps
-        self.process = None
-        self.model_class = None
+        self.process: Thread
+        self.model_class: Union[Type[SAC], Type[TQC]]
         self.sleep_time = sleep_time
 
     def _init_callback(self) -> None:
@@ -127,9 +130,12 @@ class ParallelTrainCallback(BaseCallback):
         # Windows TemporaryFile is not a io Buffer
         # we save the model in the logs/ folder
         if os.name == "nt":
-            temp_file = os.path.join("logs", "model_tmp.zip")
+            temp_file = os.path.join("logs", "model_tmp.zip")  # type: ignore[arg-type,assignment]
 
-        self.model.save(temp_file)
+        # make mypy happy
+        assert isinstance(self.model, (SAC, TQC)), f"{self.model} is not supported for parallel training"
+
+        self.model.save(temp_file)  # type: ignore[arg-type]
 
         if self.model.get_vec_normalize_env() is not None:
             temp_file_norm = os.path.join("logs", "vec_normalize.pkl")
@@ -140,11 +146,11 @@ class ParallelTrainCallback(BaseCallback):
         # TODO: add support for other algorithms
         for model_class in [SAC, TQC, SACX, TQCX]:
             if isinstance(self.model, model_class):
-                self.model_class = model_class
+                self.model_class = model_class  # type: ignore[assignment]
                 break
 
         assert self.model_class is not None, f"{self.model} is not supported for parallel training"
-        self._model = self.model_class.load(temp_file)
+        self._model = self.model_class.load(temp_file)  # type: ignore[arg-type]
 
         if self.model.get_vec_normalize_env() is not None:
             with open(temp_file_norm, "rb") as file_handler:
@@ -163,7 +169,7 @@ class ParallelTrainCallback(BaseCallback):
 
         # Add logger for parallel training
         self._model.set_logger(self.model.logger)
-        self.model.train = patch_train(self.model.train)
+        self.model.train = patch_train(self.model.train)  # type: ignore[assignment]
 
         # Hack: Re-add correct values at save time
         def patch_save(function):
@@ -173,7 +179,7 @@ class ParallelTrainCallback(BaseCallback):
 
             return wrapper
 
-        self.model.save = patch_save(self.model.save)
+        self.model.save = patch_save(self.model.save)  # type: ignore[assignment]
 
     def train(self) -> None:
         self._model_ready = False
@@ -191,13 +197,17 @@ class ParallelTrainCallback(BaseCallback):
         return True
 
     def _on_rollout_end(self) -> None:
+        # Make mypy happy
+        assert isinstance(self.model, (SAC, TQC))
+
         if self._model_ready:
             self._model.replay_buffer = deepcopy(self.model.replay_buffer)
+
             if self.model_class in [SACX, TQCX]:
                 self.model.policy = self._model.policy
             else:
                 self.model.set_parameters(deepcopy(self._model.get_parameters()))
-                self.model.actor = self.model.policy.actor
+                self.model.actor = self.model.policy.actor  # type: ignore[union-attr, attr-defined]
             # Sync VecNormalize
             if self.model.get_vec_normalize_env() is not None:
                 sync_envs_normalization(self.model.get_vec_normalize_env(), self._model._vec_normalize_env)
@@ -228,6 +238,7 @@ class RawStatisticsCallback(BaseCallback):
         self._tensorboard_writer = None
 
     def _init_callback(self) -> None:
+        assert self.logger is not None
         # Retrieve tensorboard writer to not flood the logger output
         for out_format in self.logger.output_formats:
             if isinstance(out_format, TensorBoardOutputFormat):

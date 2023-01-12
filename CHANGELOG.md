@@ -1,3 +1,49 @@
+## Release 1.7.0 (2023-01-10)
+
+**SB3 v1.7.0, added support for python config files**
+
+### Breaking Changes
+- `--yaml-file` argument was renamed to `-conf` (`--conf-file`) as now python file are supported too
+- Upgraded to SB3 >= 1.7.0 (changed `net_arch=[dict(pi=.., vf=..)]` to `net_arch=dict(pi=.., vf=..)`)
+
+### New Features
+- Specifying custom policies in yaml file is now supported (@Rick-v-E)
+- Added ``monitor_kwargs`` parameter
+- Handle the `env_kwargs` of `render:True` under the hood for panda-gym v1 envs in `enjoy` replay to match visualzation behavior of other envs
+- Added support for python config file
+- Tuned hyperparameters for PPO on Swimmer
+- Added ``-tags/--wandb-tags`` argument to ``train.py`` to add tags to the wandb run
+- Added a sb3 version tag to the wandb run
+
+### Bug fixes
+- Allow `python -m rl_zoo3.cli` to be called directly
+- Fixed a bug where custom environments were not found despite passing ``--gym-package`` when using subprocesses
+- Fixed TRPO hyperparameters for MinitaurBulletEnv-v0, MinitaurBulletDuckEnv-v0, HumanoidBulletEnv-v0, InvertedDoublePendulumBulletEnv-v0 and InvertedPendulumSwingupBulletEnv
+
+### Documentation
+
+### Other
+- `scripts/plot_train.py` plots models such that newer models appear on top of older ones.
+- Added additional type checking using mypy
+- Standardized the use of ``from gym import spaces``
+
+
+## Release 1.6.3 (2022-10-13)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+- `python3 -m rl_zoo3.train` now works as expected
+
+### Documentation
+- Added instructions and examples on passing arguments in an interactive session (@richter43)
+
+### Other
+- Used issue forms instead of issue templates
+
+
 ## Release 1.6.2.post2 (2022-10-10)
 
 ### Breaking Changes
@@ -25,7 +71,7 @@
 - Upgraded to sb3-contrib >= 1.6.1
 
 ### New Features
-- Added `--yaml-file` argument option for `train.py`to read hyperparameters from custom yaml files (@JohannesUl)
+- Added `--yaml-file` argument option for `train.py` to read hyperparameters from custom yaml files (@JohannesUl)
 
 ### Bug fixes
 - Added `custom_object` parameter on record_video.py (@Affonso-Gui)
@@ -150,6 +196,7 @@
 - Upgrade to sb3-contrib >= 1.2.0
 
 ### New Features
+- Added support for Python 3.10
 
 ### Bug fixes
 - Fix `--load-last-checkpoint` (@SammyRamone)
@@ -206,7 +253,7 @@
 - Clarify n_evaluations help text (@jkterry)
 - Simplified hyperparameters files making use of defaults
 - Added new TQC+HER agents
-- Add `panda-gym`environments (@qgallouedec)
+- Add `panda-gym` environments (@qgallouedec)
 
 ## Release 1.0 (2021-03-17)
 

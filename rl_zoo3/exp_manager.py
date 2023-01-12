@@ -1,4 +1,5 @@
 import argparse
+import importlib
 import os
 import pickle as pkl
 import time
@@ -13,6 +14,7 @@ import numpy as np
 import optuna
 import torch as th
 import yaml
+from gym import spaces
 from huggingface_sb3 import EnvironmentName
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
@@ -47,7 +49,7 @@ from torch import nn as nn  # noqa: F401
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
 from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from rl_zoo3.hyperparams_opt import HYPERPARAMS_SAMPLER
-from rl_zoo3.utils import ALGOS, get_callback_list, get_latest_run_id, get_wrapper_class, linear_schedule
+from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
 class ExperimentManager:
@@ -93,7 +95,7 @@ class ExperimentManager:
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
         device: Union[th.device, str] = "auto",
-        yaml_file: Optional[str] = None,
+        config: Optional[str] = None,
         show_progress: bool = False,
     ):
         super().__init__()
@@ -108,11 +110,11 @@ class ExperimentManager:
             # Take the root folder
             default_path = Path(__file__).parent.parent
 
-        self.yaml_file = yaml_file or str(default_path / f"hyperparams/{self.algo}.yml")
-        self.env_kwargs = {} if env_kwargs is None else env_kwargs
+        self.config = config or str(default_path / f"hyperparams/{self.algo}.yml")
+        self.env_kwargs: Dict[str, Any] = {} if env_kwargs is None else env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False
-        self.normalize_kwargs = {}
+        self.normalize_kwargs: Dict[str, Any] = {}
         self.env_wrapper = None
         self.frame_stack = None
         self.seed = seed
@@ -121,12 +123,12 @@ class ExperimentManager:
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
         self.vec_env_wrapper = None
 
-        self.vec_env_kwargs = {}
+        self.vec_env_kwargs: Dict[str, Any] = {}
         # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
 
         # Callbacks
-        self.specified_callbacks = []
-        self.callbacks = []
+        self.specified_callbacks: List = []
+        self.callbacks: List[BaseCallback] = []
         self.save_freq = save_freq
         self.eval_freq = eval_freq
         self.n_eval_episodes = n_eval_episodes
@@ -134,7 +136,8 @@ class ExperimentManager:
 
         self.n_envs = 1  # it will be updated when reading hyperparams
         self.n_actions = None  # For DDPG/TD3 action noise objects
-        self._hyperparams = {}
+        self._hyperparams: Dict[str, Any] = {}
+        self.monitor_kwargs: Dict[str, Any] = {}
 
         self.trained_agent = trained_agent
         self.continue_training = trained_agent.endswith(".zip") and os.path.isfile(trained_agent)
@@ -295,16 +298,28 @@ class ExperimentManager:
         print(f"Log path: {self.save_path}")
 
     def read_hyperparameters(self) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        # Load hyperparameters from yaml file
-        print(f"Loading hyperparameters from: {self.yaml_file}")
-        with open(self.yaml_file) as f:
-            hyperparams_dict = yaml.safe_load(f)
-            if self.env_name.gym_id in list(hyperparams_dict.keys()):
-                hyperparams = hyperparams_dict[self.env_name.gym_id]
-            elif self._is_atari:
-                hyperparams = hyperparams_dict["atari"]
-            else:
-                raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_name.gym_id}")
+        print(f"Loading hyperparameters from: {self.config}")
+
+        if self.config.endswith(".yml") or self.config.endswith(".yaml"):
+            # Load hyperparameters from yaml file
+            with open(self.config) as f:
+                hyperparams_dict = yaml.safe_load(f)
+        elif self.config.endswith(".py"):
+            global_variables = {}
+            # Load hyperparameters from python file
+            exec(Path(self.config).read_text(), global_variables)
+            hyperparams_dict = global_variables["hyperparams"]
+        else:
+            # Load hyperparameters from python package
+            hyperparams_dict = importlib.import_module(self.config).hyperparams
+            # raise ValueError(f"Unsupported config file format: {self.config}")
+
+        if self.env_name.gym_id in list(hyperparams_dict.keys()):
+            hyperparams = hyperparams_dict[self.env_name.gym_id]
+        elif self._is_atari:
+            hyperparams = hyperparams_dict["atari"]
+        else:
+            raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_name.gym_id} in {self.config}")
 
         if self.custom_hyperparams is not None:
             # Overwrite hyperparams if needed
@@ -348,6 +363,10 @@ class ExperimentManager:
             # ex: "dict(norm_obs=False, norm_reward=True)"
             if isinstance(self.normalize, str):
                 self.normalize_kwargs = eval(self.normalize)
+                self.normalize = True
+
+            if isinstance(self.normalize, dict):
+                self.normalize_kwargs = self.normalize
                 self.normalize = True
 
             # Use the same discount factor as for the algorithm
@@ -396,6 +415,14 @@ class ExperimentManager:
             if kwargs_key in hyperparams.keys() and isinstance(hyperparams[kwargs_key], str):
                 hyperparams[kwargs_key] = eval(hyperparams[kwargs_key])
 
+        # Preprocess monitor kwargs
+        if "monitor_kwargs" in hyperparams.keys():
+            self.monitor_kwargs = hyperparams["monitor_kwargs"]
+            # Convert str to python code
+            if isinstance(self.monitor_kwargs, str):
+                self.monitor_kwargs = eval(self.monitor_kwargs)
+            del hyperparams["monitor_kwargs"]
+
         # Delete keys so the dict can be pass to the model constructor
         if "n_envs" in hyperparams.keys():
             del hyperparams["n_envs"]
@@ -404,6 +431,10 @@ class ExperimentManager:
         if "frame_stack" in hyperparams.keys():
             self.frame_stack = hyperparams["frame_stack"]
             del hyperparams["frame_stack"]
+
+        # import the policy when using a custom policy
+        if "policy" in hyperparams and "." in hyperparams["policy"]:
+            hyperparams["policy"] = get_class_by_name(hyperparams["policy"])
 
         # obtain a class object from a wrapper name string in hyperparams
         # and delete the entry
@@ -511,6 +542,11 @@ class ExperimentManager:
         entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
         return "gym.envs.robotics" in str(entry_point) or "panda_gym.envs" in str(entry_point)
 
+    @staticmethod
+    def is_panda_gym(env_id: str) -> bool:
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
+        return "panda_gym.envs" in str(entry_point)
+
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """
         Wrap the env into a VecNormalize wrapper if needed
@@ -563,19 +599,28 @@ class ExperimentManager:
         # Do not log eval env (issue with writing the same file)
         log_dir = None if eval_env or no_log else self.save_path
 
-        monitor_kwargs = {}
         # Special case for GoalEnvs: log success rate too
         if (
             "Neck" in self.env_name.gym_id
             or self.is_robotics_env(self.env_name.gym_id)
             or "parking-v0" in self.env_name.gym_id
+            and len(self.monitor_kwargs) == 0  # do not overwrite custom kwargs
         ):
-            monitor_kwargs = dict(info_keywords=("is_success",))
+            self.monitor_kwargs = dict(info_keywords=("is_success",))
+
+        # Define make_env here so it works with subprocesses
+        # when the registry was modified with `--gym-packages`
+        # See https://github.com/HumanCompatibleAI/imitation/pull/160
+        spec = gym.spec(self.env_name.gym_id)
+
+        def make_env(**kwargs) -> gym.Env:
+            env = spec.make(**kwargs)
+            return env
 
         # On most env, SubprocVecEnv does not help and is quite memory hungry
         # therefore we use DummyVecEnv by default
         env = make_vec_env(
-            env_id=self.env_name.gym_id,
+            make_env,
             n_envs=n_envs,
             seed=self.seed,
             env_kwargs=self.env_kwargs,
@@ -583,7 +628,7 @@ class ExperimentManager:
             wrapper_class=self.env_wrapper,
             vec_env_cls=self.vec_env_class,
             vec_env_kwargs=self.vec_env_kwargs,
-            monitor_kwargs=monitor_kwargs,
+            monitor_kwargs=self.monitor_kwargs,
         )
 
         if self.vec_env_wrapper is not None:
@@ -602,7 +647,7 @@ class ExperimentManager:
 
         if not is_vecenv_wrapped(env, VecTransposeImage):
             wrap_with_vectranspose = False
-            if isinstance(env.observation_space, gym.spaces.Dict):
+            if isinstance(env.observation_space, spaces.Dict):
                 # If even one of the keys is a image-space in need of transpose, apply transpose
                 # If the image spaces are not consistent (for instance one is channel first,
                 # the other channel last), VecTransposeImage will throw an error

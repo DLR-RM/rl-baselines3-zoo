@@ -26,6 +26,31 @@ Goals of this repository:
 
 This is the SB3 version of the original SB2 [rl-zoo](https://github.com/araffin/rl-baselines-zoo).
 
+## Installation
+
+### Minimal installation
+
+From source:
+```
+pip install -e .
+```
+
+As a python package:
+```
+pip install rl_zoo3
+```
+
+Note: you can do `python -m rl_zoo3.train` from any folder and you have access to `rl_zoo3` command line interface, for instance, `rl_zoo3 train` is equivalent to `python train.py`
+
+### Full installation (with extra envs and test dependencies)
+
+```
+apt-get install swig cmake ffmpeg
+pip install -r requirements.txt
+```
+
+Please see [Stable Baselines3 documentation](https://stable-baselines3.readthedocs.io/en/master/) for alternatives to install stable baselines3.
+
 ## Train an Agent
 
 The hyperparameters for each environment are defined in `hyperparameters/algo_name.yml`.
@@ -36,10 +61,22 @@ python train.py --algo algo_name --env env_id
 ```
 You can use `-P` (`--progress`) option to display a progress bar.
 
-Using a custom yaml file (which contains a `env_id` entry):
+Using a custom config file when it is a yaml file with a which contains a `env_id` entry:
 ```
-python train.py --algo algo_name --env env_id --yaml-file my_yaml.yml
+python train.py --algo algo_name --env env_id --conf-file my_yaml.yml
 ```
+
+You can also use a python file that contains a dictionary called `hyperparams` with an entry for each `env_id`.
+(see `hyperparams/python/ppo_config_example.py` for an example)
+```bash
+# You can pass a path to a python file
+python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams/python/ppo_config_example.py
+# Or pass a path to a file from a module (for instance my_package.my_file
+python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams.python.ppo_config_example
+```
+The advantage of this approach is that you can specify arbitrary python dictionaries
+and ensure that all their dependencies are imported in the config file itself.
+
 
 For example (with tensorboard support):
 ```
@@ -114,7 +151,7 @@ Remark: plotting with the `--rliable` option is usually slow as confidence inter
 
 ## Custom Environment
 
-The easiest way to add support for a custom environment is to edit `rl_zoo3/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml` or a custom yaml file that you can specify using `--yaml-file` argument).
+The easiest way to add support for a custom environment is to edit `rl_zoo3/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml` or a custom yaml file that you can specify using `--conf-file` argument).
 
 ## Enjoy a Trained Agent
 
@@ -181,6 +218,13 @@ Specify a different activation function for the network:
   policy_kwargs: "dict(activation_fn=nn.ReLU)"
 ```
 
+For a custom policy:
+
+```yaml
+  policy: my_package.MyCustomPolicy  # for instance stable_baselines3.ppo.MlpPolicy
+```
+
+
 ## Hyperparameter Tuning
 
 We use [Optuna](https://optuna.org/) for optimizing the hyperparameters.
@@ -231,7 +275,7 @@ python train.py --algo ppo --env CartPole-v1 --track --wandb-project-name sb3
 
 yields a tracked experiment at this [URL](https://wandb.ai/openrlbenchmark/sb3/runs/1b65ldmh).
 
-
+To add a tag to the run, (e.g. `optimized`), use the argument `--wandb-tags optimized`.
 
 ## Env normalization
 
@@ -263,6 +307,23 @@ env_wrapper:
 ```
 
 Note that you can easily specify parameters too.
+
+By default, the environment is wrapped with a `Monitor` wrapper to record episode statistics.
+You can specify arguments to it using `monitor_kwargs` parameter to log additional data.
+That data *must* be present in the info dictionary at the last step of each episode.
+
+For instance, for recording success with goal envs (e.g. `FetchReach-v1`):
+
+```yaml
+monitor_kwargs: dict(info_keywords=('is_success',))
+```
+
+or recording final x position with `Ant-v3`:
+```yaml
+monitor_kwargs: dict(info_keywords=('x_position',))
+```
+
+Note: for known `GoalEnv` like `FetchReach`, `info_keywords=('is_success',)` is actually the default.
 
 ## VecEnvWrapper
 
@@ -467,8 +528,6 @@ We used the v1 environments.
 |----------|-------------|-------------------|-----------|------------|------------|
 | HER+TQC | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
-To visualize the result, you can pass `--env-kwargs render:True` to the enjoy script.
-
 
 ### MiniGrid Envs
 
@@ -488,7 +547,7 @@ There are 19 environment groups (variations for each) in total.
 Note that you need to specify `--gym-packages gym_minigrid` with `enjoy.py` and `train.py` as it is not a standard Gym environment, as well as installing the custom Gym package module or putting it in python path.
 
 ```
-pip install gym-minigrid
+pip install gym-minigrid==1.0.3
 python train.py --algo ppo --env MiniGrid-DoorKey-5x5-v0 --gym-packages gym_minigrid
 ```
 
@@ -503,18 +562,20 @@ import gym_minigrid
 
 You can train agents online using [colab notebook](https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/rl-baselines-zoo.ipynb).
 
-## Installation
+### Passing arguments in an interactive session
 
-### Stable-Baselines3 PyPi Package
+The zoo is not meant to be executed from an interactive session (e.g: Jupyter Notebooks, IPython), however, it can be done by modifying `sys.argv` and adding the desired arguments.
 
-We recommend using stable-baselines3 and sb3_contrib master versions.
+*Example*
+```python
+import sys
+from rl_zoo3.train import train
 
+sys.argv = ["python", "--algo", "ppo", "--env", "MountainCar-v0"]
+
+train()
 ```
-apt-get install swig cmake ffmpeg
-pip install -r requirements.txt
-```
 
-Please see [Stable Baselines3 documentation](https://stable-baselines3.readthedocs.io/en/master/) for alternatives.
 
 ### Docker Images
 
