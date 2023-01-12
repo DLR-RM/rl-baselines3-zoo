@@ -1,5 +1,6 @@
 import gym
 import numpy as np
+from gym import spaces
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 
 
@@ -125,7 +126,7 @@ class HistoryWrapper(gym.Wrapper):
     """
 
     def __init__(self, env: gym.Env, horizon: int = 2):
-        assert isinstance(env.observation_space, gym.spaces.Box)
+        assert isinstance(env.observation_space, spaces.Box)
 
         wrapped_obs_space = env.observation_space
         wrapped_action_space = env.action_space
@@ -141,7 +142,7 @@ class HistoryWrapper(gym.Wrapper):
         high = np.concatenate((high_obs, high_action))
 
         # Overwrite the observation space
-        env.observation_space = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
+        env.observation_space = spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
 
         super().__init__(env)
 
@@ -184,7 +185,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
     """
 
     def __init__(self, env: gym.Env, horizon: int = 2):
-        assert isinstance(env.observation_space.spaces["observation"], gym.spaces.Box)
+        assert isinstance(env.observation_space.spaces["observation"], spaces.Box)
 
         wrapped_obs_space = env.observation_space.spaces["observation"]
         wrapped_action_space = env.action_space
@@ -200,7 +201,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
         high = np.concatenate((high_obs, high_action))
 
         # Overwrite the observation space
-        env.observation_space.spaces["observation"] = gym.spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
+        env.observation_space.spaces["observation"] = spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
 
         super().__init__(env)
 

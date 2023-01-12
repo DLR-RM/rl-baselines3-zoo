@@ -14,6 +14,7 @@ import numpy as np
 import optuna
 import torch as th
 import yaml
+from gym import spaces
 from huggingface_sb3 import EnvironmentName
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
@@ -119,10 +120,10 @@ class ExperimentManager:
             default_path = Path(__file__).parent.parent
 
         self.config = config or str(default_path / f"hyperparams/{self.algo}.yml")
-        self.env_kwargs = {} if env_kwargs is None else env_kwargs
+        self.env_kwargs: Dict[str, Any] = {} if env_kwargs is None else env_kwargs
         self.n_timesteps = n_timesteps
         self.normalize = False
-        self.normalize_kwargs = {}
+        self.normalize_kwargs: Dict[str, Any] = {}
         self.env_wrapper = None
         self.frame_stack = None
         self.seed = seed
@@ -132,12 +133,12 @@ class ExperimentManager:
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
         self.vec_env_wrapper = None
 
-        self.vec_env_kwargs = {}
+        self.vec_env_kwargs: Dict[str, Any] = {}
         # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
 
         # Callbacks
-        self.specified_callbacks = []
-        self.callbacks = []
+        self.specified_callbacks: List = []
+        self.callbacks: List[BaseCallback] = []
         self.save_freq = save_freq
         self.eval_freq = eval_freq
         self.n_eval_episodes = n_eval_episodes
@@ -145,8 +146,8 @@ class ExperimentManager:
 
         self.n_envs = 1  # it will be updated when reading hyperparams
         self.n_actions = None  # For DDPG/TD3 action noise objects
-        self._hyperparams = {}
-        self.monitor_kwargs = {}
+        self._hyperparams: Dict[str, Any] = {}
+        self.monitor_kwargs: Dict[str, Any] = {}
 
         self.trained_agent = trained_agent
         self.continue_training = trained_agent.endswith(".zip") and os.path.isfile(trained_agent)
@@ -654,7 +655,7 @@ class ExperimentManager:
 
         if not is_vecenv_wrapped(env, VecTransposeImage):
             wrap_with_vectranspose = False
-            if isinstance(env.observation_space, gym.spaces.Dict):
+            if isinstance(env.observation_space, spaces.Dict):
                 # If even one of the keys is a image-space in need of transpose, apply transpose
                 # If the image spaces are not consistent (for instance one is channel first,
                 # the other channel last), VecTransposeImage will throw an error

@@ -7,6 +7,7 @@ import uuid
 
 import gym
 import numpy as np
+import stable_baselines3 as sb3
 import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
@@ -16,7 +17,7 @@ from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
 
 
-def train():
+def train() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
@@ -159,6 +160,10 @@ def train():
         default=False,
         help="if toggled, try to use EnvPool to run the env, env_wrappers are not supported.",
     )
+    parser.add_argument(
+        "-tags", "--wandb-tags", type=str, default=[], nargs="+", help="Tags for wandb run, e.g.: -tags optimized pr-123"
+    )
+
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -185,8 +190,7 @@ def train():
     uuid_str = f"_{uuid.uuid4()}" if args.uuid else ""
     if args.seed < 0:
         # Seed but with a random one
-        max_number = 2**31 - 1 if args.use_envpool else 2**32 - 1
-        args.seed = np.random.randint(max_number, dtype="int64").item()
+        args.seed = np.random.randint(2**31 - 1, dtype="int64").item()  # type: ignore[attr-defined]
 
     set_random_seed(args.seed)
 
@@ -213,10 +217,12 @@ def train():
             )
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
+        tags = args.wandb_tags + [f"v{sb3.__version__}"]
         run = wandb.init(
             name=run_name,
             project=args.wandb_project_name,
             entity=args.wandb_entity,
+            tags=tags,
             config=vars(args),
             sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
             monitor_gym=True,  # auto-upload the videos of agents playing the game
@@ -270,6 +276,7 @@ def train():
         if args.track:
             # we need to save the loaded hyperparameters
             args.saved_hyperparams = saved_hyperparams
+            assert run is not None  # make mypy happy
             run.config.setdefaults(vars(args))
 
         # Normal training
