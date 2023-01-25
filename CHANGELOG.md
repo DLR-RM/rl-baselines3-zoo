@@ -6,6 +6,7 @@
 ### New Features
 
 ### Bug fixes
+- Removed `use_auth_token` for push to hub util
 
 ### Documentation
 
