@@ -1,3 +1,18 @@
+## Release 1.8.0a2 (WIP)
+
+### Breaking Changes
+- Upgraded to SB3 >= 1.8.0
+
+### New Features
+
+### Bug fixes
+- Removed `use_auth_token` for push to hub util
+
+### Documentation
+
+### Other
+- Added support for `ruff` (fast alternative to flake8) in the Makefile
+
 ## Release 1.7.0 (2023-01-10)
 
 **SB3 v1.7.0, added support for python config files**
