@@ -50,7 +50,7 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
     if algo == "her":
         continue
 
-    if algo in ["dqn", "qrdqn", "ddpg", "sac", "td3", "tqc"]:
+    if algo in ["dqn", "iqn", "qrdqn", "ddpg", "sac", "td3", "tqc"]:
         n_envs = 1
         n_timesteps *= args.n_envs
 

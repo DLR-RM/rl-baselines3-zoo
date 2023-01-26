@@ -11,7 +11,7 @@ import yaml
 from gym import spaces
 from huggingface_hub import HfApi
 from huggingface_sb3 import EnvironmentName, ModelName
-from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
+from sb3_contrib import ARS, IQN, QRDQN, TQC, TRPO, RecurrentPPO
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback
@@ -31,6 +31,7 @@ ALGOS: Dict[str, Type[BaseAlgorithm]] = {
     "td3": TD3,
     # SB3 Contrib,
     "ars": ARS,
+    "iqn": IQN,
     "qrdqn": QRDQN,
     "tqc": TQC,
     "trpo": TRPO,
