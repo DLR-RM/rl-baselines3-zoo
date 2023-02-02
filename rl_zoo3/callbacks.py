@@ -29,8 +29,7 @@ class TrialEvalCallback(EvalCallback):
         verbose: int = 0,
         best_model_save_path: Optional[str] = None,
         log_path: Optional[str] = None,
-    ):
-
+    ) -> None:
         super().__init__(
             eval_env=eval_env,
             n_eval_episodes=n_eval_episodes,

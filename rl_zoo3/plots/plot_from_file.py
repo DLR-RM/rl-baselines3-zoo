@@ -115,7 +115,6 @@ def plot_from_file():  # noqa: C901
     if not args.skip_timesteps:
         # Plot learning curves per env
         for env in envs:
-
             plt.figure(f"Results {env}")
             title = f"{env}"  # BulletEnv-v0
             if "Mountain" in env:
@@ -207,7 +206,6 @@ def plot_from_file():  # noqa: C901
 
     # Rliable plots, see https://github.com/google-research/rliable
     if args.rliable:
-
         if rly is None:
             raise ImportError(
                 "You must install rliable package to use this feature. Note: Python 3.7+ is required in that case."
