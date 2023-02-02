@@ -61,7 +61,6 @@ def all_plots():  # noqa: C901
 
         for algo in args.algos:
             for folder_idx, exp_folder in enumerate(args.exp_folders):
-
                 log_path = os.path.join(exp_folder, algo.lower())
 
                 if not os.path.isdir(log_path):
