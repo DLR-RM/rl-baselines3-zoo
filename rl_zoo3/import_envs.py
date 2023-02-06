@@ -16,7 +16,7 @@ else:
     # hotfix for highway_env
     import numpy as np
 
-    np.float = np.float32 # type: ignore[attr-defined]
+    np.float = np.float32  # type: ignore[attr-defined]
 
 try:
     import neck_rl  # pytype: disable=import-error
