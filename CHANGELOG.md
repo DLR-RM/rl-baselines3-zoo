@@ -8,6 +8,7 @@
 ### Bug fixes
 - Removed `use_auth_token` for push to hub util
 - Reverted from v3 to v2 for HumanoidStandup, Reacher, InvertedPendulum and InvertedDoublePendulum since they were not part of the mujoco refactoring (see https://github.com/openai/gym/pull/1304)
+- Fixed `gym-minigrid` policy (from `MlpPolicy` to `MultiInputPolicy`)
 
 ### Documentation
 
