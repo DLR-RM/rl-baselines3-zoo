@@ -36,9 +36,6 @@ def test_trained_agents(trained_model):
     if "Fetch" in trained_model or "-v3" in trained_model:
         return
 
-    if "-MiniGrid-" in trained_model:
-        args = args + ["--gym-packages", "gym_minigrid"]
-
     return_code = subprocess.call(["python", "enjoy.py"] + args)
     _assert_eq(return_code, 0)
 

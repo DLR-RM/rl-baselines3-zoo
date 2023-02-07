@@ -109,7 +109,7 @@ def train() -> None:
         type=str,
         nargs="+",
         default=[],
-        help="Additional external Gym environment package modules to import (e.g. gym_minigrid)",
+        help="Additional external Gym environment package modules to import",
     )
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
