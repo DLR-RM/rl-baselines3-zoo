@@ -19,7 +19,8 @@ def _convert_dtype_to_float32(space: spaces.Space) -> spaces.Space:
     :return: Converted space
     """
     if isinstance(space, spaces.Box):
-        space.dtype = np.dtype(np.float32)
+        if space.dtype == np.float64:
+            space.dtype = np.dtype(np.float32)
     elif isinstance(space, spaces.Dict):
         for key, sub_space in space.spaces.items():
             space.spaces[key] = _convert_dtype_to_float32(sub_space)
