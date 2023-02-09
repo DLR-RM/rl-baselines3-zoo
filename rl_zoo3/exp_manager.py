@@ -54,10 +54,11 @@ from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_lates
 
 try:
     import envpool
-
-    from rl_zoo3.vec_env_wrappers import EnvPoolAdapter
 except ImportError:
     envpool = None
+else:
+    from rl_zoo3.vec_env_wrappers import EnvPoolAdapter
+    from envpool.python.protocol import EnvPool
 
 
 class ExperimentManager:
@@ -592,14 +593,21 @@ class ExperimentManager:
         log_dir = None if eval_env or no_log else self.save_path
 
         if self.use_envpool:
-            # TODO: warning if env wrapper is passed
+            if self.env_wrapper is not None:
+                warnings.warn("EnvPool does not support env wrappers, it will be ignored.")
+            if self.env_kwargs is not None:
+                warnings.warn(
+                    "EnvPool does not support env_kwargs, it will be ignored. "
+                    "To pass keyword argument to envpool, use vec_env_kwargs instead."
+                )
+
             # Convert Atari game names
             # See https://github.com/sail-sg/envpool/issues/14
             env_id = self.env_name.gym_id
             if self._is_atari and "NoFrameskip-v4" in env_id:
                 env_id = env_id.split("NoFrameskip-v4")[0] + "-v5"
 
-            env = envpool.make(env_id, env_type="gym", num_envs=n_envs, seed=self.seed)
+            env = envpool.make(env_id, env_type="gym", num_envs=n_envs, seed=self.seed, **self.vec_env_kwargs)  # type: EnvPool
             env.spec.id = self.env_name.gym_id
             env = EnvPoolAdapter(env)
             filename = None if log_dir is None else f"{log_dir}/monitor.csv"
