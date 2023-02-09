@@ -596,7 +596,7 @@ class ExperimentManager:
         if self.use_envpool:
             if self.env_wrapper is not None:
                 warnings.warn("EnvPool does not support env wrappers, it will be ignored.")
-            if self.env_kwargs is not None:
+            if self.env_kwargs:
                 warnings.warn(
                     "EnvPool does not support env_kwargs, it will be ignored. "
                     "To pass keyword argument to envpool, use vec_env_kwargs instead."
