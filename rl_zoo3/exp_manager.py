@@ -57,8 +57,9 @@ try:
 except ImportError:
     envpool = None
 else:
-    from rl_zoo3.vec_env_wrappers import EnvPoolAdapter
     from envpool.python.protocol import EnvPool
+
+    from rl_zoo3.vec_env_wrappers import EnvPoolAdapter
 
 
 class ExperimentManager:
