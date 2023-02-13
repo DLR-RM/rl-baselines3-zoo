@@ -247,14 +247,14 @@ def create_test_env(
         # when the registry was modified with `--gym-packages`
         # See https://github.com/HumanCompatibleAI/imitation/pull/160
         try:
-            spec = gym.spec(env_id)
+            spec = gym.spec(env_id) # type: ignore[assignment]
         except gym.error.NameNotFound:
             # Registered with gym 0.26
             spec = gym26.spec(env_id)
 
     def make_env(**kwargs) -> gym.Env:
         env = spec.make(**kwargs)
-        return env
+        return env # type: ignore[return-value]
 
     env = make_vec_env(
         make_env,
