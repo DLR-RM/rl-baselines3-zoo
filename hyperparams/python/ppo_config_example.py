@@ -4,7 +4,7 @@ import torch
 
 hyperparams = {
     "MountainCarContinuous-v0": dict(
-        env_wrapper=[{"gym.wrappers.TimeLimit": {"max_episode_steps": 100}}],
+        env_wrapper=[{"gymnasium.wrappers.TimeLimit": {"max_episode_steps": 100}}],
         normalize=True,
         n_envs=1,
         n_timesteps=20000.0,

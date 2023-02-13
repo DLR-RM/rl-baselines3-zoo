@@ -9,7 +9,7 @@ box2d-py==2.3.8
 pybullet
 gym-minigrid
 # scikit-optimize
-optuna~=2.10.1
+optuna~=3.0
 pytablewriter~=0.64
 pyyaml>=5.1
 cloudpickle>=1.5.0

@@ -10,7 +10,7 @@ from rl_zoo3.wrappers import ActionNoiseWrapper, DelayedRewardWrapper, HistoryWr
 
 
 def test_wrappers():
-    env = gym.make("AntBulletEnv-v0", apply_api_compatibility=True)
+    env = gym.make("Ant-v4")
     env = DelayedRewardWrapper(env)
     env = ActionNoiseWrapper(env)
     env = HistoryWrapper(env)
@@ -27,7 +27,7 @@ def test_wrappers():
     ],
 )
 def test_get_wrapper(env_wrapper):
-    env = gym.make("AntBulletEnv-v0", apply_api_compatibility=True)
+    env = gym.make("Ant-v4")
     hyperparams = {"env_wrapper": env_wrapper}
     wrapper_class = get_wrapper_class(hyperparams)
     if env_wrapper is not None:
@@ -44,7 +44,7 @@ def test_get_wrapper(env_wrapper):
     ],
 )
 def test_get_vec_env_wrapper(vec_env_wrapper):
-    env = gym.make("AntBulletEnv-v0", apply_api_compatibility=True)
+    env = gym.make("Ant-v4")
     env = DummyVecEnv([lambda: env])
     hyperparams = {"vec_env_wrapper": vec_env_wrapper}
     wrapper_class = get_wrapper_class(hyperparams, "vec_env_wrapper")
