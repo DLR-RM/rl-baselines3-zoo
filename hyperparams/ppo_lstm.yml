@@ -403,7 +403,7 @@ Hopper-v3:
                     net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
-HumanoidStandup-v3:
+HumanoidStandup-v2:
   normalize: true
   n_envs: 1
   policy: 'MlpLstmPolicy'
@@ -447,7 +447,7 @@ Humanoid-v3:
                     net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
-InvertedDoublePendulum-v3:
+InvertedDoublePendulum-v2:
   normalize: true
   n_envs: 1
   policy: 'MlpLstmPolicy'
@@ -463,7 +463,7 @@ InvertedDoublePendulum-v3:
   max_grad_norm: 0.5
   vf_coef: 0.695929
 
-InvertedPendulum-v3:
+InvertedPendulum-v2:
   normalize: true
   n_envs: 1
   policy: 'MlpLstmPolicy'
@@ -479,7 +479,7 @@ InvertedPendulum-v3:
   max_grad_norm: 0.3
   vf_coef: 0.19816
 
-Reacher-v3:
+Reacher-v2:
   normalize: true
   n_envs: 1
   policy: 'MlpLstmPolicy'

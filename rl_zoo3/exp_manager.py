@@ -475,7 +475,6 @@ class ExperimentManager:
         os.makedirs(self.params_path, exist_ok=True)
 
     def create_callbacks(self):
-
         if self.show_progress:
             self.callbacks.append(ProgressBarCallback())
 
@@ -711,7 +710,6 @@ class ExperimentManager:
         return pruner
 
     def objective(self, trial: optuna.Trial) -> float:
-
         kwargs = self._hyperparams.copy()
 
         # Hack to use DDPG/TD3 noise sampler
@@ -801,7 +799,6 @@ class ExperimentManager:
         return reward
 
     def hyperparameters_optimization(self) -> None:
-
         if self.verbose > 0:
             print("Optimizing hyperparameters")
 

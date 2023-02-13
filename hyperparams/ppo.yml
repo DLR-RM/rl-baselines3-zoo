@@ -292,7 +292,7 @@ MiniGrid-DoorKey-5x5-v0:
   normalize: true
   n_envs: 8 # number of environment copies running in parallel
   n_timesteps: !!float 1e5
-  policy: MlpPolicy
+  policy: 'MultiInputPolicy'
   n_steps: 128 # batch size is n_steps * n_env
   batch_size: 64 # Number of training minibatches per update
   gae_lambda: 0.95 #  Factor for trade-off of bias vs variance for Generalized Advantage Estimator
@@ -307,7 +307,7 @@ MiniGrid-FourRooms-v0:
   normalize: true
   n_envs: 8
   n_timesteps: !!float 4e6
-  policy: 'MlpPolicy'
+  policy: 'MultiInputPolicy'
   n_steps: 512
   batch_size: 64
   gae_lambda: 0.95
@@ -443,7 +443,7 @@ Hopper-v3:
                     net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
-HumanoidStandup-v3:
+HumanoidStandup-v2:
   normalize: true
   n_envs: 1
   policy: 'MlpPolicy'
@@ -487,7 +487,7 @@ Humanoid-v3:
                     net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
-InvertedDoublePendulum-v3:
+InvertedDoublePendulum-v2:
   normalize: true
   n_envs: 1
   policy: 'MlpPolicy'
@@ -503,7 +503,7 @@ InvertedDoublePendulum-v3:
   max_grad_norm: 0.5
   vf_coef: 0.695929
 
-InvertedPendulum-v3:
+InvertedPendulum-v2:
   normalize: true
   n_envs: 1
   policy: 'MlpPolicy'

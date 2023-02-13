@@ -9,16 +9,31 @@
 
 ### Bug fixes
 
+## Release 1.8.0a2 (WIP)
+
+### Breaking Changes
+- Upgraded to SB3 >= 1.8.0
+
+### New Features
+
+### Bug fixes
+- Set ``highway-env`` version to 1.5 and ``setuptools to`` v65.5 for the CI
+- Removed `use_auth_token` for push to hub util
+- Reverted from v3 to v2 for HumanoidStandup, Reacher, InvertedPendulum and InvertedDoublePendulum since they were not part of the mujoco refactoring (see https://github.com/openai/gym/pull/1304)
+- Fixed `gym-minigrid` policy (from `MlpPolicy` to `MultiInputPolicy`)
+
 ### Documentation
 
 ### Other
+- Added support for `ruff` (fast alternative to flake8) in the Makefile
 
+## Release 1.7.0 (2023-01-10)
 
-## Release 1.7.0a12 (WIP)
+**SB3 v1.7.0, added support for python config files**
 
 ### Breaking Changes
 - `--yaml-file` argument was renamed to `-conf` (`--conf-file`) as now python file are supported too
-- Upgraded to SB3 >= 1.7.0a12 (changed `net_arch=[dict(pi=.., vf=..)]` to `net_arch=dict(pi=.., vf=..)`)
+- Upgraded to SB3 >= 1.7.0 (changed `net_arch=[dict(pi=.., vf=..)]` to `net_arch=dict(pi=.., vf=..)`)
 
 ### New Features
 - Specifying custom policies in yaml file is now supported (@Rick-v-E)

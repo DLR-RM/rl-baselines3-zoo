@@ -252,7 +252,6 @@ def create_test_env(
     )
 
     if "vec_env_wrapper" in hyperparams.keys():
-
         vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
         assert vec_env_wrapper is not None
         env = vec_env_wrapper(env)  # type: ignore[assignment, arg-type]
@@ -451,7 +450,6 @@ def get_model_path(
     load_checkpoint: Optional[str] = None,
     load_last_checkpoint: bool = False,
 ) -> Tuple[str, str, str]:
-
     if exp_id == 0:
         exp_id = get_latest_run_id(os.path.join(folder, algo), env_name)
         print(f"Loading latest experiment, id={exp_id}")
