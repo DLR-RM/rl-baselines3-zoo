@@ -9,12 +9,13 @@ from pathlib import Path
 from pprint import pprint
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-import gym
+import gym as gym26
+import gymnasium as gym
 import numpy as np
 import optuna
 import torch as th
 import yaml
-from gym import spaces
+from gymnasium import spaces
 from huggingface_sb3 import EnvironmentName
 from optuna.pruners import BasePruner, MedianPruner, NopPruner, SuccessiveHalvingPruner
 from optuna.samplers import BaseSampler, RandomSampler, TPESampler
@@ -512,24 +513,29 @@ class ExperimentManager:
             self.callbacks.append(eval_callback)
 
     @staticmethod
+    def entry_point(env_id: str) -> str:
+        try:
+            return str(gym.envs.registry[env_id].entry_point)  # pytype: disable=module-attr
+        except KeyError:
+            return str(gym26.envs.registry[env_id].entry_point)  # pytype: disable=module-attr
+
+    @staticmethod
     def is_atari(env_id: str) -> bool:
-        entry_point = gym.envs.registry[env_id].entry_point  # pytype: disable=module-attr
-        return "AtariEnv" in str(entry_point)
+        return "AtariEnv" in ExperimentManager.entry_point(env_id)
 
     @staticmethod
     def is_bullet(env_id: str) -> bool:
-        entry_point = gym.envs.registry[env_id].entry_point  # pytype: disable=module-attr
-        return "pybullet_envs" in str(entry_point)
+        return "pybullet_envs" in ExperimentManager.entry_point(env_id)
 
     @staticmethod
     def is_robotics_env(env_id: str) -> bool:
-        entry_point = gym.envs.registry[env_id].entry_point  # pytype: disable=module-attr
-        return "gym.envs.robotics" in str(entry_point) or "panda_gym.envs" in str(entry_point)
+        return "gym.envs.robotics" in ExperimentManager.entry_point(
+            env_id
+        ) or "panda_gym.envs" in ExperimentManager.entry_point(env_id)
 
     @staticmethod
     def is_panda_gym(env_id: str) -> bool:
-        entry_point = gym.envs.registry[env_id].entry_point  # pytype: disable=module-attr
-        return "panda_gym.envs" in str(entry_point)
+        return "panda_gym.envs" in ExperimentManager.entry_point(env_id)
 
     def _maybe_normalize(self, env: VecEnv, eval_env: bool) -> VecEnv:
         """
@@ -590,14 +596,19 @@ class ExperimentManager:
         ):
             self.monitor_kwargs = dict(info_keywords=("is_success",))
 
-        # Define make_env here so it works with subprocesses
-        # when the registry was modified with `--gym-packages`
-        # See https://github.com/HumanCompatibleAI/imitation/pull/160
-        spec = gym.spec(self.env_name.gym_id)
-
         # Make Pybullet compatible with gym 0.26
         if self.is_bullet(self.env_name.gym_id):
+            spec = gym26.spec(self.env_name.gym_id)
             self.env_kwargs.update(dict(apply_api_compatibility=True))
+        else:
+            # Define make_env here so it works with subprocesses
+            # when the registry was modified with `--gym-packages`
+            # See https://github.com/HumanCompatibleAI/imitation/pull/160
+            try:
+                spec = gym.spec(self.env_name.gym_id)
+            except gym.error.NameNotFound:
+                # Registered with gym 0.26
+                spec = gym26.spec(self.env_name.gym_id)
 
         def make_env(**kwargs) -> gym.Env:
             env = spec.make(**kwargs)

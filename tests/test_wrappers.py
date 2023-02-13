@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import pytest
 from stable_baselines3 import A2C
 from stable_baselines3.common.env_checker import check_env

@@ -1,8 +1,10 @@
+gymnasium==0.27.1
 gym==0.26.2
+git+https://github.com/Farama-Foundation/Shimmy
 # stable-baselines3[extra,tests,docs]>=1.7.0
-git+https://github.com/carlosluis/stable-baselines3@fix_tests#egg=stable_baselines3[extra,tests,docs]
+git+https://github.com/DLR-RM/stable-baselines3@feat/gymnasium-support#egg=stable_baselines3[extra,tests,docs]
 # sb3-contrib>=1.7.0
-git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/new-gym-version
+git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/gymnasium-support
 box2d-py==2.3.8
 pybullet
 gym-minigrid

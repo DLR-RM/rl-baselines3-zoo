@@ -5,7 +5,8 @@ import os
 import time
 import uuid
 
-import gym
+import gym as gym26
+import gymnasium as gym
 import numpy as np
 import stable_baselines3 as sb3
 import torch as th
@@ -165,6 +166,8 @@ def train() -> None:
 
     env_id = args.env
     registered_envs = set(gym.envs.registry.keys())  # pytype: disable=module-attr
+    # Add gym 0.26 envs
+    registered_envs.update(gym26.envs.registry.keys())  # pytype: disable=module-attr
 
     if args.yaml_file is not None:
         raise ValueError(

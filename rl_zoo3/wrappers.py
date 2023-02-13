@@ -1,8 +1,8 @@
 from typing import Dict, Optional, Tuple
 
-import gym
+import gymnasium as gym
 import numpy as np
-from gym import spaces
+from gymnasium import spaces
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from stable_baselines3.common.type_aliases import Gym26ResetReturn, Gym26StepReturn
 
