@@ -1,3 +1,4 @@
+import seals
 import argparse
 import glob
 import os
