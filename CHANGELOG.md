@@ -4,6 +4,7 @@
 - Upgraded to SB3 >= 1.8.0
 
 ### New Features
+- Tuned hyperparameters for RecurrentPPO on Swimmer
 
 ### Bug fixes
 - Set ``highway-env`` version to 1.5 and ``setuptools to`` v65.5 for the CI
