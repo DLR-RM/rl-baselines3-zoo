@@ -339,7 +339,11 @@ Ant-v3: &mujoco-defaults
 Swimmer-v3:
   <<: *mujoco-defaults
   gamma: 0.9999
-
+  n_envs: 4
+  n_steps: 1024
+  batch_size: 256
+  learning_rate: !!float 6e-4
+  gae_lambda: 0.98
 
 # 10 mujoco envs
 
