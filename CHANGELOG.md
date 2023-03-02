@@ -17,6 +17,7 @@
 ### Other
 - Added support for `ruff` (fast alternative to flake8) in the Makefile
 - Removed Gitlab CI file
+- Replaced deprecated `optuna.suggest_loguniform(...)` by `optuna.suggest_float(..., log=True)`
 
 ## Release 1.7.0 (2023-01-10)
 
