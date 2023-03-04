@@ -211,6 +211,21 @@ class ExperimentManager:
                 **self._hyperparams,
             )
 
+        # "logs/sac/donkey-mountain-track-v0_22/replay_buffer.pkl"
+        # replay_path = "logs/human/donkey-mountain-track-v0_3/replay_buffer.pkl"
+        # replay_path = "logs/human/donkey-mountain-track-v0_35/replay_buffer.pkl"
+        # print(f"Loading replay buffer from {replay_path}")
+        # model.load_replay_buffer(replay_path)
+        # model.replay_buffer.device = "cpu"
+        # print(f"{model.replay_buffer.pos} transitions in the buffer")
+        # Pretrain steps
+        # model.learn(1)
+        # print("Pretraining...")
+        # from tqdm.rich import tqdm
+        # for _ in tqdm(range(1000)):
+        #     model.train(model.batch_size, model.gradient_steps)
+        # print("Pretraining done.")
+
         self._save_config(saved_hyperparams)
         return model, saved_hyperparams
 
@@ -238,7 +253,7 @@ class ExperimentManager:
             pass
         finally:
             # Clean progress bar
-            if len(self.callbacks) > 0:
+            if len(self.callbacks) > 0 and hasattr(self.callbacks[0], "pbar") and self.callbacks[0].pbar is not None:
                 self.callbacks[0].on_training_end()
             # Release resources
             try:
@@ -543,6 +558,8 @@ class ExperimentManager:
         # Pretrained model, load normalization
         path_ = os.path.join(os.path.dirname(self.trained_agent), self.env_name)
         path_ = os.path.join(path_, "vecnormalize.pkl")
+
+        # path_ = "logs/sac/donkey-mountain-track-v0_10/donkey-mountain-track-v0/vecnormalize.pkl"
 
         if os.path.exists(path_):
             print("Loading saved VecNormalize stats")
