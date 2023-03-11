@@ -31,6 +31,9 @@ In addition, it includes a collection of tuned hyperparameters for common enviro
   :caption: RL Zoo API
 
   modules/exp_manager
+  modules/wrappers
+  modules/callbacks
+  modules/utils
 
 .. toctree::
   :maxdepth: 1
