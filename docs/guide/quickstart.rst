@@ -4,27 +4,48 @@
 Getting Started
 ===============
 
-Most of the library tries to follow a sklearn-like syntax for the Reinforcement Learning algorithms.
+.. note::
 
-Here is a quick example of how to train and run A2C on a CartPole environment:
+  You can try the following examples online using Google colab |colab|
+  notebook: `RL Baselines zoo notebook`_
 
-.. code-block:: python
 
-  import gym
+.. _RL Baselines zoo notebook: https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/rl-baselines-zoo.ipynb
+.. |colab| image:: ../_static/img/colab.svg
 
-  from stable_baselines3 import A2C
 
-  env = gym.make("CartPole-v1")
+The hyperparameters for each environment are defined in
+``hyperparameters/algo_name.yml``.
 
-  model = A2C("MlpPolicy", env, verbose=1)
-  model.learn(total_timesteps=10_000)
+If the environment exists in this file, then you can train an agent
+using:
 
-  vec_env = model.get_env()
-  obs = vec_env.reset()
-  for i in range(1000):
-      action, _state = model.predict(obs, deterministic=True)
-      obs, reward, done, info = vec_env.step(action)
-      vec_env.render()
-      # VecEnv resets automatically
-      # if done:
-      #   obs = vec_env.reset()
+::
+
+ python -m rl_zoo3.train --algo algo_name --env env_id
+
+Or if you are in the RL Zoo3 folder:
+
+::
+
+  python train.py --algo algo_name --env env_id
+
+For example (with evaluation and checkpoints):
+
+::
+
+ python -m rl_zoo3.train --algo ppo --env CartPole-v1 --eval-freq 10000 --save-freq 50000
+
+
+
+If the trained agent exists, then you can see it in action using:
+
+::
+
+ python -m rl_zoo3.enjoy --algo algo_name --env env_id
+
+For example, enjoy A2C on Breakout during 5000 timesteps:
+
+::
+
+ python -m rl_zoo3.enjoy --algo a2c --env BreakoutNoFrameskip-v4 --folder rl-trained-agents/ -n 5000

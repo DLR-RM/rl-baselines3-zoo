@@ -16,15 +16,21 @@ In addition, it includes a collection of tuned hyperparameters for common enviro
 
    guide/install
    guide/quickstart
-   guide/examples
-   guide/rl_zoo
+   guide/train
+   guide/plot
+   guide/enjoy
+   guide/custom_env
+   guide/config
+   guide/integrations
+   guide/tuning
+   guide/sbx
 
 
 .. toctree::
   :maxdepth: 1
-  :caption: RL Algorithms
+  :caption: RL Zoo API
 
-  modules/a2c
+  modules/exp_manager
 
 .. toctree::
   :maxdepth: 1
