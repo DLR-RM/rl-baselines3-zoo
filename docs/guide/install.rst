@@ -44,3 +44,37 @@ With extra envs and test dependencies:
 
 
 Please see `Stable Baselines3 documentation <https://stable-baselines3.readthedocs.io/en/master/>`_ for alternatives to install stable baselines3.
+
+
+Docker Images
+-------------
+
+Build docker image (CPU):
+
+::
+
+   make docker-cpu
+
+GPU:
+
+::
+
+   USE_GPU=True make docker-gpu
+
+Pull built docker image (CPU):
+
+::
+
+   docker pull stablebaselines/rl-baselines3-zoo-cpu
+
+GPU image:
+
+::
+
+   docker pull stablebaselines/rl-baselines3-zoo
+
+Run script in the docker image:
+
+::
+
+   ./scripts/run_docker_cpu.sh python train.py --algo ppo --env CartPole-v1

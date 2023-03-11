@@ -124,3 +124,6 @@ softmax
 stdout
 Contrib
 Quantile
+Huggingface
+Jax
+Optuna
