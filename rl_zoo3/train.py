@@ -204,10 +204,10 @@ def train() -> None:
     if args.track:
         try:
             import wandb
-        except ImportError:
+        except ImportError as e:
             raise ImportError(
                 "if you want to use Weights & Biases to track experiment, please install W&B via `pip install wandb`"
-            )
+            ) from e
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
         tags = args.wandb_tags + [f"v{sb3.__version__}"]
