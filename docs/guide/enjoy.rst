@@ -6,8 +6,8 @@ Enjoy a Trained Agent
 
 .. note::
 
-  **To download the repo with the trained agents, you must use
-  ``git clone --recursive https://github.com/DLR-RM/rl-baselines3-zoo``**
+  To download the repo with the trained agents, you must use
+  ``git clone --recursive https://github.com/DLR-RM/rl-baselines3-zoo``
   in order to clone the submodule too.
 
 

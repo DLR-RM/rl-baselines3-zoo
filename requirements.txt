@@ -13,7 +13,7 @@ plotly
 panda-gym==1.1.1 # tmp fix: until compatibility with panda-gym v2
 rliable>=1.0.5
 wandb
-huggingface_sb3>=2.2.1, <3.*
+huggingface_sb3>=2.2.1
 seaborn
 tqdm
 rich
