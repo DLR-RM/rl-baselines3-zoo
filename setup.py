@@ -27,8 +27,8 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
-        "sb3-contrib>=1.8.0a2",
-        "huggingface_sb3>=2.2.1, <3.*",
+        "sb3-contrib>=1.8.0a9",
+        "huggingface_sb3>=2.2.1",
         "tqdm",
         "rich",
         "optuna",

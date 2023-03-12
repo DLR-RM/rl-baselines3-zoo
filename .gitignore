@@ -18,6 +18,8 @@ runs
 hub
 *.mp4
 *.json
+_build/
+
 
 # Setuptools distribution and build folders.
 /dist/

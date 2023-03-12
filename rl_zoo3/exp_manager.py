@@ -782,7 +782,7 @@ class ExperimentManager:
             print("============")
             print("Sampled hyperparams:")
             pprint(sampled_hyperparams)
-            raise optuna.exceptions.TrialPruned()
+            raise optuna.exceptions.TrialPruned() from e
         is_pruned = eval_callback.is_pruned
         reward = eval_callback.last_mean_reward
 

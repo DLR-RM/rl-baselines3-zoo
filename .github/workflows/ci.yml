@@ -31,6 +31,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+
+        # Install Atari Roms
+        pip install autorom
+        wget https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906eda/raw/00046ac3403768bfe45857610a3d333b8e35e026/Roms.tar.gz.b64
+        base64 Roms.tar.gz.b64 --decode &> Roms.tar.gz
+        AutoROM --accept-license --source-file Roms.tar.gz
+
         pip install setuptools==65.5.0
         # cpu version of pytorch - faster to download
         pip install torch==1.11+cpu -f https://download.pytorch.org/whl/torch_stable.html
@@ -41,17 +48,20 @@ jobs:
         # install parking-env to test HER (pinned so it works with gym 0.21)
         pip install highway-env==1.5.0
         pip install -e .
+    - name: Lint with ruff
+      run: |
+        make lint
+    - name: Check codestyle
+      run: |
+        make check-codestyle
+    - name: Build doc
+      run: |
+        make doc
     - name: Type check
       run: |
         make type
       # skip mypy type check for python3.7 (last forever for some reason)
-      if: "!(matrix.python-version == '3.7')" 
-    - name: Check codestyle
-      run: |
-        make check-codestyle
-    - name: Lint with flake8
-      run: |
-        make lint
+      if: "!(matrix.python-version == '3.7')"
     - name: Test with pytest
       run: |
         make pytest

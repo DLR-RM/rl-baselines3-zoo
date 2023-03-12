@@ -1,5 +1,6 @@
 <!-- [![pipeline status](https://gitlab.com/araffin/rl-baselines3-zoo/badges/master/pipeline.svg)](https://gitlab.com/araffin/rl-baselines3-zoo/-/commits/master) -->
 ![CI](https://github.com/DLR-RM/rl-baselines3-zoo/workflows/CI/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/rl-baselines3-zoo/badge/?version=master)](https://rl-baselines3-zoo.readthedocs.io/en/master/?badge=master)
 [![coverage report](https://gitlab.com/araffin/rl-baselines3-zoo/badges/master/coverage.svg)](https://gitlab.com/araffin/rl-baselines3-zoo/-/commits/master) [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
@@ -25,6 +26,10 @@ Goals of this repository:
 4. Have fun with the trained agents!
 
 This is the SB3 version of the original SB2 [rl-zoo](https://github.com/araffin/rl-baselines-zoo).
+
+## Documentation
+
+Documentation is available online: [https://rl-baselines3-zoo.readthedocs.io/](https://rl-baselines3-zoo.readthedocs.io)
 
 ## Installation
 
@@ -59,99 +64,22 @@ If the environment exists in this file, then you can train an agent using:
 ```
 python train.py --algo algo_name --env env_id
 ```
-You can use `-P` (`--progress`) option to display a progress bar.
-
-Using a custom config file when it is a yaml file with a which contains a `env_id` entry:
-```
-python train.py --algo algo_name --env env_id --conf-file my_yaml.yml
-```
-
-You can also use a python file that contains a dictionary called `hyperparams` with an entry for each `env_id`.
-(see `hyperparams/python/ppo_config_example.py` for an example)
-```bash
-# You can pass a path to a python file
-python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams/python/ppo_config_example.py
-# Or pass a path to a file from a module (for instance my_package.my_file)
-python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams.python.ppo_config_example
-```
-The advantage of this approach is that you can specify arbitrary python dictionaries
-and ensure that all their dependencies are imported in the config file itself.
-
-
-For example (with tensorboard support):
-```
-python train.py --algo ppo --env CartPole-v1 --tensorboard-log /tmp/stable-baselines/
-```
 
 Evaluate the agent every 10000 steps using 10 episodes for evaluation (using only one evaluation env):
 ```
 python train.py --algo sac --env HalfCheetahBulletEnv-v0 --eval-freq 10000 --eval-episodes 10 --n-eval-envs 1
 ```
 
-Save a checkpoint of the agent every 100000 steps:
-```
-python train.py --algo td3 --env HalfCheetahBulletEnv-v0 --save-freq 100000
-```
+More examples are available in the [documentation](https://rl-baselines3-zoo.readthedocs.io).
 
-Continue training (here, load pretrained agent for Breakout and continue training for 5000 steps):
-```
-python train.py --algo a2c --env BreakoutNoFrameskip-v4 -i rl-trained-agents/a2c/BreakoutNoFrameskip-v4_1/BreakoutNoFrameskip-v4.zip -n 5000
-```
 
-When using off-policy algorithms, you can also save the replay buffer after training:
-```
-python train.py --algo sac --env Pendulum-v1 --save-replay-buffer
-```
-It will be automatically loaded if present when continuing training.
+## Integrations
+
+The RL Zoo has some integration with other libraries/services like Weights & Biases for experiment tracking or Hugging Face for storing/sharing trained models. You can find out more in the [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/integrations.html) of the documentation.
 
 ## Plot Scripts
 
-Plot scripts (to be documented, see "Results" sections in SB3 documentation):
-- `scripts/all_plots.py`/`scripts/plot_from_file.py` for plotting evaluations
-- `scripts/plot_train.py` for plotting training reward/success
-
-*Examples (on the current collection)*
-
-Plot training success (y-axis) w.r.t. timesteps (x-axis) with a moving window of 500 episodes for all the `Fetch` environment with `HER` algorithm:
-
-```
-python scripts/plot_train.py -a her -e Fetch -y success -f rl-trained-agents/ -w 500 -x steps
-```
-
-Plot evaluation reward curve for TQC, SAC and TD3 on the HalfCheetah and Ant PyBullet environments:
-
-```
-python3 scripts/all_plots.py -a sac td3 tqc --env HalfCheetahBullet AntBullet -f rl-trained-agents/
-```
-
-## Plot with the rliable library
-
-The RL zoo integrates some of [rliable](https://agarwl.github.io/rliable/) library features.
-You can find a visual explanation of the tools used by rliable in this [blog post](https://araffin.github.io/post/rliable/).
-
-First, you need to install [rliable](https://github.com/google-research/rliable).
-
-Note: Python 3.7+ is required in that case.
-
-Then export your results to a file using the `all_plots.py` script (see above):
-```
-python scripts/all_plots.py -a sac td3 tqc --env Half Ant -f logs/ -o logs/offpolicy
-```
-
-You can now use the `plot_from_file.py` script with `--rliable`, `--versus` and `--iqm` arguments:
-```
-python scripts/plot_from_file.py -i logs/offpolicy.pkl --skip-timesteps --rliable --versus -l SAC TD3 TQC
-```
-
-Note: you may need to edit `plot_from_file.py`, in particular the `env_key_to_env_id` dictionary
-and the `scripts/score_normalization.py` which stores min and max score for each environment.
-
-Remark: plotting with the `--rliable` option is usually slow as confidence interval need to be computed using bootstrap sampling.
-
-
-## Custom Environment
-
-The easiest way to add support for a custom environment is to edit `rl_zoo3/import_envs.py` and register your environment here. Then, you need to add a section for it in the hyperparameters file (`hyperparams/algo.yml` or a custom yaml file that you can specify using `--conf-file` argument).
+Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/plot.html) of the documentation.
 
 ## Enjoy a Trained Agent
 
@@ -168,237 +96,13 @@ For example, enjoy A2C on Breakout during 5000 timesteps:
 python enjoy.py --algo a2c --env BreakoutNoFrameskip-v4 --folder rl-trained-agents/ -n 5000
 ```
 
-If you have trained an agent yourself, you need to do:
-```
-# exp-id 0 corresponds to the last experiment, otherwise, you can specify another ID
-python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 0
-```
+## Hyperparameters Tuning
 
-To load the best model (when using evaluation environment):
-```
-python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-best
-```
+Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/tuning.html) of the documentation.
 
-To load a checkpoint (here the checkpoint name is `rl_model_10000_steps.zip`):
-```
-python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-checkpoint 10000
-```
+## Custom Configuration
 
-To load the latest checkpoint:
-```
-python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-last-checkpoint
-```
-
-## Huggingface Hub Integration
-
-Upload model to hub (same syntax as for `enjoy.py`):
-```
-python -m rl_zoo3.push_to_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3 -m "Initial commit"
-```
-you can choose custom `repo-name` (default: `{algo}-{env_id}`) by passing a `--repo-name` argument.
-
-Download model from hub:
-```
-python -m rl_zoo3.load_from_hub --algo ppo --env CartPole-v1 -f logs/ -orga sb3
-```
-
-## Hyperparameter yaml syntax
-
-The syntax used in `hyperparameters/algo_name.yml` for setting hyperparameters (likewise the syntax to [overwrite hyperparameters](https://github.com/DLR-RM/rl-baselines3-zoo#overwrite-hyperparameters) on the cli) may be specialized if the argument is a function.  See examples in the `hyperparameters/` directory. For example:
-
-- Specify a linear schedule for the learning rate:
-
-```yaml
-  learning_rate: lin_0.012486195510232303
-```
-
-Specify a different activation function for the network:
-
-```yaml
-  policy_kwargs: "dict(activation_fn=nn.ReLU)"
-```
-
-For a custom policy:
-
-```yaml
-  policy: my_package.MyCustomPolicy  # for instance stable_baselines3.ppo.MlpPolicy
-```
-
-
-## Hyperparameter Tuning
-
-We use [Optuna](https://optuna.org/) for optimizing the hyperparameters.
-Not all hyperparameters are tuned, and tuning enforces certain default hyperparameter settings that may be different from the official defaults. See [rl_zoo3/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/rl_zoo3/hyperparams_opt.py) for the current settings for each agent.
-
-Hyperparameters not specified in [rl_zoo3/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/rl_zoo3/hyperparams_opt.py) are taken from the associated YAML file and fallback to the default values of SB3 if not present.
-
-Note: when using SuccessiveHalvingPruner ("halving"), you must specify `--n-jobs > 1`
-
-Budget of 1000 trials with a maximum of 50000 steps:
-
-```
-python train.py --algo ppo --env MountainCar-v0 -n 50000 -optimize --n-trials 1000 --n-jobs 2 \
-  --sampler tpe --pruner median
-```
-
-Distributed optimization using a shared database is also possible (see the corresponding [Optuna documentation](https://optuna.readthedocs.io/en/stable/tutorial/10_key_features/004_distributed.html)):
-```
-python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage sqlite:///example.db
-```
-
-Print and save best hyperparameters of an Optuna study:
-```
-python scripts/parse_study.py -i path/to/study.pkl --print-n-best-trials 10 --save-n-best-hyperparameters 10
-```
-
-The default budget for hyperparameter tuning is 500 trials and there is one intermediate evaluation for pruning/early stopping per 100k time steps.
-
-### Hyperparameters search space
-
-Note that the default hyperparameters used in the zoo when tuning are not always the same as the defaults provided in [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/modules/base.html). Consult the latest source code to be sure of these settings. For example:
-
-- PPO tuning assumes a network architecture with `ortho_init = False` when tuning, though it is `True` by [default](https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html#ppo-policies). You can change that by updating [rl_zoo3/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/rl_zoo3/hyperparams_opt.py).
-
-- Non-episodic rollout in TD3 and DDPG assumes `gradient_steps = train_freq` and so tunes only `train_freq` to reduce the search space.  
-
-When working with continuous actions, we recommend to enable [gSDE](https://arxiv.org/abs/2005.05719) by uncommenting lines in [rl_zoo3/hyperparams_opt.py](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/rl_zoo3/hyperparams_opt.py).
-
-
-## Experiment tracking
-
-We support tracking experiment data such as learning curves and hyperparameters via [Weights and Biases](https://wandb.ai).
-
-The following command
-```
-python train.py --algo ppo --env CartPole-v1 --track --wandb-project-name sb3
-```
-
-yields a tracked experiment at this [URL](https://wandb.ai/openrlbenchmark/sb3/runs/1b65ldmh).
-
-To add a tag to the run, (e.g. `optimized`), use the argument `--wandb-tags optimized`.
-
-## Env normalization
-
-In the hyperparameter file, `normalize: True` means that the training environment will be wrapped in a [VecNormalize](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/vec_env/vec_normalize.py#L13) wrapper.
-
-[Normalization uses](https://github.com/DLR-RM/rl-baselines3-zoo/issues/64) the default parameters of `VecNormalize`, with the exception of `gamma` which is set to match that of the agent.  This can be [overridden](https://github.com/DLR-RM/rl-baselines3-zoo/blob/v0.10.0/hyperparams/sac.yml#L239) using the appropriate `hyperparameters/algo_name.yml`, e.g.
-
-```yaml
-  normalize: "{'norm_obs': True, 'norm_reward': False}"
-```
-
-
-## Env Wrappers
-
-You can specify in the hyperparameter config one or more wrapper to use around the environment:
-
-for one wrapper:
-```yaml
-env_wrapper: gym_minigrid.wrappers.FlatObsWrapper
-```
-
-for multiple, specify a list:
-
-```yaml
-env_wrapper:
-    - rl_zoo3.wrappers.DoneOnSuccessWrapper:
-        reward_offset: 1.0
-    - sb3_contrib.common.wrappers.TimeFeatureWrapper
-```
-
-Note that you can easily specify parameters too.
-
-By default, the environment is wrapped with a `Monitor` wrapper to record episode statistics.
-You can specify arguments to it using `monitor_kwargs` parameter to log additional data.
-That data *must* be present in the info dictionary at the last step of each episode.
-
-For instance, for recording success with goal envs (e.g. `FetchReach-v1`):
-
-```yaml
-monitor_kwargs: dict(info_keywords=('is_success',))
-```
-
-or recording final x position with `Ant-v3`:
-```yaml
-monitor_kwargs: dict(info_keywords=('x_position',))
-```
-
-Note: for known `GoalEnv` like `FetchReach`, `info_keywords=('is_success',)` is actually the default.
-
-## VecEnvWrapper
-
-You can specify which `VecEnvWrapper` to use in the config, the same way as for env wrappers (see above), using the `vec_env_wrapper` key:
-
-For instance:
-```yaml
-vec_env_wrapper: stable_baselines3.common.vec_env.VecMonitor
-```
-
-Note: `VecNormalize` is supported separately using `normalize` keyword, and `VecFrameStack` has a dedicated keyword `frame_stack`.
-
-## Callbacks
-
-Following the same syntax as env wrappers, you can also add custom callbacks to use during training.
-
-```yaml
-callback:
-  - rl_zoo3.callbacks.ParallelTrainCallback:
-      gradient_steps: 256
-```
-
-## Env keyword arguments
-
-You can specify keyword arguments to pass to the env constructor in the command line, using `--env-kwargs`:
-
-```
-python enjoy.py --algo ppo --env MountainCar-v0 --env-kwargs goal_velocity:10
-```
-
-## Overwrite hyperparameters
-
-You can easily overwrite hyperparameters in the command line, using ``--hyperparams``:
-
-```
-python train.py --algo a2c --env MountainCarContinuous-v0 --hyperparams learning_rate:0.001 policy_kwargs:"dict(net_arch=[64, 64])"
-```
-
-Note: if you want to pass a string, you need to escape it like that: `my_string:"'value'"`
-
-## Record a Video of a Trained Agent
-
-Record 1000 steps with the latest saved model:
-
-```
-python -m rl_zoo3.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000
-```
-
-Use the best saved model instead:
-
-```
-python -m rl_zoo3.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000 --load-best
-```
-
-Record a video of a checkpoint saved during training (here the checkpoint name is `rl_model_10000_steps.zip`):
-
-```
-python -m rl_zoo3.record_video --algo ppo --env BipedalWalkerHardcore-v3 -n 1000 --load-checkpoint 10000
-```
-
-## Record a Video of a Training Experiment
-
-Apart from recording videos of specific saved models, it is also possible to record a video of a training experiment where checkpoints have been saved.
-
-Record 1000 steps for each checkpoint, latest and best saved models:
-
-```
-python -m rl_zoo3.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic
-```
-
-The previous command will create a `mp4` file. To convert this file to `gif` format as well:
-
-```
-python -m rl_zoo3.record_training --algo ppo --env CartPole-v1 -n 1000 -f logs --deterministic --gif
-```
+Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/config.html) of the documentation.
 
 ## Current Collection: 195+ Trained Agents!
 
@@ -577,34 +281,6 @@ train()
 ```
 
 
-### Docker Images
-
-Build docker image (CPU):
-```
-make docker-cpu
-```
-
-GPU:
-```
-USE_GPU=True make docker-gpu
-```
-
-Pull built docker image (CPU):
-```
-docker pull stablebaselines/rl-baselines3-zoo-cpu
-```
-
-GPU image:
-```
-docker pull stablebaselines/rl-baselines3-zoo
-```
-
-Run script in the docker image:
-
-```
-./scripts/run_docker_cpu.sh python train.py --algo ppo --env CartPole-v1
-```
-
 ## Tests
 
 To run tests, first install pytest, then:
@@ -639,4 +315,4 @@ If you trained an agent that is not present in the RL Zoo, please submit a Pull 
 
 ## Contributors
 
-We would like to thank our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres), [@ernestum](https://github.com/ernestum)
+We would like to thank our contributors: [@iandanforth](https://github.com/iandanforth), [@tatsubori](https://github.com/tatsubori) [@Shade5](https://github.com/Shade5) [@mcres](https://github.com/mcres), [@ernestum](https://github.com/ernestum), [@qgallouedec](https://github.com/qgallouedec)
