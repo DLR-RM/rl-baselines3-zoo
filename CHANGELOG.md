@@ -15,6 +15,7 @@
 - Upgraded to SB3 >= 1.8.0
 
 ### New Features
+- Tuned hyperparameters for RecurrentPPO on Swimmer
 
 ### Bug fixes
 - Set ``highway-env`` version to 1.5 and ``setuptools to`` v65.5 for the CI
@@ -26,6 +27,8 @@
 
 ### Other
 - Added support for `ruff` (fast alternative to flake8) in the Makefile
+- Removed Gitlab CI file
+- Replaced deprecated `optuna.suggest_loguniform(...)` by `optuna.suggest_float(..., log=True)`
 
 ## Release 1.7.0 (2023-01-10)
 

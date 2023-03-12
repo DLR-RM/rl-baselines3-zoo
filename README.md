@@ -71,7 +71,7 @@ You can also use a python file that contains a dictionary called `hyperparams` w
 ```bash
 # You can pass a path to a python file
 python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams/python/ppo_config_example.py
-# Or pass a path to a file from a module (for instance my_package.my_file
+# Or pass a path to a file from a module (for instance my_package.my_file)
 python train.py --algo ppo --env MountainCarContinuous-v0 --conf-file hyperparams.python.ppo_config_example
 ```
 The advantage of this approach is that you can specify arbitrary python dictionaries
