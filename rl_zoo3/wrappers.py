@@ -1,8 +1,9 @@
-from typing import Dict, Optional, SupportsFloat, Tuple
+from typing import Any, Dict, Optional, SupportsFloat, Tuple
 
 import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
+from gymnasium.core import ObsType
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
 from stable_baselines3.common.type_aliases import Gym26ResetReturn, Gym26StepReturn
 
@@ -40,7 +41,7 @@ class TruncatedOnSuccessWrapper(gym.Wrapper):
         return reward + self.reward_offset
 
 
-class ActionNoiseWrapper(gym.Wrapper):
+class ActionNoiseWrapper(gym.Wrapper[ObsType, np.ndarray, ObsType, np.ndarray]):
     """
     Add gaussian noise to the action (without telling the agent),
     to test the robustness of the control.
@@ -53,7 +54,7 @@ class ActionNoiseWrapper(gym.Wrapper):
         super().__init__(env)
         self.noise_std = noise_std
 
-    def step(self, action) -> Gym26StepReturn:
+    def step(self, action: np.ndarray) -> Tuple[ObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
         assert isinstance(self.action_space, spaces.Box)
         noise = np.random.normal(np.zeros_like(action), np.ones_like(action) * self.noise_std)
         noisy_action = np.clip(action + noise, self.action_space.low, self.action_space.high)
@@ -125,7 +126,7 @@ class DelayedRewardWrapper(gym.Wrapper):
         return obs, reward, terminated, truncated, info
 
 
-class HistoryWrapper(gym.Wrapper):
+class HistoryWrapper(gym.Wrapper[np.ndarray, np.ndarray, np.ndarray, np.ndarray]):
     """
     Stack past observations and actions to give an history to the agent.
 
