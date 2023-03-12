@@ -37,6 +37,13 @@ Full installation
 
 With extra envs and test dependencies:
 
+
+.. note::
+
+  If you want to use Atari games, you will need to do ``pip install "autorom[accept-rom-license]"``
+  additionally to download the ROMs
+
+
 .. code-block:: bash
 
 	apt-get install swig cmake ffmpeg
