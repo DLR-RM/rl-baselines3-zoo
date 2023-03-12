@@ -19,3 +19,8 @@ dependencies:
     - sphinx_copybutton
     - sb3-contrib>=1.7.0
     - optuna
+    - huggingface_sb3>=2.2.1
+    - rich
+    - tqdm
+    - pyyaml>=5.1
+    - pytablewriter==0.64.2
