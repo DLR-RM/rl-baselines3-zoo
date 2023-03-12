@@ -1,8 +1,7 @@
-gymnasium==0.27.1
+# gymnasium==0.27.1
 gym==0.26.2
-git+https://github.com/Farama-Foundation/Shimmy
-# stable-baselines3[extra,tests,docs]>=1.7.0
-git+https://github.com/DLR-RM/stable-baselines3@feat/gymnasium-support#egg=stable_baselines3[extra,tests,docs]
+# stable-baselines3[extra_no_roms,tests,docs]>=1.7.0
+git+https://github.com/DLR-RM/stable-baselines3@feat/gymnasium-support#egg=stable_baselines3[extra_no_roms,tests,docs]
 # sb3-contrib>=1.7.0
 git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/gymnasium-support
 box2d-py==2.3.8
@@ -18,7 +17,6 @@ plotly
 # panda-gym~=3.0.1
 rliable>=1.0.5
 wandb
-ale-py~=0.8.0
 huggingface_sb3>=2.2.1, <3.*
 seaborn~=0.11.2
 tqdm
