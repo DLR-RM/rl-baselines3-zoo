@@ -29,7 +29,7 @@ setup(
     install_requires=[
         "sb3_contrib @ git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/gymnasium-support",
         "gym==0.26.2",
-        "huggingface_sb3>=2.2.1, <3.*",
+        "huggingface_sb3>=2.2.1",
         "tqdm",
         "rich",
         "optuna",
