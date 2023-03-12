@@ -18,9 +18,8 @@ plotly
 rliable>=1.0.5
 wandb
 huggingface_sb3>=2.2.1
-seaborn~=0.11.2
+seaborn
 tqdm
 rich
-importlib-metadata~=4.13 # flake8 not compatible with importlib-metadata>5.0
 moviepy
 ruff
