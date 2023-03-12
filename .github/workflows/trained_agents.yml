@@ -14,6 +14,7 @@ jobs:
     env:
       TERM: xterm-256color
       FORCE_COLOR: 1
+
     # Skip CI if [ci skip] in the commit message
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     runs-on: ubuntu-latest
@@ -31,6 +32,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+
+        # Install Atari Roms
+        pip install autorom
+        wget https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906eda/raw/00046ac3403768bfe45857610a3d333b8e35e026/Roms.tar.gz.b64
+        base64 Roms.tar.gz.b64 --decode &> Roms.tar.gz
+        AutoROM --accept-license --source-file Roms.tar.gz
+
         # cpu version of pytorch - faster to download
         pip install torch==1.11.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
         pip install pybullet==3.2.5

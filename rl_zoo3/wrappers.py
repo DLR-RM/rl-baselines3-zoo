@@ -313,12 +313,12 @@ class MaskVelocityWrapper(gym.ObservationWrapper):
         assert env.unwrapped.spec is not None
         env_id: str = env.unwrapped.spec.id
         # By default no masking
-        self.mask = np.ones_like((env.observation_space.sample()))
+        self.mask = np.ones_like(env.observation_space.sample())
         try:
             # Mask velocity
             self.mask[self.velocity_indices[env_id]] = 0.0
-        except KeyError:
-            raise NotImplementedError(f"Velocity masking not implemented for {env_id}")
+        except KeyError as e:
+            raise NotImplementedError(f"Velocity masking not implemented for {env_id}") from e
 
     def observation(self, observation: np.ndarray) -> np.ndarray:
         return observation * self.mask

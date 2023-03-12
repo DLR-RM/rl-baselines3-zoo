@@ -43,16 +43,16 @@ def test_trained_agents(trained_model):
 
     # FIXME: switch to MiniGrid package
     if "-MiniGrid-" in trained_model:
-        args = args + ["--gym-packages", "gym_minigrid"]
+        args = [*args, "--gym-packages", "gym_minigrid"]
 
-    return_code = subprocess.call(["python", "enjoy.py"] + args)
+    return_code = subprocess.call(["python", "enjoy.py", *args])
     _assert_eq(return_code, 0)
 
 
 def test_benchmark(tmp_path):
     args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode", "--no-hub"]
 
-    return_code = subprocess.call(["python", "-m", "rl_zoo3.benchmark"] + args)
+    return_code = subprocess.call(["python", "-m", "rl_zoo3.benchmark", *args])
     _assert_eq(return_code, 0)
 
 
@@ -76,21 +76,21 @@ def test_load(tmp_path):
         "-P",  # Enable progress bar
     ]
     # Train and save checkpoints and best model
-    return_code = subprocess.call(["python", "train.py"] + args)
+    return_code = subprocess.call(["python", "train.py", *args])
     _assert_eq(return_code, 0)
 
     # Load best model
     args = ["-n", str(N_STEPS), "-f", tmp_path, "--algo", algo, "--env", env_id, "--no-render"]
     # Test with progress bar
-    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-best", "-P"])
+    return_code = subprocess.call(["python", "enjoy.py", *args] + ["--load-best", "-P"])
     _assert_eq(return_code, 0)
 
     # Load checkpoint
-    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-checkpoint", str(500)])
+    return_code = subprocess.call(["python", "enjoy.py", *args] + ["--load-checkpoint", str(500)])
     _assert_eq(return_code, 0)
 
     # Load last checkpoint
-    return_code = subprocess.call(["python", "enjoy.py"] + args + ["--load-last-checkpoint"])
+    return_code = subprocess.call(["python", "enjoy.py", *args] + ["--load-last-checkpoint"])
     _assert_eq(return_code, 0)
 
 
@@ -101,7 +101,7 @@ def test_record_video(tmp_path):
     if not os.environ.get("DISPLAY"):
         pytest.skip("No X-Server")
 
-    return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args)
+    return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video", *args])
     _assert_eq(return_code, 0)
     video_path = str(tmp_path / "final-model-sac-Pendulum-v1-step-0-to-step-100.mp4")
     # File is not empty
@@ -140,10 +140,10 @@ def test_record_training(tmp_path):
     if not os.environ.get("DISPLAY"):
         pytest.skip("No X-Server")
 
-    return_code = subprocess.call(["python", "train.py"] + args_training)
+    return_code = subprocess.call(["python", "train.py", *args_training])
     _assert_eq(return_code, 0)
 
-    return_code = subprocess.call(["python", "-m", "rl_zoo3.record_training"] + args_recording)
+    return_code = subprocess.call(["python", "-m", "rl_zoo3.record_training", *args_recording])
     _assert_eq(return_code, 0)
     mp4_path = str(videos_tmp_path / "training.mp4")
     gif_path = str(videos_tmp_path / "training.gif")

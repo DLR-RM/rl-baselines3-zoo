@@ -11,7 +11,7 @@ from stable_baselines3.common.vec_env import VecVideoRecorder
 from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict, create_test_env, get_model_path, get_saved_hyperparams
 
-if __name__ == "__main__":  # noqa: C901
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="environment ID", type=EnvironmentName, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
