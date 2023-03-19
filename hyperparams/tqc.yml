@@ -177,7 +177,6 @@ FetchReach-v1:
   normalize: True
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=True,
     goal_selection_strategy='future',
     n_sampled_goal=4
   )"
@@ -194,7 +193,6 @@ FetchPush-v1: &her-defaults
   tau: 0.05
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=True,
     goal_selection_strategy='future',
     n_sampled_goal=4,
   )"
@@ -220,7 +218,6 @@ PandaReach-v1:
   normalize: True
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=True,
     goal_selection_strategy='future',
     n_sampled_goal=4
   )"
@@ -249,10 +246,8 @@ parking-v0:
   tau: 0.005
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=False,
     goal_selection_strategy='episode',
     n_sampled_goal=4,
-    max_episode_length=100
   )"
 
 # Tuned

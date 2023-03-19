@@ -1,4 +1,4 @@
-## Release 1.8.0a9 (WIP)
+## Release 1.8.0a10 (WIP)
 
 ### Breaking Changes
 - Upgraded to SB3 >= 1.8.0
@@ -20,6 +20,7 @@
 - Removed Gitlab CI file
 - Replaced deprecated `optuna.suggest_loguniform(...)` by `optuna.suggest_float(..., log=True)`
 - Switched to `ruff` and `pyproject.toml`
+- Removed `online_sampling` argument when using `HerReplayBuffer`
 
 ## Release 1.7.0 (2023-01-10)
 
