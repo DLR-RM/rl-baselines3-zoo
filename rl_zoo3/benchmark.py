@@ -41,7 +41,7 @@ results: Dict[str, List] = {
     "eval_episodes": [],
 }
 
-for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
+for idx, trained_model in enumerate(trained_models.keys()):
     algo, env_id = trained_models[trained_model]
     n_envs = args.n_envs
     n_timesteps = args.n_timesteps
@@ -98,7 +98,7 @@ for idx, trained_model in enumerate(trained_models.keys()):  # noqa: C901
     if skip_eval:
         print("Skipping eval...")
     else:
-        return_code = subprocess.call(["python", "enjoy.py"] + arguments)
+        return_code = subprocess.call(["python", "enjoy.py", *arguments])
         if return_code != 0:
             print("Error during evaluation, skipping...")
             continue

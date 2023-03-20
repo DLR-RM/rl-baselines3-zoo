@@ -49,7 +49,7 @@ def all_plots():  # noqa: C901
     if args.labels is None:
         args.labels = args.exp_folders
 
-    for env in args.env:  # noqa: C901
+    for env in args.env:
         plt.figure(f"Results {env}")
         plt.title(f"{env}", fontsize=14)
 

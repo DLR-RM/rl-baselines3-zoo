@@ -66,7 +66,7 @@ def test_optimize(tmp_path, sampler, pruner, experiment):
         "-optimize",
     ]
 
-    return_code = subprocess.call(["python", "train.py"] + args)
+    return_code = subprocess.call(["python", "train.py", *args])
     _assert_eq(return_code, 0)
 
 
@@ -99,7 +99,7 @@ def test_optimize_log_path(tmp_path):
         "-optimize",
     ]
 
-    return_code = subprocess.call(["python", "train.py"] + args)
+    return_code = subprocess.call(["python", "train.py", *args])
     _assert_eq(return_code, 0)
     print(optimization_log_path)
     assert os.path.isdir(optimization_log_path)
@@ -120,7 +120,7 @@ def test_optimize_log_path(tmp_path):
         "-f",
         str(tmp_path / "best_hyperparameters"),
     ]
-    return_code = subprocess.call(["python", "scripts/parse_study.py"] + args)
+    return_code = subprocess.call(["python", "scripts/parse_study.py", *args])
     _assert_eq(return_code, 0)
 
 
@@ -166,7 +166,7 @@ def test_multiple_workers(tmp_path):
     workers = []
     for _ in range(n_workers):
         worker = subprocess.Popen(
-            ["python", "train.py"] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
+            ["python", "train.py", *args], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
         )
         worker.wait()
         workers.append(worker)
