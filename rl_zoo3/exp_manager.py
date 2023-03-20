@@ -361,7 +361,7 @@ class ExperimentManager:
             del hyperparams["normalize"]
         return hyperparams
 
-    def _preprocess_hyperparams( # noqa: C901
+    def _preprocess_hyperparams(  # noqa: C901
         self, hyperparams: Dict[str, Any]
     ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback], Optional[Callable]]:
         self.n_envs = hyperparams.get("n_envs", 1)
