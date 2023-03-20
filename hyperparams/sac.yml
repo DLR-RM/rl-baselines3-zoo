@@ -225,7 +225,6 @@ FetchReach-v1:
   normalize: True
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=True,
     goal_selection_strategy='future',
     n_sampled_goal=4
   )"
