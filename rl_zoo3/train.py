@@ -210,7 +210,7 @@ def train() -> None:
             ) from e
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
-        tags = args.wandb_tags + [f"v{sb3.__version__}"]
+        tags = [*args.wandb_tags, f"v{sb3.__version__}"]
         run = wandb.init(
             name=run_name,
             project=args.wandb_project_name,

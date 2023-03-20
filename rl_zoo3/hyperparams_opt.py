@@ -440,7 +440,6 @@ def sample_her_params(trial: optuna.Trial, hyperparams: Dict[str, Any]) -> Dict[
     her_kwargs["goal_selection_strategy"] = trial.suggest_categorical(
         "goal_selection_strategy", ["final", "episode", "future"]
     )
-    her_kwargs["online_sampling"] = trial.suggest_categorical("online_sampling", [True, False])
     hyperparams["replay_buffer_kwargs"] = her_kwargs
     return hyperparams
 

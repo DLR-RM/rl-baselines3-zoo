@@ -9,7 +9,7 @@ from huggingface_sb3 import EnvironmentName
 
 from rl_zoo3.utils import ALGOS, get_latest_run_id
 
-if __name__ == "__main__":  # noqa: C901
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="environment ID", type=EnvironmentName, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
@@ -79,19 +79,19 @@ if __name__ == "__main__":  # noqa: C901
         args_final_model.append("--deterministic")
 
     if os.path.exists(os.path.join(log_path, f"{env_name}.zip")):
-        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args_final_model)
+        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video", *args_final_model])
         assert return_code == 0, "Failed to record the final model"
 
     if os.path.exists(os.path.join(log_path, "best_model.zip")):
-        args_best_model = args_final_model + ["--load-best"]
-        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args_best_model)
+        args_best_model = [*args_final_model, "--load-best"]
+        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video", *args_best_model])
         assert return_code == 0, "Failed to record the best model"
 
-    args_checkpoint = args_final_model + ["--load-checkpoint"]
+    args_checkpoint = [*args_final_model, "--load-checkpoint"]
     args_checkpoint.append("0")
     for checkpoint in checkpoints:
         args_checkpoint[-1] = str(checkpoint)
-        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video"] + args_checkpoint)
+        return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video", *args_checkpoint])
         assert return_code == 0, f"Failed to record the {checkpoint} checkpoint model"
 
     # add text to each video
