@@ -1,9 +1,13 @@
-## Release 1.8.0a2 (WIP)
+## Release 1.8.0a10 (WIP)
 
 ### Breaking Changes
 - Upgraded to SB3 >= 1.8.0
+- Upgraded to new `HerReplayBuffer` implementation that supports multiple envs
+- Removed `TimeFeatureWrapper` for Panda and Fetch envs, as the new replay buffer should handle timeout.
 
 ### New Features
+- Tuned hyperparameters for RecurrentPPO on Swimmer
+- Documentation is now built using Sphinx and hosted on read the doc
 
 ### Bug fixes
 - Set ``highway-env`` version to 1.5 and ``setuptools to`` v65.5 for the CI
@@ -15,6 +19,10 @@
 
 ### Other
 - Added support for `ruff` (fast alternative to flake8) in the Makefile
+- Removed Gitlab CI file
+- Replaced deprecated `optuna.suggest_loguniform(...)` by `optuna.suggest_float(..., log=True)`
+- Switched to `ruff` and `pyproject.toml`
+- Removed `online_sampling` and `max_episode_length` argument when using `HerReplayBuffer`
 
 ## Release 1.7.0 (2023-01-10)
 

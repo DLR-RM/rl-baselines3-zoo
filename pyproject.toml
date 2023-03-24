@@ -1,0 +1,69 @@
+[tool.ruff]
+# Same as Black.
+line-length = 127
+# Assume Python 3.7
+target-version = "py37"
+# See https://beta.ruff.rs/docs/rules/
+select = ["E", "F", "B", "UP", "C90", "RUF"]
+# Ignore explicit stacklevel`
+ignore = ["B028"]
+
+[tool.ruff.per-file-ignores]
+# "./rl_zoo3/plots/all_plots.py"= ["E501"]
+# "./rl_zoo3/plots/plot_train.py"= ["E501"]
+
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 15
+
+[tool.black]
+line-length = 127
+
+[tool.isort]
+profile = "black"
+line_length = 127
+src_paths = ["stable_baselines3", "rl_zoo3"]
+
+[tool.pytype]
+inputs = ["."]
+# disable = []
+
+[tool.mypy]
+ignore_missing_imports = true
+follow_imports = "silent"
+show_error_codes = true
+exclude = """(?x)(
+    rl_zoo3/hyperparams_opt.py$
+    | rl_zoo3/exp_manager.py$
+  )"""
+
+[tool.pytest.ini_options]
+# Deterministic ordering for tests; useful for pytest-xdist.
+env = [
+	"PYTHONHASHSEED=0"
+]
+
+filterwarnings = [
+    # Tensorboard warnings
+    "ignore::DeprecationWarning:tensorboard",
+    # Gym warnings
+    "ignore::UserWarning:gym",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')"
+]
+
+[tool.coverage.run]
+disable_warnings = ["couldnt-parse"]
+branch = false
+omit = [
+	"tests/*",
+	"setup.py",
+	"rl_zoo3/plots/*",
+	"rl_zoo3/push_to_hub.py",
+	"scripts/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [ "pragma: no cover", "raise NotImplementedError()", "if typing.TYPE_CHECKING:"]

@@ -165,7 +165,6 @@ Swimmer-v3:
 
 # === HER Robotics GoalEnvs ===
 FetchReach-v1:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 20000
   policy: 'MultiInputPolicy'
   buffer_size: 1000000
@@ -177,14 +176,12 @@ FetchReach-v1:
   normalize: True
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=True,
     goal_selection_strategy='future',
     n_sampled_goal=4
   )"
   policy_kwargs: "dict(net_arch=[64, 64], n_critics=1)"
 
 FetchPush-v1: &her-defaults
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 1e6
   policy: 'MultiInputPolicy'
   buffer_size: 1000000
@@ -194,7 +191,6 @@ FetchPush-v1: &her-defaults
   tau: 0.05
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=True,
     goal_selection_strategy='future',
     n_sampled_goal=4,
   )"
@@ -208,7 +204,6 @@ FetchPickAndPlace-v1:
   <<: *her-defaults
 
 PandaReach-v1:
-  env_wrapper: sb3_contrib.common.wrappers.TimeFeatureWrapper
   n_timesteps: !!float 20000
   policy: 'MultiInputPolicy'
   buffer_size: 1000000
@@ -220,7 +215,6 @@ PandaReach-v1:
   normalize: True
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=True,
     goal_selection_strategy='future',
     n_sampled_goal=4
   )"
@@ -249,10 +243,8 @@ parking-v0:
   tau: 0.005
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
-    online_sampling=False,
     goal_selection_strategy='episode',
     n_sampled_goal=4,
-    max_episode_length=100
   )"
 
 # Tuned

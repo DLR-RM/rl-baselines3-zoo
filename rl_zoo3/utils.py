@@ -20,7 +20,7 @@ from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  #
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv, VecFrameStack, VecNormalize
 
 # For custom activation fn
-from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
+from torch import nn as nn
 
 ALGOS: Dict[str, Type[BaseAlgorithm]] = {
     "a2c": A2C,
@@ -314,7 +314,7 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
             args_files = glob.glob(os.path.join(log_folder, algo, model_folder, "*/args.yml"))
             if len(args_files) != 1:
                 continue  # we expect only one sub-folder with an args.yml file
-            with open(args_files[0], "r") as fh:
+            with open(args_files[0]) as fh:
                 env_id = yaml.load(fh, Loader=yaml.UnsafeLoader)["env"]
 
             model_name = ModelName(algo, EnvironmentName(env_id))

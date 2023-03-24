@@ -16,4 +16,4 @@ for trained_model in list(remaining_models):
     if algo == "her":
         continue
 
-    return_code = subprocess.call(["python", "-m", "rl_zoo3.push_to_hub"] + args)
+    return_code = subprocess.call(["python", "-m", "rl_zoo3.push_to_hub", *args])
