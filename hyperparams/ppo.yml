@@ -337,7 +337,6 @@ MiniGrid-ObstructedMaze-2Dlh-v0:
   <<: *minigrid-defaults
 
 
-
 CarRacing-v0:
   env_wrapper:
     - rl_zoo3.wrappers.FrameSkip:

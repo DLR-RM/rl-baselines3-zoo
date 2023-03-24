@@ -48,7 +48,6 @@ try:
 except ImportError:
     rocket_lander_gym = None
 
-
 try:
     import gym_minigrid  # pytype: disable=import-error
 except ImportError:
