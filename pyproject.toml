@@ -27,6 +27,7 @@ src_paths = ["stable_baselines3", "rl_zoo3"]
 
 [tool.pytype]
 inputs = ["."]
+exclude = ["tests/test_env"]
 # disable = []
 
 [tool.mypy]
