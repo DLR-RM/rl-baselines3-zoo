@@ -34,6 +34,7 @@ exclude = ["tests/test_env"]
 ignore_missing_imports = true
 follow_imports = "silent"
 show_error_codes = true
+explicit_package_bases = true
 exclude = """(?x)(
     rl_zoo3/hyperparams_opt.py$
     | rl_zoo3/exp_manager.py$
