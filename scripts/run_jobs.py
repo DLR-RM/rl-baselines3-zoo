@@ -34,4 +34,4 @@ for algo in ALGOS:
                 ]
                 arg_str_list: List[str] = list(map(str, args))
 
-                ok = subprocess.call(["python", "train.py"] + arg_str_list)
+                ok = subprocess.call(["python", "train.py", *arg_str_list])

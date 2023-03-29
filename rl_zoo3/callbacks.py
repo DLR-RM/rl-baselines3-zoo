@@ -102,12 +102,12 @@ class ParallelTrainCallback(BaseCallback):
 
     TODO:
     - blocking mode: wait for the model to finish updating the policy before collecting new experience
-        at the end of a rollout
+    at the end of a rollout
     - force sync mode: stop training to update to the latest policy for collecting
-        new experience
+    new experience
 
     :param gradient_steps: Number of gradient steps to do before
-        sending the new policy
+      sending the new policy
     :param verbose: Verbosity level
     :param sleep_time: Limit the fps in the thread collecting experience.
     """

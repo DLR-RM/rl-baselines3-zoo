@@ -24,7 +24,7 @@ body:
           required: true
         - label: I have read the [SB3 documentation](https://stable-baselines3.readthedocs.io/en/master/)
           required: true
-        - label: I have read the [RL Zoo README](https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/README.md)
+        - label: I have read the [RL Zoo documentation](https://rl-baselines3-zoo.readthedocs.io)
           required: true
         - label: If code there is, it is minimal and working
           required: true

@@ -24,7 +24,7 @@ from optuna.visualization import plot_optimization_history, plot_param_importanc
 from sb3_contrib.common.vec_env import AsyncEval
 
 # For using HER with GoalEnv
-from stable_baselines3 import HerReplayBuffer  # noqa: F401
+from stable_baselines3 import HerReplayBuffer
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback, ProgressBarCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -44,7 +44,7 @@ from stable_baselines3.common.vec_env import (
 )
 
 # For custom activation fn
-from torch import nn as nn  # noqa: F401
+from torch import nn as nn
 
 # Register custom envs
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
@@ -373,7 +373,7 @@ class ExperimentManager:
             del hyperparams["normalize"]
         return hyperparams
 
-    def _preprocess_hyperparams(
+    def _preprocess_hyperparams(  # noqa: C901
         self, hyperparams: Dict[str, Any]
     ) -> Tuple[Dict[str, Any], Optional[Callable], List[BaseCallback], Optional[Callable]]:
         self.n_envs = hyperparams.get("n_envs", 1)
@@ -816,7 +816,7 @@ class ExperimentManager:
             print("============")
             print("Sampled hyperparams:")
             pprint(sampled_hyperparams)
-            raise optuna.exceptions.TrialPruned()
+            raise optuna.exceptions.TrialPruned() from e
         is_pruned = eval_callback.is_pruned
         reward = eval_callback.last_mean_reward
 

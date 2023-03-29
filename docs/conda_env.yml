@@ -1,0 +1,26 @@
+name: root
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - cpuonly=1.0=0
+  - pip=22.3.1
+  - python=3.7
+  - pytorch=1.11=py3.7_cpu_0
+  - pip:
+    - cloudpickle
+    - opencv-python-headless
+    - pandas
+    - numpy
+    - matplotlib
+    - sphinx_autodoc_typehints
+    - sphinx>=4.2
+    - sphinx_rtd_theme>=1.0
+    - sphinx_copybutton
+    - sb3-contrib>=1.7.0
+    - optuna
+    - huggingface_sb3>=2.2.1
+    - rich
+    - tqdm
+    - pyyaml>=5.1
+    - pytablewriter==0.64.2

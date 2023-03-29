@@ -36,7 +36,7 @@ for algo in ALGOS:
                 ]
                 arg_str_list: List[str] = list(map(str, args))
 
-                command = " ".join(["python", "-u", "train.py"] + arg_str_list)
+                command = " ".join(["python", "-u", "train.py", *arg_str_list])
 
                 ok = subprocess.call(["sbatch", "cluster_torchy.sh", algo, env_id, "ablation", command])
                 time.sleep(0.05)
