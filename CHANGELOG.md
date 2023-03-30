@@ -1,4 +1,4 @@
-## Release 1.8.0a10 (WIP)
+## Release 1.8.0a13 (WIP)
 
 ### Breaking Changes
 - Upgraded to SB3 >= 1.8.0

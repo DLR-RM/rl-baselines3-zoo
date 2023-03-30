@@ -1,6 +1,6 @@
 gym==0.21
-stable-baselines3[extra_no_roms,tests,docs]>=1.8.0a10
-sb3-contrib>=1.8.0a10
+stable-baselines3[extra_no_roms,tests,docs]>=1.8.0a13,<2.0
+sb3-contrib>=1.8.0a13,<2.0
 box2d-py==2.3.8
 pybullet
 gym-minigrid
