@@ -18,3 +18,5 @@ seaborn
 tqdm
 rich
 ruff
+# gym not compatible with importlib-metadata>5.0
+importlib-metadata~=4.13
