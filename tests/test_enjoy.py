@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 import pytest
 
@@ -38,6 +39,10 @@ def test_trained_agents(trained_model):
 
     if "-MiniGrid-" in trained_model:
         args = [*args, "--gym-packages", "gym_minigrid"]
+        # Skip for python 3.7, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/372#issuecomment-1490562332
+        python_37 = sys.version_info.major == 3 and sys.version_info.minor == 7
+        if python_37:
+            pytest.skip("MiniGrid env does not work with Python 3.7")
 
     return_code = subprocess.call(["python", "enjoy.py", *args])
     _assert_eq(return_code, 0)
