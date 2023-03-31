@@ -428,21 +428,8 @@ HalfCheetah-v3:
   gae_lambda: 0.92
   max_grad_norm: 0.8
   vf_coef: 0.58096
-  policy_kwargs: "dict(Reacher-v2:
-  normalize: true
-  n_envs: 1
-  policy: 'MlpLstmPolicy'
-  n_timesteps: !!float 1e6
-  batch_size: 32
-  n_steps: 512
-  gamma: 0.9
-  learning_rate: 0.000104019
-  ent_coef: 7.52585e-08
-  clip_range: 0.3
-  n_epochs: 5
-  gae_lambda: 1.0
-  max_grad_norm: 0.9
-  vf_coef: 0.950368
+  policy_kwargs: "dict(
+                    log_std_init=-2,
                     ortho_init=False,
                     activation_fn=nn.ReLU,
                     net_arch=dict(pi=[256, 256], vf=[256, 256])
