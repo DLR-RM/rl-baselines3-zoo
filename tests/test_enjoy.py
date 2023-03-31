@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 import pytest
 
@@ -35,6 +36,12 @@ def test_trained_agents(trained_model):
     # Skip mujoco envs
     if "Fetch" in trained_model or "-v3" in trained_model:
         return
+
+    if "-MiniGrid-" in trained_model:
+        args = [*args, "--gym-packages", "gym_minigrid"]
+        # Skip for python 3.7, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/372#issuecomment-1490562332
+        if sys.version_info[:2] == (3, 7):
+            pytest.skip("MiniGrid env does not work with Python 3.7")
 
     return_code = subprocess.call(["python", "enjoy.py", *args])
     _assert_eq(return_code, 0)
