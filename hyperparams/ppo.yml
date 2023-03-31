@@ -303,38 +303,48 @@ MiniGrid-Empty-Random-5x5-v0: &minigrid-defaults
 
 MiniGrid-FourRooms-v0:
   <<: *minigrid-defaults
-  n_timesteps: !!float 4e6
+  n_timesteps: !!float 5e6
   n_steps: 512
 
 MiniGrid-DoorKey-5x5-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 1e5
 
 MiniGrid-MultiRoom-N4-S5-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 1e7 # Unsolved
 
 MiniGrid-Fetch-5x5-N2-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 5e6
 
 MiniGrid-GoToDoor-5x5-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 5e6
 
 MiniGrid-PutNear-6x6-N2-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 1e7
 
 MiniGrid-RedBlueDoors-6x6-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 1e6
+  n_steps: 512
 
 MiniGrid-LockedRoom-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 1e7 # Unsolved
 
 MiniGrid-KeyCorridorS3R1-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 5e5
 
 MiniGrid-Unlock-v0:
   <<: *minigrid-defaults
 
 MiniGrid-ObstructedMaze-2Dlh-v0:
   <<: *minigrid-defaults
+  n_timesteps: !!float 1e7 # Unsolved
 
 
 CarRacing-v0:
@@ -418,8 +428,21 @@ HalfCheetah-v3:
   gae_lambda: 0.92
   max_grad_norm: 0.8
   vf_coef: 0.58096
-  policy_kwargs: "dict(
-                    log_std_init=-2,
+  policy_kwargs: "dict(Reacher-v2:
+  normalize: true
+  n_envs: 1
+  policy: 'MlpLstmPolicy'
+  n_timesteps: !!float 1e6
+  batch_size: 32
+  n_steps: 512
+  gamma: 0.9
+  learning_rate: 0.000104019
+  ent_coef: 7.52585e-08
+  clip_range: 0.3
+  n_epochs: 5
+  gae_lambda: 1.0
+  max_grad_norm: 0.9
+  vf_coef: 0.950368
                     ortho_init=False,
                     activation_fn=nn.ReLU,
                     net_arch=dict(pi=[256, 256], vf=[256, 256])
