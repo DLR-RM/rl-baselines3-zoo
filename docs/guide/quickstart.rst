@@ -6,12 +6,12 @@ Getting Started
 
 .. note::
 
-  You can try the following examples online using Google colab |colab|
+  You can try the following examples online using Google Colab |Colab|
   notebook: `RL Baselines zoo notebook`_
 
 
 .. _RL Baselines zoo notebook: https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/rl-baselines-zoo.ipynb
-.. |colab| image:: ../_static/img/colab.svg
+.. |Colab| image:: ../_static/img/colab.svg
 
 
 The hyperparameters for each environment are defined in
