@@ -1,4 +1,12 @@
-## Release 1.8.0a13 (WIP)
+## Release 1.8.0 (2023-04-07)
+
+**New Documentation, Multi-Env HerReplayBuffer**
+
+> **Warning**
+> Stable-Baselines3 (SB3) v1.8.0 will be the last one to use Gym as a backend.
+  Starting with v2.0.0, Gymnasium will be the default backend (though SB3 will have compatibility layers for Gym envs).
+  You can find a migration guide [here](https://gymnasium.farama.org/content/migration-guide/).
+  If you want to try the SB3 v2.0 alpha version, you can take a look at [PR #1327](https://github.com/DLR-RM/stable-baselines3/pull/1327).
 
 ### Breaking Changes
 - Upgraded to SB3 >= 1.8.0
