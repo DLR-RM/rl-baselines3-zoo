@@ -104,7 +104,7 @@ Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/m
 
 Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/config.html) of the documentation.
 
-## Current Collection: 195+ Trained Agents!
+## Current Collection: 200+ Trained Agents!
 
 Final performance of the trained agents can be found in [`benchmark.md`](./benchmark.md). To compute them, simply run `python -m rl_zoo3.benchmark`.
 
@@ -235,31 +235,18 @@ We used the v1 environments.
 
 ### MiniGrid Envs
 
-See https://github.com/maximecb/gym-minigrid
+See https://github.com/Farama-Foundation/Minigrid.
 A simple, lightweight and fast Gym environments implementation of the famous gridworld.
 
-|  RL Algo | Empty | FourRooms | DoorKey | MultiRoom | Fetch |
-|----------|-------|-----------|---------|-----------|-------|
-| A2C      | | | | | |
-| PPO      | |  |  | | |
-| DDPG     | | | | | |
-| SAC      | | | | | |
-| TRPO     | | | | | |
+| RL Algo | Empty-Random-5x5   | FourRooms          | DoorKey-5x5        | MultiRoom-N4-S5    | Fetch-5x5-N2       | GoToDoor-5x5       | PutNear-6x6-N2     | RedBlueDoors-6x6   | LockedRoom         | KeyCorridorS3R1    | Unlock             | ObstructedMaze-2Dlh |
+| ------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------- |
+| A2C     |                    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                     |
+| PPO     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:  |
+| DQN     |                    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                     |
+| QR-DQN  |                    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                     |
+| TRPO    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                    |                     |
 
-There are 19 environment groups (variations for each) in total.
-
-Note that you need to specify `--gym-packages gym_minigrid` with `enjoy.py` and `train.py` as it is not a standard Gym environment, as well as installing the custom Gym package module or putting it in python path.
-
-```
-pip install gym-minigrid==1.0.3
-python train.py --algo ppo --env MiniGrid-DoorKey-5x5-v0 --gym-packages gym_minigrid
-```
-
-This does the same thing as:
-
-```python
-import gym_minigrid
-```
+There are 22 environment groups (variations for each) in total.
 
 
 ## Colab Notebook: Try it Online!
@@ -285,6 +272,7 @@ train()
 
 To run tests, first install pytest, then:
 ```
+pip install tests/test_env  # used to test --gym-packages
 make pytest
 ```
 

@@ -58,7 +58,7 @@ def enjoy() -> None:  # noqa: C901
         type=str,
         nargs="+",
         default=[],
-        help="Additional external Gym environment package modules to import (e.g. gym_minigrid)",
+        help="Additional external Gym environment package modules to import",
     )
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
@@ -137,6 +137,7 @@ def enjoy() -> None:  # noqa: C901
         th.set_num_threads(args.num_threads)
 
     is_atari = ExperimentManager.is_atari(env_name.gym_id)
+    is_minigrid = ExperimentManager.is_minigrid(env_name.gym_id)
 
     stats_path = os.path.join(log_path, env_name)
     hyperparams, maybe_stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
@@ -195,7 +196,7 @@ def enjoy() -> None:  # noqa: C901
     obs = env.reset()
 
     # Deterministic by default except for atari games
-    stochastic = args.stochastic or is_atari and not args.deterministic
+    stochastic = args.stochastic or (is_atari or is_minigrid) and not args.deterministic
     deterministic = not stochastic
 
     episode_reward = 0.0

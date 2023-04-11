@@ -73,6 +73,7 @@ if __name__ == "__main__":
     set_random_seed(args.seed)
 
     is_atari = ExperimentManager.is_atari(env_name.gym_id)
+    is_minigrid = ExperimentManager.is_minigrid(env_name.gym_id)
 
     stats_path = os.path.join(log_path, env_name)
     hyperparams, maybe_stats_path = get_saved_hyperparams(stats_path)
@@ -130,7 +131,7 @@ if __name__ == "__main__":
     model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
 
     # Deterministic by default except for atari games
-    stochastic = args.stochastic or is_atari and not args.deterministic
+    stochastic = args.stochastic or (is_atari or is_minigrid) and not args.deterministic
     deterministic = not stochastic
 
     if video_folder is None:

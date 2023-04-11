@@ -27,6 +27,7 @@
 ### New Features
 - Tuned hyperparameters for RecurrentPPO on Swimmer
 - Documentation is now built using Sphinx and hosted on read the doc
+- Added hyperparameters pre-trained agents for PPO on 11 MiniGrid envs
 
 ### Bug fixes
 - Set ``highway-env`` version to 1.5 and ``setuptools to`` v65.5 for the CI

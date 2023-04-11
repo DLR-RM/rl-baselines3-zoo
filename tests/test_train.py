@@ -149,3 +149,24 @@ def test_python_config_file(tmp_path, config_file):
 
     return_code = subprocess.call(["python", "train.py", *args])
     _assert_eq(return_code, 0)
+
+
+def test_gym_packages(tmp_path):
+    # Test gym packages
+    args = [
+        "-n",
+        str(N_STEPS),
+        "--algo",
+        "ppo",
+        "--env",
+        "TestEnv-v0",
+        "--gym-packages",
+        "test_env",
+        "--log-folder",
+        tmp_path,
+        "--conf-file",
+        "test_env.config",
+    ]
+
+    return_code = subprocess.call(["python", "train.py", *args])
+    _assert_eq(return_code, 0)
