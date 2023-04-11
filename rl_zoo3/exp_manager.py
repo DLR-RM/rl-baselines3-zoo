@@ -158,7 +158,7 @@ class ExperimentManager:
         self.pruner = pruner
         self.n_startup_trials = n_startup_trials
         self.n_evaluations = n_evaluations
-        self.deterministic_eval = not self.is_atari(env_id)
+        self.deterministic_eval = not (self.is_atari(env_id) or self.is_minigrid(env_id))
         self.device = device
 
         # Logging
@@ -515,6 +515,11 @@ class ExperimentManager:
     def is_atari(env_id: str) -> bool:
         entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
         return "AtariEnv" in str(entry_point)
+
+    @staticmethod
+    def is_minigrid(env_id: str) -> bool:
+        entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
+        return "gym_minigrid" in str(entry_point)
 
     @staticmethod
     def is_bullet(env_id: str) -> bool:

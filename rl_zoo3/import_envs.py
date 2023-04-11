@@ -48,6 +48,11 @@ try:
 except ImportError:
     rocket_lander_gym = None
 
+try:
+    import gym_minigrid  # pytype: disable=import-error
+except ImportError:
+    gym_minigrid = None
+
 
 # Register no vel envs
 def create_no_vel_env(env_id: str):
