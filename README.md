@@ -251,7 +251,7 @@ There are 22 environment groups (variations for each) in total.
 
 ## Colab Notebook: Try it Online!
 
-You can train agents online using [colab notebook](https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/rl-baselines-zoo.ipynb).
+You can train agents online using [Colab notebook](https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/rl-baselines-zoo.ipynb).
 
 ### Passing arguments in an interactive session
 
