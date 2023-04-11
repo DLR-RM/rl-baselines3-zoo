@@ -272,6 +272,7 @@ train()
 
 To run tests, first install pytest, then:
 ```
+pip install tests/test_env  # used for testing --gym-packages
 make pytest
 ```
 
