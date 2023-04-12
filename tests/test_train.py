@@ -152,6 +152,11 @@ def test_python_config_file(tmp_path, config_file):
 
 
 def test_gym_packages(tmp_path):
+    # Update python path so the test_env package is found
+    env_variables = os.environ.copy()
+    python_path = env_variables.get("PYTHONPATH", "") + ":tests/dummy_env"
+    env_variables["PYTHONPATH"] = python_path
+
     # Test gym packages
     args = [
         "-n",
@@ -168,5 +173,5 @@ def test_gym_packages(tmp_path):
         "test_env.config",
     ]
 
-    return_code = subprocess.call(["python", "train.py", *args])
+    return_code = subprocess.call(["python", "train.py", *args], env=env_variables)
     _assert_eq(return_code, 0)

@@ -48,8 +48,6 @@ jobs:
         pip install opencv-python-headless
         # install parking-env to test HER
         pip install highway-env==1.8.1
-        # Install a test env to test gym-packages arg
-        pip install tests/dummy_env
         pip install -e .
     - name: Lint with ruff
       run: |

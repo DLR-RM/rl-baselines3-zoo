@@ -5,6 +5,7 @@ from gymnasium import spaces
 
 class TestEnv(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 4}
+    __test__ = False
 
     def __init__(self, render_mode=None):
         super().__init__()
