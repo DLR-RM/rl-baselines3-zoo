@@ -287,7 +287,7 @@ InvertedPendulumSwingupBulletEnv-v0:
 
 # Following https://github.com/lcswillems/rl-starter-files
 MiniGrid-Empty-Random-5x5-v0: &minigrid-defaults
-  env_wrapper: gym_minigrid.wrappers.FlatObsWrapper # See GH/1320#issuecomment-1421108191
+  env_wrapper: minigrid.wrappers.FlatObsWrapper # See GH/1320#issuecomment-1421108191
   normalize: true
   n_envs: 8 # number of environment copies running in parallel
   n_timesteps: !!float 1e5

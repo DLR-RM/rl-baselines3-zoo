@@ -6,7 +6,7 @@ git+https://github.com/DLR-RM/stable-baselines3@feat/gymnasium-support#egg=stabl
 git+https://github.com/Stable-Baselines-Team/stable-baselines3-contrib@feat/gymnasium-support
 box2d-py==2.3.8
 pybullet
-# gym-minigrid
+# minigrid
 # scikit-optimize
 optuna~=3.0
 pytablewriter~=0.64

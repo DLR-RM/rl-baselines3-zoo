@@ -51,9 +51,9 @@ except ImportError:
     rocket_lander_gym = None
 
 try:
-    import gym_minigrid  # pytype: disable=import-error
+    import minigrid  # pytype: disable=import-error
 except ImportError:
-    gym_minigrid = None
+    minigrid = None
 
 
 # Register no vel envs

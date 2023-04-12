@@ -525,8 +525,7 @@ class ExperimentManager:
 
     @staticmethod
     def is_minigrid(env_id: str) -> bool:
-        entry_point = gym.envs.registry.env_specs[env_id].entry_point  # pytype: disable=module-attr
-        return "gym_minigrid" in str(entry_point)
+        return "minigrid" in ExperimentManager.entry_point(env_id)
 
     @staticmethod
     def is_bullet(env_id: str) -> bool:
