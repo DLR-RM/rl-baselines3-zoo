@@ -46,10 +46,10 @@ jobs:
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
-        # install parking-env to test HER (pinned so it works with gym 0.21)
-        pip install highway-env==1.5.0
+        # install parking-env to test HER
+        pip install highway-env==1.8.1
         # Install a test env to test gym-packages arg
-        pip install tests/test_env
+        pip install tests/dummy_env
         pip install -e .
     - name: Lint with ruff
       run: |

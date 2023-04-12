@@ -20,6 +20,8 @@ hub
 *.json
 _build/
 
+tests/dummy_env/build/
+
 
 # Setuptools distribution and build folders.
 /dist/
