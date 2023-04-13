@@ -189,7 +189,7 @@ class ParallelTrainCallback(BaseCallback):
 
         if self._model_ready:
             self._model.replay_buffer = deepcopy(self.model.replay_buffer)
-            self.model.set_parameters(deepcopy(self._model.get_parameters()))
+            self.model.set_parameters(deepcopy(self._model.get_parameters()))  # type: ignore[arg-type]
             self.model.actor = self.model.policy.actor  # type: ignore[union-attr, attr-defined, assignment]
             if self.num_timesteps >= self._model.learning_starts:
                 self.train()

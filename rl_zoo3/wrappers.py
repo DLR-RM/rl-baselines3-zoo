@@ -5,7 +5,7 @@ import numpy as np
 from gymnasium import spaces
 from gymnasium.core import ObsType
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
-from stable_baselines3.common.type_aliases import Gym26ResetReturn, Gym26StepReturn
+from stable_baselines3.common.type_aliases import GymResetReturn, GymStepReturn
 
 
 class TruncatedOnSuccessWrapper(gym.Wrapper):
@@ -20,12 +20,12 @@ class TruncatedOnSuccessWrapper(gym.Wrapper):
         self.n_successes = n_successes
         self.current_successes = 0
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
         self.current_successes = 0
         assert options is None, "Options not supported for now"
         return self.env.reset(seed=seed)
 
-    def step(self, action) -> Gym26StepReturn:
+    def step(self, action) -> GymStepReturn:
         obs, reward, terminated, truncated, info = self.env.step(action)
         if info.get("is_success", False):
             self.current_successes += 1
@@ -78,12 +78,12 @@ class ActionSmoothingWrapper(gym.Wrapper):
         # self.alpha = self.smoothing_coef
         # self.beta = np.sqrt(1 - self.alpha ** 2) / (1 - self.alpha)
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
         self.smoothed_action = None
         assert options is None, "Options not supported for now"
         return self.env.reset(seed=seed)
 
-    def step(self, action) -> Gym26StepReturn:
+    def step(self, action) -> GymStepReturn:
         if self.smoothed_action is None:
             self.smoothed_action = np.zeros_like(action)
         assert self.smoothed_action is not None
@@ -106,13 +106,13 @@ class DelayedRewardWrapper(gym.Wrapper):
         self.current_step = 0
         self.accumulated_reward = 0.0
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Gym26ResetReturn:
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
         self.current_step = 0
         self.accumulated_reward = 0.0
         assert options is None, "Options not supported for now"
         return self.env.reset(seed=seed)
 
-    def step(self, action) -> Gym26StepReturn:
+    def step(self, action) -> GymStepReturn:
         obs, reward, terminated, truncated, info = self.env.step(action)
 
         self.accumulated_reward += float(reward)
@@ -271,7 +271,7 @@ class FrameSkip(gym.Wrapper):
         super().__init__(env)
         self._skip = skip
 
-    def step(self, action) -> Gym26StepReturn:
+    def step(self, action) -> GymStepReturn:
         """
         Step the environment with the given action
         Repeat action, sum reward.
