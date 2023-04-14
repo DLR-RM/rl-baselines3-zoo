@@ -27,17 +27,17 @@ src_paths = ["stable_baselines3", "rl_zoo3"]
 
 [tool.pytype]
 inputs = ["."]
-exclude = ["tests/test_env"]
+exclude = ["tests/dummy_env"]
 # disable = []
 
 [tool.mypy]
 ignore_missing_imports = true
 follow_imports = "silent"
 show_error_codes = true
-explicit_package_bases = true
 exclude = """(?x)(
     rl_zoo3/hyperparams_opt.py$
     | rl_zoo3/exp_manager.py$
+    | tests/dummy_env/*$
   )"""
 
 [tool.pytest.ini_options]

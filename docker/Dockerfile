@@ -21,7 +21,7 @@ RUN \
     mkdir -p ${CODE_DIR}/rl_zoo3 && \
     pip uninstall -y stable-baselines3 && \
     pip install -r /tmp/requirements.txt && \
-    pip install pip install highway-env==1.5 && \
+    pip install highway-env>=1.7.1 && \
     rm -rf $HOME/.cache/pip
 
 ENV PATH=$VENV/bin:$PATH

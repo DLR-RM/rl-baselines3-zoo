@@ -27,7 +27,8 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
-        "sb3-contrib>=1.8.0,<2.0",
+        "sb3_contrib>=2.0.0a4",
+        "gym==0.26.2",
         "huggingface_sb3>=2.2.1",
         "tqdm",
         "rich",
@@ -44,7 +45,7 @@ setup(
     url="https://github.com/DLR-RM/rl-baselines3-zoo",
     author_email="antonin.raffin@dlr.de",
     keywords="reinforcement-learning-algorithms reinforcement-learning machine-learning "
-    "gym openai stable baselines sb3 toolbox python data-science",
+    "gym gymnasium openai stable baselines sb3 toolbox python data-science",
     license="MIT",
     long_description=long_description,
     long_description_content_type="text/markdown",

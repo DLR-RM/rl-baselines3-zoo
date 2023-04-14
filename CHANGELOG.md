@@ -1,3 +1,14 @@
+## Release 2.0.0a4 (WIP)
+
+### Breaking Changes
+- Upgraded to gym 0.26+
+- Fixed bug in HistoryWrapper, now returns the correct obs space limits
+
+### New Features
+- Gym 0.26+ patches to continue working with pybullet and TimeLimit wrapper
+
+### Bug fixes
+
 ## Release 1.8.0 (2023-04-07)
 
 **New Documentation, Multi-Env HerReplayBuffer**

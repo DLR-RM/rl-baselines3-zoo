@@ -39,16 +39,13 @@ jobs:
         base64 Roms.tar.gz.b64 --decode &> Roms.tar.gz
         AutoROM --accept-license --source-file Roms.tar.gz
 
-
-        pip install setuptools==65.5.0
         # cpu version of pytorch - faster to download
-        pip install torch==1.11+cpu -f https://download.pytorch.org/whl/torch_stable.html
-        pip install pybullet==3.1.9
+        pip install torch==1.11.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+        pip install pybullet==3.2.5
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
-        # install parking-env to test HER (pinned so it works with gym 0.21)
-        pip install highway-env==1.5.0
+        pip install highway-env==1.8.1
         # Add support for pickle5 protocol
         # TODO: remove me when dropping python 3.7
         pip install pickle5

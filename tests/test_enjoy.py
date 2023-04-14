@@ -33,15 +33,22 @@ def test_trained_agents(trained_model):
     if "CarRacing" in env_id:
         return
 
+    # FIXME: skip Panda gym envs
+    # need panda gym >= 3.0.1 and gymnasium
+    if "Panda" in env_id:
+        return
+
     # Skip mujoco envs
     if "Fetch" in trained_model or "-v3" in trained_model:
         return
 
+    # FIXME: switch to MiniGrid package
     if "-MiniGrid-" in trained_model:
-        args = [*args, "--gym-packages", "gym_minigrid"]
         # Skip for python 3.7, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/372#issuecomment-1490562332
         if sys.version_info[:2] == (3, 7):
             pytest.skip("MiniGrid env does not work with Python 3.7")
+        # FIXME: switch to Gymnsium
+        return
 
     return_code = subprocess.call(["python", "enjoy.py", *args])
     _assert_eq(return_code, 0)
@@ -96,7 +103,8 @@ def test_record_video(tmp_path):
     args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v1", "-o", str(tmp_path)]
 
     # Skip if no X-Server
-    pytest.importorskip("pyglet.gl")
+    if not os.environ.get("DISPLAY"):
+        pytest.skip("No X-Server")
 
     return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video", *args])
     _assert_eq(return_code, 0)
@@ -134,7 +142,8 @@ def test_record_training(tmp_path):
     ]
 
     # Skip if no X-Server
-    pytest.importorskip("pyglet.gl")
+    if not os.environ.get("DISPLAY"):
+        pytest.skip("No X-Server")
 
     return_code = subprocess.call(["python", "train.py", *args_training])
     _assert_eq(return_code, 0)

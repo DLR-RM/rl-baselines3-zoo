@@ -1,16 +1,16 @@
-import gym
-import pybullet_envs  # noqa: F401
+import gymnasium as gym
 import pytest
 from stable_baselines3 import A2C
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.env_util import DummyVecEnv
 
+import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.utils import get_wrapper_class
 from rl_zoo3.wrappers import ActionNoiseWrapper, DelayedRewardWrapper, HistoryWrapper, TimeFeatureWrapper
 
 
 def test_wrappers():
-    env = gym.make("AntBulletEnv-v0")
+    env = gym.make("Ant-v4")
     env = DelayedRewardWrapper(env)
     env = ActionNoiseWrapper(env)
     env = HistoryWrapper(env)
@@ -27,7 +27,7 @@ def test_wrappers():
     ],
 )
 def test_get_wrapper(env_wrapper):
-    env = gym.make("AntBulletEnv-v0")
+    env = gym.make("Ant-v4")
     hyperparams = {"env_wrapper": env_wrapper}
     wrapper_class = get_wrapper_class(hyperparams)
     if env_wrapper is not None:
@@ -44,7 +44,8 @@ def test_get_wrapper(env_wrapper):
     ],
 )
 def test_get_vec_env_wrapper(vec_env_wrapper):
-    env = DummyVecEnv([lambda: gym.make("AntBulletEnv-v0")])
+    env = gym.make("Ant-v4")
+    env = DummyVecEnv([lambda: env])
     hyperparams = {"vec_env_wrapper": vec_env_wrapper}
     wrapper_class = get_wrapper_class(hyperparams, "vec_env_wrapper")
     if wrapper_class is not None:

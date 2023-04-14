@@ -2,13 +2,15 @@ import argparse
 import glob
 import importlib
 import os
+from copy import deepcopy
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
-import gym
+import gym as gym26
+import gymnasium as gym
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
-from gym import spaces
+from gymnasium import spaces
 from huggingface_hub import HfApi
 from huggingface_sb3 import EnvironmentName, ModelName
 from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
@@ -40,11 +42,7 @@ ALGOS: Dict[str, Type[BaseAlgorithm]] = {
 
 def flatten_dict_observations(env: gym.Env) -> gym.Env:
     assert isinstance(env.observation_space, spaces.Dict)
-    try:
-        return gym.wrappers.FlattenObservation(env)
-    except AttributeError:
-        keys = env.observation_space.spaces.keys()
-        return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
+    return gym.wrappers.FlattenObservation(env)
 
 
 def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
@@ -234,15 +232,32 @@ def create_test_env(
         vec_env_cls = SubprocVecEnv  # type: ignore[assignment]
         # start_method = 'spawn' for thread safe
 
-    # panda-gym is based on pybullet, whose rendering requires to be configure at initialization
-    if ExperimentManager.is_panda_gym(env_id) and should_render:
-        if env_kwargs is None:
-            env_kwargs = {"render": True}
-        else:
-            env_kwargs["render"] = True
+    # Fix for gym 0.26, to keep old behavior
+    env_kwargs = env_kwargs or {}
+    env_kwargs = deepcopy(env_kwargs)
+    if "render_mode" not in env_kwargs and should_render:
+        env_kwargs.update(render_mode="human")
+
+    # Make Pybullet compatible with gym 0.26
+    if ExperimentManager.is_bullet(env_id):
+        spec = gym26.spec(env_id)
+        env_kwargs.update(dict(apply_api_compatibility=True))
+    else:
+        # Define make_env here so it works with subprocesses
+        # when the registry was modified with `--gym-packages`
+        # See https://github.com/HumanCompatibleAI/imitation/pull/160
+        try:
+            spec = gym.spec(env_id)  # type: ignore[assignment]
+        except gym.error.NameNotFound:
+            # Registered with gym 0.26
+            spec = gym26.spec(env_id)
+
+    def make_env(**kwargs) -> gym.Env:
+        env = spec.make(**kwargs)
+        return env  # type: ignore[return-value]
 
     env = make_vec_env(
-        env_id,
+        make_env,
         n_envs=n_envs,
         monitor_dir=log_dir,
         seed=seed,
@@ -255,7 +270,7 @@ def create_test_env(
     if "vec_env_wrapper" in hyperparams.keys():
         vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
         assert vec_env_wrapper is not None
-        env = vec_env_wrapper(env)
+        env = vec_env_wrapper(env)  # type: ignore[assignment, arg-type]
         del hyperparams["vec_env_wrapper"]
 
     # Load saved stats for normalizing input and rewards
