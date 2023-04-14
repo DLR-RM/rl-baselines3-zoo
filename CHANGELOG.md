@@ -1,4 +1,4 @@
-## Release 2.0.0a2 (WIP)
+## Release 2.0.0a4 (WIP)
 
 ### Breaking Changes
 - Upgraded to gym 0.26+

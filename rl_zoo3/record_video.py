@@ -137,12 +137,6 @@ if __name__ == "__main__":
     if video_folder is None:
         video_folder = os.path.join(log_path, "videos")
 
-    if is_atari:
-        # Patch Atari for rendering
-        # see https://github.com/mgbellemare/Arcade-Learning-Environment/issues/473
-        env.unwrapped.render_mode = env_kwargs.get("render_mode")
-        env.render_mode = env_kwargs.get("render_mode")
-
     # Note: apparently it renders by default
     env = VecVideoRecorder(
         env,
