@@ -283,7 +283,7 @@ InvertedPendulumSwingupBulletEnv-v0:
   clip_range: 0.2
 
 
-CarRacing-v0:
+CarRacing-v2:
   env_wrapper:
     # - rl_zoo3.wrappers.FrameSkip:
     #     skip: 2
