@@ -8,6 +8,7 @@
 - Gym 0.26+ patches to continue working with pybullet and TimeLimit wrapper
 
 ### Bug fixes
+- Renamed ``CarRacing-v1`` to ``CarRacing-v2`` in hyperparameters
 
 ## Release 1.8.0 (2023-04-07)
 

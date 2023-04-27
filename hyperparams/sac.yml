@@ -161,7 +161,7 @@ MinitaurBulletDuckEnv-v0:
   learning_starts: 10000
 
 # To be tuned
-CarRacing-v1:
+CarRacing-v2:
   env_wrapper:
     - rl_zoo3.wrappers.FrameSkip:
         skip: 2
@@ -235,7 +235,7 @@ FetchReach-v1:
 
 donkey-generated-track-v0:
   env_wrapper:
-    - gym.wrappers.time_limit.TimeLimit:
+    - gymnasium.wrappers.time_limit.TimeLimit:
         max_episode_steps: 500
     - rl_zoo3.wrappers.HistoryWrapper:
         horizon: 5
