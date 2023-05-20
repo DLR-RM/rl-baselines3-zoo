@@ -766,7 +766,7 @@ class ExperimentManager:
         # Use non-deterministic eval for Atari
         path = None
         if self.optimization_log_path is not None:
-            path = os.path.join(self.optimization_log_path, f"trial_{str(trial.number)}")
+            path = os.path.join(self.optimization_log_path, f"trial_{trial.number!s}")
         callbacks = get_callback_list({"callback": self.specified_callbacks})
         eval_callback = TrialEvalCallback(
             eval_env,
