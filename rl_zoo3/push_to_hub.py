@@ -20,9 +20,9 @@ from stable_baselines3.common.vec_env import VecEnv, unwrap_vec_normalize
 from wasabi import Printer
 
 import rl_zoo3.import_envs  # noqa: F401 pylint: disable=unused-import
-from rl_zoo3 import ALGOS, create_test_env, get_saved_hyperparams
+from rl_zoo3 import ALGOS, get_saved_hyperparams
 from rl_zoo3.exp_manager import ExperimentManager
-from rl_zoo3.utils import StoreDict, get_model_path
+from rl_zoo3.utils import StoreDict, get_model_path, create_test_env
 
 msg = Printer()
 
@@ -360,6 +360,9 @@ if __name__ == "__main__":
     # overwrite with command line arguments
     if args.env_kwargs is not None:
         env_kwargs.update(args.env_kwargs)
+    
+    # Force rgb_array rendering (gym 0.26+)
+    env_kwargs.update(render_mode="rgb_array")
 
     eval_env = create_test_env(
         env_name.gym_id,
@@ -371,11 +374,17 @@ if __name__ == "__main__":
         hyperparams=deepcopy(hyperparams),
         env_kwargs=env_kwargs,
     )
-
+    
     kwargs = dict(seed=args.seed)
     if algo in off_policy_algos:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
         kwargs.update(dict(buffer_size=1))
+
+        # Hack due to breaking change in v1.6
+        # handle_timeout_termination cannot be at the same time
+        # with optimize_memory_usage
+        if "optimize_memory_usage" in hyperparams:
+            kwargs.update(optimize_memory_usage=False)
 
     # Note: we assume that we push models using the same machine (same python version)
     # that trained them, if not, we would need to pass custom object as in enjoy.py
