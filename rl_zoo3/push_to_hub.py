@@ -378,6 +378,12 @@ if __name__ == "__main__":
         env_kwargs=env_kwargs,
     )
 
+    if is_atari:
+        # Patch Atari for rendering
+        # see https://github.com/mgbellemare/Arcade-Learning-Environment/pull/476
+        eval_env.unwrapped.render_mode = env_kwargs.get("render_mode")
+        eval_env.render_mode = env_kwargs.get("render_mode")
+
     kwargs = dict(seed=args.seed)
     if algo in off_policy_algos:
         # Dummy buffer size as we don't need memory to enjoy the trained agent

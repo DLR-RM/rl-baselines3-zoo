@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
     if is_atari:
         # Patch Atari for rendering
-        # see https://github.com/mgbellemare/Arcade-Learning-Environment/issues/473
+        # see https://github.com/mgbellemare/Arcade-Learning-Environment/pull/476
         env.unwrapped.render_mode = env_kwargs.get("render_mode")
         env.render_mode = env_kwargs.get("render_mode")
 
