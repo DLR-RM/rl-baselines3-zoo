@@ -22,7 +22,7 @@ from wasabi import Printer
 import rl_zoo3.import_envs  # noqa: F401 pylint: disable=unused-import
 from rl_zoo3 import ALGOS, get_saved_hyperparams
 from rl_zoo3.exp_manager import ExperimentManager
-from rl_zoo3.utils import StoreDict, get_model_path, create_test_env
+from rl_zoo3.utils import StoreDict, create_test_env, get_model_path
 
 msg = Printer()
 
@@ -357,12 +357,15 @@ if __name__ == "__main__":
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
             if loaded_args["env_kwargs"] is not None:
                 env_kwargs = loaded_args["env_kwargs"]
+
+    # render and record video by default
+    should_render = not args.no_render
+    if should_render:
+        env_kwargs.update(render_mode="rgb_array")
+
     # overwrite with command line arguments
     if args.env_kwargs is not None:
         env_kwargs.update(args.env_kwargs)
-    
-    # Force rgb_array rendering (gym 0.26+)
-    env_kwargs.update(render_mode="rgb_array")
 
     eval_env = create_test_env(
         env_name.gym_id,
@@ -370,11 +373,11 @@ if __name__ == "__main__":
         stats_path=maybe_stats_path,
         seed=args.seed,
         log_dir=None,
-        should_render=not args.no_render,
+        should_render=should_render,
         hyperparams=deepcopy(hyperparams),
         env_kwargs=env_kwargs,
     )
-    
+
     kwargs = dict(seed=args.seed)
     if algo in off_policy_algos:
         # Dummy buffer size as we don't need memory to enjoy the trained agent
