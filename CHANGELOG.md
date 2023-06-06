@@ -1,4 +1,4 @@
-## Release 2.0.0a9 (WIP)
+## Release 2.0.0a12 (WIP)
 
 ### Breaking Changes
 - Upgraded to gym 0.26+
@@ -9,7 +9,9 @@
 - Gym 0.26+ patches to continue working with pybullet and TimeLimit wrapper
 
 ### Bug fixes
-- Renamed ``CarRacing-v1`` to ``CarRacing-v2`` in hyperparameters
+- Renamed `CarRacing-v1` to `CarRacing-v2` in hyperparameters
+- Huggingface push to hub now accepts a `--n-timesteps` argument to adjust the length of the video
+- Fixed `record_video` steps (before it was stepping in a closed env)
 
 ## Release 1.8.0 (2023-04-07)
 

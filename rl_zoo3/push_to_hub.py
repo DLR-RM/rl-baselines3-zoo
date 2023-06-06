@@ -277,12 +277,12 @@ def package_to_hub(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=EnvironmentName, required=True)
+    parser.add_argument("--env", help="Environment ID", type=EnvironmentName, required=True)
     parser.add_argument("-f", "--folder", help="Log folder", type=str, required=True)
     parser.add_argument("--algo", help="RL Algorithm", type=str, required=True, choices=list(ALGOS.keys()))
-    parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
+    parser.add_argument("-n", "--n-timesteps", help="Number of timesteps for the video recording", default=1000, type=int)
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
-    parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
+    parser.add_argument("--n-envs", help="Number of environments", default=1, type=int)
     parser.add_argument("--exp-id", help="Experiment ID (default: 0: latest, -1: no exp folder)", default=0, type=int)
     parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
     parser.add_argument(
@@ -423,6 +423,6 @@ if __name__ == "__main__":
         n_eval_episodes=10,
         token=None,
         local_repo_path="hub",
-        video_length=1000,
+        video_length=args.n_timesteps,
         generate_video=not args.no_render,
     )
