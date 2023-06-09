@@ -13,12 +13,12 @@ from rl_zoo3.utils import ALGOS, StoreDict, create_test_env, get_model_path, get
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=EnvironmentName, default="CartPole-v1")
+    parser.add_argument("--env", help="Environment ID", type=EnvironmentName, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
     parser.add_argument("-o", "--output-folder", help="Output folder", type=str)
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
-    parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
-    parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
+    parser.add_argument("-n", "--n-timesteps", help="Number of timesteps", default=1000, type=int)
+    parser.add_argument("--n-envs", help="Number of environments", default=1, type=int)
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
     parser.add_argument("--stochastic", action="store_true", default=False, help="Use stochastic actions")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     lstm_states = None
     episode_starts = np.ones((env.num_envs,), dtype=bool)
     try:
-        for _ in range(video_length + 1):
+        for _ in range(video_length):
             action, lstm_states = model.predict(
                 obs,  # type: ignore[arg-type]
                 state=lstm_states,
