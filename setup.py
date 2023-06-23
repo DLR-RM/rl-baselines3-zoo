@@ -27,8 +27,8 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
-        "sb3_contrib>=2.0.0a13",
-        "gym==0.26.2",
+        "sb3_contrib>=2.0.0",
+        "gym==0.26.2",  # for patches to make gym backward compat
         "huggingface_sb3>=2.2.5",
         "tqdm",
         "rich",
@@ -52,6 +52,15 @@ setup(
     version=__version__,
     python_requires=">=3.7",
     # PyPI package information.
+    # PyPI package information.
+    project_urls={
+        "Code": "https://github.com/DLR-RM/rl-baselines3-zoo",
+        "Documentation": "https://rl-baselines3-zoo.readthedocs.io/en/master/",
+        "Changelog": "https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/CHANGELOG.md",
+        "Stable-Baselines3": "https://github.com/DLR-RM/stable-baselines3",
+        "RL-Zoo": "https://github.com/DLR-RM/rl-baselines3-zoo",
+        "SBX": "https://github.com/araffin/sbx",
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",

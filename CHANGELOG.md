@@ -1,12 +1,18 @@
-## Release 2.0.0a12 (WIP)
+## Release 2.0.0 (2023-06-22)
+
+**Gymnasium support**
+
+> **Warning**
+> Stable-Baselines3 (SB3) v2.0.0 will be the last one supporting python 3.7
 
 ### Breaking Changes
-- Upgraded to gym 0.26+
 - Fixed bug in HistoryWrapper, now returns the correct obs space limits
 - Upgraded to SB3 >= 2.0.0
 - Upgraded to Huggingface-SB3 >= 2.2.5
+- Upgraded to Gym API 0.26+, RL Zoo3 doesn't work anymore with Gym 0.21
 
 ### New Features
+- Added Gymnasium support
 - Gym 0.26+ patches to continue working with pybullet and TimeLimit wrapper
 
 ### Bug fixes
