@@ -28,7 +28,7 @@ setup(
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
         "sb3_contrib>=2.0.0",
-        "gym==0.26.2", # for patches to make gym backward compat
+        "gym==0.26.2",  # for patches to make gym backward compat
         "huggingface_sb3>=2.2.5",
         "tqdm",
         "rich",
