@@ -131,7 +131,7 @@ class HistoryWrapper(gym.Wrapper[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
     Stack past observations and actions to give an history to the agent.
 
     :param env:
-    :param horizon:Number of steps to keep in the history.
+    :param horizon: Number of steps to keep in the history.
     """
 
     def __init__(self, env: gym.Env, horizon: int = 2):

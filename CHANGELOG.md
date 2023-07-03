@@ -1,3 +1,20 @@
+## Release 2.1.0a0 (WIP)
+
+### Breaking Changes
+- Dropped python 3.7 support
+- SB3 now requires PyTorch 1.13+
+
+### New Features
+- Added python 3.11 support
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
+
 ## Release 2.0.0 (2023-06-22)
 
 **Gymnasium support**
