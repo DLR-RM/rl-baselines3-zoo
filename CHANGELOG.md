@@ -1,8 +1,12 @@
-## Release 2.1.0a0 (WIP)
+## Release 2.1.0 (2023-08-17)
 
 ### Breaking Changes
 - Dropped python 3.7 support
 - SB3 now requires PyTorch 1.13+
+- Upgraded to SB3 >= 2.1.0
+- Upgraded to Huggingface-SB3 >= 2.3
+- Upgraded to Optuna >= 3.0
+- Upgraded to cloudpickle >= 2.2.1
 
 ### New Features
 - Added python 3.11 support

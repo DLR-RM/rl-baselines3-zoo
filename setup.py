@@ -27,12 +27,12 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
-        "sb3_contrib>=2.0.0",
+        "sb3_contrib>=2.1.0",
         "gym==0.26.2",  # for patches to make gym backward compat
-        "huggingface_sb3>=2.2.5",
+        "huggingface_sb3>=2.3",
         "tqdm",
         "rich",
-        "optuna",
+        "optuna>=3.0",
         "pyyaml>=5.1",
         "pytablewriter~=0.64",
         # TODO: add test dependencies

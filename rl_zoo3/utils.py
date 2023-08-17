@@ -95,7 +95,7 @@ def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> 
                     "You should check the indentation."
                 )
                 wrapper_dict = wrapper_name
-                wrapper_name = list(wrapper_dict.keys())[0]
+                wrapper_name = next(iter(wrapper_dict.keys()))
                 kwargs = wrapper_dict[wrapper_name]
             else:
                 kwargs = {}
@@ -178,7 +178,7 @@ def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
                     "You should check the indentation."
                 )
                 callback_dict = callback_name
-                callback_name = list(callback_dict.keys())[0]
+                callback_name = next(iter(callback_dict.keys()))
                 kwargs = callback_dict[callback_name]
             else:
                 kwargs = {}
