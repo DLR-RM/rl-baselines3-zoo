@@ -108,7 +108,7 @@ def test_optimize_log_path(tmp_path):
     assert os.path.isdir(os.path.join(optimization_log_path, "trial_1"))
     assert os.path.isfile(os.path.join(optimization_log_path, "trial_1", "evaluations.npz"))
 
-    study_path = list(glob.glob(str(tmp_path / algo / "report_*.pkl")))[0]
+    study_path = next(iter(glob.glob(str(tmp_path / algo / "report_*.pkl"))))
     print(study_path)
     # Test reading best trials
     args = [

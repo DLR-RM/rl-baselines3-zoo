@@ -1,6 +1,6 @@
 gym==0.26.2
-stable-baselines3[extra_no_roms,tests,docs]>=2.0.0
-sb3-contrib>=2.0.0
+stable-baselines3[extra_no_roms,tests,docs]>=2.1.0
+sb3-contrib>=2.1.0
 box2d-py==2.3.8
 pybullet
 # minigrid
@@ -8,13 +8,13 @@ pybullet
 optuna~=3.0
 pytablewriter~=0.64
 pyyaml>=5.1
-cloudpickle>=1.5.0
+cloudpickle>=2.2.1
 plotly
 # need to upgrade to gymnasium:
 # panda-gym~=3.0.1
 rliable>=1.0.5
 wandb
-huggingface_sb3>=2.2.5
+huggingface_sb3>=2.3
 seaborn
 tqdm
 rich
