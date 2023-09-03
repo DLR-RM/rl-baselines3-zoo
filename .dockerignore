@@ -8,7 +8,6 @@ cluster_sbatch.sh
 cluster_sbatch_mpi.sh
 cluster_torchy.sh
 logs/
-rl-trained_agents/
 .pytype/
 htmlcov/
 git_rewrite_commit_history.sh
@@ -16,3 +15,4 @@ git_rewrite_commit_history.sh
 # ignore for docker builds
 rl-trained-agents/
 .git/
+.mypy_cache/
