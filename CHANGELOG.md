@@ -1,3 +1,17 @@
+## Release 2.2.0a1 (WIP)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+
+### Documentation
+
+### Other
+- Updated docker image, removed support for X server
+
+
 ## Release 2.1.0 (2023-08-17)
 
 ### Breaking Changes
@@ -16,7 +30,6 @@
 ### Documentation
 
 ### Other
-
 
 
 ## Release 2.0.0 (2023-06-22)
