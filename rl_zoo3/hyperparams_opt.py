@@ -27,10 +27,10 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
     n_epochs = trial.suggest_categorical("n_epochs", [1, 5, 10, 20])
     gae_lambda = trial.suggest_categorical("gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
     max_grad_norm = trial.suggest_categorical("max_grad_norm", [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5])
-    vf_coef = trial.suggest_uniform("vf_coef", 0, 1)
+    vf_coef = trial.suggest_float("vf_coef", 0, 1)
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
     # Uncomment for gSDE (continuous actions)
-    # log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
+    # log_std_init = trial.suggest_float("log_std_init", -4, 1)
     # Uncomment for gSDE (continuous action)
     # sde_sample_freq = trial.suggest_categorical("sde_sample_freq", [-1, 8, 16, 32, 64, 128, 256])
     # Orthogonal initialization
@@ -98,7 +98,7 @@ def sample_trpo_params(trial: optuna.Trial) -> Dict[str, Any]:
     gae_lambda = trial.suggest_categorical("gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
     # Uncomment for gSDE (continuous actions)
-    # log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
+    # log_std_init = trial.suggest_float("log_std_init", -4, 1)
     # Uncomment for gSDE (continuous action)
     # sde_sample_freq = trial.suggest_categorical("sde_sample_freq", [-1, 8, 16, 32, 64, 128, 256])
     # Orthogonal initialization
@@ -161,9 +161,9 @@ def sample_a2c_params(trial: optuna.Trial) -> Dict[str, Any]:
     lr_schedule = trial.suggest_categorical("lr_schedule", ["linear", "constant"])
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1, log=True)
     ent_coef = trial.suggest_float("ent_coef", 0.00000001, 0.1, log=True)
-    vf_coef = trial.suggest_uniform("vf_coef", 0, 1)
+    vf_coef = trial.suggest_float("vf_coef", 0, 1)
     # Uncomment for gSDE (continuous actions)
-    # log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
+    # log_std_init = trial.suggest_float("log_std_init", -4, 1)
     ortho_init = trial.suggest_categorical("ortho_init", [False, True])
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
     # sde_net_arch = trial.suggest_categorical("sde_net_arch", [None, "tiny", "small"])
@@ -230,7 +230,7 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
     # ent_coef = trial.suggest_categorical('ent_coef', ['auto', 0.5, 0.1, 0.05, 0.01, 0.0001])
     ent_coef = "auto"
     # You can comment that out when not using gSDE
-    log_std_init = trial.suggest_uniform("log_std_init", -4, 1)
+    log_std_init = trial.suggest_float("log_std_init", -4, 1)
     # NOTE: Add "verybig" to net_arch when tuning HER
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
@@ -247,7 +247,7 @@ def sample_sac_params(trial: optuna.Trial) -> Dict[str, Any]:
     target_entropy = "auto"
     # if ent_coef == 'auto':
     #     # target_entropy = trial.suggest_categorical('target_entropy', ['auto', 5, 1, 0, -1, -5, -10, -20, -50])
-    #     target_entropy = trial.suggest_uniform('target_entropy', -10, 10)
+    #     target_entropy = trial.suggest_float('target_entropy', -10, 10)
 
     hyperparams = {
         "gamma": gamma,
@@ -287,7 +287,7 @@ def sample_td3_params(trial: optuna.Trial) -> Dict[str, Any]:
     gradient_steps = train_freq
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
-    noise_std = trial.suggest_uniform("noise_std", 0, 1)
+    noise_std = trial.suggest_float("noise_std", 0, 1)
 
     # NOTE: Add "verybig" to net_arch when tuning HER
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
@@ -345,7 +345,7 @@ def sample_ddpg_params(trial: optuna.Trial) -> Dict[str, Any]:
     gradient_steps = train_freq
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
-    noise_std = trial.suggest_uniform("noise_std", 0, 1)
+    noise_std = trial.suggest_float("noise_std", 0, 1)
 
     # NOTE: Add "verybig" to net_arch when tuning HER (see TD3)
     net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
@@ -394,8 +394,8 @@ def sample_dqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 1, log=True)
     batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 100, 128, 256, 512])
     buffer_size = trial.suggest_categorical("buffer_size", [int(1e4), int(5e4), int(1e5), int(1e6)])
-    exploration_final_eps = trial.suggest_uniform("exploration_final_eps", 0, 0.2)
-    exploration_fraction = trial.suggest_uniform("exploration_fraction", 0, 0.5)
+    exploration_final_eps = trial.suggest_float("exploration_final_eps", 0, 0.2)
+    exploration_fraction = trial.suggest_float("exploration_fraction", 0, 0.5)
     target_update_interval = trial.suggest_categorical("target_update_interval", [1, 1000, 5000, 10000, 15000, 20000])
     learning_starts = trial.suggest_categorical("learning_starts", [0, 1000, 5000, 10000, 20000])
 
