@@ -10,6 +10,7 @@
 
 ### Other
 - Updated docker image, removed support for X server
+- Replaced deprecated `optuna.suggest_uniform(...)` by `optuna.suggest_float(..., low=..., high=...)`
 
 
 ## Release 2.1.0 (2023-08-17)
