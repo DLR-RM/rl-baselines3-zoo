@@ -618,8 +618,8 @@ class ExperimentManager:
             env = spec.make(**kwargs)
             return env
 
-        # On most env, SubprocVecEnv does not help and is quite memory hungry
-        # therefore we use DummyVecEnv by default
+        # On most env, SubprocVecEnv does not help and is quite memory hungry,
+        # therefore, we use DummyVecEnv by default
         env = make_vec_env(
             make_env,
             n_envs=n_envs,
@@ -649,9 +649,9 @@ class ExperimentManager:
         if not is_vecenv_wrapped(env, VecTransposeImage):
             wrap_with_vectranspose = False
             if isinstance(env.observation_space, spaces.Dict):
-                # If even one of the keys is a image-space in need of transpose, apply transpose
-                # If the image spaces are not consistent (for instance one is channel first,
-                # the other channel last), VecTransposeImage will throw an error
+                # If even one of the keys is an image-space in need of transpose, apply transpose
+                # If the image spaces are not consistent (for instance, one is channel first,
+                # the other channel last); VecTransposeImage will throw an error
                 for space in env.observation_space.spaces.values():
                     wrap_with_vectranspose = wrap_with_vectranspose or (
                         is_image_space(space) and not is_image_space_channels_first(space)
@@ -696,7 +696,7 @@ class ExperimentManager:
         return model
 
     def _create_sampler(self, sampler_method: str) -> BaseSampler:
-        # n_warmup_steps: Disable pruner until the trial reaches the given number of step.
+        # n_warmup_steps: Disable pruner until the trial reaches the given number of steps.
         if sampler_method == "random":
             sampler = RandomSampler(seed=self.seed)
         elif sampler_method == "tpe":
@@ -741,7 +741,7 @@ class ExperimentManager:
         env = self.create_envs(n_envs, no_log=True)
 
         # By default, do not activate verbose output to keep
-        # stdout clean with only the trials results
+        # stdout clean with only the trial's results
         trial_verbosity = 0
         # Activate verbose mode for the trial in debug mode
         # See PR #214
