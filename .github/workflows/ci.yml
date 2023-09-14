@@ -49,6 +49,8 @@ jobs:
         # install parking-env to test HER
         pip install highway-env==1.8.1
         pip install -e .
+        # install pybullet envs
+        pip install pybullet_envs_gymnasium
     - name: Lint with ruff
       run: |
         make lint

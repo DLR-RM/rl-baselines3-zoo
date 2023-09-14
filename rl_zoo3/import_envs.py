@@ -6,9 +6,9 @@ from gymnasium.envs.registration import register
 from rl_zoo3.wrappers import MaskVelocityWrapper
 
 try:
-    import pybullet_envs  # pytype: disable=import-error
+    import pybullet_envs_gymnasium  # pytype: disable=import-error
 except ImportError:
-    pybullet_envs = None
+    pybullet_envs_gymnasium = None
 
 try:
     import highway_env  # pytype: disable=import-error
