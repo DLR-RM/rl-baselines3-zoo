@@ -5,7 +5,6 @@ import os
 from copy import deepcopy
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
-import gym as gym26
 import gymnasium as gym
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
@@ -238,23 +237,13 @@ def create_test_env(
     if "render_mode" not in env_kwargs and should_render:
         env_kwargs.update(render_mode="human")
 
-    # Make Pybullet compatible with gym 0.26
-    if ExperimentManager.is_bullet(env_id):
-        spec = gym26.spec(env_id)
-        env_kwargs.update(dict(apply_api_compatibility=True))
-    else:
-        # Define make_env here so it works with subprocesses
-        # when the registry was modified with `--gym-packages`
-        # See https://github.com/HumanCompatibleAI/imitation/pull/160
-        try:
-            spec = gym.spec(env_id)  # type: ignore[assignment]
-        except gym.error.NameNotFound:
-            # Registered with gym 0.26
-            spec = gym26.spec(env_id)
+    spec = gym.spec(env_id)
 
+    # Define make_env here, so it works with subprocesses
+    # when the registry was modified with `--gym-packages`
+    # See https://github.com/HumanCompatibleAI/imitation/pull/160
     def make_env(**kwargs) -> gym.Env:
-        env = spec.make(**kwargs)
-        return env  # type: ignore[return-value]
+        return spec.make(**kwargs)
 
     env = make_vec_env(
         make_env,
