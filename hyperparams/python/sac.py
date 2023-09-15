@@ -72,3 +72,12 @@ hyperparams = {
         train_freq=256,
     ),
 }
+
+# Add newer seals mujoco envs by copying the config from the old one
+def is_mujoco_env(env: str):
+    return any(mjenv in env for mjenv in
+               ("Ant", "HalfCheetah", "Hopper", "Humanoid", "Swimmer", "Walker2d"))
+
+hyperparams.update({
+    env.replace("v0", "v1"): hyperparams[env] for env in hyperparams if is_mujoco_env(env)
+})
