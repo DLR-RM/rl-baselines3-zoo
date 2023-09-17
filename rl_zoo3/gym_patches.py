@@ -2,7 +2,6 @@
 Patches for gym 0.26+ so RL Zoo3 keeps working as before
 (notably TimeLimit wrapper and Pybullet envs)
 """
-from typing import Any, Dict
 
 import numpy as np
 
@@ -10,17 +9,6 @@ import numpy as np
 np.bool8 = np.bool_  # type: ignore[attr-defined]
 
 import gymnasium  # noqa: E402
-
-
-class PatchedRegistry(dict):
-    """
-    gym.envs.registration.registry
-    is now a dictionnary and no longer an EnvRegistry() object.
-    """
-
-    @property
-    def env_specs(self) -> Dict[str, Any]:
-        return self
 
 
 class PatchedTimeLimit(gymnasium.wrappers.TimeLimit):

@@ -9,7 +9,7 @@ select = ["E", "F", "B", "UP", "C90", "RUF"]
 ignore = ["B028"]
 
 [tool.ruff.per-file-ignores]
-# "./rl_zoo3/plots/all_plots.py"= ["E501"]
+"./rl_zoo3/import_envs.py"= ["F401"]
 # "./rl_zoo3/plots/plot_train.py"= ["E501"]
 
 
@@ -20,10 +20,6 @@ max-complexity = 15
 [tool.black]
 line-length = 127
 
-[tool.isort]
-profile = "black"
-line_length = 127
-src_paths = ["stable_baselines3", "rl_zoo3"]
 
 [tool.pytype]
 inputs = ["."]
