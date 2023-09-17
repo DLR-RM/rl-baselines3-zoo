@@ -1,6 +1,7 @@
-## Release 2.2.0a1 (WIP)
+## Release 2.2.0a2 (WIP)
 
 ### Breaking Changes
+- Removed `gym` dependency, the package is still required for some pretrained agents.
 
 ### New Features
 
@@ -11,7 +12,7 @@
 ### Other
 - Updated docker image, removed support for X server
 - Replaced deprecated `optuna.suggest_uniform(...)` by `optuna.suggest_float(..., low=..., high=...)`
-
+- Switched to ruff for sorting imports
 
 ## Release 2.1.0 (2023-08-17)
 
