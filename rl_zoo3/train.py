@@ -115,7 +115,11 @@ def train() -> None:
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
     )
     parser.add_argument(
-        "--eval-env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor for evaluation"
+        "--eval-env-kwargs",
+        type=str,
+        nargs="+",
+        action=StoreDict,
+        help="Optional keyword argument to pass to the env constructor for evaluation",
     )
     parser.add_argument(
         "-params",
