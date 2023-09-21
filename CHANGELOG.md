@@ -4,6 +4,7 @@
 - Removed `gym` dependency, the package is still required for some pretrained agents.
 
 ### New Features
+- Add `--eval-env-kwargs` to `train.py` (@Quentin18)
 
 ### Bug fixes
 
