@@ -130,7 +130,7 @@ class ExperimentManager:
         # Callbacks
         self.specified_callbacks: List = []
         self.callbacks: List[BaseCallback] = []
-        self.eval_env_kwargs: Dict[str, Any] = env_kwargs if eval_env_kwargs is None else eval_env_kwargs
+        self.eval_env_kwargs: Dict[str, Any] = {} if eval_env_kwargs is None else eval_env_kwargs
         self.save_freq = save_freq
         self.eval_freq = eval_freq
         self.n_eval_episodes = n_eval_episodes
