@@ -1,6 +1,6 @@
 import os
+import shlex
 import subprocess
-import sys
 
 import pytest
 
@@ -23,7 +23,6 @@ trained_models.update(get_hf_trained_models())
 @pytest.mark.slow
 def test_trained_agents(trained_model):
     algo, env_id = trained_models[trained_model]
-    args = ["-n", str(N_STEPS), "-f", FOLDER, "--algo", algo, "--env", env_id, "--no-render"]
 
     # Since SB3 >= 1.1.0, HER is no more an algorithm but a replay buffer class
     if algo == "her":
@@ -44,58 +43,44 @@ def test_trained_agents(trained_model):
 
     # FIXME: switch to MiniGrid package
     if "-MiniGrid-" in trained_model:
-        # Skip for python 3.7, see https://github.com/DLR-RM/rl-baselines3-zoo/pull/372#issuecomment-1490562332
-        if sys.version_info[:2] == (3, 7):
-            pytest.skip("MiniGrid env does not work with Python 3.7")
         # FIXME: switch to Gymnsium
         return
 
-    return_code = subprocess.call(["python", "enjoy.py", *args])
+    cmd = f"python enjoy.py --algo {algo} --env {env_id} -n {N_STEPS} -f {FOLDER} --no-render"
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
 def test_benchmark(tmp_path):
-    args = ["-n", str(N_STEPS), "--benchmark-dir", tmp_path, "--test-mode", "--no-hub"]
-
-    return_code = subprocess.call(["python", "-m", "rl_zoo3.benchmark", *args])
+    cmd = f"python -m rl_zoo3.benchmark -n {N_STEPS} --benchmark-dir {tmp_path} --test-mode --no-hub"
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
 def test_load(tmp_path):
     algo, env_id = "a2c", "CartPole-v1"
-    args = [
-        "-n",
-        str(1000),
-        "--algo",
-        algo,
-        "--env",
-        env_id,
-        "-params",
-        "n_envs:1",
-        "--log-folder",
-        tmp_path,
-        "--eval-freq",
-        str(500),
-        "--save-freq",
-        str(500),
-        "-P",  # Enable progress bar
-    ]
     # Train and save checkpoints and best model
-    return_code = subprocess.call(["python", "train.py", *args])
+    cmd = (
+        f"python train.py --algo {algo} --env {env_id} -n 1000 -f {tmp_path} "
+        # Enable progress bar
+        f"-params n_envs:1 --eval-freq 500 --save-freq 500 -P"
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
     # Load best model
-    args = ["-n", str(N_STEPS), "-f", tmp_path, "--algo", algo, "--env", env_id, "--no-render"]
-    # Test with progress bar
-    return_code = subprocess.call(["python", "enjoy.py", *args, "--load-best", "-P"])
+    base_cmd = f"python enjoy.py --algo {algo} --env {env_id} -n {N_STEPS} -f {tmp_path} --no-render"
+    # Enable progress bar
+    return_code = subprocess.call(shlex.split(base_cmd + "--load-best -P"))
+
     _assert_eq(return_code, 0)
 
     # Load checkpoint
-    return_code = subprocess.call(["python", "enjoy.py", *args, "--load-checkpoint", str(500)])
+    return_code = subprocess.call(shlex.split(base_cmd + "--load-checkpoint 500"))
     _assert_eq(return_code, 0)
 
     # Load last checkpoint
-    return_code = subprocess.call(["python", "enjoy.py", *args, "--load-last-checkpoint"])
+    return_code = subprocess.call(shlex.split(base_cmd + "--load-last-checkpoint"))
     _assert_eq(return_code, 0)
 
 

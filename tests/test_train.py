@@ -91,6 +91,7 @@ def test_custom_yaml(tmp_path):
     return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
+
 @pytest.mark.parametrize("config_file", ["hyperparams.python.ppo_config_example", "hyperparams/python/ppo_config_example.py"])
 def test_python_config_file(tmp_path, config_file):
     # Use the example python config file for training
