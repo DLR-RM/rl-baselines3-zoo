@@ -112,7 +112,7 @@ class ExperimentManager:
             default_path = Path(__file__).parent.parent
 
         self.config = config or str(default_path / f"hyperparams/{self.algo}.yml")
-        self.env_kwargs: Dict[str, Any] = {} if env_kwargs is None else env_kwargs
+        self.env_kwargs: Dict[str, Any] = env_kwargs or {}
         self.n_timesteps = n_timesteps
         self.normalize = False
         self.normalize_kwargs: Dict[str, Any] = {}
@@ -130,7 +130,8 @@ class ExperimentManager:
         # Callbacks
         self.specified_callbacks: List = []
         self.callbacks: List[BaseCallback] = []
-        self.eval_env_kwargs: Dict[str, Any] = {} if eval_env_kwargs is None else eval_env_kwargs
+        # Use env-kwargs if eval_env_kwargs was not specified
+        self.eval_env_kwargs: Dict[str, Any] = eval_env_kwargs or self.env_kwargs
         self.save_freq = save_freq
         self.eval_freq = eval_freq
         self.n_eval_episodes = n_eval_episodes
