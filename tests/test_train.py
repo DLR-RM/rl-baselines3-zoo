@@ -1,4 +1,5 @@
 import os
+import shlex
 import subprocess
 
 import pytest
@@ -33,121 +34,71 @@ experiments["ddpg-Pendulum-v1"] = ("ddpg", "Pendulum-v1")
 @pytest.mark.parametrize("experiment", experiments.keys())
 def test_train(tmp_path, experiment):
     algo, env_id = experiments[experiment]
-    args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id, "--log-folder", tmp_path]
 
-    return_code = subprocess.call(["python", "train.py", *args])
+    cmd = f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
 def test_continue_training(tmp_path):
     algo, env_id = "a2c", "CartPole-v1"
-    args = [
-        "-n",
-        str(N_STEPS),
-        "--algo",
-        algo,
-        "--env",
-        env_id,
-        "--log-folder",
-        tmp_path,
-        "-i",
-        "rl-trained-agents/a2c/CartPole-v1_1/CartPole-v1.zip",
-    ]
-
-    return_code = subprocess.call(["python", "train.py", *args])
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
+        "-i rl-trained-agents/a2c/CartPole-v1_1/CartPole-v1.zip"
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
 def test_save_load_replay_buffer(tmp_path):
     algo, env_id = "sac", "Pendulum-v1"
-    args = [
-        "-n",
-        str(N_STEPS),
-        "--algo",
-        algo,
-        "--env",
-        env_id,
-        "--log-folder",
-        tmp_path,
-        "--save-replay-buffer",
-        "-params",
-        "buffer_size:1000",
-    ]
-
-    return_code = subprocess.call(["python", "train.py", *args])
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
+        "--save-replay-buffer -params buffer_size:1000 "
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
     assert os.path.isfile(os.path.join(tmp_path, "sac/Pendulum-v1_1/replay_buffer.pkl"))
 
-    args = [*args, "-i", os.path.join(tmp_path, "sac/Pendulum-v1_1/Pendulum-v1.zip")]
+    saved_model = os.path.join(tmp_path, "sac/Pendulum-v1_1/Pendulum-v1.zip")
+    cmd += f"-i {saved_model}"
 
-    return_code = subprocess.call(["python", "train.py", *args])
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
 def test_parallel_train(tmp_path):
-    args = [
-        "-n",
-        str(1000),
-        "--algo",
-        "sac",
-        "--env",
-        "Pendulum-v1",
-        "--log-folder",
-        tmp_path,
-        "-params",
+    cmd = (
+        f"python train.py -n 1000 --algo sac --env Pendulum-v1 --log-folder {tmp_path} "
         # Test custom argument for the monitor too
-        "monitor_kwargs:'dict(info_keywords=(\"TimeLimit.truncated\",))'",
-        "callback:'rl_zoo3.callbacks.ParallelTrainCallback'",
-    ]
-
-    return_code = subprocess.call(["python", "train.py", *args])
+        "-params monitor_kwargs:'dict(info_keywords=(\"TimeLimit.truncated\",))' "
+        "callback:\"'rl_zoo3.callbacks.ParallelTrainCallback'\""
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
 def test_custom_yaml(tmp_path):
-    # Use A2C hyperparams for ppo
-    args = [
-        "-n",
-        str(N_STEPS),
-        "--algo",
-        "ppo",
-        "--env",
-        "CartPole-v1",
-        "--log-folder",
-        tmp_path,
-        "-conf",
-        "hyperparams/a2c.yml",
-        "-params",
-        "n_envs:2",
-        "n_steps:50",
-        "n_epochs:2",
-        "batch_size:4",
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo ppo --env CartPole-v1 --log-folder {tmp_path} "
+        # Use A2C hyperparams for ppo
+        "-conf hyperparams/a2c.yml "
+        "-params n_envs:2 n_steps:50 n_epochs:2 batch_size:4 "
         # Test custom policy
-        "policy:'stable_baselines3.ppo.MlpPolicy'",
-    ]
-
-    return_code = subprocess.call(["python", "train.py", *args])
+        "policy:\"'stable_baselines3.ppo.MlpPolicy'\""
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
-
 
 @pytest.mark.parametrize("config_file", ["hyperparams.python.ppo_config_example", "hyperparams/python/ppo_config_example.py"])
 def test_python_config_file(tmp_path, config_file):
     # Use the example python config file for training
-    args = [
-        "-n",
-        str(N_STEPS),
-        "--algo",
-        "ppo",
-        "--env",
-        "MountainCarContinuous-v0",
-        "--log-folder",
-        tmp_path,
-        "-conf",
-        config_file,
-    ]
-
-    return_code = subprocess.call(["python", "train.py", *args])
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo ppo --env MountainCarContinuous-v0 --log-folder {tmp_path} "
+        f"-conf {config_file} "
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
@@ -158,20 +109,9 @@ def test_gym_packages(tmp_path):
     env_variables["PYTHONPATH"] = python_path
 
     # Test gym packages
-    args = [
-        "-n",
-        str(N_STEPS),
-        "--algo",
-        "ppo",
-        "--env",
-        "TestEnv-v0",
-        "--gym-packages",
-        "test_env",
-        "--log-folder",
-        tmp_path,
-        "--conf-file",
-        "test_env.config",
-    ]
-
-    return_code = subprocess.call(["python", "train.py", *args], env=env_variables)
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo ppo --env TestEnv-v0 --log-folder {tmp_path} "
+        f"--gym-packages test_env --conf-file test_env.config "
+    )
+    return_code = subprocess.call(shlex.split(cmd), env=env_variables)
     _assert_eq(return_code, 0)
