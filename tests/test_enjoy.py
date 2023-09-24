@@ -85,13 +85,13 @@ def test_load(tmp_path):
 
 
 def test_record_video(tmp_path):
-    args = ["-n", "100", "--algo", "sac", "--env", "Pendulum-v1", "-o", str(tmp_path)]
-
     # Skip if no X-Server
     if not os.environ.get("DISPLAY"):
         pytest.skip("No X-Server")
 
-    return_code = subprocess.call(["python", "-m", "rl_zoo3.record_video", *args])
+    cmd = f"python -m rl_zoo3.record_video -n 100 --algo sac --env Pendulum-v1 -o {tmp_path}"
+    return_code = subprocess.call(shlex.split(cmd))
+
     _assert_eq(return_code, 0)
     video_path = str(tmp_path / "final-model-sac-Pendulum-v1-step-0-to-step-100.mp4")
     # File is not empty
@@ -100,41 +100,24 @@ def test_record_video(tmp_path):
 
 def test_record_training(tmp_path):
     videos_tmp_path = tmp_path / "videos"
-    args_training = [
-        "--algo",
-        "ppo",
-        "--env",
-        "CartPole-v1",
-        "--log-folder",
-        str(tmp_path),
-        "--save-freq",
-        "4000",
-        "-n",
-        "10000",
-    ]
-    args_recording = [
-        "--algo",
-        "ppo",
-        "--env",
-        "CartPole-v1",
-        "--gif",
-        "-n",
-        "100",
-        "-f",
-        str(tmp_path),
-        "-o",
-        str(videos_tmp_path),
-    ]
+    algo, env_id = "ppo", "CartPole-v1"
 
     # Skip if no X-Server
     if not os.environ.get("DISPLAY"):
         pytest.skip("No X-Server")
 
-    return_code = subprocess.call(["python", "train.py", *args_training])
+    cmd = f"python train.py -n 10000 --algo {algo} --env {env_id} --log-folder {tmp_path} --save-freq 4000 "
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
-    return_code = subprocess.call(["python", "-m", "rl_zoo3.record_training", *args_recording])
+    cmd = (
+        f"python -m rl_zoo3.record_training -n 100 --algo {algo} --env {env_id} "
+        f"--f {tmp_path} "
+        f"--gif -o {videos_tmp_path}"
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
+
     mp4_path = str(videos_tmp_path / "training.mp4")
     gif_path = str(videos_tmp_path / "training.gif")
     # File is not empty
