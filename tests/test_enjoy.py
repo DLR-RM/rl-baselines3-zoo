@@ -69,7 +69,7 @@ def test_load(tmp_path):
     _assert_eq(return_code, 0)
 
     # Load best model
-    base_cmd = f"python enjoy.py --algo {algo} --env {env_id} -n {N_STEPS} -f {tmp_path} --no-render"
+    base_cmd = f"python enjoy.py --algo {algo} --env {env_id} -n {N_STEPS} -f {tmp_path} --no-render "
     # Enable progress bar
     return_code = subprocess.call(shlex.split(base_cmd + "--load-best -P"))
 
