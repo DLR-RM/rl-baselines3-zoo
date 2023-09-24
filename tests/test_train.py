@@ -54,7 +54,7 @@ def test_save_load_replay_buffer(tmp_path):
     algo, env_id = "sac", "Pendulum-v1"
     cmd = (
         f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
-        "--save-replay-buffer -params buffer_size:1000 "
+        "--save-replay-buffer -params buffer_size:1000 --env-kwargs g:8.0 --eval-env-kwargs g:5.0 "
     )
     return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
