@@ -73,6 +73,7 @@ class ExperimentManager:
         save_freq: int = -1,
         hyperparams: Optional[Dict[str, Any]] = None,
         env_kwargs: Optional[Dict[str, Any]] = None,
+        eval_env_kwargs: Optional[Dict[str, Any]] = None,
         trained_agent: str = "",
         optimize_hyperparameters: bool = False,
         storage: Optional[str] = None,
@@ -111,7 +112,7 @@ class ExperimentManager:
             default_path = Path(__file__).parent.parent
 
         self.config = config or str(default_path / f"hyperparams/{self.algo}.yml")
-        self.env_kwargs: Dict[str, Any] = {} if env_kwargs is None else env_kwargs
+        self.env_kwargs: Dict[str, Any] = env_kwargs or {}
         self.n_timesteps = n_timesteps
         self.normalize = False
         self.normalize_kwargs: Dict[str, Any] = {}
@@ -129,6 +130,8 @@ class ExperimentManager:
         # Callbacks
         self.specified_callbacks: List = []
         self.callbacks: List[BaseCallback] = []
+        # Use env-kwargs if eval_env_kwargs was not specified
+        self.eval_env_kwargs: Dict[str, Any] = eval_env_kwargs or self.env_kwargs
         self.save_freq = save_freq
         self.eval_freq = eval_freq
         self.n_eval_episodes = n_eval_episodes
@@ -604,13 +607,15 @@ class ExperimentManager:
         def make_env(**kwargs) -> gym.Env:
             return spec.make(**kwargs)
 
+        env_kwargs = self.eval_env_kwargs if eval_env else self.env_kwargs
+
         # On most env, SubprocVecEnv does not help and is quite memory hungry,
         # therefore, we use DummyVecEnv by default
         env = make_vec_env(
             make_env,
             n_envs=n_envs,
             seed=self.seed,
-            env_kwargs=self.env_kwargs,
+            env_kwargs=env_kwargs,
             monitor_dir=log_dir,
             wrapper_class=self.env_wrapper,
             vec_env_cls=self.vec_env_class,
