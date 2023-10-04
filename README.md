@@ -3,9 +3,12 @@
 
 # Исходный код для статьи Применение методов Deep RL для отбора признаков при обнаружении компьютерных атак в IDS серевого типа
 
+Статья https://link.springer.com/article/10.1134/S0361768822060020
+Полный текст статьи https://rdcu.be/c0Bbb
 
+Используемая среда https://github.com/james116blue/cwcf-env-openai-gym
 
-Форк RL pytorch-based фреймворка 
+Код является форком RL pytorch-based фреймворка 
 RL Baselines3 Zoo (https://github.com/DLR-RM/stable-baselines3).
 ## Стратегия с используемыми ограничениями ConstrainedActorCriticPolicy 
 опеределена в
@@ -37,7 +40,7 @@ python train.py --algo ppo
 --env-kwargs lambda_coefficient:0.01 mode:'TRAIN' terminal_reward:[[0,-0.3],[-0.7,0]]
 --eval-env-kwargs lambda_coefficient:0.01 random_mode:False mode:'VAL' terminal_reward:[[0,-0.3],[-0.7,0]] --tensorboard-log /tmp/stable-baselines/
 ```
-## тестирования агента 
+## тестирование агента 
 
 Найденные гиперпараметры определены в  `hyperparameters/algo_name.yml`.
 ```
@@ -52,7 +55,7 @@ approb_model_real_data.ipynb
 ```
 plot_results.ipynb
 ```
-## Другие методы
+## Другие методы ML, используемые в эксперименте
 ```
 RandomForestModel_Web_attacks.ipynb
 ```
