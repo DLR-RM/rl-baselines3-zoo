@@ -75,6 +75,36 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
         ),
     }
 
+def sample_ppo_lstm_params(trial: optuna.Trial) -> Dict[str, Any]:
+    """
+    Sampler for RecurrentPPO hyperparams.
+    Uses sample_ppo_params(), this function samples for the policy_kwargs
+    calls to the same variable need to be made before calling sample_ppo_params as
+    within a trial Optuna's first sampling for a variable defines its search space,
+    ensuring consistency across calls. Due to this LSTM params take priority.
+    :param trial:
+    :return:
+    """
+    net_arch = trial.suggest_categorical("net_arch", ["tiny", "small", "medium"])
+    enable_critic_lstm = trial.suggest_categorical("enable_critic_lstm", [False, True])
+    lstm_hidden_size = trial.suggest_categorical("lstm_hidden_size", [16, 32, 64, 128, 256, 512])
+
+    net_arch = {
+        "tiny": dict(pi=[64], vf=[64]),
+        "small": dict(pi=[64, 64], vf=[64, 64]),
+        "medium": dict(pi=[256, 256], vf=[256, 256]),
+    }[net_arch]
+
+    hyperparams = sample_ppo_params(trial)
+
+    hyperparams["policy_kwargs"].update({
+        "enable_critic_lstm": enable_critic_lstm,
+        "lstm_hidden_size": lstm_hidden_size,
+        "net_arch": net_arch,
+    })
+
+    return hyperparams
+
 
 def sample_trpo_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
@@ -527,6 +557,7 @@ HYPERPARAMS_SAMPLER = {
     "sac": sample_sac_params,
     "tqc": sample_tqc_params,
     "ppo": sample_ppo_params,
+    "ppo_lstm": sample_ppo_lstm_params,
     "td3": sample_td3_params,
     "trpo": sample_trpo_params,
 }
