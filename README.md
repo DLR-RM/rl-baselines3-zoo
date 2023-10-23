@@ -79,7 +79,7 @@ The RL Zoo has some integration with other libraries/services like Weights & Bia
 
 ## Plot Scripts
 
-Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/plot.html) of the documentation.
+Please see the [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/plot.html) of the documentation.
 
 ## Enjoy a Trained Agent
 
@@ -98,11 +98,11 @@ python enjoy.py --algo a2c --env BreakoutNoFrameskip-v4 --folder rl-trained-agen
 
 ## Hyperparameters Tuning
 
-Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/tuning.html) of the documentation.
+Please see the [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/tuning.html) of the documentation.
 
 ## Custom Configuration
 
-Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/config.html) of the documentation.
+Please see the [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/config.html) of the documentation.
 
 ## Current Collection: 200+ Trained Agents!
 
