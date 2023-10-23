@@ -28,7 +28,7 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
     gae_lambda = trial.suggest_categorical("gae_lambda", [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
     max_grad_norm = trial.suggest_categorical("max_grad_norm", [0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 5])
     vf_coef = trial.suggest_float("vf_coef", 0, 1)
-    net_arch = trial.suggest_categorical("net_arch", ["small", "medium"])
+    net_arch = trial.suggest_categorical("net_arch", ["tiny", "small", "medium"])
     # Uncomment for gSDE (continuous actions)
     # log_std_init = trial.suggest_float("log_std_init", -4, 1)
     # Uncomment for gSDE (continuous action)
@@ -49,6 +49,7 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
     # Independent networks usually work best
     # when not working with images
     net_arch = {
+        "tiny": dict(pi=[64], vf=[64]),
         "small": dict(pi=[64, 64], vf=[64, 64]),
         "medium": dict(pi=[256, 256], vf=[256, 256]),
     }[net_arch]
@@ -78,29 +79,18 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
 def sample_ppo_lstm_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for RecurrentPPO hyperparams.
-    Uses sample_ppo_params(), this function samples for the policy_kwargs
-    calls to the same variable need to be made before calling sample_ppo_params as
-    within a trial Optuna's first sampling for a variable defines its search space,
-    ensuring consistency across calls. Due to this LSTM params take priority.
+    uses sample_ppo_params(), this function samples for the policy_kwargs
     :param trial:
     :return:
     """
-    net_arch = trial.suggest_categorical("net_arch", ["tiny", "small", "medium"])
+    hyperparams = sample_ppo_params(trial)
+
     enable_critic_lstm = trial.suggest_categorical("enable_critic_lstm", [False, True])
     lstm_hidden_size = trial.suggest_categorical("lstm_hidden_size", [16, 32, 64, 128, 256, 512])
-
-    net_arch = {
-        "tiny": dict(pi=[64], vf=[64]),
-        "small": dict(pi=[64, 64], vf=[64, 64]),
-        "medium": dict(pi=[256, 256], vf=[256, 256]),
-    }[net_arch]
-
-    hyperparams = sample_ppo_params(trial)
 
     hyperparams["policy_kwargs"].update({
         "enable_critic_lstm": enable_critic_lstm,
         "lstm_hidden_size": lstm_hidden_size,
-        "net_arch": net_arch,
     })
 
     return hyperparams
