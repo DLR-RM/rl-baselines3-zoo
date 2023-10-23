@@ -76,6 +76,7 @@ def sample_ppo_params(trial: optuna.Trial) -> Dict[str, Any]:
         ),
     }
 
+
 def sample_ppo_lstm_params(trial: optuna.Trial) -> Dict[str, Any]:
     """
     Sampler for RecurrentPPO hyperparams.
@@ -88,10 +89,12 @@ def sample_ppo_lstm_params(trial: optuna.Trial) -> Dict[str, Any]:
     enable_critic_lstm = trial.suggest_categorical("enable_critic_lstm", [False, True])
     lstm_hidden_size = trial.suggest_categorical("lstm_hidden_size", [16, 32, 64, 128, 256, 512])
 
-    hyperparams["policy_kwargs"].update({
-        "enable_critic_lstm": enable_critic_lstm,
-        "lstm_hidden_size": lstm_hidden_size,
-    })
+    hyperparams["policy_kwargs"].update(
+        {
+            "enable_critic_lstm": enable_critic_lstm,
+            "lstm_hidden_size": lstm_hidden_size,
+        }
+    )
 
     return hyperparams
 
