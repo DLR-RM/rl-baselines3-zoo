@@ -33,7 +33,7 @@ experiments["td3-Pendulum-v1"] = ("td3", "Pendulum-v1")
 experiments["tqc-parking-v0"] = ("tqc", "parking-v0")
 # Test for TQC
 experiments["tqc-Pendulum-v1"] = ("tqc", "Pendulum-v1")
-# Test for RecurrentPPO
+# Test for RecurrentPPO (ppo_lstm)
 experiments["ppo_lstm-CartPoleNoVel-v1"] = ("ppo_lstm", "CartPoleNoVel-v1")
 
 
