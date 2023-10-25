@@ -1,7 +1,9 @@
-## Release 2.2.0a4 (WIP)
+## Release 2.2.0a8 (WIP)
 
 ### Breaking Changes
 - Removed `gym` dependency, the package is still required for some pretrained agents.
+- Upgraded to SB3 >= 2.2.0
+- Upgraded to Huggingface-SB3 >= 3.0
 
 ### New Features
 - Add `--eval-env-kwargs` to `train.py` (@Quentin18)
