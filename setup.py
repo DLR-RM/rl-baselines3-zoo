@@ -27,9 +27,9 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
-        "sb3_contrib>=2.1.0",
+        "sb3_contrib>=2.2.0a8,<3.0",
         "gymnasium~=0.29.1",
-        "huggingface_sb3>=2.3",
+        "huggingface_sb3>=3.0,<4.0",
         "tqdm",
         "rich",
         "optuna>=3.0",
@@ -38,7 +38,7 @@ setup(
         # TODO: add test dependencies
     ],
     extras_require={
-        "plots": ["seaborn", "rliable>=1.0.5", "scipy~=1.7.3"],
+        "plots": ["seaborn", "rliable>=1.0.5", "scipy~=1.10"],
     },
     description="A Training Framework for Stable Baselines3 Reinforcement Learning Agents",
     author="Antonin Raffin",
