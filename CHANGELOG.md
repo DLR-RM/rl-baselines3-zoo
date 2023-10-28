@@ -7,6 +7,7 @@
 
 ### New Features
 - Add `--eval-env-kwargs` to `train.py` (@Quentin18)
+- Added `ppo_lstm` to hyperparams_opt.py (@technocrat13)
 
 ### Bug fixes
 
