@@ -1,6 +1,10 @@
 try:
-    import pybullet_envs  # pytype: disable=import-error
+    import gym_donkeycar  # pytype: disable=import-error
 except ImportError:
+    gym_donkeycar = None
+try:
+    import pybullet_envs  #pytype: disable=import-error
+except ImportError or AttributeError:
     pybullet_envs = None
 
 try:
@@ -22,12 +26,6 @@ try:
     import custom_envs  # pytype: disable=import-error
 except ImportError:
     custom_envs = None
-
-try:
-    import gym_donkeycar  # pytype: disable=import-error
-except ImportError:
-    gym_donkeycar = None
-
 try:
     import rl_racing.envs  # pytype: disable=import-error
 except ImportError:

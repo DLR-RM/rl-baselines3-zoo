@@ -170,8 +170,10 @@ class ExperimentManager(object):
 
         # Create env to have access to action space for action noise
         n_envs = 1 if self.algo == "ars" else self.n_envs
+        
+        #The issue does not exist here
         env = self.create_envs(n_envs, no_log=False)
-
+        
         self._hyperparams = self._preprocess_action_noise(hyperparams, saved_hyperparams, env)
 
         if self.continue_training:
