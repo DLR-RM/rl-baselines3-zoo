@@ -121,6 +121,7 @@ List and videos of trained agents can be found on our Huggingface page: https://
 | A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| IQN      |                    |                    |                    |                    |                    |                    |                    |
 | QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 Additional Atari Games (to be completed):
@@ -130,6 +131,7 @@ Additional Atari Games (to be completed):
 | A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| IQN      |                    |                    |                    |
 | QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
@@ -141,6 +143,7 @@ Additional Atari Games (to be completed):
 | A2C      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | PPO      | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | DQN      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A                | N/A |
+| IQN      |                    |                    |                    | N/A                | N/A |
 | QR-DQN   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | N/A                | N/A |
 | DDPG     |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
 | SAC      |  N/A |  N/A  | N/A | :heavy_check_mark: | :heavy_check_mark: |
@@ -157,6 +160,7 @@ Additional Atari Games (to be completed):
 | A2C      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | PPO      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
 | DQN      | N/A | :heavy_check_mark: | N/A | N/A | N/A |
+| IQN      | N/A |                    | N/A | N/A | N/A |
 | QR-DQN   | N/A | :heavy_check_mark: | N/A | N/A | N/A |
 | DDPG     | :heavy_check_mark: | N/A | :heavy_check_mark: | | |
 | SAC      | :heavy_check_mark: | N/A | :heavy_check_mark: | :heavy_check_mark: | |

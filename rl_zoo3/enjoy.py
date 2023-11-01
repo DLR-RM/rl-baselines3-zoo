@@ -124,7 +124,7 @@ def enjoy() -> None:  # noqa: C901
     print(f"Loading {model_path}")
 
     # Off-policy algorithm only support one env for now
-    off_policy_algos = ["qrdqn", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
+    off_policy_algos = ["iqn", "qrdqn", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
 
     if algo in off_policy_algos:
         args.n_envs = 1

@@ -493,11 +493,27 @@ def sample_qrdqn_params(trial: optuna.Trial) -> Dict[str, Any]:
     :param trial:
     :return:
     """
-    # TQC is DQN + Distributional RL
+    # QR-DQN is DQN + Distributional RL
     hyperparams = sample_dqn_params(trial)
 
     n_quantiles = trial.suggest_int("n_quantiles", 5, 200)
     hyperparams["policy_kwargs"].update({"n_quantiles": n_quantiles})
+
+    return hyperparams
+
+
+def sample_iqn_params(trial: optuna.Trial) -> Dict[str, Any]:
+    """
+    Sampler for IQN hyperparams.
+
+    :param trial:
+    :return:
+    """
+    # IQN is QR-DQN + Implicit Q Network
+    hyperparams = sample_qrdqn_params(trial)
+
+    hyperparams["num_tau_samples"] = trial.suggest_int("num_tau_samples", 5, 200)
+    hyperparams["num_tau_prime_samples"] = trial.suggest_int("num_tau_prime_samples", 5, 200)
 
     return hyperparams
 
@@ -546,6 +562,7 @@ HYPERPARAMS_SAMPLER = {
     "ars": sample_ars_params,
     "ddpg": sample_ddpg_params,
     "dqn": sample_dqn_params,
+    "iqn": sample_iqn_params,
     "qrdqn": sample_qrdqn_params,
     "sac": sample_sac_params,
     "tqc": sample_tqc_params,

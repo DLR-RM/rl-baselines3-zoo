@@ -112,6 +112,7 @@
 - Tuned hyperparameters for PPO on Swimmer
 - Added ``-tags/--wandb-tags`` argument to ``train.py`` to add tags to the wandb run
 - Added a sb3 version tag to the wandb run
+- Added support for `IQN` from SB3 contrib
 
 ### Bug fixes
 - Allow `python -m rl_zoo3.cli` to be called directly
