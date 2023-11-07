@@ -1,5 +1,5 @@
 ## Custom envs
-donkey-mountain-track-v0: &defaults
+donkey-mountain-track-v0: &defaults 
   # Normalize AE (+ the rest)
   normalize: "{'norm_obs': True, 'norm_reward': False}"
   env_wrapper:
@@ -13,11 +13,11 @@ donkey-mountain-track-v0: &defaults
         gradient_steps: 200
     - rl_zoo3.callbacks.LapTimeCallback
   n_timesteps: !!float 2e6
-  policy: 'MlpPolicy'
+  policy: "MlpPolicy"
   learning_rate: !!float 7.3e-4
   buffer_size: 200000
   batch_size: 256
-  ent_coef: 'auto'
+  ent_coef: "auto"
   gamma: 0.99
   tau: 0.02
   train_freq: 200
@@ -45,3 +45,24 @@ donkey-generated-roads-v0:
 
 donkey-roboracingleague-track-v0":
   <<: *defaults
+
+donkey-waveshare-v0:
+  # Normalize AE (+ the rest)
+  callback:
+    - rl_zoo3.callbacks.ParallelTrainCallback:
+        gradient_steps: 200
+  n_timesteps: !!float 3e6
+  policy: "CnnPolicy"
+  learning_rate: !!float 7.3e-4
+  buffer_size: 20000
+  batch_size: 256p
+  ent_coef: "auto"
+  gamma: 0.99
+  tau: 0.02
+  train_freq: 200
+  gradient_steps: 256
+  learning_starts: 20000
+  use_sde_at_warmup: True
+  use_sde: True
+  sde_sample_freq: 16
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[256, 256], n_critics=2, use_expln=True)"
