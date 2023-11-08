@@ -126,9 +126,6 @@ def enjoy() -> None:  # noqa: C901
     # Off-policy algorithm only support one env for now
     off_policy_algos = ["qrdqn", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
 
-    if algo in off_policy_algos:
-        args.n_envs = 1
-
     set_random_seed(args.seed)
 
     if args.num_threads > 0:

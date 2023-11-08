@@ -1,4 +1,4 @@
-## Release 2.2.0a11 (WIP)
+## Release 2.2.0a12 (WIP)
 
 ### Breaking Changes
 - Removed `gym` dependency, the package is still required for some pretrained agents.
@@ -10,6 +10,8 @@
 - Added `ppo_lstm` to hyperparams_opt.py (@technocrat13)
 
 ### Bug fixes
+- Upgraded to `pybullet_envs_gymnasium>=0.4.0`
+- Removed old hacks (for instance limiting offpolicy algorithms to one env at test time)
 
 ### Documentation
 
