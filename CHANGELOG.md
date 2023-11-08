@@ -18,6 +18,7 @@
 - Replaced deprecated `optuna.suggest_uniform(...)` by `optuna.suggest_float(..., low=..., high=...)`
 - Switched to ruff for sorting imports
 - Updated tests to use `shlex.split()`
+- Fixed `rl_zoo3/hyperparams_opt.py` type hints
 
 ## Release 2.1.0 (2023-08-17)
 

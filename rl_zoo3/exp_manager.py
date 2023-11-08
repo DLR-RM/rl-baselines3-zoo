@@ -138,7 +138,7 @@ class ExperimentManager:
         self.n_eval_envs = n_eval_envs
 
         self.n_envs = 1  # it will be updated when reading hyperparams
-        self.n_actions = None  # For DDPG/TD3 action noise objects
+        self.n_actions = 0  # For DDPG/TD3 action noise objects
         self._hyperparams: Dict[str, Any] = {}
         self.monitor_kwargs: Dict[str, Any] = {}
 
@@ -718,17 +718,17 @@ class ExperimentManager:
     def objective(self, trial: optuna.Trial) -> float:
         kwargs = self._hyperparams.copy()
 
-        # Hack to use DDPG/TD3 noise sampler
-        trial.n_actions = self.n_actions
-        # Hack when using HerReplayBuffer
-        trial.using_her_replay_buffer = kwargs.get("replay_buffer_class") == HerReplayBuffer
-        if trial.using_her_replay_buffer:
-            trial.her_kwargs = kwargs.get("replay_buffer_kwargs", {})
+        n_envs = 1 if self.algo == "ars" else self.n_envs
+
+        additional_args = {
+            "using_her_replay_buffer": kwargs.get("replay_buffer_class") == HerReplayBuffer,
+            "her_kwargs": kwargs.get("replay_buffer_kwargs", {}),
+        }
+        # Pass n_actions to initialize DDPG/TD3 noise sampler
         # Sample candidate hyperparameters
-        sampled_hyperparams = HYPERPARAMS_SAMPLER[self.algo](trial)
+        sampled_hyperparams = HYPERPARAMS_SAMPLER[self.algo](trial, self.n_actions, n_envs, additional_args)
         kwargs.update(sampled_hyperparams)
 
-        n_envs = 1 if self.algo == "ars" else self.n_envs
         env = self.create_envs(n_envs, no_log=True)
 
         # By default, do not activate verbose output to keep

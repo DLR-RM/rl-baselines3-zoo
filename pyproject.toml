@@ -25,8 +25,7 @@ ignore_missing_imports = true
 follow_imports = "silent"
 show_error_codes = true
 exclude = """(?x)(
-    rl_zoo3/hyperparams_opt.py$
-    | rl_zoo3/exp_manager.py$
+    rl_zoo3/exp_manager.py$
     | tests/dummy_env/*$
   )"""
 
