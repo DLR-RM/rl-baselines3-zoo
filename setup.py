@@ -27,7 +27,7 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=[
-        "sb3_contrib>=2.2.0a8,<3.0",
+        "sb3_contrib>=2.2.0a11,<3.0",
         "gymnasium~=0.29.1",
         "huggingface_sb3>=3.0,<4.0",
         "tqdm",

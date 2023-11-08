@@ -20,12 +20,6 @@ max-complexity = 15
 [tool.black]
 line-length = 127
 
-
-[tool.pytype]
-inputs = ["."]
-exclude = ["tests/dummy_env"]
-# disable = []
-
 [tool.mypy]
 ignore_missing_imports = true
 follow_imports = "silent"

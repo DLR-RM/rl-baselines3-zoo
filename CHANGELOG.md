@@ -1,4 +1,4 @@
-## Release 2.2.0a8 (WIP)
+## Release 2.2.0a11 (WIP)
 
 ### Breaking Changes
 - Removed `gym` dependency, the package is still required for some pretrained agents.
