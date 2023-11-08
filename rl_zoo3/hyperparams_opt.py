@@ -285,7 +285,7 @@ def sample_sac_params(trial: optuna.Trial, n_actions: int, n_envs: int, addition
     }
 
     if additional_args["using_her_replay_buffer"]:
-        hyperparams = sample_her_params(trial, hyperparams, additional_args["using_her_replay_buffer"])
+        hyperparams = sample_her_params(trial, hyperparams, additional_args["her_kwargs"])
 
     return hyperparams
 
@@ -395,7 +395,7 @@ def sample_ddpg_params(trial: optuna.Trial, n_actions: int, n_envs: int, additio
         )
 
     if additional_args["using_her_replay_buffer"]:
-        hyperparams = sample_her_params(trial, hyperparams, additional_args["using_her_replay_buffer"])
+        hyperparams = sample_her_params(trial, hyperparams, additional_args["her_kwargs"])
 
     return hyperparams
 
@@ -439,7 +439,7 @@ def sample_dqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, addition
     }
 
     if additional_args["using_her_replay_buffer"]:
-        hyperparams = sample_her_params(trial, hyperparams, additional_args["using_her_replay_buffer"])
+        hyperparams = sample_her_params(trial, hyperparams, additional_args["her_kwargs"])
 
     return hyperparams
 
