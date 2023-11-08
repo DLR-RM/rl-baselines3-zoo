@@ -115,7 +115,10 @@ def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> 
             :return:
             """
             for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs):
-                env = wrapper_class(env, **kwargs)
+                if not kwargs:
+                    env = wrapper_class(env)
+                else:
+                    env = wrapper_class(env, **kwargs)
             return env
 
         return wrap_env
