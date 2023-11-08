@@ -39,7 +39,7 @@ jobs:
         AutoROM --accept-license --source-file Roms.tar.gz
 
         # cpu version of pytorch - faster to download
-        pip install torch==1.13.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+        pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
         pip install pybullet==3.2.5
         # for v4 MuJoCo envs:
         pip install mujoco
@@ -61,8 +61,6 @@ jobs:
     - name: Type check
       run: |
         make type
-      # skip pytype type check for python 3.11 (not supported)
-      if: "!(matrix.python-version == '3.11')"
     - name: Test with pytest
       run: |
         make pytest

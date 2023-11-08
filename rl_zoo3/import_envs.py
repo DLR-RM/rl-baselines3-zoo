@@ -6,12 +6,12 @@ from gymnasium.envs.registration import register
 from rl_zoo3.wrappers import MaskVelocityWrapper
 
 try:
-    import pybullet_envs_gymnasium  # pytype: disable=import-error
+    import pybullet_envs_gymnasium
 except ImportError:
     pass
 
 try:
-    import highway_env  # pytype: disable=import-error
+    import highway_env
 except ImportError:
     pass
 else:
@@ -21,27 +21,27 @@ else:
     np.float = np.float32  # type: ignore[attr-defined]
 
 try:
-    import custom_envs  # pytype: disable=import-error
+    import custom_envs
 except ImportError:
     pass
 
 try:
-    import gym_donkeycar  # pytype: disable=import-error
+    import gym_donkeycar
 except ImportError:
     pass
 
 try:
-    import panda_gym  # pytype: disable=import-error
+    import panda_gym
 except ImportError:
     pass
 
 try:
-    import rocket_lander_gym  # pytype: disable=import-error
+    import rocket_lander_gym
 except ImportError:
     pass
 
 try:
-    import minigrid  # pytype: disable=import-error
+    import minigrid
 except ImportError:
     pass
 
