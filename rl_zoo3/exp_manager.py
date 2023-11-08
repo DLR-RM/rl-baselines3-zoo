@@ -789,7 +789,7 @@ class ExperimentManager:
             )
 
         try:
-            model.learn(self.n_timesteps, callback=callbacks, **learn_kwargs)
+            model.learn(self.n_timesteps, callback=callbacks, **learn_kwargs)  # type: ignore[arg-type]
             # Free memory
             assert model.env is not None
             model.env.close()
