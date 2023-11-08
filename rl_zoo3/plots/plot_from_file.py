@@ -10,8 +10,8 @@ import seaborn
 from matplotlib import pyplot as plt
 
 try:
-    from rliable import library as rly  # pytype: disable=import-error
-    from rliable import metrics, plot_utils  # pytype: disable=import-error
+    from rliable import library as rly
+    from rliable import metrics, plot_utils
 except ImportError:
     rly = None
 
