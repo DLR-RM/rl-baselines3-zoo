@@ -1,10 +1,14 @@
-import gym
+from typing import Any, ClassVar, Dict, Optional, SupportsFloat, Tuple
+
+import gymnasium as gym
 import numpy as np
-from gym import spaces
+from gymnasium import spaces
+from gymnasium.core import ObsType
 from sb3_contrib.common.wrappers import TimeFeatureWrapper  # noqa: F401 (backward compatibility)
+from stable_baselines3.common.type_aliases import GymResetReturn, GymStepReturn
 
 
-class DoneOnSuccessWrapper(gym.Wrapper):
+class TruncatedOnSuccessWrapper(gym.Wrapper):
     """
     Reset on success and offsets the reward.
     Useful for GoalEnv.
@@ -16,27 +20,28 @@ class DoneOnSuccessWrapper(gym.Wrapper):
         self.n_successes = n_successes
         self.current_successes = 0
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
         self.current_successes = 0
-        return self.env.reset()
+        assert options is None, "Options not supported for now"
+        return self.env.reset(seed=seed)
 
-    def step(self, action):
-        obs, reward, done, info = self.env.step(action)
+    def step(self, action) -> GymStepReturn:
+        obs, reward, terminated, truncated, info = self.env.step(action)
         if info.get("is_success", False):
             self.current_successes += 1
         else:
             self.current_successes = 0
         # number of successes in a row
-        done = done or self.current_successes >= self.n_successes
-        reward += self.reward_offset
-        return obs, reward, done, info
+        truncated = truncated or self.current_successes >= self.n_successes
+        reward = float(reward) + self.reward_offset
+        return obs, reward, terminated, truncated, info
 
     def compute_reward(self, achieved_goal, desired_goal, info):
         reward = self.env.compute_reward(achieved_goal, desired_goal, info)
         return reward + self.reward_offset
 
 
-class ActionNoiseWrapper(gym.Wrapper):
+class ActionNoiseWrapper(gym.Wrapper[ObsType, np.ndarray, ObsType, np.ndarray]):
     """
     Add gaussian noise to the action (without telling the agent),
     to test the robustness of the control.
@@ -49,9 +54,10 @@ class ActionNoiseWrapper(gym.Wrapper):
         super().__init__(env)
         self.noise_std = noise_std
 
-    def step(self, action):
+    def step(self, action: np.ndarray) -> Tuple[ObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
+        assert isinstance(self.action_space, spaces.Box)
         noise = np.random.normal(np.zeros_like(action), np.ones_like(action) * self.noise_std)
-        noisy_action = action + noise
+        noisy_action = np.clip(action + noise, self.action_space.low, self.action_space.high)
         return self.env.step(noisy_action)
 
 
@@ -72,13 +78,15 @@ class ActionSmoothingWrapper(gym.Wrapper):
         # self.alpha = self.smoothing_coef
         # self.beta = np.sqrt(1 - self.alpha ** 2) / (1 - self.alpha)
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
         self.smoothed_action = None
-        return self.env.reset()
+        assert options is None, "Options not supported for now"
+        return self.env.reset(seed=seed)
 
-    def step(self, action):
+    def step(self, action) -> GymStepReturn:
         if self.smoothed_action is None:
             self.smoothed_action = np.zeros_like(action)
+        assert self.smoothed_action is not None
         self.smoothed_action = self.smoothing_coef * self.smoothed_action + (1 - self.smoothing_coef) * action
         return self.env.step(self.smoothed_action)
 
@@ -98,51 +106,52 @@ class DelayedRewardWrapper(gym.Wrapper):
         self.current_step = 0
         self.accumulated_reward = 0.0
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
         self.current_step = 0
         self.accumulated_reward = 0.0
-        return self.env.reset()
+        assert options is None, "Options not supported for now"
+        return self.env.reset(seed=seed)
 
-    def step(self, action):
-        obs, reward, done, info = self.env.step(action)
+    def step(self, action) -> GymStepReturn:
+        obs, reward, terminated, truncated, info = self.env.step(action)
 
-        self.accumulated_reward += reward
+        self.accumulated_reward += float(reward)
         self.current_step += 1
 
-        if self.current_step % self.delay == 0 or done:
+        if self.current_step % self.delay == 0 or terminated or truncated:
             reward = self.accumulated_reward
             self.accumulated_reward = 0.0
         else:
             reward = 0.0
-        return obs, reward, done, info
+        return obs, reward, terminated, truncated, info
 
 
-class HistoryWrapper(gym.Wrapper):
+class HistoryWrapper(gym.Wrapper[np.ndarray, np.ndarray, np.ndarray, np.ndarray]):
     """
     Stack past observations and actions to give an history to the agent.
 
     :param env:
-    :param horizon:Number of steps to keep in the history.
+    :param horizon: Number of steps to keep in the history.
     """
 
     def __init__(self, env: gym.Env, horizon: int = 2):
         assert isinstance(env.observation_space, spaces.Box)
+        assert isinstance(env.action_space, spaces.Box)
 
         wrapped_obs_space = env.observation_space
         wrapped_action_space = env.action_space
 
-        # TODO: double check, it seems wrong when we have different low and highs
-        low_obs = np.repeat(wrapped_obs_space.low, horizon, axis=-1)
-        high_obs = np.repeat(wrapped_obs_space.high, horizon, axis=-1)
+        low_obs = np.tile(wrapped_obs_space.low, horizon)
+        high_obs = np.tile(wrapped_obs_space.high, horizon)
 
-        low_action = np.repeat(wrapped_action_space.low, horizon, axis=-1)
-        high_action = np.repeat(wrapped_action_space.high, horizon, axis=-1)
+        low_action = np.tile(wrapped_action_space.low, horizon)
+        high_action = np.tile(wrapped_action_space.high, horizon)
 
         low = np.concatenate((low_obs, low_action))
         high = np.concatenate((high_obs, high_action))
 
         # Overwrite the observation space
-        env.observation_space = spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
+        env.observation_space = spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)  # type: ignore[arg-type]
 
         super().__init__(env)
 
@@ -153,19 +162,20 @@ class HistoryWrapper(gym.Wrapper):
         self.obs_history = np.zeros(low_obs.shape, low_obs.dtype)
         self.action_history = np.zeros(low_action.shape, low_action.dtype)
 
-    def _create_obs_from_history(self):
+    def _create_obs_from_history(self) -> np.ndarray:
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[np.ndarray, Dict]:
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
-        obs = self.env.reset()
+        assert options is None, "Options not supported for now"
+        obs, info = self.env.reset(seed=seed)
         self.obs_history[..., -obs.shape[-1] :] = obs
-        return self._create_obs_from_history()
+        return self._create_obs_from_history(), info
 
-    def step(self, action):
-        obs, reward, done, info = self.env.step(action)
+    def step(self, action) -> Tuple[np.ndarray, SupportsFloat, bool, bool, Dict]:
+        obs, reward, terminated, truncated, info = self.env.step(action)
         last_ax_size = obs.shape[-1]
 
         self.obs_history = np.roll(self.obs_history, shift=-last_ax_size, axis=-1)
@@ -173,7 +183,7 @@ class HistoryWrapper(gym.Wrapper):
 
         self.action_history = np.roll(self.action_history, shift=-action.shape[-1], axis=-1)
         self.action_history[..., -action.shape[-1] :] = action
-        return self._create_obs_from_history(), reward, done, info
+        return self._create_obs_from_history(), reward, terminated, truncated, info
 
 
 class HistoryWrapperObsDict(gym.Wrapper):
@@ -185,23 +195,28 @@ class HistoryWrapperObsDict(gym.Wrapper):
     """
 
     def __init__(self, env: gym.Env, horizon: int = 2):
+        assert isinstance(env.observation_space, spaces.Dict)
         assert isinstance(env.observation_space.spaces["observation"], spaces.Box)
+        assert isinstance(env.action_space, spaces.Box)
 
         wrapped_obs_space = env.observation_space.spaces["observation"]
         wrapped_action_space = env.action_space
 
-        # TODO: double check, it seems wrong when we have different low and highs
-        low_obs = np.repeat(wrapped_obs_space.low, horizon, axis=-1)
-        high_obs = np.repeat(wrapped_obs_space.high, horizon, axis=-1)
+        low_obs = np.tile(wrapped_obs_space.low, horizon)
+        high_obs = np.tile(wrapped_obs_space.high, horizon)
 
-        low_action = np.repeat(wrapped_action_space.low, horizon, axis=-1)
-        high_action = np.repeat(wrapped_action_space.high, horizon, axis=-1)
+        low_action = np.tile(wrapped_action_space.low, horizon)
+        high_action = np.tile(wrapped_action_space.high, horizon)
 
         low = np.concatenate((low_obs, low_action))
         high = np.concatenate((high_obs, high_action))
 
         # Overwrite the observation space
-        env.observation_space.spaces["observation"] = spaces.Box(low=low, high=high, dtype=wrapped_obs_space.dtype)
+        env.observation_space.spaces["observation"] = spaces.Box(
+            low=low,
+            high=high,
+            dtype=wrapped_obs_space.dtype,  # type: ignore[arg-type]
+        )
 
         super().__init__(env)
 
@@ -212,23 +227,24 @@ class HistoryWrapperObsDict(gym.Wrapper):
         self.obs_history = np.zeros(low_obs.shape, low_obs.dtype)
         self.action_history = np.zeros(low_action.shape, low_action.dtype)
 
-    def _create_obs_from_history(self):
+    def _create_obs_from_history(self) -> np.ndarray:
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[Dict[str, np.ndarray], Dict]:
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
-        obs_dict = self.env.reset()
+        assert options is None, "Options not supported for now"
+        obs_dict, info = self.env.reset(seed=seed)
         obs = obs_dict["observation"]
         self.obs_history[..., -obs.shape[-1] :] = obs
 
         obs_dict["observation"] = self._create_obs_from_history()
 
-        return obs_dict
+        return obs_dict, info
 
-    def step(self, action):
-        obs_dict, reward, done, info = self.env.step(action)
+    def step(self, action) -> Tuple[Dict[str, np.ndarray], SupportsFloat, bool, bool, Dict]:
+        obs_dict, reward, terminated, truncated, info = self.env.step(action)
         obs = obs_dict["observation"]
         last_ax_size = obs.shape[-1]
 
@@ -240,7 +256,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
 
         obs_dict["observation"] = self._create_obs_from_history()
 
-        return obs_dict, reward, done, info
+        return obs_dict, reward, terminated, truncated, info
 
 
 class FrameSkip(gym.Wrapper):
@@ -255,26 +271,22 @@ class FrameSkip(gym.Wrapper):
         super().__init__(env)
         self._skip = skip
 
-    def step(self, action: np.ndarray):
+    def step(self, action) -> GymStepReturn:
         """
         Step the environment with the given action
         Repeat action, sum reward.
 
         :param action: the action
-        :return: observation, reward, done, information
+        :return: observation, reward, terminated, truncated, information
         """
         total_reward = 0.0
-        done = None
         for _ in range(self._skip):
-            obs, reward, done, info = self.env.step(action)
-            total_reward += reward
-            if done:
+            obs, reward, terminated, truncated, info = self.env.step(action)
+            total_reward += float(reward)
+            if terminated or truncated:
                 break
 
-        return obs, total_reward, done, info
-
-    def reset(self):
-        return self.env.reset()
+        return obs, total_reward, terminated, truncated, info
 
 
 class MaskVelocityWrapper(gym.ObservationWrapper):
@@ -287,7 +299,7 @@ class MaskVelocityWrapper(gym.ObservationWrapper):
     """
 
     # Supported envs
-    velocity_indices = {
+    velocity_indices: ClassVar[Dict[str, np.ndarray]] = {
         "CartPole-v1": np.array([1, 3]),
         "MountainCar-v0": np.array([1]),
         "MountainCarContinuous-v0": np.array([1]),
@@ -299,6 +311,7 @@ class MaskVelocityWrapper(gym.ObservationWrapper):
     def __init__(self, env: gym.Env):
         super().__init__(env)
 
+        assert env.unwrapped.spec is not None
         env_id: str = env.unwrapped.spec.id
         # By default no masking
         self.mask = np.ones_like(env.observation_space.sample())

@@ -283,13 +283,13 @@ InvertedPendulumSwingupBulletEnv-v0:
   clip_range: 0.2
 
 
-CarRacing-v0:
+CarRacing-v2:
   env_wrapper:
     # - rl_zoo3.wrappers.FrameSkip:
     #     skip: 2
-    - gym.wrappers.resize_observation.ResizeObservation:
+    - gymnasium.wrappers.resize_observation.ResizeObservation:
         shape: 64
-    - gym.wrappers.gray_scale_observation.GrayScaleObservation:
+    - gymnasium.wrappers.gray_scale_observation.GrayScaleObservation:
         keep_dim: true
   frame_stack: 2
   normalize: "{'norm_obs': False, 'norm_reward': True}"

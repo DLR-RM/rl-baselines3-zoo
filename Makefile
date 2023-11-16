@@ -1,4 +1,4 @@
-LINT_PATHS = *.py tests/ scripts/ rl_zoo3/ hyperparams/python/*.py
+LINT_PATHS = *.py tests/ scripts/ rl_zoo3/ hyperparams/python/*.py docs/conf.py
 
 # Run pytest and coverage report
 pytest:
@@ -8,13 +8,10 @@ pytest:
 check-trained-agents:
 	python -m pytest -v tests/test_enjoy.py -k trained_agent --color=yes
 
-pytype:
-	pytype -j auto ${LINT_PATHS} -d import-error
-
 mypy:
 	mypy ${LINT_PATHS} --install-types --non-interactive
 
-type: pytype mypy
+type: mypy
 
 lint:
 	# stop the build if there are Python syntax errors or undefined names
@@ -25,13 +22,13 @@ lint:
 
 format:
 	# Sort imports
-	isort ${LINT_PATHS}
+	ruff --select I ${LINT_PATHS} --fix
 	# Reformat using black
 	black ${LINT_PATHS}
 
 check-codestyle:
 	# Sort imports
-	isort --check ${LINT_PATHS}
+	ruff --select I ${LINT_PATHS}
 	# Reformat using black
 	black --check ${LINT_PATHS}
 
@@ -57,15 +54,15 @@ docker-gpu:
 # PyPi package release
 release:
 	# rm -r build/* dist/*
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python -m build -s
+	python -m build -w
 	twine upload dist/*
 
 # Test PyPi package release
 test-release:
 	# rm -r build/* dist/*
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python -m build -s
+	python -m build -w
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 .PHONY: lint format check-codestyle commit-checks doc spelling docker type pytest

@@ -67,7 +67,7 @@ for multiple, specify a list:
 .. code:: yaml
 
   env_wrapper:
-      - rl_zoo3.wrappers.DoneOnSuccessWrapper:
+      - rl_zoo3.wrappers.TruncatedOnSuccessWrapper:
           reward_offset: 1.0
       - sb3_contrib.common.wrappers.TimeFeatureWrapper
 

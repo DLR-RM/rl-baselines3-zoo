@@ -6,7 +6,7 @@ Installation
 Prerequisites
 -------------
 
-RL Zoo requires python 3.7+ and PyTorch >= 1.11
+RL Zoo requires python 3.8+ and PyTorch >= 1.13
 
 
 Minimal Installation

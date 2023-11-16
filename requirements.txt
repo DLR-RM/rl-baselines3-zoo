@@ -1,21 +1,24 @@
-gym==0.21
-stable-baselines3[extra_no_roms,tests,docs]>=1.8.0a10
-sb3-contrib>=1.8.0a10
+gym==0.26.2
+stable-baselines3[extra_no_roms,tests,docs]>=2.2.0a11,<3.0
+sb3-contrib>=2.2.0a11,<3.0
 box2d-py==2.3.8
 pybullet
-gym-minigrid
-scikit-optimize
-optuna
+pybullet_envs_gymnasium>=0.4.0
+# minigrid
+# scikit-optimize
+optuna~=3.0
 pytablewriter~=0.64
 pyyaml>=5.1
-cloudpickle>=1.5.0
+cloudpickle>=2.2.1
 plotly
-panda-gym==1.1.1 # tmp fix: until compatibility with panda-gym v2
+# need to upgrade to gymnasium:
+# panda-gym~=3.0.1
 rliable>=1.0.5
 wandb
-huggingface_sb3>=2.2.1
+huggingface_sb3>=3.0,<4.0
 seaborn
 tqdm
 rich
 envpool
+moviepy
 ruff

@@ -5,14 +5,14 @@ import os
 import time
 import uuid
 
-import gym
+import gymnasium as gym
 import numpy as np
 import stable_baselines3 as sb3
 import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
 # Register custom envs
-import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
+import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
 
@@ -109,10 +109,17 @@ def train() -> None:
         type=str,
         nargs="+",
         default=[],
-        help="Additional external Gym environment package modules to import (e.g. gym_minigrid)",
+        help="Additional external Gym environment package modules to import",
     )
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
+    )
+    parser.add_argument(
+        "--eval-env-kwargs",
+        type=str,
+        nargs="+",
+        action=StoreDict,
+        help="Optional keyword argument to pass to the env constructor for evaluation",
     )
     parser.add_argument(
         "-params",
@@ -129,13 +136,6 @@ def train() -> None:
         default=None,
         help="Custom yaml file or python package from which the hyperparameters will be loaded."
         "We expect that python packages contain a dictionary called 'hyperparams' which contains a key for each environment.",
-    )
-    parser.add_argument(
-        "-yaml",
-        "--yaml-file",
-        type=str,
-        default=None,
-        help="This parameter is deprecated, please use `--conf-file` instead",
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
     parser.add_argument(
@@ -171,12 +171,7 @@ def train() -> None:
         importlib.import_module(env_module)
 
     env_id = args.env
-    registered_envs = set(gym.envs.registry.env_specs.keys())  # pytype: disable=module-attr
-
-    if args.yaml_file is not None:
-        raise ValueError(
-            "The`--yaml-file` parameter is deprecated and will be removed in RL Zoo3 v1.8, please use `--conf-file` instead",
-        )
+    registered_envs = set(gym.envs.registry.keys())
 
     # If the environment is not found, suggest the closest match
     if env_id not in registered_envs:
@@ -242,6 +237,7 @@ def train() -> None:
         args.save_freq,
         args.hyperparams,
         args.env_kwargs,
+        args.eval_env_kwargs,
         args.trained_agent,
         args.optimize_hyperparameters,
         args.storage,

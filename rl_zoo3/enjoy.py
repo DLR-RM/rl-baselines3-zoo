@@ -58,7 +58,7 @@ def enjoy() -> None:  # noqa: C901
         type=str,
         nargs="+",
         default=[],
-        help="Additional external Gym environment package modules to import (e.g. gym_minigrid)",
+        help="Additional external Gym environment package modules to import",
     )
     parser.add_argument(
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
@@ -126,9 +126,6 @@ def enjoy() -> None:  # noqa: C901
     # Off-policy algorithm only support one env for now
     off_policy_algos = ["qrdqn", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
 
-    if algo in off_policy_algos:
-        args.n_envs = 1
-
     set_random_seed(args.seed)
 
     if args.num_threads > 0:
@@ -137,6 +134,7 @@ def enjoy() -> None:  # noqa: C901
         th.set_num_threads(args.num_threads)
 
     is_atari = ExperimentManager.is_atari(env_name.gym_id)
+    is_minigrid = ExperimentManager.is_minigrid(env_name.gym_id)
 
     stats_path = os.path.join(log_path, env_name)
     hyperparams, maybe_stats_path = get_saved_hyperparams(stats_path, norm_reward=args.norm_reward, test_mode=True)
@@ -146,7 +144,7 @@ def enjoy() -> None:  # noqa: C901
     args_path = os.path.join(log_path, env_name, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path) as f:
-            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)
             if loaded_args["env_kwargs"] is not None:
                 env_kwargs = loaded_args["env_kwargs"]
     # overwrite with command line arguments
@@ -188,12 +186,14 @@ def enjoy() -> None:  # noqa: C901
             "clip_range": lambda _: 0.0,
         }
 
-    model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=args.device, **kwargs)
+    if "HerReplayBuffer" in hyperparams.get("replay_buffer_class", ""):
+        kwargs["env"] = env
 
+    model = ALGOS[algo].load(model_path, custom_objects=custom_objects, device=args.device, **kwargs)
     obs = env.reset()
 
     # Deterministic by default except for atari games
-    stochastic = args.stochastic or is_atari and not args.deterministic
+    stochastic = args.stochastic or (is_atari or is_minigrid) and not args.deterministic
     deterministic = not stochastic
 
     episode_reward = 0.0

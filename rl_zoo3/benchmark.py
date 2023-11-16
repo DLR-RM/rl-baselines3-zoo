@@ -8,8 +8,10 @@ from typing import Dict, List
 import numpy as np
 import pandas as pd
 import pytablewriter
+from huggingface_sb3 import EnvironmentName
 from stable_baselines3.common.results_plotter import load_results, ts2xy
 
+from rl_zoo3.load_from_hub import download_from_hub
 from rl_zoo3.utils import get_hf_trained_models, get_latest_run_id, get_saved_hyperparams, get_trained_models
 
 parser = argparse.ArgumentParser()
@@ -109,6 +111,24 @@ for idx, trained_model in enumerate(trained_models.keys()):
         exp_id = get_latest_run_id(os.path.join(args.log_dir, algo), env_id)
         log_path = os.path.join(args.log_dir, algo, f"{env_id}_{exp_id}", env_id)
         hyperparams, _ = get_saved_hyperparams(log_path)
+        # Model not downloaded
+        if len(hyperparams) == 0:
+            print("Pretrained model not found, trying to download it from sb3 Huggingface hub: https://huggingface.co/sb3")
+            exp_id = 1
+            log_path = os.path.join(args.log_dir, algo, f"{env_id}_{exp_id}", env_id)
+            # Auto-download
+            download_from_hub(
+                algo=algo,
+                env_name=EnvironmentName(env_id),
+                exp_id=exp_id,
+                folder=args.log_dir,
+                organization="sb3",
+                repo_name=None,
+                force=False,
+            )
+            # Try again
+            hyperparams, _ = get_saved_hyperparams(log_path)
+
         # Hack to format it properly
         if hyperparams["n_timesteps"] < 1e6:
             n_training_timesteps = f"{int(hyperparams['n_timesteps'] / 1e3)}k"
@@ -151,7 +171,7 @@ header = """
 ## Performance of trained agents
 
 Final performance of the trained agents can be found in the table below.
-This was computed by running `python -m utils.benchmark`:
+This was computed by running `python -m rl_zoo3.benchmark`:
 it runs the trained agent (trained on `n_timesteps`) for `eval_timesteps` and then reports the mean episode reward
 during this evaluation.
 

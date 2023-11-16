@@ -13,12 +13,12 @@ from rl_zoo3.utils import ALGOS, StoreDict, create_test_env, get_model_path, get
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="environment ID", type=EnvironmentName, default="CartPole-v1")
+    parser.add_argument("--env", help="Environment ID", type=EnvironmentName, default="CartPole-v1")
     parser.add_argument("-f", "--folder", help="Log folder", type=str, default="rl-trained-agents")
     parser.add_argument("-o", "--output-folder", help="Output folder", type=str)
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
-    parser.add_argument("-n", "--n-timesteps", help="number of timesteps", default=1000, type=int)
-    parser.add_argument("--n-envs", help="number of environments", default=1, type=int)
+    parser.add_argument("-n", "--n-timesteps", help="Number of timesteps", default=1000, type=int)
+    parser.add_argument("--n-envs", help="Number of environments", default=1, type=int)
     parser.add_argument("--deterministic", action="store_true", default=False, help="Use deterministic actions")
     parser.add_argument("--stochastic", action="store_true", default=False, help="Use stochastic actions")
     parser.add_argument("--seed", help="Random generator seed", type=int, default=0)
@@ -73,6 +73,7 @@ if __name__ == "__main__":
     set_random_seed(args.seed)
 
     is_atari = ExperimentManager.is_atari(env_name.gym_id)
+    is_minigrid = ExperimentManager.is_minigrid(env_name.gym_id)
 
     stats_path = os.path.join(log_path, env_name)
     hyperparams, maybe_stats_path = get_saved_hyperparams(stats_path)
@@ -82,12 +83,15 @@ if __name__ == "__main__":
     args_path = os.path.join(log_path, env_name, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path) as f:
-            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)
             if loaded_args["env_kwargs"] is not None:
                 env_kwargs = loaded_args["env_kwargs"]
     # overwrite with command line arguments
     if args.env_kwargs is not None:
         env_kwargs.update(args.env_kwargs)
+
+    # Force rgb_array rendering (gym 0.26+)
+    env_kwargs.update(render_mode="rgb_array")
 
     env = create_test_env(
         env_name.gym_id,
@@ -127,7 +131,7 @@ if __name__ == "__main__":
     model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
 
     # Deterministic by default except for atari games
-    stochastic = args.stochastic or is_atari and not args.deterministic
+    stochastic = args.stochastic or (is_atari or is_minigrid) and not args.deterministic
     deterministic = not stochastic
 
     if video_folder is None:
@@ -146,17 +150,17 @@ if __name__ == "__main__":
     lstm_states = None
     episode_starts = np.ones((env.num_envs,), dtype=bool)
     try:
-        for _ in range(video_length + 1):
+        for _ in range(video_length):
             action, lstm_states = model.predict(
                 obs,  # type: ignore[arg-type]
                 state=lstm_states,
                 episode_start=episode_starts,
                 deterministic=deterministic,
             )
-            obs, _, dones, _ = env.step(action)  # type: ignore[assignment]
-            episode_starts = dones
             if not args.no_render:
                 env.render()
+            obs, _, dones, _ = env.step(action)  # type: ignore[assignment]
+            episode_starts = dones
     except KeyboardInterrupt:
         pass
 

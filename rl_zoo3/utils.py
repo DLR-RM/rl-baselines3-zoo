@@ -2,13 +2,14 @@ import argparse
 import glob
 import importlib
 import os
+from copy import deepcopy
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
-import gym
+import gymnasium as gym
 import stable_baselines3 as sb3  # noqa: F401
 import torch as th  # noqa: F401
 import yaml
-from gym import spaces
+from gymnasium import spaces
 from huggingface_hub import HfApi
 from huggingface_sb3 import EnvironmentName, ModelName
 from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
@@ -40,11 +41,7 @@ ALGOS: Dict[str, Type[BaseAlgorithm]] = {
 
 def flatten_dict_observations(env: gym.Env) -> gym.Env:
     assert isinstance(env.observation_space, spaces.Dict)
-    try:
-        return gym.wrappers.FlattenObservation(env)
-    except AttributeError:
-        keys = env.observation_space.spaces.keys()
-        return gym.wrappers.FlattenDictWrapper(env, dict_keys=list(keys))
+    return gym.wrappers.FlattenObservation(env)
 
 
 def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
@@ -97,7 +94,7 @@ def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> 
                     "You should check the indentation."
                 )
                 wrapper_dict = wrapper_name
-                wrapper_name = list(wrapper_dict.keys())[0]
+                wrapper_name = next(iter(wrapper_dict.keys()))
                 kwargs = wrapper_dict[wrapper_name]
             else:
                 kwargs = {}
@@ -180,7 +177,7 @@ def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
                     "You should check the indentation."
                 )
                 callback_dict = callback_name
-                callback_name = list(callback_dict.keys())[0]
+                callback_name = next(iter(callback_dict.keys()))
                 kwargs = callback_dict[callback_name]
             else:
                 kwargs = {}
@@ -214,9 +211,6 @@ def create_test_env(
     :param env_kwargs: Optional keyword argument to pass to the env constructor
     :return:
     """
-    # Avoid circular import
-    from rl_zoo3.exp_manager import ExperimentManager
-
     # Create the environment and wrap it if necessary
     assert hyperparams is not None
     env_wrapper = get_wrapper_class(hyperparams)
@@ -227,35 +221,38 @@ def create_test_env(
         del hyperparams["env_wrapper"]
 
     vec_env_kwargs: Dict[str, Any] = {}
-    vec_env_cls = DummyVecEnv
-    if n_envs > 1 or (ExperimentManager.is_bullet(env_id) and should_render):
-        # HACK: force SubprocVecEnv for Bullet env
-        # as Pybullet envs does not follow gym.render() interface
-        vec_env_cls = SubprocVecEnv  # type: ignore[assignment]
-        # start_method = 'spawn' for thread safe
+    # Avoid potential shared memory issue
+    vec_env_cls = SubprocVecEnv if n_envs > 1 else DummyVecEnv
 
-    # panda-gym is based on pybullet, whose rendering requires to be configure at initialization
-    if ExperimentManager.is_panda_gym(env_id) and should_render:
-        if env_kwargs is None:
-            env_kwargs = {"render": True}
-        else:
-            env_kwargs["render"] = True
+    # Fix for gym 0.26, to keep old behavior
+    env_kwargs = env_kwargs or {}
+    env_kwargs = deepcopy(env_kwargs)
+    if "render_mode" not in env_kwargs and should_render:
+        env_kwargs.update(render_mode="human")
+
+    spec = gym.spec(env_id)
+
+    # Define make_env here, so it works with subprocesses
+    # when the registry was modified with `--gym-packages`
+    # See https://github.com/HumanCompatibleAI/imitation/pull/160
+    def make_env(**kwargs) -> gym.Env:
+        return spec.make(**kwargs)
 
     env = make_vec_env(
-        env_id,
+        make_env,
         n_envs=n_envs,
         monitor_dir=log_dir,
         seed=seed,
         wrapper_class=env_wrapper,
         env_kwargs=env_kwargs,
-        vec_env_cls=vec_env_cls,
+        vec_env_cls=vec_env_cls,  # type: ignore[arg-type]
         vec_env_kwargs=vec_env_kwargs,
     )
 
     if "vec_env_wrapper" in hyperparams.keys():
         vec_env_wrapper = get_wrapper_class(hyperparams, "vec_env_wrapper")
         assert vec_env_wrapper is not None
-        env = vec_env_wrapper(env)
+        env = vec_env_wrapper(env)  # type: ignore[assignment, arg-type]
         del hyperparams["vec_env_wrapper"]
 
     # Load saved stats for normalizing input and rewards
@@ -402,7 +399,7 @@ def get_saved_hyperparams(
         if os.path.isfile(config_file):
             # Load saved hyperparameters
             with open(os.path.join(stats_path, "config.yml")) as f:
-                hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+                hyperparams = yaml.load(f, Loader=yaml.UnsafeLoader)
             hyperparams["normalize"] = hyperparams.get("normalize", False)
         else:
             obs_rms_path = os.path.join(stats_path, "obs_rms.pkl")
