@@ -1,12 +1,13 @@
-## Release 2.2.0a12 (WIP)
+## Release 2.2.1 (2023-11-17)
 
 ### Breaking Changes
 - Removed `gym` dependency, the package is still required for some pretrained agents.
-- Upgraded to SB3 >= 2.2.0
+- Upgraded to SB3 >= 2.2.1
 - Upgraded to Huggingface-SB3 >= 3.0
+- Upgraded to pytablewriter >= 1.0
 
 ### New Features
-- Add `--eval-env-kwargs` to `train.py` (@Quentin18)
+- Added `--eval-env-kwargs` to `train.py` (@Quentin18)
 - Added `ppo_lstm` to hyperparams_opt.py (@technocrat13)
 
 ### Bug fixes
