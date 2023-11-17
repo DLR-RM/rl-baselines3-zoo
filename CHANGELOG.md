@@ -1,8 +1,8 @@
-## Release 2.2.0 (2023-11-16)
+## Release 2.2.1 (2023-11-17)
 
 ### Breaking Changes
 - Removed `gym` dependency, the package is still required for some pretrained agents.
-- Upgraded to SB3 >= 2.2.0
+- Upgraded to SB3 >= 2.2.1
 - Upgraded to Huggingface-SB3 >= 3.0
 - Upgraded to pytablewriter >= 1.0
 
