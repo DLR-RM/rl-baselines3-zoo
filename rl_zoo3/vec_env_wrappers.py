@@ -1,9 +1,9 @@
 from typing import Any, Iterable, List, Optional, Sequence, Type, Union
 
-import gym
+import gymnasium as gym
 import numpy as np
 from envpool.python.protocol import EnvPool
-from gym import spaces
+from gymnasium import spaces
 from stable_baselines3.common.vec_env import VecEnv
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs, VecEnvStepReturn
 
@@ -49,21 +49,34 @@ class EnvPoolAdapter(VecEnv):
         )
 
     def reset(self) -> VecEnvObs:
-        return self.venv.reset()
+        obs, reset_infos = self.venv.reset()
+        for key, value in reset_infos.items():
+            if key == "players":  # only used for multi-agent setting
+                continue
+            for env_idx in range(self.num_envs):
+                self.reset_infos[env_idx][key] = value[env_idx]
+        return obs
 
     def step_async(self, actions: np.ndarray) -> None:
         self.actions = actions
 
     def step_wait(self) -> VecEnvStepReturn:
-        obs, rewards, dones, info_dict = self.venv.step(self.actions)
+        obs, rewards, terminated, truncated, info_dict = self.venv.step(self.actions)
+        dones = terminated | truncated
+
         infos = []
         # Convert dict to list of dict and add terminal observation
         for env_idx in range(self.num_envs):
             infos.append({key: info_dict[key][env_idx] for key in info_dict.keys() if isinstance(info_dict[key], np.ndarray)})
+            infos[env_idx]["TimeLimit.truncated"] = truncated[env_idx] and not terminated[env_idx]
             if dones[env_idx]:
                 infos[env_idx]["terminal_observation"] = obs[env_idx]
-                obs[env_idx] = self.venv.reset(np.array([env_idx]))
-
+                obs[env_idx], reset_infos = self.venv.reset(np.array([env_idx]))
+                # Store reset_infos
+                for key, value in reset_infos.items():
+                    if key == "players":
+                        continue
+                    self.reset_infos[env_idx][key] = value[0]
         return obs, rewards, dones, infos
 
     def close(self) -> None:
