@@ -1,3 +1,20 @@
+## Release 2.3.0a0 (WIP)
+
+### Breaking Changes
+- Updated defaults hyperparameters for TD3/DDPG to match SAC ones
+- Upgraded MuJoCo envs hyperparameters to v4 (pre-trained agents need to be updated)
+
+### New Features
+
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
+
 ## Release 2.2.1 (2023-11-17)
 
 ### Breaking Changes

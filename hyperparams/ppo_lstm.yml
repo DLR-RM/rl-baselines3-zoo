@@ -316,27 +316,27 @@ CarRacing-v2:
                        )"
 
 # === Mujoco Envs ===
-# HalfCheetah-v3: &mujoco-defaults
+# HalfCheetah-v4: &mujoco-defaults
 #   normalize: true
 #   n_timesteps: !!float 1e6
 #   policy: 'MlpLstmPolicy'
 
-Ant-v3: &mujoco-defaults
+Ant-v4: &mujoco-defaults
   normalize: true
   n_timesteps: !!float 1e6
   policy: 'MlpLstmPolicy'
 
-# Hopper-v3:
+# Hopper-v4:
 #   <<: *mujoco-defaults
 #
-# Walker2d-v3:
+# Walker2d-v4:
 #   <<: *mujoco-defaults
 #
-# Humanoid-v3:
+# Humanoid-v4:
 #   <<: *mujoco-defaults
 #   n_timesteps: !!float 2e6
 #
-Swimmer-v3:
+Swimmer-v4:
   <<: *mujoco-defaults
   gamma: 0.9999
   n_envs: 4
@@ -347,7 +347,7 @@ Swimmer-v3:
 
 # 10 mujoco envs
 
-HalfCheetah-v3:
+HalfCheetah-v4:
   normalize: true
   n_envs: 1
   policy: 'MlpLstmPolicy'
@@ -369,7 +369,7 @@ HalfCheetah-v3:
                     net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
-# Ant-v3:
+# Ant-v4:
 #   normalize: true
 #   n_envs: 1
 #   policy: 'MlpLstmPolicy'
@@ -385,7 +385,7 @@ HalfCheetah-v3:
 #   max_grad_norm: 0.6
 #   vf_coef: 0.677239
 
-Hopper-v3:
+Hopper-v4:
   normalize: true
   n_envs: 1
   policy: 'MlpLstmPolicy'
@@ -429,7 +429,7 @@ HumanoidStandup-v2:
                     net_arch=dict(pi=[256, 256], vf=[256, 256])
                   )"
 
-Humanoid-v3:
+Humanoid-v4:
   normalize: true
   n_envs: 1
   policy: 'MlpLstmPolicy'
@@ -499,7 +499,7 @@ Reacher-v2:
   max_grad_norm: 0.9
   vf_coef: 0.950368
 
-# Swimmer-v3:
+# Swimmer-v4:
 #   normalize: true
 #   n_envs: 1
 #   policy: 'MlpLstmPolicy'
@@ -521,7 +521,7 @@ Reacher-v2:
 #                     net_arch=dict(pi=[256, 256], vf=[256, 256])
 #                   )"
 
-Walker2d-v3:
+Walker2d-v4:
   normalize: true
   n_envs: 1
   policy: 'MlpLstmPolicy'

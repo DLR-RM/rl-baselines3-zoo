@@ -7,7 +7,6 @@ pybullet_envs_gymnasium>=0.4.0
 # minigrid
 # scikit-optimize
 optuna~=3.0
-pytablewriter~=0.64
 pyyaml>=5.1
 cloudpickle>=2.2.1
 plotly

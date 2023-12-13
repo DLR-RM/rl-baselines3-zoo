@@ -108,7 +108,7 @@ ReacherBulletEnv-v0:
 
 # === Mujoco Envs ===
 # Params closest to original paper
-Swimmer-v3:
+Swimmer-v4:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 2e6
@@ -119,7 +119,7 @@ Swimmer-v3:
   alive_bonus_offset: 0
   # normalize: "dict(norm_obs=True, norm_reward=False)"
 
-Hopper-v3:
+Hopper-v4:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 7e6
@@ -130,7 +130,7 @@ Hopper-v3:
   alive_bonus_offset: -1
   normalize: "dict(norm_obs=True, norm_reward=False)"
 
-HalfCheetah-v3:
+HalfCheetah-v4:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 1.25e7
@@ -141,7 +141,7 @@ HalfCheetah-v3:
   alive_bonus_offset: 0
   normalize: "dict(norm_obs=True, norm_reward=False)"
 
-Walker2d-v3:
+Walker2d-v4:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 7.5e7
@@ -152,7 +152,7 @@ Walker2d-v3:
   alive_bonus_offset: -1
   normalize: "dict(norm_obs=True, norm_reward=False)"
 
-Ant-v3:
+Ant-v4:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 7.5e7
@@ -164,7 +164,7 @@ Ant-v3:
   normalize: "dict(norm_obs=True, norm_reward=False)"
 
 
-Humanoid-v3:
+Humanoid-v4:
   n_envs: 1
   policy: 'LinearPolicy'
   n_timesteps: !!float 2.5e8
