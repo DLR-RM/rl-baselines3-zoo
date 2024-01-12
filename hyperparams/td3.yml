@@ -6,9 +6,9 @@ MountainCarContinuous-v0:
   noise_std: 0.5
   gradient_steps: 1
   train_freq: 1
-  learning_rate: !!float 3e-4
+  learning_rate: !!float 1e-3
   batch_size: 256
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 Pendulum-v1:
   n_timesteps: 20000
@@ -20,8 +20,8 @@ Pendulum-v1:
   noise_std: 0.1
   gradient_steps: 1
   train_freq: 1
-  learning_rate: !!float 3e-4
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  learning_rate: !!float 1e-3
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 LunarLanderContinuous-v2:
   n_timesteps: !!float 3e5
@@ -33,8 +33,8 @@ LunarLanderContinuous-v2:
   noise_std: 0.1
   gradient_steps: 1
   train_freq: 1
-  learning_rate: !!float 3e-4
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  learning_rate: !!float 1e-3
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 BipedalWalker-v3:
   n_timesteps: !!float 1e6
@@ -46,8 +46,8 @@ BipedalWalker-v3:
   noise_std: 0.1
   gradient_steps: 1
   train_freq: 1
-  learning_rate: !!float 3e-4
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  learning_rate: !!float 1e-3
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # To be tuned
 BipedalWalkerHardcore-v3:
@@ -61,7 +61,7 @@ BipedalWalkerHardcore-v3:
   batch_size: 256
   train_freq: 1
   learning_rate: lin_7e-4
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
 HalfCheetahBulletEnv-v0: &pybullet-defaults
@@ -98,8 +98,8 @@ HumanoidBulletEnv-v0:
   noise_type: 'normal'
   noise_std: 0.1
   train_freq: 1
-  learning_rate: !!float 3e-4
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  learning_rate: !!float 1e-3
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
 ReacherBulletEnv-v0:
@@ -125,10 +125,10 @@ MinitaurBulletEnv-v0:
   noise_std: 0.1
   learning_starts: 10000
   batch_size: 256
-  learning_rate: !!float 3e-4
+  learning_rate: !!float 1e-3
   train_freq: 1
   gradient_steps: 1
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # === Mujoco Envs ===
 HalfCheetah-v4: &mujoco-defaults
@@ -139,9 +139,9 @@ HalfCheetah-v4: &mujoco-defaults
   noise_std: 0.1
   train_freq: 1
   gradient_steps: 1
-  learning_rate: !!float 3e-4
+  learning_rate: !!float 1e-3
   batch_size: 256
-  policy_kwargs: "dict(net_arch=[256, 256])"
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 Ant-v4:
   <<: *mujoco-defaults
