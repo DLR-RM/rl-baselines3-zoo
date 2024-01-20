@@ -18,5 +18,6 @@ huggingface_sb3>=3.0,<4.0
 seaborn
 tqdm
 rich
+envpool
 moviepy
 ruff

@@ -154,6 +154,13 @@ def train() -> None:
         help="if toggled, display a progress bar using tqdm and rich",
     )
     parser.add_argument(
+        "-envpool",
+        "--use-envpool",
+        action="store_true",
+        default=False,
+        help="if toggled, try to use EnvPool to run the env, env_wrappers are not supported.",
+    )
+    parser.add_argument(
         "-tags", "--wandb-tags", type=str, default=[], nargs="+", help="Tags for wandb run, e.g.: -tags optimized pr-123"
     )
 
@@ -178,7 +185,7 @@ def train() -> None:
     uuid_str = f"_{uuid.uuid4()}" if args.uuid else ""
     if args.seed < 0:
         # Seed but with a random one
-        args.seed = np.random.randint(2**32 - 1, dtype="int64").item()  # type: ignore[attr-defined]
+        args.seed = np.random.randint(2**31 - 1, dtype="int64").item()  # type: ignore[attr-defined]
 
     set_random_seed(args.seed)
 
@@ -255,6 +262,7 @@ def train() -> None:
         device=args.device,
         config=args.conf_file,
         show_progress=args.progress,
+        use_envpool=args.use_envpool,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed

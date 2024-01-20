@@ -37,6 +37,7 @@ from stable_baselines3.common.vec_env import (
     SubprocVecEnv,
     VecEnv,
     VecFrameStack,
+    VecMonitor,
     VecNormalize,
     VecTransposeImage,
     is_vecenv_wrapped,
@@ -50,6 +51,15 @@ import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from rl_zoo3.hyperparams_opt import HYPERPARAMS_SAMPLER
 from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_latest_run_id, get_wrapper_class, linear_schedule
+
+try:
+    import envpool
+except ImportError:
+    envpool = None
+else:
+    from envpool.python.protocol import EnvPool
+
+    from rl_zoo3.vec_env_wrappers import EnvPoolAdapter
 
 
 class ExperimentManager:
@@ -98,6 +108,7 @@ class ExperimentManager:
         device: Union[th.device, str] = "auto",
         config: Optional[str] = None,
         show_progress: bool = False,
+        use_envpool: bool = False,
     ):
         super().__init__()
         self.algo = algo
@@ -121,6 +132,7 @@ class ExperimentManager:
         self.seed = seed
         self.optimization_log_path = optimization_log_path
 
+        self.use_envpool = use_envpool
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
         self.vec_env_wrapper: Optional[Callable] = None
 
@@ -598,38 +610,52 @@ class ExperimentManager:
         # Do not log eval env (issue with writing the same file)
         log_dir = None if eval_env or no_log else self.save_path
 
-        # Special case for GoalEnvs: log success rate too
-        if (
-            "Neck" in self.env_name.gym_id
-            or self.is_robotics_env(self.env_name.gym_id)
-            or "parking-v0" in self.env_name.gym_id
-            and len(self.monitor_kwargs) == 0  # do not overwrite custom kwargs
-        ):
-            self.monitor_kwargs = dict(info_keywords=("is_success",))
+        if self.use_envpool:
+            if self.env_wrapper is not None:
+                warnings.warn("EnvPool does not support env wrappers, it will be ignored.")
+            if self.env_kwargs:
+                warnings.warn(
+                    "EnvPool does not support env_kwargs, it will be ignored. "
+                    "To pass keyword argument to envpool, use vec_env_kwargs instead."
+                )
+            # Convert Atari game names
+            # See https://github.com/sail-sg/envpool/issues/14
+            env_id = self.env_name.gym_id
+            if self._is_atari and "NoFrameskip-v4" in env_id:
+                env_id = env_id.split("NoFrameskip-v4")[0] + "-v5"
 
-        spec = gym.spec(self.env_name.gym_id)
+            env = envpool.make(
+                env_id, env_type="gymnasium", num_envs=n_envs, seed=self.seed, **self.vec_env_kwargs
+            )  # type: EnvPool
+            env.spec.id = self.env_name.gym_id
+            env = EnvPoolAdapter(env)
+            filename = None if log_dir is None else f"{log_dir}/monitor.csv"
+            env = VecMonitor(env, filename, **self.monitor_kwargs)
 
-        # Define make_env here, so it works with subprocesses
-        # when the registry was modified with `--gym-packages`
-        # See https://github.com/HumanCompatibleAI/imitation/pull/160
-        def make_env(**kwargs) -> gym.Env:
-            return spec.make(**kwargs)
+        else:
+            spec = gym.spec(self.env_name.gym_id)
 
-        env_kwargs = self.eval_env_kwargs if eval_env else self.env_kwargs
+            # Define make_env here, so it works with subprocesses
+            # when the registry was modified with `--gym-packages`
+            # See https://github.com/HumanCompatibleAI/imitation/pull/160
+            def make_env(**kwargs) -> gym.Env:
+                return spec.make(**kwargs)
 
-        # On most env, SubprocVecEnv does not help and is quite memory hungry,
-        # therefore, we use DummyVecEnv by default
-        env = make_vec_env(
-            make_env,
-            n_envs=n_envs,
-            seed=self.seed,
-            env_kwargs=env_kwargs,
-            monitor_dir=log_dir,
-            wrapper_class=self.env_wrapper,
-            vec_env_cls=self.vec_env_class,  # type: ignore[arg-type]
-            vec_env_kwargs=self.vec_env_kwargs,
-            monitor_kwargs=self.monitor_kwargs,
-        )
+            env_kwargs = self.eval_env_kwargs if eval_env else self.env_kwargs
+
+            # On most env, SubprocVecEnv does not help and is quite memory hungry,
+            # therefore, we use DummyVecEnv by default
+            env = make_vec_env(
+                make_env,
+                n_envs=n_envs,
+                seed=self.seed,
+                env_kwargs=env_kwargs,
+                monitor_dir=log_dir,
+                wrapper_class=self.env_wrapper,
+                vec_env_cls=self.vec_env_class,  # type: ignore[arg-type]
+                vec_env_kwargs=self.vec_env_kwargs,
+                monitor_kwargs=self.monitor_kwargs,
+            )
 
         if self.vec_env_wrapper is not None:
             env = self.vec_env_wrapper(env)
