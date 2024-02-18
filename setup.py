@@ -27,7 +27,10 @@ install_requires = [
 plots_requires = ["seaborn", "rliable>=1.0.5", "scipy~=1.10"]
 test_requires = [
     "pytest",
-    "pytablewriter",  # needed for test_enjoy.test_benchmark
+    "parameterized",
+    "pytablewriter",  # required for test_enjoy.test_benchmark
+    'gymnasium[mujoco]',  # required for test_wrappers, test_get_wrapper, test_get_vec_env_wrapper
+    "minigrid"
 ]
 
 setup(
