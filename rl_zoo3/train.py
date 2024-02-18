@@ -159,7 +159,7 @@ def train() -> None:
 
     args = parser.parse_args()
 
-    # Going through custom gym packages to let them register in the global registory
+    # Going through custom gym packages to let them register in the global registry
     for env_module in args.gym_packages:
         importlib.import_module(env_module)
 
