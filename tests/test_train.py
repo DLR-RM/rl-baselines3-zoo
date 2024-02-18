@@ -15,12 +15,7 @@ ALGOS = ("ppo", "a2c", "dqn")
 # 'BreakoutNoFrameskip-v4'
 ENV_IDS = ("CartPole-v1",)
 
-experiments = {}
-
-for algo in ALGOS:
-    for env_id in ENV_IDS:
-        experiments[f"{algo}-{env_id}"] = (algo, env_id)
-
+experiments = {f"{algo}-{env_id}": (algo, env_id) for algo in ALGOS for env_id in ENV_IDS}
 # Test for vecnormalize and frame-stack
 experiments["ppo-BipedalWalkerHardcore-v3"] = ("ppo", "BipedalWalkerHardcore-v3")
 # Test for SAC

@@ -14,6 +14,21 @@ long_description = """
 
 See https://github.com/DLR-RM/rl-baselines3-zoo
 """
+install_requires = [
+    "sb3_contrib>=2.3.0a1,<3.0",
+    "gymnasium~=0.29.1",
+    "huggingface_sb3>=3.0,<4.0",
+    "tqdm",
+    "rich",
+    "optuna>=3.0",
+    "pyyaml>=5.1",
+    "pytablewriter~=1.2",
+]
+plots_requires = ["seaborn", "rliable>=1.0.5", "scipy~=1.10"]
+test_requires = [
+    "pytest",
+    "pytablewriter",  # needed for test_enjoy.test_benchmark
+]
 
 setup(
     name="rl_zoo3",
@@ -26,20 +41,8 @@ setup(
         ]
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
-    install_requires=[
-        "sb3_contrib>=2.3.0a1,<3.0",
-        "gymnasium~=0.29.1",
-        "huggingface_sb3>=3.0,<4.0",
-        "tqdm",
-        "rich",
-        "optuna>=3.0",
-        "pyyaml>=5.1",
-        "pytablewriter~=1.2",
-        # TODO: add test dependencies
-    ],
-    extras_require={
-        "plots": ["seaborn", "rliable>=1.0.5", "scipy~=1.10"],
-    },
+    install_requires=install_requires,
+    extras_require={"plots": plots_requires, "test": test_requires},
     description="A Training Framework for Stable Baselines3 Reinforcement Learning Agents",
     author="Antonin Raffin",
     url="https://github.com/DLR-RM/rl-baselines3-zoo",

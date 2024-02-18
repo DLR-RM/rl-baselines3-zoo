@@ -4,6 +4,7 @@ Min score corresponds to random agent.
 Max score corresponds to acceptable performance, for instance
 human level performance in the case of Atari games.
 """
+
 from typing import NamedTuple
 
 import numpy as np
