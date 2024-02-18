@@ -9,8 +9,10 @@
 
 
 ### Bug fixes
+- Added test dependencies to `setup.py`
 
 ### Documentation
+- Added README to tests
 
 ### Other
 
