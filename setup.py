@@ -26,10 +26,10 @@ install_requires = [
 ]
 plots_requires = ["seaborn", "rliable>=1.0.5", "scipy~=1.10"]
 test_requires = [
-    "pytest",
-    "pytablewriter",
-    "gymnasium[mujoco]",
-    "minigrid",
+    # for MuJoCo envs v4:
+    "mujoco~=2.3",
+    # install parking-env to test HER
+    "highway-env==1.8.2",
 ]
 
 setup(
@@ -44,7 +44,7 @@ setup(
     },
     entry_points={"console_scripts": ["rl_zoo3=rl_zoo3.cli:main"]},
     install_requires=install_requires,
-    extras_require={"plots": plots_requires, "test": test_requires},
+    extras_require={"plots": plots_requires, "tests": test_requires},
     description="A Training Framework for Stable Baselines3 Reinforcement Learning Agents",
     author="Antonin Raffin",
     url="https://github.com/DLR-RM/rl-baselines3-zoo",
