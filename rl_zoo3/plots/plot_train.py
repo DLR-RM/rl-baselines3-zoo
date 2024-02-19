@@ -1,6 +1,7 @@
 """
 Plot training reward/success rate
 """
+
 import argparse
 import os
 

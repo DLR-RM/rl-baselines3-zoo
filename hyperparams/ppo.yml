@@ -297,7 +297,7 @@ MiniGrid-Empty-Random-5x5-v0: &minigrid-defaults
   gae_lambda: 0.95 #  Factor for trade-off of bias vs variance for Generalized Advantage Estimator
   gamma: 0.99
   n_epochs: 10 #  Number of epoch when optimizing the surrogate
-  ent_coef: 0.0 # Entropy coefficient for the loss caculation
+  ent_coef: 0.0 # Entropy coefficient for the loss calculation
   learning_rate: 2.5e-4 # The learning rate, it can be a function
   clip_range: 0.2 # Clipping parameter, it can be a function
 

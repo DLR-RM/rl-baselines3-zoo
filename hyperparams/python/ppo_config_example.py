@@ -1,5 +1,6 @@
 """This file just serves as an example on how to configure the zoo
 using python scripts instead of yaml files."""
+
 import torch
 
 hyperparams = {
