@@ -1,4 +1,4 @@
-## Release 2.3.0a1 (WIP)
+## Release 2.3.0a2 (WIP)
 
 ### Breaking Changes
 - Updated defaults hyperparameters for TD3/DDPG to be more consistent with SAC
@@ -9,7 +9,7 @@
 
 
 ### Bug fixes
-- Added test dependencies to `setup.py`
+- Added test dependencies to `setup.py` (@power-edge)
 
 ### Documentation
 - Added README to tests
