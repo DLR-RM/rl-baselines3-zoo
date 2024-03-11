@@ -6,6 +6,9 @@ import pytest
 
 from rl_zoo3.utils import get_hf_trained_models, get_trained_models
 
+# Test models from sb3 organization can be trusted
+os.environ["TRUST_REMOTE_CODE"] = "True"
+
 
 def _assert_eq(left, right):
     assert left == right, f"{left} != {right}"
