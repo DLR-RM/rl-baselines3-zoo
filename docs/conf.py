@@ -10,7 +10,8 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
+import datetime
 import os
 import sys
 from typing import Dict
@@ -44,7 +45,7 @@ with open(version_file) as file_handler:
 # -- Project information -----------------------------------------------------
 
 project = "RL Baselines3 Zoo"
-copyright = "2023, Stable Baselines3"
+copyright = f"2021-{datetime.date.today().year}, Stable Baselines3"
 author = "Stable Baselines3 Contributors"
 
 # The short X.Y version

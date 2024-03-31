@@ -15,7 +15,7 @@ long_description = """
 See https://github.com/DLR-RM/rl-baselines3-zoo
 """
 install_requires = [
-    "sb3_contrib>=2.3.0a4,<3.0",
+    "sb3_contrib>=2.3.0,<3.0",
     "gymnasium~=0.29.1",
     "huggingface_sb3>=3.0,<4.0",
     "tqdm",
@@ -76,9 +76,3 @@ setup(
 
 # Remove copied files after packaging
 shutil.rmtree(os.path.join("rl_zoo3", "hyperparams"))
-
-
-# python setup.py sdist
-# python setup.py bdist_wheel
-# twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-# twine upload dist/*

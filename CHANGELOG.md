@@ -1,4 +1,4 @@
-## Release 2.3.0a4 (WIP)
+## Release 2.3.0 (2024-03-31)
 
 ### Breaking Changes
 - Updated defaults hyperparameters for TD3/DDPG to be more consistent with SAC
