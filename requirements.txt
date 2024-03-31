@@ -1,5 +1,5 @@
 gym==0.26.2
-stable-baselines3[extra_no_roms,tests,docs]>=2.3.0a4,<3.0
+stable-baselines3[extra_no_roms,tests,docs]>=2.3.0,<3.0
 box2d-py==2.3.8
 pybullet_envs_gymnasium>=0.4.0
 # minigrid
