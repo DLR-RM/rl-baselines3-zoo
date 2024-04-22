@@ -285,7 +285,7 @@ def train() -> None:
             exp_manager.save_trained_model(model)
     else:
         exp_manager.hyperparameters_optimization()
-    
+
     track.finish_tracking()
 
 
