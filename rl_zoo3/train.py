@@ -142,10 +142,23 @@ def parse_args():
         "--track",
         action="store_true",
         default=False,
-        help="if toggled, this experiment will be tracked with Weights and Biases",
+        help="if toggled, this experiment will be tracked with external ML platform",
+    )
+    parser.add_argument(
+        "--track-backend",
+        default="wandb",
+        choices=[
+            "wandb",
+            "mlflow",
+        ],
+        help="select ML platform for tracking experiments",
     )
     parser.add_argument("--wandb-project-name", type=str, default="sb3", help="the wandb's project name")
     parser.add_argument("--wandb-entity", type=str, default=None, help="the entity (team) of wandb's project")
+    parser.add_argument("--mlflow-experiment-name", type=str, default="sb3", help="the mlflow's experiment name")
+    parser.add_argument(
+        "--mlflow-tracking-uri", type=str, default="http://127.0.0.1:8080", help="the uri of the mlflow server"
+    )
     parser.add_argument(
         "-P",
         "--progress",
@@ -155,6 +168,18 @@ def parse_args():
     )
     parser.add_argument(
         "-tags", "--wandb-tags", type=str, default=[], nargs="+", help="Tags for wandb run, e.g.: -tags optimized pr-123"
+    )
+
+    def parse_json_tags(json_str):
+        if json_str is None or not len(json_str):
+            return dict()
+        return json.loads(json_str)
+
+    parser.add_argument(
+        "--mlflow-tags",
+        type=parse_json_tags,
+        default=None,
+        help='Extra args for mlflow experiment provided as JSON string e.g.: --mlflow-tags \'{"Optimized": "true", "Name": "Value"}\')',
     )
 
     return parser.parse_args()
