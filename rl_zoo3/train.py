@@ -4,10 +4,10 @@ import importlib
 import os
 import time
 import uuid
+import json
 
 import gymnasium as gym
 import numpy as np
-import stable_baselines3 as sb3
 import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
@@ -15,6 +15,7 @@ from stable_baselines3.common.utils import set_random_seed
 import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
+import rl_zoo3.track as track
 
 
 def parse_args():
@@ -226,26 +227,9 @@ def train() -> None:
     print(f"Seed: {args.seed}")
 
     if args.track:
-        try:
-            import wandb
-        except ImportError as e:
-            raise ImportError(
-                "if you want to use Weights & Biases to track experiment, please install W&B via `pip install wandb`"
-            ) from e
-
-        run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
-        tags = [*args.wandb_tags, f"v{sb3.__version__}"]
-        run = wandb.init(
-            name=run_name,
-            project=args.wandb_project_name,
-            entity=args.wandb_entity,
-            tags=tags,
-            config=vars(args),
-            sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
-            monitor_gym=True,  # auto-upload the videos of agents playing the game
-            save_code=True,  # optional
-        )
-        args.tensorboard_log = f"runs/{run_name}"
+        args.run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
+        args.tensorboard_log = f"runs/{args.run_name}"
+        track.setup_tracking(args)
 
     exp_manager = ExperimentManager(
         args,
@@ -293,8 +277,7 @@ def train() -> None:
         if args.track:
             # we need to save the loaded hyperparameters
             args.saved_hyperparams = saved_hyperparams
-            assert run is not None  # make mypy happy
-            run.config.setdefaults(vars(args))
+            track.log_params(args)
 
         # Normal training
         if model is not None:
@@ -302,6 +285,8 @@ def train() -> None:
             exp_manager.save_trained_model(model)
     else:
         exp_manager.hyperparameters_optimization()
+    
+    track.finish_tracking()
 
 
 if __name__ == "__main__":
