@@ -17,7 +17,7 @@ from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
 
 
-def train() -> None:
+def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
@@ -157,7 +157,11 @@ def train() -> None:
         "-tags", "--wandb-tags", type=str, default=[], nargs="+", help="Tags for wandb run, e.g.: -tags optimized pr-123"
     )
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def train() -> None:
+    args = parse_args()
 
     # Going through custom gym packages to let them register in the global registry
     for env_module in args.gym_packages:
