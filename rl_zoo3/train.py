@@ -4,7 +4,6 @@ import importlib
 import os
 import time
 import uuid
-import json
 
 import gymnasium as gym
 import numpy as np
@@ -140,27 +139,6 @@ def parse_args():
     )
     parser.add_argument("-uuid", "--uuid", action="store_true", default=False, help="Ensure that the run has a unique ID")
     parser.add_argument(
-        "--track",
-        action="store_true",
-        default=False,
-        help="if toggled, this experiment will be tracked with external ML platform",
-    )
-    parser.add_argument(
-        "--track-backend",
-        default="wandb",
-        choices=[
-            "wandb",
-            "mlflow",
-        ],
-        help="select ML platform for tracking experiments",
-    )
-    parser.add_argument("--wandb-project-name", type=str, default="sb3", help="the wandb's project name")
-    parser.add_argument("--wandb-entity", type=str, default=None, help="the entity (team) of wandb's project")
-    parser.add_argument("--mlflow-experiment-name", type=str, default="sb3", help="the mlflow's experiment name")
-    parser.add_argument(
-        "--mlflow-tracking-uri", type=str, default="http://mlflow:5000", help="the uri of the mlflow server"
-    )
-    parser.add_argument(
         "-P",
         "--progress",
         action="store_true",
@@ -168,22 +146,14 @@ def parse_args():
         help="if toggled, display a progress bar using tqdm and rich",
     )
     parser.add_argument(
-        "-tags", "--wandb-tags", type=str, default=[], nargs="+", help="Tags for wandb run, e.g.: -tags optimized pr-123"
+        "--track",
+        action="store_true",
+        default=False,
+        help="if toggled, this experiment will be tracked with external ML platform",
     )
-
-    def parse_json_tags(json_str):
-        if json_str is None or not len(json_str):
-            return dict()
-        return json.loads(json_str)
-
-    parser.add_argument(
-        "--mlflow-tags",
-        type=parse_json_tags,
-        default=dict(),
-        help='Extra args for mlflow experiment provided as JSON string e.g.: --mlflow-tags \'{"Optimized": "true", "Name": "Value"}\')',
-    )
-
-    return parser.parse_args()
+    track.argparse_add_track_arguments(parser)
+    parsed_args = parser.parse_args()
+    return track.argparse_filter_track_args(parsed_args)
 
 
 def train() -> None:
