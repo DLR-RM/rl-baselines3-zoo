@@ -158,7 +158,7 @@ def parse_args():
     parser.add_argument("--wandb-entity", type=str, default=None, help="the entity (team) of wandb's project")
     parser.add_argument("--mlflow-experiment-name", type=str, default="sb3", help="the mlflow's experiment name")
     parser.add_argument(
-        "--mlflow-tracking-uri", type=str, default="http://127.0.0.1:8080", help="the uri of the mlflow server"
+        "--mlflow-tracking-uri", type=str, default="http://mlflow:5000", help="the uri of the mlflow server"
     )
     parser.add_argument(
         "-P",
@@ -179,7 +179,7 @@ def parse_args():
     parser.add_argument(
         "--mlflow-tags",
         type=parse_json_tags,
-        default=None,
+        default=dict(),
         help='Extra args for mlflow experiment provided as JSON string e.g.: --mlflow-tags \'{"Optimized": "true", "Name": "Value"}\')',
     )
 
