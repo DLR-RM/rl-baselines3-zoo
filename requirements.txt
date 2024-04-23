@@ -8,5 +8,6 @@ cloudpickle>=2.2.1
 plotly
 # need to upgrade to gymnasium:
 # panda-gym~=3.0.1
-wandb
+# TODO: restore for wandb logging
+#wandb
 moviepy
