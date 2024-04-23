@@ -196,10 +196,12 @@ def train() -> None:
     print("=" * 10, env_id, "=" * 10)
     print(f"Seed: {args.seed}")
 
+    sb3_logger = None
     if args.track:
         args.run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
         args.tensorboard_log = f"runs/{args.run_name}"
         track.setup_tracking(args)
+        sb3_logger = track.get_sb3_logger(verbose=False)
 
     exp_manager = ExperimentManager(
         args,
@@ -238,6 +240,7 @@ def train() -> None:
         device=args.device,
         config=args.conf_file,
         show_progress=args.progress,
+        logger=sb3_logger,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
@@ -256,6 +259,8 @@ def train() -> None:
     else:
         exp_manager.hyperparameters_optimization()
 
+    track.log_artifacts_directory(exp_manager.save_path)
+    track.log_artifacts_directory(local_dir=os.environ["PROJECT_DOCKERFILE_DIR"], artifacts_dir="docker")
     track.finish_tracking()
 
 

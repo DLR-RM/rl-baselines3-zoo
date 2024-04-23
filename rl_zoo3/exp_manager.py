@@ -1,6 +1,7 @@
 import argparse
 import importlib
 import os
+import sys
 import pickle as pkl
 import time
 import warnings
@@ -22,6 +23,7 @@ from optuna.study import MaxTrialsCallback
 from optuna.trial import TrialState
 from optuna.visualization import plot_optimization_history, plot_param_importances
 from sb3_contrib.common.vec_env import AsyncEval
+from stable_baselines3.common.logger import Logger, HumanOutputFormat
 
 # For using HER with GoalEnv
 from stable_baselines3 import HerReplayBuffer
@@ -98,6 +100,7 @@ class ExperimentManager:
         device: Union[th.device, str] = "auto",
         config: Optional[str] = None,
         show_progress: bool = False,
+        logger: Logger = None,
     ):
         super().__init__()
         self.algo = algo
@@ -172,6 +175,12 @@ class ExperimentManager:
         self.log_interval = log_interval
         self.save_replay_buffer = save_replay_buffer
         self.show_progress = show_progress
+        self.logger = logger
+        if logger is None:
+            self.logger = Logger(
+                folder=None,
+                output_formats=[HumanOutputFormat(sys.stdout)],
+            )
 
         self.log_path = f"{log_folder}/{self.algo}/"
         self.save_path = os.path.join(
@@ -237,6 +246,7 @@ class ExperimentManager:
             )
 
         try:
+            model.set_logger(self.logger)
             model.learn(self.n_timesteps, **kwargs)
         except KeyboardInterrupt:
             # this allows to save the model when interrupting training
