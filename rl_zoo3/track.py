@@ -175,15 +175,19 @@ def log_artifacts_directory(local_dir: str, artifacts_dir: str = None) -> None:
         MLFLOW.log_artifacts(local_dir=local_dir, artifact_path=artifacts_dir)
 
 
-def log_params(args) -> None:
+def log_params(params) -> None:
     global INITALIZED
     if not INITALIZED:
         return
+
+    params_dict = params
+    if not isinstance(params, dict):
+        params_dict = vars(params)
 
     global BACKEND
     if BACKEND == BACKEND_WANDB:
         global WANDB_RUN
         assert WANDB_RUN is not None  # make mypy happy
-        WANDB_RUN.config.setdefaults(vars(args))
+        WANDB_RUN.config.setdefaults(params_dict)
     elif BACKEND == BACKEND_MLFLOW:
-        MLFLOW.log_params(vars(args))
+        MLFLOW.log_params(params_dict)
