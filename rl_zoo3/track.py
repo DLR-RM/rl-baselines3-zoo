@@ -83,7 +83,7 @@ def setup_tracking(args) -> None:
         return
     INITALIZED = True
 
-    tracking_commit_hashes = {f"version/{k}":v for k, v in track_git_repos().items()}
+    tracking_commit_hashes = {f"version/{k}": v for k, v in track_git_repos().items()}
 
     BACKEND = args.track_backend
     if BACKEND == BACKEND_WANDB:
@@ -130,6 +130,10 @@ def _setup_mlflow(args, tracking_commit_hashes: Dict[str, str]) -> None:
     global MLFLOW
     MLFLOW = mlflow
 
+    logname = os.environ["LOGNAME"]
+    logging_user_name = f"{os.environ['HOST_USER_NAME']}@{os.environ['HOST_MACHINE_NAME']}"
+    os.environ["LOGNAME"] = logging_user_name
+
     tags = {}
     tags.update(tracking_commit_hashes)
     tags.update(_get_tags_as_dict())
@@ -144,6 +148,7 @@ def _setup_mlflow(args, tracking_commit_hashes: Dict[str, str]) -> None:
         log_system_metrics=True,
     )
     mlflow.set_tags(tags)
+    os.environ["LOGNAME"] = logname
 
 
 def _get_tags_as_dict() -> Dict[str, str]:
