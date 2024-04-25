@@ -1,11 +1,17 @@
 import argparse
 import json
-import sys
 import os
+import sys
+from typing import Dict, Any
+
+import sb3_contrib
 import stable_baselines3 as sb3
-import rl_zoo3
 from stable_baselines3.common.logger import Logger, HumanOutputFormat
+
+import rl_zoo3
+from rl_zoo3.git_tools import track_git_repos
 from rl_zoo3.mlflow import MLflowOutputFormat
+
 
 INITALIZED = False
 BACKEND = None
@@ -77,16 +83,18 @@ def setup_tracking(args) -> None:
         return
     INITALIZED = True
 
+    tracking_commit_hashes = {f"version/{k}":v for k, v in track_git_repos().items()}
+
     BACKEND = args.track_backend
     if BACKEND == BACKEND_WANDB:
-        _setup_wandb(args)
+        _setup_wandb(args, tracking_commit_hashes)
     elif BACKEND == BACKEND_MLFLOW:
-        _setup_mlflow(args)
+        _setup_mlflow(args, tracking_commit_hashes)
     else:
         raise ImportError(f"if you want to track model data, please select one of the valid backends: '{BACKENDS_LIST}'")
 
 
-def _setup_wandb(args) -> None:
+def _setup_wandb(args, tracking_commit_hashes: Dict[str, str]) -> None:
     try:
         import wandb
     except ImportError as e:
@@ -96,7 +104,9 @@ def _setup_wandb(args) -> None:
 
     assert "wandb_entity" in vars(args), "Missing W&B entity (--wandb-entity)."
 
-    tags = [*args.wandb_tags, f"v{sb3.__version__}"]
+    tags = set([f"{k}-{v}" for k, v in tracking_commit_hashes.items()])
+    tags.update([f"{k}-{v}" for k, v in _get_tags_as_dict().items()])
+
     global WANDB_RUN
     WANDB_RUN = wandb.init(
         name=args.run_name,
@@ -110,7 +120,7 @@ def _setup_wandb(args) -> None:
     )
 
 
-def _setup_mlflow(args) -> None:
+def _setup_mlflow(args, tracking_commit_hashes: Dict[str, str]) -> None:
     try:
         import mlflow
     except ImportError as e:
@@ -120,11 +130,9 @@ def _setup_mlflow(args) -> None:
     global MLFLOW
     MLFLOW = mlflow
 
-    tags = {
-        "SB3_version": f"v{sb3.__version__}",
-        "rl_zoo3_version": f"v{rl_zoo3.__version__}",
-        "docker_image_hash": os.environ["DOCKER_IMAGE_HASH"],
-    }
+    tags = {}
+    tags.update(tracking_commit_hashes)
+    tags.update(_get_tags_as_dict())
     tags.update(args.mlflow_tags)
 
     mlflow.set_tracking_uri(uri=args.mlflow_tracking_uri)
@@ -136,6 +144,15 @@ def _setup_mlflow(args) -> None:
         log_system_metrics=True,
     )
     mlflow.set_tags(tags)
+
+
+def _get_tags_as_dict() -> Dict[str, str]:
+    return {
+        "version/SB3": f"v{sb3.__version__}",
+        "version/sb3_contrib": f"v{sb3_contrib.__version__}",
+        "version/rl_zoo3": f"v{rl_zoo3.__version__}",
+        "version/docker_image_hash": os.environ["DOCKER_IMAGE_HASH"],
+    }
 
 
 def get_sb3_logger(verbose: bool = False) -> Logger:
