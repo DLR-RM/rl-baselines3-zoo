@@ -260,7 +260,6 @@ def train() -> None:
         exp_manager.hyperparameters_optimization()
 
     track.log_artifacts_directory(exp_manager.save_path)
-    track.log_artifacts_directory(local_dir=os.environ["PROJECT_DOCKERFILE_DIR"], artifacts_dir="docker")
     track.finish_tracking()
 
 
