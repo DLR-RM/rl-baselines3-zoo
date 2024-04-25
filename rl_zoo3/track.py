@@ -65,7 +65,6 @@ def argparse_filter_track_args(parsed_args):
     elif parsed_args.track_backend == BACKEND_MLFLOW:
         del parsed_args.wandb_entity
         del parsed_args.wandb_project_name
-        del parsed_args.wandb_entity
         del parsed_args.wandb_tags
     return parsed_args
 
