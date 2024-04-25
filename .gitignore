@@ -42,3 +42,4 @@ env.bak/
 venv.bak/
 
 .ipynb_checkpoints/
+DONT_TRACK
