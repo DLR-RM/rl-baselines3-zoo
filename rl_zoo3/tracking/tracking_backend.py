@@ -13,16 +13,16 @@ from stable_baselines3.common.logger import Logger
 
 class TrackingBackend(ABC):
     implemented_backends: Dict[str, "TrackingBackend"] = {}
+    tracking_commit_hashes = {f"version/{k}": v for k, v in track_git_repos().items()}
+    version_tags = {
+        "version/SB3": f"v{sb3.__version__}",
+        "version/sb3_contrib": f"v{sb3_contrib.__version__}",
+        "version/rl_zoo3": f"v{rl_zoo3.__version__}",
+        "version/docker_image_hash": os.environ["DOCKER_IMAGE_HASH"],
+    }
 
     def __init__(self):
         self.initalized = False
-        self._tracking_commit_hashes = {f"version/{k}": v for k, v in track_git_repos().items()}
-        self._version_tags = {
-            "version/SB3": f"v{sb3.__version__}",
-            "version/sb3_contrib": f"v{sb3_contrib.__version__}",
-            "version/rl_zoo3": f"v{rl_zoo3.__version__}",
-            "version/docker_image_hash": os.environ["DOCKER_IMAGE_HASH"],
-        }
 
     def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
@@ -63,10 +63,10 @@ class TrackingBackend(ABC):
         return self.initalized
 
     def get_tracking_commit_hashes(self) -> Dict[str, str]:
-        return self._tracking_commit_hashes
+        return TrackingBackend.tracking_commit_hashes
 
     def get_version_tags(self) -> Dict[str, str]:
-        return self._version_tags
+        return TrackingBackend.version_tags
 
     def setup_tracking(self, args) -> None:
         if self.is_initalized():
