@@ -14,7 +14,7 @@ from stable_baselines3.common.utils import set_random_seed
 import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
-import rl_zoo3.track as track
+import rl_zoo3.tracking as track
 
 
 def parse_args():
@@ -153,7 +153,8 @@ def parse_args():
     )
     track.argparse_add_track_arguments(parser)
     parsed_args = parser.parse_args()
-    return track.argparse_filter_track_args(parsed_args)
+    track.argparse_filter_track_arguments(parsed_args)
+    return parsed_args
 
 
 def train() -> None:
@@ -198,10 +199,11 @@ def train() -> None:
 
     sb3_logger = None
     if args.track:
+        tracker = track.TrackingBackend.get_tracker(args.track_backend)
         args.run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
         args.tensorboard_log = f"runs/{args.run_name}"
-        track.setup_tracking(args)
-        sb3_logger = track.get_sb3_logger(verbose=False)
+        tracker.setup_tracking(args)
+        sb3_logger = tracker.get_sb3_logger(verbose=False)
 
     exp_manager = ExperimentManager(
         args,
@@ -250,7 +252,7 @@ def train() -> None:
         if args.track:
             # we need to save the loaded hyperparameters
             args.saved_hyperparams = saved_hyperparams
-            track.log_params(args)
+            tracker.log_params(args)
 
         # Normal training
         if model is not None:
@@ -259,8 +261,8 @@ def train() -> None:
     else:
         exp_manager.hyperparameters_optimization()
 
-    track.log_artifacts_directory(exp_manager.save_path)
-    track.finish_tracking()
+    tracker.log_directory(exp_manager.save_path)
+    tracker.finish_tracking()
 
 
 if __name__ == "__main__":

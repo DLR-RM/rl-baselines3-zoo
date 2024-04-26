@@ -49,7 +49,10 @@ def track_git_repos(working_path: Path | None = None) -> Dict[str, str]:
             continue
 
         if repo.is_dirty():
-            raise UncommittedChangesError(f"The repository {p} have uncomitted changes.")
+            raise UncommittedChangesError(
+                f"The repository {p} has uncomitted changes. "
+                f"If you want to ommit this repository from tracking, create a new empty file '{IGNORE_REPO_FILENAME}' inside it."
+            )
         git_repos_commits[p.name] = repo.head.commit.hexsha
 
     return git_repos_commits
