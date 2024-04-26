@@ -9,6 +9,7 @@ __all__ = [
     "TrackingBackend",
 ]
 
+# Automatic detection of available ML tracking packages
 try:
     from rl_zoo3.tracking.wandb import WandbBackend
 
