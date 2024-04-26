@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Dict, Any
+from typing import Dict
 
 import wandb
 from stable_baselines3.common.logger import Logger, HumanOutputFormat
