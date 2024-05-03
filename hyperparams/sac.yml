@@ -209,7 +209,7 @@ Humanoid-v4:
 
 Swimmer-v4:
   <<: *mujoco-defaults
-  gamma: 0.9999
+  gamma: 0.999
 
 # === HER Robotics GoalEnvs ===
 
