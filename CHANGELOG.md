@@ -4,6 +4,7 @@
 - Updated defaults hyperparameters for TQC/SAC for Swimmer-v4 (decrease gamma for more consistent results) (@JacobHA) [W&B report](https://wandb.ai/openrlbenchmark/sbx/reports/SAC-MuJoCo-Swimmer-v4--Vmlldzo3NzM5OTk2)
 
 ### New Features
+- Added `CrossQ` hyperparameters for SB3-contrib
 
 ### Bug fixes
 
