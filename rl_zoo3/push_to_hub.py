@@ -265,7 +265,7 @@ def package_to_hub(
     save_model_card(repo_local_path, generated_model_card, metadata)
 
     msg.info(f"Pushing repo {repo_name} to the Hugging Face Hub")
-    api.upload_folder(repo_id=repo_id, folder_path=local_repo_path, commit_message=commit_message)
+    api.upload_folder(repo_id=repo_id, folder_path=repo_local_path, commit_message=commit_message)
     msg.info(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
     return repo_url
 
