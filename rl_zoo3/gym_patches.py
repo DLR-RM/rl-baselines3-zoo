@@ -2,6 +2,7 @@
 Patches for gym 0.26+ so RL Zoo3 keeps working as before
 (notably TimeLimit wrapper and Pybullet envs)
 """
+
 from typing import Any, Dict
 
 import numpy as np
