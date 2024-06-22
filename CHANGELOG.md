@@ -10,6 +10,8 @@
 
 ### Bug fixes
 - Renamed ``CarRacing-v1`` to ``CarRacing-v2`` in hyperparameters
+- Replaced deprecated use of `Repository` when pushing to huggingface hub by the
+  recommended `HfApi` (see https://huggingface.co/docs/huggingface_hub/concepts/git_vs_http).
 
 ## Release 1.8.0 (2023-04-07)
 
