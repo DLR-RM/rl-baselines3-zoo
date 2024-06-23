@@ -6,6 +6,8 @@
 ### New Features
 
 ### Bug fixes
+- Replaced deprecated use of `Repository` when pushing to huggingface hub by the
+  recommended `HfApi` (see https://huggingface.co/docs/huggingface_hub/concepts/git_vs_http).
 
 ### Documentation
 
@@ -91,6 +93,7 @@
 - Renamed `CarRacing-v1` to `CarRacing-v2` in hyperparameters
 - Huggingface push to hub now accepts a `--n-timesteps` argument to adjust the length of the video
 - Fixed `record_video` steps (before it was stepping in a closed env)
+
 
 ## Release 1.8.0 (2023-04-07)
 
