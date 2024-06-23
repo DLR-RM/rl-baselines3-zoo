@@ -126,9 +126,6 @@ def enjoy() -> None:  # noqa: C901
     # Off-policy algorithm only support one env for now
     off_policy_algos = ["qrdqn", "dqn", "ddpg", "sac", "her", "td3", "tqc"]
 
-    if algo in off_policy_algos:
-        args.n_envs = 1
-
     set_random_seed(args.seed)
 
     if args.num_threads > 0:
@@ -147,7 +144,7 @@ def enjoy() -> None:  # noqa: C901
     args_path = os.path.join(log_path, env_name, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path) as f:
-            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)  # pytype: disable=module-attr
+            loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)
             if loaded_args["env_kwargs"] is not None:
                 env_kwargs = loaded_args["env_kwargs"]
     # overwrite with command line arguments

@@ -20,13 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -40,16 +40,11 @@ jobs:
         AutoROM --accept-license --source-file Roms.tar.gz
 
         # cpu version of pytorch - faster to download
-        pip install torch==1.11.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
-        pip install pybullet==3.2.5
+        pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
-        pip install highway-env==1.8.1
-        # Add support for pickle5 protocol
-        # TODO: remove me when dropping python 3.7
-        pip install pickle5
-        pip install -e .
+        pip install -e .[plots,tests]
     - name: Check trained agents
       run: |
         make check-trained-agents

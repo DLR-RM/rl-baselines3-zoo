@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, SupportsFloat, Tuple
+from typing import Any, ClassVar, Dict, Optional, SupportsFloat, Tuple
 
 import gymnasium as gym
 import numpy as np
@@ -131,7 +131,7 @@ class HistoryWrapper(gym.Wrapper[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
     Stack past observations and actions to give an history to the agent.
 
     :param env:
-    :param horizon:Number of steps to keep in the history.
+    :param horizon: Number of steps to keep in the history.
     """
 
     def __init__(self, env: gym.Env, horizon: int = 2):
@@ -299,7 +299,7 @@ class MaskVelocityWrapper(gym.ObservationWrapper):
     """
 
     # Supported envs
-    velocity_indices = {
+    velocity_indices: ClassVar[Dict[str, np.ndarray]] = {
         "CartPole-v1": np.array([1, 3]),
         "MountainCar-v0": np.array([1]),
         "MountainCarContinuous-v0": np.array([1]),

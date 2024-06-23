@@ -1,5 +1,6 @@
 import glob
 import os
+import shlex
 import subprocess
 
 import optuna
@@ -32,6 +33,8 @@ experiments["td3-Pendulum-v1"] = ("td3", "Pendulum-v1")
 experiments["tqc-parking-v0"] = ("tqc", "parking-v0")
 # Test for TQC
 experiments["tqc-Pendulum-v1"] = ("tqc", "Pendulum-v1")
+# Test for RecurrentPPO (ppo_lstm)
+experiments["ppo_lstm-CartPoleNoVel-v1"] = ("ppo_lstm", "CartPoleNoVel-v1")
 
 
 @pytest.mark.parametrize("sampler", ["random", "tpe"])
@@ -44,30 +47,14 @@ def test_optimize(tmp_path, sampler, pruner, experiment):
     if algo not in {"a2c", "ppo"} and not (sampler == "random" and pruner == "median"):
         pytest.skip("Skipping slow tests")
 
-    args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id, "-params", 'policy_kwargs:"dict(net_arch=[32])"', "n_envs:1"]
-    args += ["n_steps:10"] if algo == "ppo" else []
-    args += [
-        "--no-optim-plots",
-        "--seed",
-        "14",
-        "--log-folder",
-        tmp_path,
-        "--n-trials",
-        str(N_TRIALS),
-        "--n-jobs",
-        str(N_JOBS),
-        "--sampler",
-        sampler,
-        "--pruner",
-        pruner,
-        "--n-evaluations",
-        str(2),
-        "--n-startup-trials",
-        str(1),
-        "-optimize",
-    ]
-
-    return_code = subprocess.call(["python", "train.py", *args])
+    maybe_params = "n_steps:10" if algo == "ppo" else ""
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
+        f"-params policy_kwargs:'dict(net_arch=[32])' {maybe_params} "
+        f"--no-optim-plots --seed 14 --n-trials {N_TRIALS} --n-jobs {N_JOBS} "
+        f"--sampler {sampler} --pruner {pruner} --n-evaluations 2 --n-startup-trials 1 -optimize"
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
@@ -77,51 +64,31 @@ def test_optimize_log_path(tmp_path):
     pruner = "median"
     optimization_log_path = str(tmp_path / "optim_logs")
 
-    args = ["-n", str(N_STEPS), "--algo", algo, "--env", env_id, "-params", 'policy_kwargs:"dict(net_arch=[32])"', "n_envs:1"]
-    args += [
-        "--seed",
-        "14",
-        "--log-folder",
-        tmp_path,
-        "--n-trials",
-        str(N_TRIALS),
-        "--n-jobs",
-        str(N_JOBS),
-        "--sampler",
-        sampler,
-        "--pruner",
-        pruner,
-        "--n-evaluations",
-        str(2),
-        "--n-startup-trials",
-        str(1),
-        "--optimization-log-path",
-        optimization_log_path,
-        "-optimize",
-    ]
-
-    return_code = subprocess.call(["python", "train.py", *args])
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
+        f"-params policy_kwargs:'dict(net_arch=[32])' "
+        f"--no-optim-plots --seed 14 --n-trials {N_TRIALS} --n-jobs {N_JOBS} "
+        f"--sampler {sampler} --pruner {pruner} --n-evaluations 2 --n-startup-trials 1 "
+        f"--optimization-log-path {optimization_log_path} -optimize"
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
+
     print(optimization_log_path)
     assert os.path.isdir(optimization_log_path)
     # Log folder of the first trial
     assert os.path.isdir(os.path.join(optimization_log_path, "trial_1"))
     assert os.path.isfile(os.path.join(optimization_log_path, "trial_1", "evaluations.npz"))
 
-    study_path = list(glob.glob(str(tmp_path / algo / "report_*.pkl")))[0]
+    study_path = next(iter(glob.glob(str(tmp_path / algo / "report_*.pkl"))))
     print(study_path)
     # Test reading best trials
-    args = [
-        "-i",
-        study_path,
-        "--print-n-best-trials",
-        str(N_TRIALS),
-        "--save-n-best-hyperparameters",
-        str(N_TRIALS),
-        "-f",
-        str(tmp_path / "best_hyperparameters"),
-    ]
-    return_code = subprocess.call(["python", "scripts/parse_study.py", *args])
+    cmd = (
+        "python scripts/parse_study.py "
+        f"-i {study_path} --print-n-best-trials {N_TRIALS} "
+        f"--save-n-best-hyperparameters {N_TRIALS} -f {tmp_path / 'best_hyperparameters'}"
+    )
+    return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
 
 
@@ -136,39 +103,17 @@ def test_multiple_workers(tmp_path):
     # 2nd worker will do 1 trial
     # 3rd worker will do nothing
     n_workers = 3
-    args = [
-        "-optimize",
-        "--no-optim-plots",
-        "--storage",
-        storage,
-        "--n-trials",
-        str(n_trials),
-        "--max-total-trials",
-        str(max_trials),
-        "--study-name",
-        study_name,
-        "--n-evaluations",
-        str(1),
-        "-n",
-        str(100),
-        "--algo",
-        "a2c",
-        "--env",
-        "Pendulum-v1",
-        "--log-folder",
-        tmp_path,
-        "-params",
-        "n_envs:1",
-        "--seed",
-        "12",
-    ]
+    cmd = (
+        f"python train.py -n 100 --algo a2c --env Pendulum-v1 --log-folder {tmp_path} "
+        "-params n_envs:1 --n-evaluations 1 "
+        f"--no-optim-plots --seed 12 --n-trials {n_trials} --max-total-trials {max_trials} "
+        f"--storage {storage} --study-name {study_name} --no-optim-plots  -optimize"
+    )
 
     # Sequencial execution to avoid race conditions
     workers = []
     for _ in range(n_workers):
-        worker = subprocess.Popen(
-            ["python", "train.py", *args], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
-        )
+        worker = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         worker.wait()
         workers.append(worker)
 

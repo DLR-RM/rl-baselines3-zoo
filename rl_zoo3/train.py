@@ -5,7 +5,6 @@ import os
 import time
 import uuid
 
-import gym as gym26
 import gymnasium as gym
 import numpy as np
 import stable_baselines3 as sb3
@@ -13,7 +12,7 @@ import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
 # Register custom envs
-import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
+import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
 
@@ -116,6 +115,13 @@ def train() -> None:
         "--env-kwargs", type=str, nargs="+", action=StoreDict, help="Optional keyword argument to pass to the env constructor"
     )
     parser.add_argument(
+        "--eval-env-kwargs",
+        type=str,
+        nargs="+",
+        action=StoreDict,
+        help="Optional keyword argument to pass to the env constructor for evaluation",
+    )
+    parser.add_argument(
         "-params",
         "--hyperparams",
         type=str,
@@ -153,14 +159,12 @@ def train() -> None:
 
     args = parser.parse_args()
 
-    # Going through custom gym packages to let them register in the global registory
+    # Going through custom gym packages to let them register in the global registry
     for env_module in args.gym_packages:
         importlib.import_module(env_module)
 
     env_id = args.env
-    registered_envs = set(gym.envs.registry.keys())  # pytype: disable=module-attr
-    # Add gym 0.26 envs
-    registered_envs.update(gym26.envs.registry.keys())  # pytype: disable=module-attr
+    registered_envs = set(gym.envs.registry.keys())
 
     # If the environment is not found, suggest the closest match
     if env_id not in registered_envs:
@@ -226,6 +230,7 @@ def train() -> None:
         args.save_freq,
         args.hyperparams,
         args.env_kwargs,
+        args.eval_env_kwargs,
         args.trained_agent,
         args.optimize_hyperparameters,
         args.storage,

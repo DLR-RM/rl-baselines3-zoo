@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
     - uses: actions/checkout@v2
       with:
@@ -39,16 +39,12 @@ jobs:
         AutoROM --accept-license --source-file Roms.tar.gz
 
         # cpu version of pytorch - faster to download
-        pip install torch==1.11.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
-        pip install pybullet==3.2.5
-        # for v4 MuJoCo envs:
-        pip install mujoco
+        pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
+
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
-        # install parking-env to test HER
-        pip install highway-env==1.8.1
-        pip install -e .
+        pip install -e .[plots,tests]
     - name: Lint with ruff
       run: |
         make lint
@@ -61,8 +57,6 @@ jobs:
     - name: Type check
       run: |
         make type
-      # skip mypy type check for python3.7 (last forever for some reason)
-      if: "!(matrix.python-version == '3.7')"
     - name: Test with pytest
       run: |
         make pytest

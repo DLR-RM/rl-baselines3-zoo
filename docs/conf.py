@@ -10,11 +10,11 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
+import datetime
 import os
 import sys
-from typing import Dict, List
-from unittest.mock import MagicMock
+from typing import Dict
 
 # We CANNOT enable 'sphinxcontrib.spelling' because ReadTheDocs.org does not support
 # PyEnchant.
@@ -37,21 +37,6 @@ except ImportError:
 sys.path.insert(0, os.path.abspath(".."))
 
 
-class Mock(MagicMock):
-    __subclasses__ = []  # type: ignore
-
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-
-# Mock modules that requires C modules
-# Note: because of that we cannot test examples using CI
-# 'torch', 'torch.nn', 'torch.nn.functional',
-# DO not mock modules for now, we will need to do that for read the docs later
-MOCK_MODULES: List[str] = []
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
 # Read version from file
 version_file = os.path.join(os.path.dirname(__file__), "../rl_zoo3", "version.txt")
 with open(version_file) as file_handler:
@@ -60,7 +45,7 @@ with open(version_file) as file_handler:
 # -- Project information -----------------------------------------------------
 
 project = "RL Baselines3 Zoo"
-copyright = "2023, Stable Baselines3"
+copyright = f"2021-{datetime.date.today().year}, Stable Baselines3"
 author = "Stable Baselines3 Contributors"
 
 # The short X.Y version
@@ -80,7 +65,6 @@ release = __version__
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
     "sphinx.ext.ifconfig",
@@ -88,6 +72,8 @@ extensions = [
     # 'sphinx.ext.intersphinx',
     # 'sphinx.ext.doctest'
 ]
+
+autodoc_typehints = "description"
 
 if enable_spell_check:
     extensions.append("sphinxcontrib.spelling")
@@ -127,14 +113,7 @@ pygments_style = "sphinx"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-
-# Fix for read the docs
-on_rtd = os.environ.get("READTHEDOCS") == "True"
-if on_rtd:
-    html_theme = "default"
-else:
-    html_theme = "sphinx_rtd_theme"
-
+html_theme = "sphinx_rtd_theme"
 html_logo = "../images/car.jpg"
 
 

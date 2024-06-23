@@ -1,10 +1,12 @@
+from typing import ClassVar
+
 import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
 
 class TestEnv(gym.Env):
-    metadata = {"render_modes": ["human"], "render_fps": 4}
+    metadata: ClassVar[dict] = {"render_modes": ["human"], "render_fps": 4}
     __test__ = False
 
     def __init__(self, render_mode=None):

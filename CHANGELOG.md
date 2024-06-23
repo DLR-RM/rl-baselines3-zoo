@@ -1,17 +1,99 @@
-## Release 2.0.0a9 (WIP)
+## Release 2.4.0a0 (WIP)
 
 ### Breaking Changes
-- Upgraded to gym 0.26+
-- Fixed bug in HistoryWrapper, now returns the correct obs space limits
-- Upgraded to SB3 >= 2.0.0
+- Updated defaults hyperparameters for TQC/SAC for Swimmer-v4 (decrease gamma for more consistent results) (@JacobHA) [W&B report](https://wandb.ai/openrlbenchmark/sbx/reports/SAC-MuJoCo-Swimmer-v4--Vmlldzo3NzM5OTk2)
 
 ### New Features
+
+### Bug fixes
+- Replaced deprecated use of `Repository` when pushing to huggingface hub by the
+  recommended `HfApi` (see https://huggingface.co/docs/huggingface_hub/concepts/git_vs_http).
+
+### Documentation
+
+### Other
+
+
+## Release 2.3.0 (2024-03-31)
+
+### Breaking Changes
+- Updated defaults hyperparameters for TD3/DDPG to be more consistent with SAC
+- Upgraded MuJoCo envs hyperparameters to v4 (pre-trained agents need to be updated)
+- Upgraded to SB3 >= 2.3.0
+
+### Other
+- Added test dependencies to `setup.py` (@power-edge)
+- Simplify dependencies of `requirements.txt` (remove duplicates from `setup.py`)
+
+
+## Release 2.2.1 (2023-11-17)
+
+### Breaking Changes
+- Removed `gym` dependency, the package is still required for some pretrained agents.
+- Upgraded to SB3 >= 2.2.1
+- Upgraded to Huggingface-SB3 >= 3.0
+- Upgraded to pytablewriter >= 1.0
+
+### New Features
+- Added `--eval-env-kwargs` to `train.py` (@Quentin18)
+- Added `ppo_lstm` to hyperparams_opt.py (@technocrat13)
+
+### Bug fixes
+- Upgraded to `pybullet_envs_gymnasium>=0.4.0`
+- Removed old hacks (for instance limiting offpolicy algorithms to one env at test time)
+
+### Documentation
+
+### Other
+- Updated docker image, removed support for X server
+- Replaced deprecated `optuna.suggest_uniform(...)` by `optuna.suggest_float(..., low=..., high=...)`
+- Switched to ruff for sorting imports
+- Updated tests to use `shlex.split()`
+- Fixed `rl_zoo3/hyperparams_opt.py` type hints
+- Fixed `rl_zoo3/exp_manager.py` type hints
+
+## Release 2.1.0 (2023-08-17)
+
+### Breaking Changes
+- Dropped python 3.7 support
+- SB3 now requires PyTorch 1.13+
+- Upgraded to SB3 >= 2.1.0
+- Upgraded to Huggingface-SB3 >= 2.3
+- Upgraded to Optuna >= 3.0
+- Upgraded to cloudpickle >= 2.2.1
+
+### New Features
+- Added python 3.11 support
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
+## Release 2.0.0 (2023-06-22)
+
+**Gymnasium support**
+
+> **Warning**
+> Stable-Baselines3 (SB3) v2.0.0 will be the last one supporting python 3.7
+
+### Breaking Changes
+- Fixed bug in HistoryWrapper, now returns the correct obs space limits
+- Upgraded to SB3 >= 2.0.0
+- Upgraded to Huggingface-SB3 >= 2.2.5
+- Upgraded to Gym API 0.26+, RL Zoo3 doesn't work anymore with Gym 0.21
+
+### New Features
+- Added Gymnasium support
 - Gym 0.26+ patches to continue working with pybullet and TimeLimit wrapper
 
 ### Bug fixes
-- Renamed ``CarRacing-v1`` to ``CarRacing-v2`` in hyperparameters
-- Replaced deprecated use of `Repository` when pushing to huggingface hub by the
-  recommended `HfApi` (see https://huggingface.co/docs/huggingface_hub/concepts/git_vs_http).
+- Renamed `CarRacing-v1` to `CarRacing-v2` in hyperparameters
+- Huggingface push to hub now accepts a `--n-timesteps` argument to adjust the length of the video
+- Fixed `record_video` steps (before it was stepping in a closed env)
+
 
 ## Release 1.8.0 (2023-04-07)
 

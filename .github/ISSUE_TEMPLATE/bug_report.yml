@@ -1,5 +1,5 @@
 name: "\U0001F41B Bug Report"
-description: Submit a bug report to help us improve RL Baselines3 Zoo
+description: If you encounter an unexpected behavior, software crash, or other bug.
 title: "[Bug]: bug title"
 labels: ["bug"]
 body:
@@ -64,7 +64,7 @@ body:
           required: true
         - label: I have read the [RL Zoo documentation](https://rl-baselines3-zoo.readthedocs.io)
           required: true
-        - label: I have provided a minimal working example to reproduce the bug
+        - label: I have provided a [minimal and working](https://github.com/DLR-RM/stable-baselines3/issues/982#issuecomment-1197044014) example to reproduce the bug
           required: true
         - label: I've used the [markdown code blocks](https://help.github.com/en/articles/creating-and-highlighting-code-blocks) for both code and stack traces.
           required: true

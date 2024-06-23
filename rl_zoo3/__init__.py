@@ -1,6 +1,5 @@
 import os
 
-# Important: import gym patches before everything
 # isort: off
 
 import rl_zoo3.gym_patches  # noqa: F401

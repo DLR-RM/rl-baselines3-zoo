@@ -6,7 +6,7 @@ Installation
 Prerequisites
 -------------
 
-RL Zoo requires python 3.7+ and PyTorch >= 1.11
+RL Zoo requires python 3.8+ and PyTorch >= 1.13
 
 
 Minimal Installation
@@ -48,6 +48,7 @@ With extra envs and test dependencies:
 
 	apt-get install swig cmake ffmpeg
 	pip install -r requirements.txt
+  pip install -e .[plots,tests]
 
 
 Please see `Stable Baselines3 documentation <https://stable-baselines3.readthedocs.io/en/master/>`_ for alternatives to install stable baselines3.

@@ -4,6 +4,11 @@ MountainCarContinuous-v0:
   policy: 'MlpPolicy'
   noise_type: 'ornstein-uhlenbeck'
   noise_std: 0.5
+  gradient_steps: 1
+  train_freq: 1
+  learning_rate: !!float 1e-3
+  batch_size: 256
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
 Pendulum-v1:
   n_timesteps: 20000
@@ -13,8 +18,8 @@ Pendulum-v1:
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
+  gradient_steps: 1
+  train_freq: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -26,8 +31,8 @@ LunarLanderContinuous-v2:
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
+  gradient_steps: 1
+  train_freq: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -39,8 +44,8 @@ BipedalWalker-v3:
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
+  gradient_steps: 1
+  train_freq: 1
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
@@ -48,14 +53,14 @@ BipedalWalker-v3:
 BipedalWalkerHardcore-v3:
   n_timesteps: !!float 1e7
   policy: 'MlpPolicy'
-  gamma: 0.98
-  buffer_size: 200000
+  gamma: 0.99
+  buffer_size: 1000000
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
-  gradient_steps: -1
-  train_freq: [1, "episode"]
-  learning_rate: !!float 1e-3
+  batch_size: 256
+  train_freq: 1
+  learning_rate: lin_7e-4
   policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
@@ -69,28 +74,21 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   noise_std: 0.1
   gradient_steps: 1
   train_freq: 1
-  learning_rate: !!float 1e-3
+  batch_size: 256
+  learning_rate: !!float 7e-4
   policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
 AntBulletEnv-v0:
   <<: *pybullet-defaults
-  learning_rate: !!float 7e-4
-  policy_kwargs: "dict(net_arch=[400, 300])"
 
 # Tuned
 HopperBulletEnv-v0:
   <<: *pybullet-defaults
-  train_freq: 64
-  gradient_steps: 64
-  batch_size: 256
-  learning_rate: !!float 7e-4
 
 # Tuned
 Walker2DBulletEnv-v0:
   <<: *pybullet-defaults
-  batch_size: 256
-  learning_rate: !!float 7e-4
 
 # TO BE tested
 HumanoidBulletEnv-v0:
@@ -123,29 +121,31 @@ InvertedPendulumSwingupBulletEnv-v0:
   n_timesteps: !!float 3e5
 
 # === Mujoco Envs ===
-
-HalfCheetah-v3: &mujoco-defaults
+HalfCheetah-v4: &mujoco-defaults
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'
   learning_starts: 10000
   noise_type: 'normal'
   noise_std: 0.1
+  train_freq: 1
+  gradient_steps: 1
+  learning_rate: !!float 1e-3
+  batch_size: 256
+  policy_kwargs: "dict(net_arch=[400, 300])"
 
-Ant-v3:
+Ant-v4:
   <<: *mujoco-defaults
 
-Hopper-v3:
+Hopper-v4:
   <<: *mujoco-defaults
 
-Walker2d-v3:
+Walker2d-v4:
   <<: *mujoco-defaults
 
-Humanoid-v3:
+Humanoid-v4:
   <<: *mujoco-defaults
   n_timesteps: !!float 2e6
 
-Swimmer-v3:
+Swimmer-v4:
   <<: *mujoco-defaults
   gamma: 0.9999
-  train_freq: 1
-  gradient_steps: 1

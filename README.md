@@ -1,7 +1,7 @@
 <!-- [![pipeline status](https://gitlab.com/araffin/rl-baselines3-zoo/badges/master/pipeline.svg)](https://gitlab.com/araffin/rl-baselines3-zoo/-/commits/master) -->
 ![CI](https://github.com/DLR-RM/rl-baselines3-zoo/workflows/CI/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/rl-baselines3-zoo/badge/?version=master)](https://rl-baselines3-zoo.readthedocs.io/en/master/?badge=master)
-[![coverage report](https://gitlab.com/araffin/rl-baselines3-zoo/badges/master/coverage.svg)](https://gitlab.com/araffin/rl-baselines3-zoo/-/commits/master) [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![coverage report](https://img.shields.io/badge/coverage-68%25-brightgreen.svg?style=flat") [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
 
@@ -52,6 +52,7 @@ Note: you can do `python -m rl_zoo3.train` from any folder and you have access t
 ```
 apt-get install swig cmake ffmpeg
 pip install -r requirements.txt
+pip install -e .[plots,tests]
 ```
 
 Please see [Stable Baselines3 documentation](https://stable-baselines3.readthedocs.io/en/master/) for alternatives to install stable baselines3.
@@ -79,7 +80,7 @@ The RL Zoo has some integration with other libraries/services like Weights & Bia
 
 ## Plot Scripts
 
-Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/plot.html) of the documentation.
+Please see the [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/plot.html) of the documentation.
 
 ## Enjoy a Trained Agent
 
@@ -98,11 +99,11 @@ python enjoy.py --algo a2c --env BreakoutNoFrameskip-v4 --folder rl-trained-agen
 
 ## Hyperparameters Tuning
 
-Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/tuning.html) of the documentation.
+Please see the [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/tuning.html) of the documentation.
 
 ## Custom Configuration
 
-Please the see [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/config.html) of the documentation.
+Please see the [dedicated section](https://rl-baselines3-zoo.readthedocs.io/en/master/guide/config.html) of the documentation.
 
 ## Current Collection: 200+ Trained Agents!
 
