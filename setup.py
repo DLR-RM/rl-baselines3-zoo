@@ -24,7 +24,8 @@ install_requires = [
     "pyyaml>=5.1",
     "pytablewriter~=1.2",
 ]
-plots_requires = ["seaborn", "rliable>=1.0.5", "scipy~=1.10"]
+# TODO(antonin): update to rliable>=1.1.0 once PR is merged and released
+plots_requires = ["seaborn", "rliable @ git+https://github.com/araffin/rliable@patch-1", "scipy~=1.10"]
 test_requires = [
     # for MuJoCo envs v4:
     "mujoco~=2.3",

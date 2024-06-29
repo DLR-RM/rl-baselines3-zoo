@@ -10,4 +10,3 @@ plotly
 # panda-gym~=3.0.1
 wandb
 moviepy
-numpy<2.0 # arch fails to build otherwise (required by rliable)
