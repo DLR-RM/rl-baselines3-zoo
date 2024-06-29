@@ -1,7 +1,8 @@
-## Release 2.4.0a0 (WIP)
+## Release 2.4.0a4 (WIP)
 
 ### Breaking Changes
 - Updated defaults hyperparameters for TQC/SAC for Swimmer-v4 (decrease gamma for more consistent results) (@JacobHA) [W&B report](https://wandb.ai/openrlbenchmark/sbx/reports/SAC-MuJoCo-Swimmer-v4--Vmlldzo3NzM5OTk2)
+- Upgraded to SB3 >= 2.4.0
 
 ### New Features
 
@@ -10,7 +11,7 @@
 ### Documentation
 
 ### Other
-
+- Updated PyTorch version to 2.3.1 in the CI
 
 ## Release 2.3.0 (2024-03-31)
 
