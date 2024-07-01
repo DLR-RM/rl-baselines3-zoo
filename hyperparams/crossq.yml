@@ -1,0 +1,25 @@
+# === Mujoco Envs ===
+
+HalfCheetah-v4: &mujoco-defaults
+  buffer_size: 1_000_000
+  learning_rate: !!float 1e-3
+  learning_starts: 5000
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  policy_delay: 3
+  policy_kwargs: "dict(net_arch=dict(pi=[256, 256], qf=[2048, 2048]))"
+
+Ant-v4:
+  <<: *mujoco-defaults
+
+Hopper-v4:
+  <<: *mujoco-defaults
+
+Walker2d-v4:
+  <<: *mujoco-defaults
+
+Humanoid-v4:
+  <<: *mujoco-defaults
+
+HumanoidStandup-v4:
+  <<: *mujoco-defaults
