@@ -40,7 +40,7 @@ jobs:
         AutoROM --accept-license --source-file Roms.tar.gz
 
         # cpu version of pytorch - faster to download
-        pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
+        pip install torch==2.3.1 --index-url https://download.pytorch.org/whl/cpu
         pip install -r requirements.txt
         # Use headless version
         pip install opencv-python-headless
