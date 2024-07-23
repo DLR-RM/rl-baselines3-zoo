@@ -200,7 +200,7 @@ def package_to_hub(
     repo_local_path = Path(local_repo_path) / repo_name
 
     # Retrieve current repo state
-    api.hf_hub_download(repo_id=repo_id, local_dir=local_repo_path)
+    api.snapshot_download(repo_id=repo_id, local_dir=local_repo_path)
 
     # Step 1: Save the model
     print("Saving model to:", repo_local_path / model_name)
@@ -273,7 +273,7 @@ def package_to_hub(
     msg.info(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
     return repo_url
 
-
+HfApi().download(repo_id="rl_zoo3/algo-env", local_dir="hub")
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="Environment ID", type=EnvironmentName, required=True)
