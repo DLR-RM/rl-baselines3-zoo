@@ -276,7 +276,7 @@ def package_to_hub(
     msg.info(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
     return repo_url
 
-HfApi().download(repo_id="rl_zoo3/algo-env", local_dir="hub")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", help="Environment ID", type=EnvironmentName, required=True)
