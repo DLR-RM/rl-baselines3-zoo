@@ -195,12 +195,15 @@ def package_to_hub(
         private=False,
         exist_ok=True,
     )
-
-    # Git pull
-    repo_local_path = Path(local_repo_path) / repo_name
-
     # Retrieve current repo state
-    api.snapshot_download(repo_id=repo_id, local_dir=local_repo_path)
+    repo_local_path = Path(local_repo_path) / repo_name
+    api.snapshot_download(repo_id=repo_id, local_dir=repo_local_path)
+
+    # Add mp4 files to .gitattributes
+    with open(repo_local_path / ".gitattributes", "a+") as f:
+        f.seek(0)  # Move the file pointer to the beginning of the file
+        if not any("*.mp4" in line for line in f):
+            f.write("*.mp4 filter=lfs diff=lfs merge=lfs -text\n")
 
     # Step 1: Save the model
     print("Saving model to:", repo_local_path / model_name)
