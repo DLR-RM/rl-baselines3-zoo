@@ -1,0 +1,91 @@
+MountainCarContinuous-v0:
+  n_timesteps: !!float 50000
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7e-4
+  buffer_size: 50000
+  train_freq: 32
+  gradient_steps: 32
+  gamma: 0.9999
+  learning_starts: 100
+  use_sde: True
+  policy_delay: 2
+  policy_kwargs: "dict(use_expln=True, log_std_init=-1, net_arch=[64, 64])"
+
+Pendulum-v1:
+  n_timesteps: 20000
+  policy: 'MlpPolicy'
+  policy_delay: 2
+  policy_kwargs: "dict(net_arch=[256, 256])"
+
+
+LunarLanderContinuous-v2:
+  n_timesteps: !!float 2e5
+  policy: 'MlpPolicy'
+  buffer_size: 1000000
+  learning_starts: 10000
+
+
+BipedalWalker-v3:
+  n_timesteps: !!float 2e5
+  policy: 'MlpPolicy'
+  buffer_size: 300000
+  gamma: 0.98
+  learning_starts: 10000
+  policy_kwargs: "dict(net_arch=dict(pi=[256, 256], qf=[1024, 1024]))"
+
+# === Mujoco Envs ===
+
+HalfCheetah-v4: &mujoco-defaults
+  buffer_size: 1_000_000
+  learning_rate: !!float 1e-3
+  learning_starts: 5000
+  n_timesteps: !!float 5e6
+  policy: 'MlpPolicy'
+  policy_delay: 3
+  policy_kwargs: "dict(net_arch=dict(pi=[256, 256], qf=[2048, 2048]))"
+
+Ant-v4:
+  <<: *mujoco-defaults
+
+Hopper-v4:
+  <<: *mujoco-defaults
+
+Walker2d-v4:
+  <<: *mujoco-defaults
+
+Humanoid-v4:
+  <<: *mujoco-defaults
+
+HumanoidStandup-v4:
+  <<: *mujoco-defaults
+
+Swimmer-v4:
+  <<: *mujoco-defaults
+  gamma: 0.999
+
+# Tuned for SAC, need to check with CrossQ
+HalfCheetahBulletEnv-v0: &pybullet-defaults
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  learning_rate: !!float 7.3e-4
+  buffer_size: 300000
+  batch_size: 256
+  ent_coef: 'auto'
+  gamma: 0.98
+  train_freq: 8
+  gradient_steps: 8
+  learning_starts: 10000
+  use_sde: True
+  policy_kwargs: "dict(use_expln=True, log_std_init=-3)"
+
+# Tuned
+AntBulletEnv-v0:
+  <<: *pybullet-defaults
+
+HopperBulletEnv-v0:
+  <<: *pybullet-defaults
+  learning_rate: lin_7.3e-4
+
+Walker2DBulletEnv-v0:
+  <<: *pybullet-defaults
+  learning_rate: lin_7.3e-4
