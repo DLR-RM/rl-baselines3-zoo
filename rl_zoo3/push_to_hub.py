@@ -195,13 +195,15 @@ def package_to_hub(
         private=False,
         exist_ok=True,
     )
-
-    # Git pull
+    # Retrieve current repo state
     repo_local_path = Path(local_repo_path) / repo_name
-    repo = Repository(repo_local_path, clone_from=repo_url)
-    repo.git_pull(rebase=True)
+    api.snapshot_download(repo_id=repo_id, local_dir=repo_local_path)
 
-    repo.lfs_track(["*.mp4"])
+    # Add mp4 files to .gitattributes
+    with open(repo_local_path / ".gitattributes", "a+") as f:
+        f.seek(0)  # Move the file pointer to the beginning of the file
+        if not any("*.mp4" in line for line in f):
+            f.write("*.mp4 filter=lfs diff=lfs merge=lfs -text\n")
 
     # Step 1: Save the model
     print("Saving model to:", repo_local_path / model_name)
@@ -269,7 +271,7 @@ def package_to_hub(
     save_model_card(repo_local_path, generated_model_card, metadata)
 
     msg.info(f"Pushing repo {repo_name} to the Hugging Face Hub")
-    repo.push_to_hub(commit_message=commit_message)
+    api.upload_folder(repo_id=repo_id, folder_path=repo_local_path, commit_message=commit_message)
 
     msg.info(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
     return repo_url
