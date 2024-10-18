@@ -8,6 +8,7 @@
 - Added `CrossQ` hyperparameters for SB3-contrib
 
 ### Bug fixes
+- Replaced deprecated `huggingface_hub.Repository` when pushing to Hugging Face Hub by the recommended `HfApi` (see https://huggingface.co/docs/huggingface_hub/concepts/git_vs_http) (@cochaviz)
 
 ### Documentation
 
