@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import torch as th
 import yaml
-from huggingface_hub import HfApi, Repository
+from huggingface_hub import HfApi
 from huggingface_hub.repocard import metadata_save
 from huggingface_sb3 import EnvironmentName, ModelName, ModelRepoId
 from huggingface_sb3.push_to_hub import _evaluate_agent, _generate_replay, generate_metadata
@@ -83,6 +83,7 @@ with hyperparameter optimization and pre-trained agents included.
 RL Zoo: https://github.com/DLR-RM/rl-baselines3-zoo<br/>
 SB3: https://github.com/DLR-RM/stable-baselines3<br/>
 SB3 Contrib: https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
+SBX (SB3 + Jax): https://github.com/araffin/sbx
 
 Install the RL Zoo (with SB3 and SB3-Contrib):
 ```bash

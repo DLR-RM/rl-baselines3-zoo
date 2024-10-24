@@ -15,7 +15,7 @@ long_description = """
 See https://github.com/DLR-RM/rl-baselines3-zoo
 """
 install_requires = [
-    "sb3_contrib>=2.4.0a4,<3.0",
+    "sb3_contrib>=2.4.0a10,<3.0",
     "gymnasium~=0.29.1",
     "huggingface_sb3>=3.0,<4.0",
     "tqdm",
@@ -24,8 +24,7 @@ install_requires = [
     "pyyaml>=5.1",
     "pytablewriter~=1.2",
 ]
-# TODO(antonin): update to rliable>=1.1.0 once PR is merged and released
-plots_requires = ["seaborn", "rliable @ git+https://github.com/araffin/rliable@patch-1", "scipy~=1.10"]
+plots_requires = ["seaborn", "rliable~=1.2.0", "scipy~=1.10"]
 test_requires = [
     # for MuJoCo envs v4:
     "mujoco~=2.3",
