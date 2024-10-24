@@ -34,18 +34,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
+          # Use uv for faster downloads
+          pip install uv
           # Install Atari Roms
-          pip install autorom
+          uv pip install --system autorom
           wget https://gist.githubusercontent.com/jjshoots/61b22aefce4456920ba99f2c36906eda/raw/00046ac3403768bfe45857610a3d333b8e35e026/Roms.tar.gz.b64
           base64 Roms.tar.gz.b64 --decode &> Roms.tar.gz
           AutoROM --accept-license --source-file Roms.tar.gz
 
-          # cpu version of pytorch - faster to download
-          pip install torch==2.3.1 --index-url https://download.pytorch.org/whl/cpu
-          pip install -r requirements.txt
+          # See https://github.com/astral-sh/uv/issues/1497
+          uv pip install --system torch==2.4.1+cpu --index https://download.pytorch.org/whl/cpu
+          # Install full requirements (for additional envs and test tools)
+          uv pip install --system -r requirements.txt
           # Use headless version
-          pip install opencv-python-headless
-          pip install -e .[plots,tests]
+          uv pip install --system opencv-python-headless
+          uv pip install --system -e .[plots,tests]
       - name: Check trained agents
         run: |
           make check-trained-agents
