@@ -29,7 +29,7 @@ test_requires = [
     # for MuJoCo envs v4:
     "mujoco>=2.3,<4",
     # install parking-env to test HER
-    "highway-env>=1.10.1,1.11.0",
+    "highway-env>=1.10.1,<1.11.0",
 ]
 
 setup(
