@@ -12,6 +12,7 @@ except ImportError:
 
 try:
     import ale_py
+
     # no-op
     gym.register_envs(ale_py)
 except ImportError:

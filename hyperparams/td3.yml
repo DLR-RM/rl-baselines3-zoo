@@ -23,7 +23,7 @@ Pendulum-v1:
   learning_rate: !!float 1e-3
   policy_kwargs: "dict(net_arch=[400, 300])"
 
-LunarLanderContinuous-v2:
+LunarLanderContinuous-v3:
   n_timesteps: !!float 3e5
   policy: 'MlpPolicy'
   gamma: 0.98

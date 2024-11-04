@@ -61,7 +61,7 @@ Pendulum-v1:
   policy_kwargs: "dict(log_std_init=-2, ortho_init=False)"
 
 # Tuned
-LunarLanderContinuous-v2:
+LunarLanderContinuous-v3:
   normalize: true
   n_envs: 4
   n_timesteps: !!float 5e6

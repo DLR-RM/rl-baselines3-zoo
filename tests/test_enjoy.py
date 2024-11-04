@@ -1,6 +1,7 @@
 import os
 import shlex
 import subprocess
+from importlib.metadata import version
 
 import pytest
 
@@ -38,6 +39,11 @@ def test_trained_agents(trained_model):
     # FIXME: skip Panda gym envs
     # need panda gym >= 3.0.1 and gymnasium
     if "Panda" in env_id:
+        return
+
+    # TODO: rename trained agents once we drop support for gymnasium v0.29
+    if "Lander" in env_id and version("gymnasium") > "0.29.1":
+        # LunarLander-v2 is now LunarLander-v3
         return
 
     # Skip mujoco envs
