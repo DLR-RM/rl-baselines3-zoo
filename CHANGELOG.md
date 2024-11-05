@@ -10,6 +10,7 @@
 ### New Features
 - Added `CrossQ` hyperparameters for SB3-contrib (@danielpalen)
 - Added Gymnasium v1.0 support
+- `--custom-objects` in `enjoy.py` now also patches obs space (when bounds are changed) to solve "Observation spaces do not match" errors
 
 ### Bug fixes
 - Replaced deprecated `huggingface_hub.Repository` when pushing to Hugging Face Hub by the recommended `HfApi` (see https://huggingface.co/docs/huggingface_hub/concepts/git_vs_http) (@cochaviz)

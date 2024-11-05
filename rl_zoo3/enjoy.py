@@ -184,12 +184,15 @@ def enjoy() -> None:  # noqa: C901
             "learning_rate": 0.0,
             "lr_schedule": lambda _: 0.0,
             "clip_range": lambda _: 0.0,
+            "observation_space": env.observation_space, # load models with different obs bounds
         }
 
     if "HerReplayBuffer" in hyperparams.get("replay_buffer_class", ""):
         kwargs["env"] = env
 
     model = ALGOS[algo].load(model_path, custom_objects=custom_objects, device=args.device, **kwargs)
+    # Uncomment to save patched file (for instance gym -> gymnasium)
+    # model.save(model_path)
     obs = env.reset()
 
     # Deterministic by default except for atari games
