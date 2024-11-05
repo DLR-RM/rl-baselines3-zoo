@@ -122,7 +122,7 @@ LunarLander-v2:
   n_epochs: 4
   ent_coef: 0.01
 
-LunarLanderContinuous-v2:
+LunarLanderContinuous-v3:
   n_envs: 16
   n_timesteps: !!float 1e6
   policy: 'MlpPolicy'

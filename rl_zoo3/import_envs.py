@@ -1,12 +1,20 @@
 from typing import Callable, Optional
 
 import gymnasium as gym
-from gymnasium.envs.registration import register
+from gymnasium.envs.registration import register, register_envs
 
 from rl_zoo3.wrappers import MaskVelocityWrapper
 
 try:
     import pybullet_envs_gymnasium
+except ImportError:
+    pass
+
+try:
+    import ale_py
+
+    # no-op
+    gym.register_envs(ale_py)
 except ImportError:
     pass
 

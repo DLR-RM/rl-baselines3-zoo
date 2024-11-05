@@ -19,7 +19,7 @@ Pendulum-v1:
   policy: 'MlpPolicy'
   learning_rate: !!float 1e-3
 
-LunarLanderContinuous-v2:
+LunarLanderContinuous-v3:
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
   learning_rate: lin_7.3e-4

@@ -35,7 +35,7 @@ LunarLander-v2:
   n_critic_updates: 15
 
 # Tuned
-LunarLanderContinuous-v2:
+LunarLanderContinuous-v3:
   normalize: true
   n_envs: 2
   n_timesteps: !!float 1e5

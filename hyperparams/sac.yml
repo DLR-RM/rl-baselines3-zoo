@@ -22,7 +22,7 @@ Pendulum-v1:
   learning_rate: !!float 1e-3
 
 
-LunarLanderContinuous-v2:
+LunarLanderContinuous-v3:
   n_timesteps: !!float 5e5
   policy: 'MlpPolicy'
   batch_size: 256

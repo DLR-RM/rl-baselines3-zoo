@@ -18,7 +18,7 @@ Pendulum-v1:
   policy_kwargs: "dict(net_arch=[256, 256])"
 
 
-LunarLanderContinuous-v2:
+LunarLanderContinuous-v3:
   n_timesteps: !!float 2e5
   policy: 'MlpPolicy'
   buffer_size: 1000000
