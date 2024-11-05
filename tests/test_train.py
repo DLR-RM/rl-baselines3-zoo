@@ -1,6 +1,7 @@
 import os
 import shlex
 import subprocess
+from importlib.metadata import version
 
 import pytest
 
@@ -36,10 +37,17 @@ def test_train(tmp_path, experiment):
 
 
 def test_continue_training(tmp_path):
-    algo, env_id = "a2c", "CartPole-v1"
+    algo = "a2c"
+    if version("gymnasium") > "0.29.1":
+        # See https://github.com/DLR-RM/stable-baselines3/pull/1837#issuecomment-2457322341
+        # obs bounds have changed...
+        env_id = "CartPole-v1"
+    else:
+        env_id = "Pendulum-v1"
+
     cmd = (
         f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
-        "-i rl-trained-agents/a2c/CartPole-v1_1/CartPole-v1.zip"
+        f"-i rl-trained-agents/a2c/{env_id}_1/{env_id}.zip"
     )
     return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
