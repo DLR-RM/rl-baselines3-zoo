@@ -184,7 +184,7 @@ def enjoy() -> None:  # noqa: C901
             "learning_rate": 0.0,
             "lr_schedule": lambda _: 0.0,
             "clip_range": lambda _: 0.0,
-            "observation_space": env.observation_space, # load models with different obs bounds
+            # "observation_space": env.observation_space,  # load models with different obs bounds
         }
 
     if "HerReplayBuffer" in hyperparams.get("replay_buffer_class", ""):
