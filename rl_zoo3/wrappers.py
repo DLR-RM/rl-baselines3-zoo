@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, Optional, SupportsFloat, Tuple
+from typing import Any, ClassVar, Optional, SupportsFloat
 
 import gymnasium as gym
 import numpy as np
@@ -54,7 +54,7 @@ class ActionNoiseWrapper(gym.Wrapper[ObsType, np.ndarray, ObsType, np.ndarray]):
         super().__init__(env)
         self.noise_std = noise_std
 
-    def step(self, action: np.ndarray) -> Tuple[ObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
+    def step(self, action: np.ndarray) -> tuple[ObsType, SupportsFloat, bool, bool, dict[str, Any]]:
         assert isinstance(self.action_space, spaces.Box)
         noise = np.random.normal(np.zeros_like(action), np.ones_like(action) * self.noise_std)
         noisy_action = np.clip(action + noise, self.action_space.low, self.action_space.high)
@@ -165,7 +165,7 @@ class HistoryWrapper(gym.Wrapper[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
     def _create_obs_from_history(self) -> np.ndarray:
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[np.ndarray, Dict]:
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> tuple[np.ndarray, dict]:
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
@@ -174,7 +174,7 @@ class HistoryWrapper(gym.Wrapper[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
         self.obs_history[..., -obs.shape[-1] :] = obs
         return self._create_obs_from_history(), info
 
-    def step(self, action) -> Tuple[np.ndarray, SupportsFloat, bool, bool, Dict]:
+    def step(self, action) -> tuple[np.ndarray, SupportsFloat, bool, bool, dict]:
         obs, reward, terminated, truncated, info = self.env.step(action)
         last_ax_size = obs.shape[-1]
 
@@ -230,7 +230,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
     def _create_obs_from_history(self) -> np.ndarray:
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> Tuple[Dict[str, np.ndarray], Dict]:
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> tuple[dict[str, np.ndarray], dict]:
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
@@ -243,7 +243,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
 
         return obs_dict, info
 
-    def step(self, action) -> Tuple[Dict[str, np.ndarray], SupportsFloat, bool, bool, Dict]:
+    def step(self, action) -> tuple[dict[str, np.ndarray], SupportsFloat, bool, bool, dict]:
         obs_dict, reward, terminated, truncated, info = self.env.step(action)
         obs = obs_dict["observation"]
         last_ax_size = obs.shape[-1]
@@ -299,7 +299,7 @@ class MaskVelocityWrapper(gym.ObservationWrapper):
     """
 
     # Supported envs
-    velocity_indices: ClassVar[Dict[str, np.ndarray]] = {
+    velocity_indices: ClassVar[dict[str, np.ndarray]] = {
         "CartPole-v1": np.array([1, 3]),
         "MountainCar-v0": np.array([1]),
         "MountainCarContinuous-v0": np.array([1]),

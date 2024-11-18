@@ -1,3 +1,19 @@
+## Release 2.5.0a0 (WIP)
+
+### Breaking Changes
+- Upgraded to Pytorch >= 2.3.0
+- Upgraded to SB3 >= 2.5.0
+
+### New Features
+- Added support for Numpy v2
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
 ## Release 2.4.0 (2024-11-18)
 
 **New algorithm: CrossQ, Gymnasium v1.0 support, and better defaults for SAC/TQC on Swimmer-v4 env**

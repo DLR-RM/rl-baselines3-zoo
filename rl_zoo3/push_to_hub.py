@@ -6,7 +6,7 @@ import zipfile
 from copy import deepcopy
 from pathlib import Path
 from pprint import pformat
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 import torch as th
 import yaml
@@ -27,7 +27,7 @@ from rl_zoo3.utils import StoreDict, create_test_env, get_model_path
 msg = Printer()
 
 
-def save_model_card(repo_dir: Path, generated_model_card: str, metadata: Dict[str, Any]) -> None:
+def save_model_card(repo_dir: Path, generated_model_card: str, metadata: dict[str, Any]) -> None:
     """Saves a model card for the repository.
 
     :param repo_dir: repository directory
@@ -50,9 +50,9 @@ def generate_model_card(
     env_id: str,
     mean_reward: float,
     std_reward: float,
-    hyperparams: Dict[str, Any],
-    env_kwargs: Dict[str, Any],
-) -> Tuple[str, Dict[str, Any]]:
+    hyperparams: dict[str, Any],
+    env_kwargs: dict[str, Any],
+) -> tuple[str, dict[str, Any]]:
     """
     Generate the model card for the Hub
 
@@ -131,8 +131,8 @@ def package_to_hub(
     algo_name: str,
     algo_class_name: str,
     log_path: Path,
-    hyperparams: Dict[str, Any],
-    env_kwargs: Dict[str, Any],
+    hyperparams: dict[str, Any],
+    env_kwargs: dict[str, Any],
     env_name: EnvironmentName,
     eval_env: VecEnv,
     repo_id: ModelRepoId,
@@ -394,7 +394,7 @@ if __name__ == "__main__":
 
     # Note: we assume that we push models using the same machine (same python version)
     # that trained them, if not, we would need to pass custom object as in enjoy.py
-    custom_objects: Dict[str, Any] = {}
+    custom_objects: dict[str, Any] = {}
     model = ALGOS[algo].load(model_path, env=eval_env, custom_objects=custom_objects, device=args.device, **kwargs)
 
     # Deterministic by default except for atari games

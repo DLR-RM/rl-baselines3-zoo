@@ -3,7 +3,7 @@ import glob
 import importlib
 import os
 from copy import deepcopy
-from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Callable, Optional, Union
 
 import gymnasium as gym
 import stable_baselines3 as sb3  # noqa: F401
@@ -23,7 +23,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv,
 # For custom activation fn
 from torch import nn as nn
 
-ALGOS: Dict[str, Type[BaseAlgorithm]] = {
+ALGOS: dict[str, type[BaseAlgorithm]] = {
     "a2c": A2C,
     "ddpg": DDPG,
     "dqn": DQN,
@@ -45,7 +45,7 @@ def flatten_dict_observations(env: gym.Env) -> gym.Env:
     return gym.wrappers.FlattenObservation(env)
 
 
-def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
+def get_wrapper_class(hyperparams: dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
     """
     Get one or more Gym environment wrapper class specified as a hyper parameter
     "env_wrapper".
@@ -118,7 +118,7 @@ def get_wrapper_class(hyperparams: Dict[str, Any], key: str = "env_wrapper") -> 
         return None
 
 
-def get_class_by_name(name: str) -> Type:
+def get_class_by_name(name: str) -> type:
     """
     Imports and returns a class given the name, e.g. passing
     'stable_baselines3.common.callbacks.CheckpointCallback' returns the
@@ -138,7 +138,7 @@ def get_class_by_name(name: str) -> Type:
     return getattr(module, get_class_name(name))
 
 
-def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
+def get_callback_list(hyperparams: dict[str, Any]) -> list[BaseCallback]:
     """
     Get one or more Callback class specified as a hyper-parameter
     "callback".
@@ -155,7 +155,7 @@ def get_callback_list(hyperparams: Dict[str, Any]) -> List[BaseCallback]:
     :return:
     """
 
-    callbacks: List[BaseCallback] = []
+    callbacks: list[BaseCallback] = []
 
     if "callback" in hyperparams.keys():
         callback_name = hyperparams.get("callback")
@@ -196,8 +196,8 @@ def create_test_env(
     seed: int = 0,
     log_dir: Optional[str] = None,
     should_render: bool = True,
-    hyperparams: Optional[Dict[str, Any]] = None,
-    env_kwargs: Optional[Dict[str, Any]] = None,
+    hyperparams: Optional[dict[str, Any]] = None,
+    env_kwargs: Optional[dict[str, Any]] = None,
 ) -> VecEnv:
     """
     Create environment for testing a trained agent
@@ -221,7 +221,7 @@ def create_test_env(
     if "env_wrapper" in hyperparams.keys():
         del hyperparams["env_wrapper"]
 
-    vec_env_kwargs: Dict[str, Any] = {}
+    vec_env_kwargs: dict[str, Any] = {}
     # Avoid potential shared memory issue
     vec_env_cls = SubprocVecEnv if n_envs > 1 else DummyVecEnv
 
@@ -299,7 +299,7 @@ def linear_schedule(initial_value: Union[float, str]) -> Callable[[float], float
     return func
 
 
-def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
+def get_trained_models(log_folder: str) -> dict[str, tuple[str, str]]:
     """
     :param log_folder: Root log folder
     :return: Dict representing the trained agents
@@ -320,7 +320,7 @@ def get_trained_models(log_folder: str) -> Dict[str, Tuple[str, str]]:
     return trained_models
 
 
-def get_hf_trained_models(organization: str = "sb3", check_filename: bool = False) -> Dict[str, Tuple[str, str]]:
+def get_hf_trained_models(organization: str = "sb3", check_filename: bool = False) -> dict[str, tuple[str, str]]:
     """
     Get pretrained models,
     available on the Hugginface hub for a given organization.
@@ -382,7 +382,7 @@ def get_saved_hyperparams(
     stats_path: str,
     norm_reward: bool = False,
     test_mode: bool = False,
-) -> Tuple[Dict[str, Any], Optional[str]]:
+) -> tuple[dict[str, Any], Optional[str]]:
     """
     Retrieve saved hyperparameters given a path.
     Return empty dict and None if the path is not valid.
@@ -392,7 +392,7 @@ def get_saved_hyperparams(
     :param test_mode:
     :return:
     """
-    hyperparams: Dict[str, Any] = {}
+    hyperparams: dict[str, Any] = {}
     if not os.path.isdir(stats_path):
         return hyperparams, None
     else:
@@ -448,7 +448,7 @@ def get_model_path(
     load_best: bool = False,
     load_checkpoint: Optional[str] = None,
     load_last_checkpoint: bool = False,
-) -> Tuple[str, str, str]:
+) -> tuple[str, str, str]:
     if exp_id == 0:
         exp_id = get_latest_run_id(os.path.join(folder, algo), env_name)
         print(f"Loading latest experiment, id={exp_id}")
