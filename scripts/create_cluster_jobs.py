@@ -5,7 +5,6 @@ Send multiple jobs to the cluster.
 import os
 import subprocess
 import time
-from typing import List
 
 import numpy as np
 
@@ -35,7 +34,7 @@ for algo in ALGOS:
                     log_folder,
                     "-uuid",
                 ]
-                arg_str_list: List[str] = list(map(str, args))
+                arg_str_list: list[str] = list(map(str, args))
 
                 command = " ".join(["python", "-u", "train.py", *arg_str_list])
 

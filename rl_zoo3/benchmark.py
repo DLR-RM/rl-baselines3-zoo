@@ -3,7 +3,6 @@ import json
 import os
 import shutil
 import subprocess
-from typing import Dict, List
 
 import numpy as np
 import pandas as pd
@@ -33,7 +32,7 @@ if not args.no_hub:
     trained_models.update(get_hf_trained_models())
 
 n_experiments = len(trained_models)
-results: Dict[str, List] = {
+results: dict[str, list] = {
     "algo": [],
     "env_id": [],
     "mean_reward": [],

@@ -15,7 +15,7 @@ long_description = """
 See https://github.com/DLR-RM/rl-baselines3-zoo
 """
 install_requires = [
-    "sb3_contrib>=2.4.0,<3.0",
+    "sb3_contrib>=2.5.0a0,<3.0",
     "gymnasium>=0.29.1,<1.1.0",
     "huggingface_sb3>=3.0,<4.0",
     "tqdm",
@@ -56,7 +56,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     version=__version__,
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     # PyPI package information.
     project_urls={
         "Code": "https://github.com/DLR-RM/rl-baselines3-zoo",
@@ -68,10 +68,10 @@ setup(
     },
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
 )
 

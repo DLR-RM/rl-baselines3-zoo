@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
         include:
           # Default version
           - gymnasium-version: "1.0.0"
@@ -45,16 +45,20 @@ jobs:
           # See https://github.com/astral-sh/uv/issues/1497
           uv pip install --system torch==2.4.1+cpu --index https://download.pytorch.org/whl/cpu
           # Install full requirements (for additional envs and test tools)
-          # Install full requirements (for additional envs and test tools)
           uv pip install --system -r requirements.txt
           # Use headless version
           uv pip install --system opencv-python-headless
           uv pip install --system -e .[plots,tests]
+          # Downgrade numpy to run pybullet agents
+          # See https://github.com/bulletphysics/bullet3/issues/4649
+          uv pip install --system "numpy<2"
 
       - name: Install specific version of gym
         run: |
           uv pip install --system gymnasium==${{ matrix.gymnasium-version }}
+          uv pip install --system "numpy<2"
         # Only run for python 3.10, downgrade gym to 0.29.1
+        if: matrix.gymnasium-version != '1.0.0'
 
       - name: Check trained agents
         run: |
