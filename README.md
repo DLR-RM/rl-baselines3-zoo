@@ -27,6 +27,8 @@ Goals of this repository:
 
 This is the SB3 version of the original SB2 [rl-zoo](https://github.com/araffin/rl-baselines-zoo).
 
+Note: although SB3 and the RL Zoo are compatible with Numpy>=2.0, you will need Numpy<2 to run agents on pybullet envs (see [issue](https://github.com/bulletphysics/bullet3/issues/4649)).
+
 ## Documentation
 
 Documentation is available online: [https://rl-baselines3-zoo.readthedocs.io/](https://rl-baselines3-zoo.readthedocs.io)

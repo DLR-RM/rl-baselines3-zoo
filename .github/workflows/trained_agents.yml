@@ -49,6 +49,9 @@ jobs:
           # Use headless version
           uv pip install --system opencv-python-headless
           uv pip install --system -e .[plots,tests]
+          # Downgrade numpy to run pybullet agents
+          # See https://github.com/bulletphysics/bullet3/issues/4649
+          uv pip install --system "numpy<2"
 
       - name: Install specific version of gym
         run: |
