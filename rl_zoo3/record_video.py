@@ -131,7 +131,7 @@ if __name__ == "__main__":
     model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, **kwargs)
 
     # Deterministic by default except for atari games
-    stochastic = args.stochastic or (is_atari or is_minigrid) and not args.deterministic
+    stochastic = args.stochastic or ((is_atari or is_minigrid) and not args.deterministic)
     deterministic = not stochastic
 
     if video_folder is None:

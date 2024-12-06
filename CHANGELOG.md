@@ -1,4 +1,4 @@
-## Release 2.5.0a0 (WIP)
+## Release 2.5.0a1 (WIP)
 
 ### Breaking Changes
 - Upgraded to Pytorch >= 2.3.0
@@ -6,6 +6,7 @@
 
 ### New Features
 - Added support for Numpy v2
+- Added support for specifying callbacks and env wrapper as python object in python config files (instead of string)
 
 ### Bug fixes
 

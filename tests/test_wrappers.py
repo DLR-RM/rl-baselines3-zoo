@@ -1,10 +1,12 @@
 import gymnasium as gym
 import pytest
+import stable_baselines3 as sb3
 from stable_baselines3 import A2C
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.env_util import DummyVecEnv
 
-import rl_zoo3.import_envs  # noqa: F401
+import rl_zoo3.import_envs
+import rl_zoo3.wrappers
 from rl_zoo3.utils import get_wrapper_class
 from rl_zoo3.wrappers import ActionNoiseWrapper, DelayedRewardWrapper, HistoryWrapper, TimeFeatureWrapper
 
@@ -24,6 +26,7 @@ def test_wrappers():
         None,
         {"rl_zoo3.wrappers.HistoryWrapper": dict(horizon=2)},
         [{"rl_zoo3.wrappers.HistoryWrapper": dict(horizon=3)}, "rl_zoo3.wrappers.TimeFeatureWrapper"],
+        [{rl_zoo3.wrappers.HistoryWrapper: dict(horizon=3)}, "rl_zoo3.wrappers.TimeFeatureWrapper"],
     ],
 )
 def test_get_wrapper(env_wrapper):
@@ -40,6 +43,7 @@ def test_get_wrapper(env_wrapper):
     [
         None,
         {"stable_baselines3.common.vec_env.VecFrameStack": dict(n_stack=2)},
+        {sb3.common.vec_env.VecFrameStack: dict(n_stack=2)},
         [{"stable_baselines3.common.vec_env.VecFrameStack": dict(n_stack=3)}, "stable_baselines3.common.vec_env.VecMonitor"],
     ],
 )
