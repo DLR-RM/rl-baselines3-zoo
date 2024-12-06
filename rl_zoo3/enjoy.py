@@ -204,7 +204,7 @@ def enjoy() -> None:  # noqa: C901
     obs = env.reset()
 
     # Deterministic by default except for atari games
-    stochastic = args.stochastic or (is_atari or is_minigrid) and not args.deterministic
+    stochastic = args.stochastic or ((is_atari or is_minigrid) and not args.deterministic)
     deterministic = not stochastic
 
     episode_reward = 0.0

@@ -398,7 +398,7 @@ if __name__ == "__main__":
     model = ALGOS[algo].load(model_path, env=eval_env, custom_objects=custom_objects, device=args.device, **kwargs)
 
     # Deterministic by default except for atari games
-    stochastic = args.stochastic or (is_atari or is_minigrid) and not args.deterministic
+    stochastic = args.stochastic or ((is_atari or is_minigrid) and not args.deterministic)
     deterministic = not stochastic
 
     # Default model name, the model will be saved under "{algo}-{env_name}.zip"

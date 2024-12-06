@@ -602,8 +602,7 @@ class ExperimentManager:
         if (
             "Neck" in self.env_name.gym_id
             or self.is_robotics_env(self.env_name.gym_id)
-            or "parking-v0" in self.env_name.gym_id
-            and len(self.monitor_kwargs) == 0  # do not overwrite custom kwargs
+            or ("parking-v0" in self.env_name.gym_id and len(self.monitor_kwargs) == 0)  # do not overwrite custom kwargs
         ):
             self.monitor_kwargs = dict(info_keywords=("is_success",))
 

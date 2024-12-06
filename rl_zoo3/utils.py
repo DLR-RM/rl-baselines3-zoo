@@ -99,16 +99,22 @@ def get_wrapper_class(hyperparams: dict[str, Any], key: str = "env_wrapper") -> 
                 kwargs = wrapper_dict[wrapper_name]
             else:
                 kwargs = {}
-            wrapper_module = importlib.import_module(get_module_name(wrapper_name))
-            wrapper_class = getattr(wrapper_module, get_class_name(wrapper_name))
+
+            if isinstance(wrapper_name, str):
+                wrapper_module = importlib.import_module(get_module_name(wrapper_name))
+                wrapper_class = getattr(wrapper_module, get_class_name(wrapper_name))
+            elif isinstance(wrapper_name, type):
+                # No conversion needed
+                wrapper_class = wrapper_name
+            else:
+                raise ValueError(
+                    f"Unexpected value {wrapper_name} for a {key}, must a str and a class, not {type(wrapper_name)}"
+                )
+
             wrapper_classes.append(wrapper_class)
             wrapper_kwargs.append(kwargs)
 
         def wrap_env(env: gym.Env) -> gym.Env:
-            """
-            :param env:
-            :return:
-            """
             for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs):
                 env = wrapper_class(env, **kwargs)
             return env
@@ -183,8 +189,12 @@ def get_callback_list(hyperparams: dict[str, Any]) -> list[BaseCallback]:
             else:
                 kwargs = {}
 
-            callback_class = get_class_by_name(callback_name)
-            callbacks.append(callback_class(**kwargs))
+            if isinstance(callback_name, BaseCallback):
+                # No conversion needed
+                callbacks.append(callback_name)
+            else:
+                callback_class = get_class_by_name(callback_name)
+                callbacks.append(callback_class(**kwargs))
 
     return callbacks
 
