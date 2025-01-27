@@ -1,4 +1,4 @@
-## Release 2.5.0a1 (WIP)
+## Release 2.5.0 (2025-01-27)
 
 ### Breaking Changes
 - Upgraded to Pytorch >= 2.3.0
@@ -13,7 +13,7 @@
 ### Documentation
 
 ### Other
-
+- Updated Dockerfile
 
 ## Release 2.4.0 (2024-11-18)
 
