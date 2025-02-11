@@ -7,7 +7,7 @@ import warnings
 from collections import OrderedDict
 from pathlib import Path
 from pprint import pprint
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, ClassVar, Optional, Union
 
 import gymnasium as gym
 import numpy as np
@@ -59,6 +59,8 @@ class ExperimentManager:
 
     Please take a look at `train.py` to have the details for each argument.
     """
+
+    vec_envs: ClassVar[dict[str, type[VecEnv]]] = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}
 
     def __init__(
         self,
@@ -121,7 +123,7 @@ class ExperimentManager:
         self.seed = seed
         self.optimization_log_path = optimization_log_path
 
-        self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
+        self.vec_env_class = self.vec_envs[vec_env_type]
         self.vec_env_wrapper: Optional[Callable] = None
 
         self.vec_env_kwargs: dict[str, Any] = {}
