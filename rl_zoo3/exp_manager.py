@@ -7,7 +7,7 @@ import warnings
 from collections import OrderedDict
 from pathlib import Path
 from pprint import pprint
-from typing import Any, Callable, ClassVar, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import gymnasium as gym
 import numpy as np
@@ -60,7 +60,8 @@ class ExperimentManager:
     Please take a look at `train.py` to have the details for each argument.
     """
 
-    vec_envs: ClassVar[dict[str, type[VecEnv]]] = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}
+    # For special VecEnv like Brax, IsaacLab, ...
+    default_vec_env_cls: Optional[type[VecEnv]] = None
 
     def __init__(
         self,
@@ -123,7 +124,11 @@ class ExperimentManager:
         self.seed = seed
         self.optimization_log_path = optimization_log_path
 
-        self.vec_env_class = self.vec_envs[vec_env_type]
+        self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
+        # Override
+        if self.default_vec_env_cls is not None:
+            self.vec_env_class = self.default_vec_env_cls
+
         self.vec_env_wrapper: Optional[Callable] = None
 
         self.vec_env_kwargs: dict[str, Any] = {}
@@ -228,6 +233,9 @@ class ExperimentManager:
         kwargs: dict[str, Any] = {}
         if self.log_interval > -1:
             kwargs = {"log_interval": self.log_interval}
+        elif self.log_interval < 0:
+            # Deactivate auto-logging, helpful when using callback like LogEveryNTimesteps
+            kwargs = {"log_interval": None}
 
         if len(self.callbacks) > 0:
             kwargs["callback"] = self.callbacks

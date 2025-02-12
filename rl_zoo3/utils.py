@@ -208,6 +208,8 @@ def create_test_env(
     should_render: bool = True,
     hyperparams: Optional[dict[str, Any]] = None,
     env_kwargs: Optional[dict[str, Any]] = None,
+    vec_env_cls: Optional[type[VecEnv]] = None,
+    vec_env_kwargs: Optional[dict[str, Any]] = None,
 ) -> VecEnv:
     """
     Create environment for testing a trained agent
@@ -220,6 +222,8 @@ def create_test_env(
     :param should_render: For Pybullet env, display the GUI
     :param hyperparams: Additional hyperparams (ex: n_stack)
     :param env_kwargs: Optional keyword argument to pass to the env constructor
+    :param vec_env_cls: ``VecEnv`` class constructor.
+    :param vec_env_kwargs: Keyword arguments to pass to the ``VecEnv`` class constructor.
     :return:
     """
     # Create the environment and wrap it if necessary
@@ -231,9 +235,9 @@ def create_test_env(
     if "env_wrapper" in hyperparams.keys():
         del hyperparams["env_wrapper"]
 
-    vec_env_kwargs: dict[str, Any] = {}
     # Avoid potential shared memory issue
-    vec_env_cls = SubprocVecEnv if n_envs > 1 else DummyVecEnv
+    if vec_env_cls is None:
+        vec_env_cls = SubprocVecEnv if n_envs > 1 else DummyVecEnv
 
     # Fix for gym 0.26, to keep old behavior
     env_kwargs = env_kwargs or {}
