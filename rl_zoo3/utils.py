@@ -426,6 +426,8 @@ def get_saved_hyperparams(
                 normalize_kwargs = eval(hyperparams["normalize"])
                 if test_mode:
                     normalize_kwargs["norm_reward"] = norm_reward
+            elif isinstance(hyperparams["normalize"], dict):
+                normalize_kwargs = hyperparams["normalize"]
             else:
                 normalize_kwargs = {"norm_obs": hyperparams["normalize"], "norm_reward": norm_reward}
             hyperparams["normalize_kwargs"] = normalize_kwargs
