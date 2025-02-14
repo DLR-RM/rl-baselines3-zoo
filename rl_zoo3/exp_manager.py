@@ -2,6 +2,7 @@ import argparse
 import importlib
 import os
 import pickle as pkl
+import sys
 import time
 import warnings
 from collections import OrderedDict
@@ -297,6 +298,13 @@ class ExperimentManager:
         with open(os.path.join(self.params_path, "args.yml"), "w") as f:
             ordered_args = OrderedDict([(key, vars(self.args)[key]) for key in sorted(vars(self.args).keys())])
             yaml.dump(ordered_args, f)
+
+        # Save command used to train
+        command = "python3 " + " ".join(sys.argv)
+        # Python 3.10+
+        if hasattr(sys, "orig_argv"):
+            command = " ".join(sys.orig_argv)
+        (Path(self.params_path) / "command.txt").write_text(command)
 
         print(f"Log path: {self.save_path}")
 

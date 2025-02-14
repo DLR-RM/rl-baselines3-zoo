@@ -1,3 +1,18 @@
+## Release 2.6.0a1 (WIP)
+
+### Breaking Changes
+- Upgraded to SB3 >= 2.6.0
+
+### New Features
+- Save the exact command line used to launch a training
+- Added support for special vectorized env (e.g. Brax, IsaacSim) by allowing to override the `VecEnv` class use to instantiate the env in the `ExperimentManager`
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
 ## Release 2.5.0 (2025-01-27)
 
 ### Breaking Changes
