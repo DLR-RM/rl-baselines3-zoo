@@ -8,6 +8,7 @@
 - Added support for special vectorized env (e.g. Brax, IsaacSim) by allowing to override the `VecEnv` class use to instantiate the env in the `ExperimentManager`
 
 ### Bug fixes
+- Fixed use of old HF api in `get_hf_trained_models()`
 
 ### Documentation
 
