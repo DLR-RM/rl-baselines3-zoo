@@ -1,3 +1,21 @@
+## Release 2.6.0a2 (WIP)
+
+### Breaking Changes
+- Upgraded to SB3 >= 2.6.0
+
+### New Features
+- Save the exact command line used to launch a training
+- Added support for special vectorized env (e.g. Brax, IsaacSim) by allowing to override the `VecEnv` class use to instantiate the env in the `ExperimentManager`
+- Allow to disable auto-logging by passing `--log-interval -2` (useful when logging things manually)
+- Added Gymnasium v1.1 support
+
+### Bug fixes
+- Fixed use of old HF api in `get_hf_trained_models()`
+
+### Documentation
+
+### Other
+
 ## Release 2.5.0 (2025-01-27)
 
 ### Breaking Changes

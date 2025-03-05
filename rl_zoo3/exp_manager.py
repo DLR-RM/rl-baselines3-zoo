@@ -2,6 +2,7 @@ import argparse
 import importlib
 import os
 import pickle as pkl
+import sys
 import time
 import warnings
 from collections import OrderedDict
@@ -59,6 +60,9 @@ class ExperimentManager:
 
     Please take a look at `train.py` to have the details for each argument.
     """
+
+    # For special VecEnv like Brax, IsaacLab, ...
+    default_vec_env_cls: Optional[type[VecEnv]] = None
 
     def __init__(
         self,
@@ -122,6 +126,10 @@ class ExperimentManager:
         self.optimization_log_path = optimization_log_path
 
         self.vec_env_class = {"dummy": DummyVecEnv, "subproc": SubprocVecEnv}[vec_env_type]
+        # Override
+        if self.default_vec_env_cls is not None:
+            self.vec_env_class = self.default_vec_env_cls
+
         self.vec_env_wrapper: Optional[Callable] = None
 
         self.vec_env_kwargs: dict[str, Any] = {}
@@ -224,8 +232,13 @@ class ExperimentManager:
         :param model: an initialized RL model
         """
         kwargs: dict[str, Any] = {}
+        # log_interval == -1 -> default
+        # < -2 -> no auto-logging
         if self.log_interval > -1:
             kwargs = {"log_interval": self.log_interval}
+        elif self.log_interval < -1:
+            # Deactivate auto-logging, helpful when using callback like LogEveryNTimesteps
+            kwargs = {"log_interval": None}
 
         if len(self.callbacks) > 0:
             kwargs["callback"] = self.callbacks
@@ -287,6 +300,13 @@ class ExperimentManager:
         with open(os.path.join(self.params_path, "args.yml"), "w") as f:
             ordered_args = OrderedDict([(key, vars(self.args)[key]) for key in sorted(vars(self.args).keys())])
             yaml.dump(ordered_args, f)
+
+        # Save command used to train
+        command = "python3 " + " ".join(sys.argv)
+        # Python 3.10+
+        if hasattr(sys, "orig_argv"):
+            command = " ".join(sys.orig_argv)
+        (Path(self.params_path) / "command.txt").write_text(command)
 
         print(f"Log path: {self.save_path}")
 

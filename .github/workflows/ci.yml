@@ -14,6 +14,7 @@ jobs:
     env:
       TERM: xterm-256color
       FORCE_COLOR: 1
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
     # Skip CI if [ci skip] in the commit message
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     runs-on: ubuntu-latest

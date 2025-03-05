@@ -208,6 +208,8 @@ def create_test_env(
     should_render: bool = True,
     hyperparams: Optional[dict[str, Any]] = None,
     env_kwargs: Optional[dict[str, Any]] = None,
+    vec_env_cls: Optional[type[VecEnv]] = None,
+    vec_env_kwargs: Optional[dict[str, Any]] = None,
 ) -> VecEnv:
     """
     Create environment for testing a trained agent
@@ -220,6 +222,8 @@ def create_test_env(
     :param should_render: For Pybullet env, display the GUI
     :param hyperparams: Additional hyperparams (ex: n_stack)
     :param env_kwargs: Optional keyword argument to pass to the env constructor
+    :param vec_env_cls: ``VecEnv`` class constructor.
+    :param vec_env_kwargs: Keyword arguments to pass to the ``VecEnv`` class constructor.
     :return:
     """
     # Create the environment and wrap it if necessary
@@ -231,9 +235,9 @@ def create_test_env(
     if "env_wrapper" in hyperparams.keys():
         del hyperparams["env_wrapper"]
 
-    vec_env_kwargs: dict[str, Any] = {}
     # Avoid potential shared memory issue
-    vec_env_cls = SubprocVecEnv if n_envs > 1 else DummyVecEnv
+    if vec_env_cls is None:
+        vec_env_cls = SubprocVecEnv if n_envs > 1 else DummyVecEnv
 
     # Fix for gym 0.26, to keep old behavior
     env_kwargs = env_kwargs or {}
@@ -349,21 +353,24 @@ def get_hf_trained_models(organization: str = "sb3", check_filename: bool = Fals
     for model in models:
         # Try to extract algorithm and environment id from model card
         try:
-            env_id = model.cardData["model-index"][0]["results"][0]["dataset"]["name"]
-            algo = model.cardData["model-index"][0]["name"].lower()
+            assert model.card_data is not None
+            env_id = model.card_data["model-index"][0]["results"][0]["dataset"]["name"]
+            algo = model.card_data["model-index"][0]["name"].lower()
             # RecurrentPPO alias is "ppo_lstm" in the rl zoo
             if algo == "recurrentppo":
                 algo = "ppo_lstm"
-        except (KeyError, IndexError):
-            print(f"Skipping {model.modelId}")
+        except (KeyError, IndexError, AssertionError):
+            print(f"Skipping {model.id}")
             continue  # skip model if name env id or algo name could not be found
 
         env_name = EnvironmentName(env_id)
         model_name = ModelName(algo, env_name)
 
         # check if there is a model file in the repo
-        if check_filename and not any(f.rfilename == model_name.filename for f in api.model_info(model.modelId).siblings):
-            continue  # skip model if the repo contains no properly named model file
+        if check_filename:
+            maybe_siblings = api.model_info(model.id).siblings
+            if maybe_siblings and not any(f.rfilename == model_name.filename for f in maybe_siblings):
+                continue  # skip model if the repo contains no properly named model file
 
         trained_models[model_name] = (algo, env_id)
 
@@ -422,6 +429,8 @@ def get_saved_hyperparams(
                 normalize_kwargs = eval(hyperparams["normalize"])
                 if test_mode:
                     normalize_kwargs["norm_reward"] = norm_reward
+            elif isinstance(hyperparams["normalize"], dict):
+                normalize_kwargs = hyperparams["normalize"]
             else:
                 normalize_kwargs = {"norm_obs": hyperparams["normalize"], "norm_reward": norm_reward}
             hyperparams["normalize_kwargs"] = normalize_kwargs
