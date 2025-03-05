@@ -32,7 +32,12 @@ def train() -> None:
     )
     parser.add_argument("-n", "--n-timesteps", help="Overwrite the number of timesteps", default=-1, type=int)
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
-    parser.add_argument("--log-interval", help="Override log interval (default: -1, no change)", default=-1, type=int)
+    parser.add_argument(
+        "--log-interval",
+        help="Override log interval (default: -1, no change, -2: no logging useful when using custom logging freq)",
+        default=-1,
+        type=int,
+    )
     parser.add_argument(
         "--eval-freq",
         help="Evaluate the agent every n steps (if negative, no evaluation). "

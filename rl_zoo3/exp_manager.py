@@ -232,9 +232,11 @@ class ExperimentManager:
         :param model: an initialized RL model
         """
         kwargs: dict[str, Any] = {}
+        # log_interval == -1 -> default
+        # < -2 -> no auto-logging
         if self.log_interval > -1:
             kwargs = {"log_interval": self.log_interval}
-        elif self.log_interval < 0:
+        elif self.log_interval < -1:
             # Deactivate auto-logging, helpful when using callback like LogEveryNTimesteps
             kwargs = {"log_interval": None}
 
