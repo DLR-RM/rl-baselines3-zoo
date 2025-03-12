@@ -645,11 +645,9 @@ class ExperimentManager:
         log_dir = None if eval_env or no_log else self.save_path
 
         # Special case for GoalEnvs: log success rate too
-        if (
-            "Neck" in self.env_name.gym_id
-            or self.is_robotics_env(self.env_name.gym_id)
-            or ("parking-v0" in self.env_name.gym_id and len(self.monitor_kwargs) == 0)  # do not overwrite custom kwargs
-        ):
+        if self.is_robotics_env(self.env_name.gym_id) or (
+            "parking-v0" in self.env_name.gym_id and len(self.monitor_kwargs) == 0
+        ):  # do not overwrite custom kwargs
             self.monitor_kwargs = dict(info_keywords=("is_success",))
 
         spec = gym.spec(self.env_name.gym_id)
