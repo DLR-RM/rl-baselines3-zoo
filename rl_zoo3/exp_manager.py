@@ -49,7 +49,7 @@ from torch import nn as nn
 # Register custom envs
 import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
-from rl_zoo3.hyperparams_opt import HYPERPARAMS_SAMPLER
+from rl_zoo3.hyperparams_opt import HYPERPARAMS_CONVERTER, HYPERPARAMS_SAMPLER
 from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_latest_run_id, get_wrapper_class, linear_schedule
 
 
@@ -102,6 +102,7 @@ class ExperimentManager:
         device: Union[th.device, str] = "auto",
         config: Optional[str] = None,
         show_progress: bool = False,
+        trial_id: Optional[int] = None,
     ):
         super().__init__()
         self.algo = algo
@@ -160,6 +161,8 @@ class ExperimentManager:
         self.storage = storage
         self.study_name = study_name
         self.no_optim_plots = no_optim_plots
+        # For loading hyperparams from a study
+        self.trial_id = trial_id
         # maximum number of trials for finding the best hyperparams
         self.n_trials = n_trials
         self.max_total_trials = max_total_trials
@@ -334,6 +337,11 @@ class ExperimentManager:
         else:
             raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_name.gym_id} in {self.config}")
 
+        if self.storage and self.study_name and self.trial_id:
+            print("Loading from Optuna study...")
+            study_hyperparams = self.load_trial(self.storage, self.study_name, self.trial_id)
+            hyperparams.update(study_hyperparams)
+
         if self.custom_hyperparams is not None:
             # Overwrite hyperparams if needed
             hyperparams.update(self.custom_hyperparams)
@@ -345,6 +353,24 @@ class ExperimentManager:
         pprint(saved_hyperparams)
 
         return hyperparams, saved_hyperparams
+
+    def load_trial(
+        self, storage: str, study_name: str, trial_id: Optional[int] = None, convert: bool = True
+    ) -> dict[str, Any]:
+
+        if storage.endswith(".log"):
+            optuna_storage = optuna.storages.JournalStorage(optuna.storages.journal.JournalFileBackend(storage))
+        else:
+            optuna_storage = storage  # type: ignore[assignment]
+        study = optuna.load_study(storage=optuna_storage, study_name=study_name)
+        if trial_id is not None:
+            params = study.trials[trial_id].params
+        else:
+            params = study.best_trial.params
+
+        if convert:
+            return HYPERPARAMS_CONVERTER[self.algo](params)
+        return params
 
     @staticmethod
     def _preprocess_schedules(hyperparams: dict[str, Any]) -> dict[str, Any]:
@@ -722,13 +748,10 @@ class ExperimentManager:
             sampler: BaseSampler = RandomSampler(seed=self.seed)
         elif sampler_method == "tpe":
             sampler = TPESampler(n_startup_trials=self.n_startup_trials, seed=self.seed, multivariate=True)
-        elif sampler_method == "skopt":
-            from optuna.integration.skopt import SkoptSampler
+        elif sampler_method == "auto":
+            import optunahub
 
-            # cf https://scikit-optimize.github.io/#skopt.Optimizer
-            # GP: gaussian process
-            # Gradient boosted regression: GBRT
-            sampler = SkoptSampler(skopt_kwargs={"base_estimator": "GP", "acq_func": "gp_hedge"})
+            sampler = optunahub.load_module("samplers/auto_sampler").AutoSampler(seed=self.seed)
         else:
             raise ValueError(f"Unknown sampler: {sampler_method}")
         return sampler
@@ -854,6 +877,14 @@ class ExperimentManager:
         # TODO: eval each hyperparams several times to account for noisy evaluation
         sampler = self._create_sampler(self.sampler)
         pruner = self._create_pruner(self.pruner)
+        # Log file storage
+        storage = self.storage
+        if storage is not None and storage.endswith(".log"):
+            # Create folder if it doesn't exist
+            Path(storage).parent.mkdir(parents=True, exist_ok=True)
+            storage = optuna.storages.JournalStorage(  # type: ignore[assignment]
+                optuna.storages.journal.JournalFileBackend(storage),
+            )
 
         if self.verbose > 0:
             print(f"Sampler: {self.sampler} - Pruner: {self.pruner}")
@@ -861,7 +892,7 @@ class ExperimentManager:
         study = optuna.create_study(
             sampler=sampler,
             pruner=pruner,
-            storage=self.storage,
+            storage=storage,
             study_name=self.study_name,
             load_if_exists=True,
             direction="maximize",

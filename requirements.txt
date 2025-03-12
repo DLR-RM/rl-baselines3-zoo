@@ -4,6 +4,8 @@ box2d-py==2.3.8
 pybullet_envs_gymnasium>=0.6.0
 # minigrid
 cloudpickle>=2.2.1
+# Optuna auto
+optunahub>=0.2.0
 # optuna plots:
 plotly
 # need to upgrade to gymnasium:

@@ -87,7 +87,7 @@ def train() -> None:
         help="Sampler to use when optimizing hyperparameters",
         type=str,
         default="tpe",
-        choices=["random", "tpe", "skopt"],
+        choices=["random", "tpe", "auto"],
     )
     parser.add_argument(
         "--pruner",
@@ -108,6 +108,7 @@ def train() -> None:
         "--storage", help="Database storage path if distributed optimization should be used", type=str, default=None
     )
     parser.add_argument("--study-name", help="Study name for distributed optimization", type=str, default=None)
+    parser.add_argument("--trial-id", help="Trial id to load for a Optuna storage.", type=int)
     parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
     parser.add_argument(
         "--gym-packages",
@@ -260,6 +261,7 @@ def train() -> None:
         device=args.device,
         config=args.conf_file,
         show_progress=args.progress,
+        trial_id=args.trial_id,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
