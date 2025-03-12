@@ -80,6 +80,7 @@ def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
 
         if "subsample_steps" in sampled_params:
             hyperparams["gradient_steps"] = max(sampled_params["train_freq"] // sampled_params["subsample_steps"], 1)
+            del hyperparams["subsample_steps"]
 
     hyperparams["policy_kwargs"] = hyperparams.get("policy_kwargs", {})
     hyperparams["policy_kwargs"]["net_arch"] = net_arch
@@ -438,10 +439,6 @@ def sample_qrdqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, additi
 def convert_ars_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
     hyperparams = sampled_params.copy()
 
-    top_frac_size = sampled_params["top_frac_size"]
-    hyperparams["n_top"] = max(int(top_frac_size * sampled_params["n_delta"]), 1)
-    del hyperparams["top_frac_size"]
-
     # Note: remove bias to be as the original linear policy
     # and do not squash output
     # Comment out when doing hyperparams search with linear policy only
@@ -454,6 +451,10 @@ def convert_ars_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
         if f"{name}_pow" in sampled_params:
             hyperparams[name] = 2 ** sampled_params[f"{name}_pow"]
             del hyperparams[f"{name}_pow"]
+
+    top_frac_size = sampled_params["top_frac_size"]
+    hyperparams["n_top"] = max(int(top_frac_size * hyperparams["n_delta"]), 1)
+    del hyperparams["top_frac_size"]
 
     return hyperparams
 

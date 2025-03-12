@@ -496,6 +496,10 @@ class ExperimentManager:
     def _preprocess_action_noise(
         self, hyperparams: dict[str, Any], saved_hyperparams: dict[str, Any], env: VecEnv
     ) -> dict[str, Any]:
+        # Compute n_actions for hyperparameter optim
+        if isinstance(env.action_space, spaces.Box):
+            self.n_actions = env.action_space.shape[0]
+
         # Parse noise string
         # Note: only off-policy algorithms are supported
         if hyperparams.get("noise_type") is not None:
@@ -506,7 +510,6 @@ class ExperimentManager:
             assert isinstance(
                 env.action_space, spaces.Box
             ), f"Action noise can only be used with Box action space, not {env.action_space}"
-            self.n_actions = env.action_space.shape[0]
 
             if "normal" in noise_type:
                 hyperparams["action_noise"] = NormalActionNoise(
@@ -931,6 +934,9 @@ class ExperimentManager:
 
         print("Params: ")
         for key, value in trial.params.items():
+            print(f"    {key}: {value}")
+        print("User Attributes: ")
+        for key, value in trial.user_attrs.items():
             print(f"    {key}: {value}")
 
         report_name = (
