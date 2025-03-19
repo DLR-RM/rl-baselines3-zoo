@@ -4,8 +4,12 @@
 Hyperparameter Tuning
 =====================
 
-Hyperparameter Tuning
----------------------
+Automated hyperparameter optimization
+-------------------------------------
+
+Blog post: `Automatic Hyperparameter Tuning - A Visual Guide <https://araffin.github.io/post/hyperparam-tuning/>`_
+
+Video: https://www.youtube.com/watch?v=AidFTOdGNFQ
 
 We use `Optuna <https://optuna.org/>`__ for optimizing the
 hyperparameters. Not all hyperparameters are tuned, and tuning enforces
@@ -35,20 +39,29 @@ documentation <https://optuna.readthedocs.io/en/stable/tutorial/10_key_features/
 
 ::
 
-   python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage sqlite:///example.db
+   python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage logs/demo.log
 
-Print and save best hyperparameters of an Optuna study:
 
-::
 
-   python scripts/parse_study.py -i path/to/study.pkl --print-n-best-trials 10 --save-n-best-hyperparameters 10
+Visualize live using `optuna-dashboard <https://optuna-dashboard.readthedocs.io/en/latest/getting-started.html>`__
+
+.. code:: bash
+
+   optuna-dashboard logs/demo.log
+
+Load hyperparameters from trial number 21 and train an agent with it:
+
+.. code:: bash
+
+   python train.py --algo ppo --env MountainCar-v0 --study-name test --storage logs/demo.log --trial-id 21
+
 
 The default budget for hyperparameter tuning is 500 trials and there is
 one intermediate evaluation for pruning/early stopping per 100k time
 steps.
 
 Hyperparameters search space
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------
 
 Note that the default hyperparameters used in the zoo when tuning are
 not always the same as the defaults provided in
@@ -65,7 +78,3 @@ example:
 -  Non-episodic rollout in TD3 and DDPG assumes
    ``gradient_steps = train_freq`` and so tunes only ``train_freq`` to
    reduce the search space.
-
-When working with continuous actions, we recommend to enable
-`gSDE <https://arxiv.org/abs/2005.05719>`__ by uncommenting lines in
-`rl_zoo3/hyperparams_opt.py <https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/rl_zoo3/hyperparams_opt.py>`__.

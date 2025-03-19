@@ -16,6 +16,12 @@ def value_key(trial: FrozenTrial) -> float:
         return trial.value
 
 
+print(
+    "DEPRECATED: `parse_study.py` is deprecated, please use optuna-dashboard "
+    "together with the `--trial-id` argument in the train script."
+)
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--study-file", help="Path to a pickle file contained a saved study", type=str)
 parser.add_argument(

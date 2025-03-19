@@ -66,7 +66,7 @@ def test_optimize_log_path(tmp_path):
 
     cmd = (
         f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
-        f"-params policy_kwargs:'dict(net_arch=[32])' "
+        f"-params policy_kwargs:'dict(net_arch=[32])' --study-name demo --storage {tmp_path}/demo.log "
         f"--no-optim-plots --seed 14 --n-trials {N_TRIALS} --n-jobs {N_JOBS} "
         f"--sampler {sampler} --pruner {pruner} --n-evaluations 2 --n-startup-trials 1 "
         f"--optimization-log-path {optimization_log_path} -optimize"
@@ -82,11 +82,20 @@ def test_optimize_log_path(tmp_path):
 
     study_path = next(iter(glob.glob(str(tmp_path / algo / "report_*.pkl"))))
     print(study_path)
-    # Test reading best trials
+    # Test reading best trials (deprecated)
     cmd = (
         "python scripts/parse_study.py "
         f"-i {study_path} --print-n-best-trials {N_TRIALS} "
         f"--save-n-best-hyperparameters {N_TRIALS} -f {tmp_path / 'best_hyperparameters'}"
+    )
+    return_code = subprocess.call(shlex.split(cmd))
+    _assert_eq(return_code, 0)
+
+    # Test training using tuned hyperparameters
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo {algo} --env {env_id} --log-folder {tmp_path} "
+        f"-params policy_kwargs:'dict(net_arch=[32])' --storage {tmp_path}/demo.log "
+        f"--study-name demo --trial-id 1"
     )
     return_code = subprocess.call(shlex.split(cmd))
     _assert_eq(return_code, 0)
