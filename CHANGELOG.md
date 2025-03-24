@@ -1,4 +1,4 @@
-## Release 2.6.0a3 (WIP)
+## Release 2.6.0 (2025-03-24)
 
 ### Breaking Changes
 - Upgraded to SB3 >= 2.6.0
