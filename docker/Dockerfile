@@ -1,4 +1,4 @@
-ARG PARENT_IMAGE
+ARG PARENT_IMAGE=stablebaselines/stable-baselines3
 FROM $PARENT_IMAGE
 
 USER root
