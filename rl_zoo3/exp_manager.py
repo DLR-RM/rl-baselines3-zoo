@@ -32,7 +32,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
-from stable_baselines3.common.utils import constant_fn
+from stable_baselines3.common.utils import ConstantSchedule
 from stable_baselines3.common.vec_env import (
     DummyVecEnv,
     SubprocVecEnv,
@@ -386,7 +386,7 @@ class ExperimentManager:
                 # Negative value: ignore (ex: for clipping)
                 if hyperparams[key] < 0:
                     continue
-                hyperparams[key] = constant_fn(float(hyperparams[key]))
+                hyperparams[key] = ConstantSchedule(float(hyperparams[key]))
             else:
                 raise ValueError(f"Invalid value for {key}: {hyperparams[key]}")
         return hyperparams
