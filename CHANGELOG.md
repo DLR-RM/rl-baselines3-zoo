@@ -1,3 +1,19 @@
+## Release 2.6.1 (WIP)
+
+### Breaking Changes
+- Upgraded to SB3 >= 2.6.1
+- `linear_schedule` now returns a `SimpleLinearSchedule` object for better portability
+
+### New Features
+
+### Bug fixes
+- Docker GPU images are now working again
+- Use `ConstantSchedule`, and `SimpleLinearSchedule` instead of `constant_fn` and `linear_schedule`
+
+### Documentation
+
+### Other
+
 ## Release 2.6.0 (2025-03-24)
 
 ### Breaking Changes

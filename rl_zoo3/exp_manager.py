@@ -32,7 +32,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from stable_baselines3.common.preprocessing import is_image_space, is_image_space_channels_first
 from stable_baselines3.common.sb2_compat.rmsprop_tf_like import RMSpropTFLike  # noqa: F401
-from stable_baselines3.common.utils import constant_fn
+from stable_baselines3.common.utils import ConstantSchedule
 from stable_baselines3.common.vec_env import (
     DummyVecEnv,
     SubprocVecEnv,
@@ -50,7 +50,14 @@ from torch import nn as nn
 import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from rl_zoo3.hyperparams_opt import HYPERPARAMS_CONVERTER, HYPERPARAMS_SAMPLER
-from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_latest_run_id, get_wrapper_class, linear_schedule
+from rl_zoo3.utils import (
+    ALGOS,
+    SimpleLinearSchedule,
+    get_callback_list,
+    get_class_by_name,
+    get_latest_run_id,
+    get_wrapper_class,
+)
 
 
 class ExperimentManager:
@@ -381,12 +388,12 @@ class ExperimentManager:
             if isinstance(hyperparams[key], str):
                 schedule, initial_value = hyperparams[key].split("_")
                 initial_value = float(initial_value)
-                hyperparams[key] = linear_schedule(initial_value)
+                hyperparams[key] = SimpleLinearSchedule(initial_value)
             elif isinstance(hyperparams[key], (float, int)):
                 # Negative value: ignore (ex: for clipping)
                 if hyperparams[key] < 0:
                     continue
-                hyperparams[key] = constant_fn(float(hyperparams[key]))
+                hyperparams[key] = ConstantSchedule(float(hyperparams[key]))
             else:
                 raise ValueError(f"Invalid value for {key}: {hyperparams[key]}")
         return hyperparams
