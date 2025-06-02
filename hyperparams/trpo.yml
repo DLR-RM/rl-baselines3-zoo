@@ -23,7 +23,7 @@ Pendulum-v1:
   sde_sample_freq: 4
 
 # Tuned
-LunarLander-v2:
+LunarLander-v3:
   n_envs: 2
   n_timesteps: !!float 2e5
   policy: 'MlpPolicy'

@@ -19,7 +19,7 @@ CartPole-v1:
   policy: 'MlpPolicy'
   ent_coef: 0.0
 
-LunarLander-v2:
+LunarLander-v3:
   n_envs: 8
   n_timesteps: !!float 2e5
   policy: 'MlpPolicy'
