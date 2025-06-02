@@ -43,7 +43,7 @@ MountainCar-v0:
   policy_kwargs: "dict(net_arch=[256, 256], n_quantiles=25)"
 
 # Tuned
-LunarLander-v2:
+LunarLander-v3:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
   learning_rate: lin_1.5e-3
