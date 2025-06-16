@@ -347,13 +347,13 @@ MiniGrid-ObstructedMaze-2Dlh-v0:
   n_timesteps: !!float 1e7 # Unsolved
 
 
-CarRacing-v2:
+CarRacing-v3:
   env_wrapper:
     - rl_zoo3.wrappers.FrameSkip:
         skip: 2
-    - gymnasium.wrappers.resize_observation.ResizeObservation:
-        shape: 64
-    - gymnasium.wrappers.gray_scale_observation.GrayScaleObservation:
+    - rl_zoo3.wrappers.YAMLCompatResizeObservation:
+        shape: [64, 64]
+    - gymnasium.wrappers.transform_observation.GrayscaleObservation:
         keep_dim: true
   frame_stack: 2
   normalize: "{'norm_obs': False, 'norm_reward': True}"
