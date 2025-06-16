@@ -50,7 +50,14 @@ from torch import nn as nn
 import rl_zoo3.import_envs  # noqa: F401
 from rl_zoo3.callbacks import SaveVecNormalizeCallback, TrialEvalCallback
 from rl_zoo3.hyperparams_opt import HYPERPARAMS_CONVERTER, HYPERPARAMS_SAMPLER
-from rl_zoo3.utils import ALGOS, get_callback_list, get_class_by_name, get_latest_run_id, get_wrapper_class, linear_schedule
+from rl_zoo3.utils import (
+    ALGOS,
+    SimpleLinearSchedule,
+    get_callback_list,
+    get_class_by_name,
+    get_latest_run_id,
+    get_wrapper_class,
+)
 
 
 class ExperimentManager:
@@ -381,7 +388,7 @@ class ExperimentManager:
             if isinstance(hyperparams[key], str):
                 schedule, initial_value = hyperparams[key].split("_")
                 initial_value = float(initial_value)
-                hyperparams[key] = linear_schedule(initial_value)
+                hyperparams[key] = SimpleLinearSchedule(initial_value)
             elif isinstance(hyperparams[key], (float, int)):
                 # Negative value: ignore (ex: for clipping)
                 if hyperparams[key] < 0:

@@ -49,14 +49,12 @@ jobs:
           # Use headless version
           uv pip install --system opencv-python-headless
           uv pip install --system -e .[plots,tests]
-          # Downgrade numpy to run pybullet agents
-          # See https://github.com/bulletphysics/bullet3/issues/4649
-          uv pip install --system "numpy<2"
 
       - name: Install specific version of gym
         run: |
           uv pip install --system gymnasium==${{ matrix.gymnasium-version }}
           uv pip install --system "numpy<2"
+          uv pip install --system "ale-py==0.10.1"
         # Only run for python 3.10, downgrade gym to 0.29.1
         if: matrix.gymnasium-version != '1.0.0'
 

@@ -19,7 +19,7 @@ Pendulum-v1: &pendulum-params
   zero_policy: False
 
 # TO BE Tuned
-LunarLander-v2:
+LunarLander-v3:
   <<: *pendulum-params
   n_delta: 6
   n_top: 1
