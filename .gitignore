@@ -19,6 +19,7 @@ hub
 *.mp4
 *.json
 _build/
+run_crossq_bipedal.sh
 
 tests/dummy_env/build/
 

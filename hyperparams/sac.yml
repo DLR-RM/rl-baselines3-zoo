@@ -161,7 +161,7 @@ MinitaurBulletDuckEnv-v0:
   learning_starts: 10000
 
 # To be tuned
-CarRacing-v2:
+CarRacing-v3:
   env_wrapper:
     - rl_zoo3.wrappers.FrameSkip:
         skip: 2
