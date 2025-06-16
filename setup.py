@@ -15,7 +15,7 @@ long_description = """
 See https://github.com/DLR-RM/rl-baselines3-zoo
 """
 install_requires = [
-    "sb3_contrib>=2.6.1a1,<3.0",
+    "sb3_contrib>=2.7.0a0,<3.0",
     "gymnasium>=0.29.1,<1.2.0",
     "huggingface_sb3>=3.0,<4.0",
     "tqdm",
