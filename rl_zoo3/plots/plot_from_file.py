@@ -156,6 +156,8 @@ def plot_from_file():  # noqa: C901
         "Ant": "AntBulletEnv-v0",
         "Hopper": "HopperBulletEnv-v0",
         "Walker": "Walker2DBulletEnv-v0",
+        "LunarLanderContinuous": "LunarLanderContinuous-v3",
+        "BipedalWalker": "BipedalWalker-v3",
     }
     # Backward compat
     skip_all_algos_dict = False
