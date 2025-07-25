@@ -1,4 +1,4 @@
-## Release 2.7.0a0 (WIP)
+## Release 2.7.0 (2025-07-25)
 
 ### Breaking Changes
 - Upgraded to SB3 >= 2.7.0
@@ -7,6 +7,7 @@
 - Renamed `CarRacing-v2` to `CarRacing-v3` in hyperparameters
 
 ### New Features
+- Added Gymnasium v1.2 support
 
 ### Bug fixes
 - Docker GPU images are now working again
