@@ -61,7 +61,7 @@ def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
     net_arch = sampled_params["net_arch"]
     del hyperparams["net_arch"]
 
-    for name in ["batch_size"]:
+    for name in ["batch_size", "n_sampled_actions"]:
         if f"{name}_pow" in sampled_params:
             hyperparams[name] = 2 ** sampled_params[f"{name}_pow"]
             del hyperparams[f"{name}_pow"]
@@ -489,6 +489,52 @@ def sample_ars_params(trial: optuna.Trial, n_actions: int, n_envs: int, addition
     )
 
 
+def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, additional_args: dict) -> dict[str, Any]:
+    """
+    Sampler for SampleDQN hyperparams.
+
+    :param trial:
+    :return:
+    """
+    one_minus_gamma = trial.suggest_float("one_minus_gamma", 0.0001, 0.03, log=True)
+    # From 2**5=32 to 2**9=512
+    batch_size_pow = trial.suggest_int("batch_size_pow", 2, 9)
+    # From 2**3=8 to 2**7=128
+    n_sampled_actions_pow = trial.suggest_int("n_sampled_actions_pow", 2, 7)
+
+    learning_rate = trial.suggest_float("learning_rate", 1e-5, 0.002, log=True)
+    # Polyak coeff
+    tau = trial.suggest_float("tau", 0.001, 0.08, log=True)
+
+    net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
+    # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
+
+    trial.set_user_attr("gamma", 1 - one_minus_gamma)
+    trial.set_user_attr("batch_size", 2**batch_size_pow)
+    trial.set_user_attr("n_sampled_actions", 2**n_sampled_actions_pow)
+
+    hyperparams = {
+        "one_minus_gamma": one_minus_gamma,
+        "learning_rate": learning_rate,
+        "batch_size_pow": batch_size_pow,
+        "tau": tau,
+        "net_arch": net_arch,
+        "n_sampled_actions_pow": n_sampled_actions_pow,
+    }
+
+    noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
+    noise_std = trial.suggest_float("noise_std", 0, 0.15)
+
+    if noise_type == "normal":
+        hyperparams["action_noise"] = NormalActionNoise(mean=np.zeros(n_actions), sigma=noise_std * np.ones(n_actions))
+    elif noise_type == "ornstein-uhlenbeck":
+        hyperparams["action_noise"] = OrnsteinUhlenbeckActionNoise(
+            mean=np.zeros(n_actions), sigma=noise_std * np.ones(n_actions)
+        )
+
+    return convert_offpolicy_params(hyperparams)
+
+
 HYPERPARAMS_SAMPLER = {
     "a2c": sample_a2c_params,
     "ars": sample_ars_params,
@@ -498,6 +544,7 @@ HYPERPARAMS_SAMPLER = {
     "ppo": sample_ppo_params,
     "ppo_lstm": sample_ppo_lstm_params,
     "sac": sample_sac_params,
+    "sample_dqn": sample_sampledqn_params,
     "tqc": sample_tqc_params,
     "td3": sample_td3_params,
     "trpo": sample_trpo_params,
@@ -513,6 +560,7 @@ HYPERPARAMS_CONVERTER = {
     "ppo": convert_onpolicy_params,
     "ppo_lstm": convert_onpolicy_params,
     "sac": convert_offpolicy_params,
+    "sample_dqn": convert_offpolicy_params,
     "tqc": convert_offpolicy_params,
     "td3": convert_offpolicy_params,
     "trpo": convert_onpolicy_params,
