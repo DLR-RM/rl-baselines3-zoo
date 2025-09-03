@@ -74,6 +74,11 @@ def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
         "verybig": [512, 512, 512],
     }[net_arch]
 
+    if "noise_type" in sampled_params and sampled_params["noise_type"] is None:
+        del hyperparams["noise_type"]
+        if "noise_std" in sampled_params:
+            del hyperparams["noise_std"]
+
     if "train_freq" in sampled_params:
         # Update to data ratio of 1, for n_envs=1
         hyperparams["gradient_steps"] = sampled_params["train_freq"]
