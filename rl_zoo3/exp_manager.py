@@ -386,7 +386,8 @@ class ExperimentManager:
             if key not in hyperparams:
                 continue
             if isinstance(hyperparams[key], str):
-                schedule, initial_value = hyperparams[key].split("_")
+                _, initial_value = hyperparams[key].split("_")
+                # assert schedule == "lin"
                 initial_value = float(initial_value)
                 hyperparams[key] = SimpleLinearSchedule(initial_value)
             elif isinstance(hyperparams[key], (float, int)):
