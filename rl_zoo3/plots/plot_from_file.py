@@ -350,7 +350,7 @@ def plot_from_file():  # noqa: C901
 
     ax = seaborn.barplot(x="Environment", y="Score", hue="Method", data=data_frame)
     # Custom legend title
-    _handles, _labels_legend = ax.get_legend_handles_labels()
+    # handles, labels_legend = ax.get_legend_handles_labels()
     # ax.legend(handles=handles, labels=labels_legend, title=r"$log \sigma$", loc=args.legend_loc)
     # ax.legend(handles=handles, labels=labels_legend, title="Network Architecture", loc=args.legend_loc)
     # ax.legend(handles=handles, labels=labels_legend, title="Interval", loc=args.legend_loc)
