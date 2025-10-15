@@ -58,15 +58,17 @@ def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
     hyperparams["gamma"] = 1 - sampled_params["one_minus_gamma"]
     del hyperparams["one_minus_gamma"]
 
-    net_arch = sampled_params["net_arch"]
-    del hyperparams["net_arch"]
+    net_arch = "medium"
+    if "net_arch" in sampled_params:
+        net_arch = sampled_params["net_arch"]
+        del hyperparams["net_arch"]
 
-    for name in ["batch_size", "n_sampled_actions"]:
+    for name in ["batch_size", "n_sampled_actions", "n_sampled_actions_exp"]:
         if f"{name}_pow" in sampled_params:
             hyperparams[name] = 2 ** sampled_params[f"{name}_pow"]
             del hyperparams[f"{name}_pow"]
 
-    net_arch = {
+    converted_net_arch = {
         "small": [64, 64],
         "medium": [256, 256],
         "big": [400, 300],
@@ -88,7 +90,15 @@ def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
             del hyperparams["subsample_steps"]
 
     hyperparams["policy_kwargs"] = hyperparams.get("policy_kwargs", {})
-    hyperparams["policy_kwargs"]["net_arch"] = net_arch
+    hyperparams["policy_kwargs"]["net_arch"] = converted_net_arch
+
+    if "sampling_strategy" in sampled_params:
+        hyperparams["policy_kwargs"]["sampling_strategy"] = sampled_params["sampling_strategy"]
+        del hyperparams["sampling_strategy"]
+
+    if "n_sampled_actions_exp" in hyperparams:
+        hyperparams["policy_kwargs"]["n_sampled_actions"] = hyperparams["n_sampled_actions_exp"]
+        del hyperparams["n_sampled_actions_exp"]
 
     if "activation_fn" in sampled_params:
         activation_fn_name = sampled_params["activation_fn"]
@@ -505,17 +515,22 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     # From 2**5=32 to 2**9=512
     batch_size_pow = trial.suggest_int("batch_size_pow", 2, 9)
     # From 2**3=8 to 2**7=128
+    # Exploration vs train (gradient update)
+    n_sampled_actions_exp_pow = trial.suggest_int("n_sampled_actions_exp_pow", 2, 7)
+    # For training
     n_sampled_actions_pow = trial.suggest_int("n_sampled_actions_pow", 2, 7)
+    sampling_strategy = trial.suggest_categorical("sampling_strategy", ["cem", "uniform", "gaussian"])
 
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 0.002, log=True)
     # Polyak coeff
     tau = trial.suggest_float("tau", 0.001, 0.08, log=True)
 
-    net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
+    # net_arch = trial.suggest_categorical("net_arch", ["small", "medium", "big"])
     # activation_fn = trial.suggest_categorical('activation_fn', [nn.Tanh, nn.ReLU, nn.ELU, nn.LeakyReLU])
 
     trial.set_user_attr("gamma", 1 - one_minus_gamma)
     trial.set_user_attr("batch_size", 2**batch_size_pow)
+    trial.set_user_attr("n_sampled_actions_exp", 2**n_sampled_actions_exp_pow)
     trial.set_user_attr("n_sampled_actions", 2**n_sampled_actions_pow)
 
     hyperparams = {
@@ -523,8 +538,12 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
         "learning_rate": learning_rate,
         "batch_size_pow": batch_size_pow,
         "tau": tau,
-        "net_arch": net_arch,
+        # "net_arch": net_arch,
+        "n_sampled_actions_exp_pow": n_sampled_actions_exp_pow,
         "n_sampled_actions_pow": n_sampled_actions_pow,
+        "sampling_strategy": sampling_strategy,
+        # For now exp=train sample strategy,
+        "train_sampling_strategy": sampling_strategy,
     }
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
