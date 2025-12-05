@@ -234,7 +234,7 @@ def plot_from_file():  # noqa: C901
             confidence_interval_size=args.ci_size,  # Coverage of confidence interval. Defaults to 95%.
         )
 
-        fig, axes = plot_utils.plot_interval_estimates(
+        fig, _axes = plot_utils.plot_interval_estimates(
             aggregate_scores,
             aggregate_interval_estimates,
             metric_names=["Median", "IQM", "Mean", "Optimality Gap"],
@@ -350,7 +350,7 @@ def plot_from_file():  # noqa: C901
 
     ax = seaborn.barplot(x="Environment", y="Score", hue="Method", data=data_frame)
     # Custom legend title
-    handles, labels_legend = ax.get_legend_handles_labels()
+    _handles, _labels_legend = ax.get_legend_handles_labels()
     # ax.legend(handles=handles, labels=labels_legend, title=r"$log \sigma$", loc=args.legend_loc)
     # ax.legend(handles=handles, labels=labels_legend, title="Network Architecture", loc=args.legend_loc)
     # ax.legend(handles=handles, labels=labels_legend, title="Interval", loc=args.legend_loc)
