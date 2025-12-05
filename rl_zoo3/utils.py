@@ -2,9 +2,9 @@ import argparse
 import glob
 import importlib
 import os
+from collections.abc import Callable
 from copy import deepcopy
 from typing import Any
-from collections.abc import Callable
 
 import gymnasium as gym
 import stable_baselines3 as sb3  # noqa: F401

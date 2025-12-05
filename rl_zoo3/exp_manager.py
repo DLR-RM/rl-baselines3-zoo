@@ -6,10 +6,10 @@ import sys
 import time
 import warnings
 from collections import OrderedDict
+from collections.abc import Callable
 from pathlib import Path
 from pprint import pprint
 from typing import Any
-from collections.abc import Callable
 
 import gymnasium as gym
 import numpy as np
@@ -362,12 +362,10 @@ class ExperimentManager:
 
         return hyperparams, saved_hyperparams
 
-    def load_trial(
-        self, storage: str, study_name: str, trial_id: int | None = None, convert: bool = True
-    ) -> dict[str, Any]:
+    def load_trial(self, storage: str, study_name: str, trial_id: int | None = None, convert: bool = True) -> dict[str, Any]:
 
         if storage.endswith(".log"):
-            optuna_storage = optuna.storages.JournalStorage(optuna.storages.journal.JournalFileBackend(storage))
+            optuna_storage = optuna.storages.JournalStorage(optuna.storages.journal.JournalFileBackend(storage))  # type: ignore[attr-defined]
         else:
             optuna_storage = storage  # type: ignore[assignment]
         study = optuna.load_study(storage=optuna_storage, study_name=study_name)
@@ -892,7 +890,7 @@ class ExperimentManager:
             # Create folder if it doesn't exist
             Path(storage).parent.mkdir(parents=True, exist_ok=True)
             storage = optuna.storages.JournalStorage(  # type: ignore[assignment]
-                optuna.storages.journal.JournalFileBackend(storage),
+                optuna.storages.journal.JournalFileBackend(storage),  # type: ignore[attr-defined]
             )
 
         if self.verbose > 0:

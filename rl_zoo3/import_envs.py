@@ -1,5 +1,5 @@
-from typing import Optional
 from collections.abc import Callable
+from typing import Optional
 
 import gymnasium as gym
 from gymnasium.envs.registration import register, register_envs
