@@ -1,4 +1,5 @@
-from typing import Callable, Optional
+from collections.abc import Callable
+from typing import Optional
 
 import gymnasium as gym
 from gymnasium.envs.registration import register, register_envs
@@ -55,8 +56,8 @@ except ImportError:
 
 
 # Register no vel envs
-def create_no_vel_env(env_id: str) -> Callable[[Optional[str]], gym.Env]:
-    def make_env(render_mode: Optional[str] = None) -> gym.Env:
+def create_no_vel_env(env_id: str) -> Callable[[str | None], gym.Env]:
+    def make_env(render_mode: str | None = None) -> gym.Env:
         env = gym.make(env_id, render_mode=render_mode)
         env = MaskVelocityWrapper(env)
         return env

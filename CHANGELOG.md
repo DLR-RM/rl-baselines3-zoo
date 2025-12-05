@@ -1,3 +1,20 @@
+## Release 2.8.0a0 (WIP)
+
+### Breaking Changes
+- Upgraded to SB3 >= 2.8.0
+- Removed support for Python 3.9, please upgrade to Python >= 3.10
+- Set ``strict=True`` for every call to ``zip(...)``
+
+### New Features
+- Added official support for Python 3.13
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
 ## Release 2.7.0 (2025-07-25)
 
 ### Breaking Changes
@@ -13,10 +30,6 @@
 - Docker GPU images are now working again
 - Use `ConstantSchedule`, and `SimpleLinearSchedule` instead of `constant_fn` and `linear_schedule`
 - Fixed `CarRacing-v3` hyperparameters for newer Gymnasium version
-
-### Documentation
-
-### Other
 
 ## Release 2.6.0 (2025-03-24)
 

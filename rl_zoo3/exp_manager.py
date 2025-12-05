@@ -6,9 +6,10 @@ import sys
 import time
 import warnings
 from collections import OrderedDict
+from collections.abc import Callable
 from pathlib import Path
 from pprint import pprint
-from typing import Any, Callable, Optional, Union
+from typing import Any
 
 import gymnasium as gym
 import numpy as np
@@ -69,7 +70,7 @@ class ExperimentManager:
     """
 
     # For special VecEnv like Brax, IsaacLab, ...
-    default_vec_env_cls: Optional[type[VecEnv]] = None
+    default_vec_env_cls: type[VecEnv] | None = None
 
     def __init__(
         self,
@@ -82,19 +83,19 @@ class ExperimentManager:
         eval_freq: int = 10000,
         n_eval_episodes: int = 5,
         save_freq: int = -1,
-        hyperparams: Optional[dict[str, Any]] = None,
-        env_kwargs: Optional[dict[str, Any]] = None,
-        eval_env_kwargs: Optional[dict[str, Any]] = None,
+        hyperparams: dict[str, Any] | None = None,
+        env_kwargs: dict[str, Any] | None = None,
+        eval_env_kwargs: dict[str, Any] | None = None,
         trained_agent: str = "",
         optimize_hyperparameters: bool = False,
-        storage: Optional[str] = None,
-        study_name: Optional[str] = None,
+        storage: str | None = None,
+        study_name: str | None = None,
         n_trials: int = 1,
-        max_total_trials: Optional[int] = None,
+        max_total_trials: int | None = None,
         n_jobs: int = 1,
         sampler: str = "tpe",
         pruner: str = "median",
-        optimization_log_path: Optional[str] = None,
+        optimization_log_path: str | None = None,
         n_startup_trials: int = 0,
         n_evaluations: int = 1,
         truncate_last_trajectory: bool = False,
@@ -106,10 +107,10 @@ class ExperimentManager:
         vec_env_type: str = "dummy",
         n_eval_envs: int = 1,
         no_optim_plots: bool = False,
-        device: Union[th.device, str] = "auto",
-        config: Optional[str] = None,
+        device: th.device | str = "auto",
+        config: str | None = None,
         show_progress: bool = False,
-        trial_id: Optional[int] = None,
+        trial_id: int | None = None,
     ):
         super().__init__()
         self.algo = algo
@@ -128,7 +129,7 @@ class ExperimentManager:
         self.n_timesteps = n_timesteps
         self.normalize = False
         self.normalize_kwargs: dict[str, Any] = {}
-        self.env_wrapper: Optional[Callable] = None
+        self.env_wrapper: Callable | None = None
         self.frame_stack = None
         self.seed = seed
         self.optimization_log_path = optimization_log_path
@@ -138,7 +139,7 @@ class ExperimentManager:
         if self.default_vec_env_cls is not None:
             self.vec_env_class = self.default_vec_env_cls
 
-        self.vec_env_wrapper: Optional[Callable] = None
+        self.vec_env_wrapper: Callable | None = None
 
         self.vec_env_kwargs: dict[str, Any] = {}
         # self.vec_env_kwargs = {} if vec_env_type == "dummy" else {"start_method": "fork"}
@@ -197,7 +198,7 @@ class ExperimentManager:
         )
         self.params_path = f"{self.save_path}/{self.env_name}"
 
-    def setup_experiment(self) -> Optional[tuple[BaseAlgorithm, dict[str, Any]]]:
+    def setup_experiment(self) -> tuple[BaseAlgorithm, dict[str, Any]] | None:
         """
         Read hyperparameters, pre-process them (create schedules, wrappers, callbacks, action noise objects)
         create the environment and possibly the model.
@@ -361,12 +362,10 @@ class ExperimentManager:
 
         return hyperparams, saved_hyperparams
 
-    def load_trial(
-        self, storage: str, study_name: str, trial_id: Optional[int] = None, convert: bool = True
-    ) -> dict[str, Any]:
+    def load_trial(self, storage: str, study_name: str, trial_id: int | None = None, convert: bool = True) -> dict[str, Any]:
 
         if storage.endswith(".log"):
-            optuna_storage = optuna.storages.JournalStorage(optuna.storages.journal.JournalFileBackend(storage))
+            optuna_storage = optuna.storages.JournalStorage(optuna.storages.journal.JournalFileBackend(storage))  # type: ignore[attr-defined]
         else:
             optuna_storage = storage  # type: ignore[assignment]
         study = optuna.load_study(storage=optuna_storage, study_name=study_name)
@@ -386,7 +385,7 @@ class ExperimentManager:
             if key not in hyperparams:
                 continue
             if isinstance(hyperparams[key], str):
-                schedule, initial_value = hyperparams[key].split("_")
+                _schedule, initial_value = hyperparams[key].split("_")
                 initial_value = float(initial_value)
                 hyperparams[key] = SimpleLinearSchedule(initial_value)
             elif isinstance(hyperparams[key], (float, int)):
@@ -424,7 +423,7 @@ class ExperimentManager:
 
     def _preprocess_hyperparams(  # noqa: C901
         self, hyperparams: dict[str, Any]
-    ) -> tuple[dict[str, Any], Optional[Callable], list[BaseCallback], Optional[Callable]]:
+    ) -> tuple[dict[str, Any], Callable | None, list[BaseCallback], Callable | None]:
         self.n_envs = hyperparams.get("n_envs", 1)
 
         if self.verbose > 0:
@@ -891,7 +890,7 @@ class ExperimentManager:
             # Create folder if it doesn't exist
             Path(storage).parent.mkdir(parents=True, exist_ok=True)
             storage = optuna.storages.JournalStorage(  # type: ignore[assignment]
-                optuna.storages.journal.JournalFileBackend(storage),
+                optuna.storages.journal.JournalFileBackend(storage),  # type: ignore[attr-defined]
             )
 
         if self.verbose > 0:

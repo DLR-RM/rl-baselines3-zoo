@@ -109,7 +109,7 @@ def plot_from_file():  # noqa: C901
 
     labels = {key: key for key in keys}
     if args.labels is not None:
-        for key, label in zip(keys, args.labels):
+        for key, label in zip(keys, args.labels, strict=True):
             labels[key] = label
 
     if not args.skip_timesteps:
@@ -234,7 +234,7 @@ def plot_from_file():  # noqa: C901
             confidence_interval_size=args.ci_size,  # Coverage of confidence interval. Defaults to 95%.
         )
 
-        fig, axes = plot_utils.plot_interval_estimates(
+        fig, _axes = plot_utils.plot_interval_estimates(
             aggregate_scores,
             aggregate_interval_estimates,
             metric_names=["Median", "IQM", "Mean", "Optimality Gap"],
@@ -266,7 +266,7 @@ def plot_from_file():  # noqa: C901
             score_distributions,
             normalized_score_thresholds,
             performance_profile_cis=score_distributions_cis,
-            colors=dict(zip(algorithms, seaborn.color_palette("colorblind"))),
+            colors=dict(zip(algorithms, seaborn.color_palette("colorblind"), strict=False)),
             xlabel=r"Normalized Score $(\tau)$",
             ax=ax,
         )
@@ -350,7 +350,7 @@ def plot_from_file():  # noqa: C901
 
     ax = seaborn.barplot(x="Environment", y="Score", hue="Method", data=data_frame)
     # Custom legend title
-    handles, labels_legend = ax.get_legend_handles_labels()
+    _handles, _labels_legend = ax.get_legend_handles_labels()
     # ax.legend(handles=handles, labels=labels_legend, title=r"$log \sigma$", loc=args.legend_loc)
     # ax.legend(handles=handles, labels=labels_legend, title="Network Architecture", loc=args.legend_loc)
     # ax.legend(handles=handles, labels=labels_legend, title="Interval", loc=args.legend_loc)

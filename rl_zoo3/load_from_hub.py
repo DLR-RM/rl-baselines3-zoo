@@ -3,7 +3,6 @@ import os
 import shutil
 import zipfile
 from pathlib import Path
-from typing import Optional
 
 from huggingface_sb3 import EnvironmentName, ModelName, ModelRepoId, load_from_hub
 from requests.exceptions import HTTPError
@@ -17,7 +16,7 @@ def download_from_hub(
     exp_id: int,
     folder: str,
     organization: str,
-    repo_name: Optional[str] = None,
+    repo_name: str | None = None,
     force: bool = False,
 ) -> None:
     """

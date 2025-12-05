@@ -2,8 +2,9 @@ import argparse
 import glob
 import importlib
 import os
+from collections.abc import Callable
 from copy import deepcopy
-from typing import Any, Callable, Optional, Union
+from typing import Any
 
 import gymnasium as gym
 import stable_baselines3 as sb3  # noqa: F401
@@ -45,7 +46,7 @@ def flatten_dict_observations(env: gym.Env) -> gym.Env:
     return gym.wrappers.FlattenObservation(env)
 
 
-def get_wrapper_class(hyperparams: dict[str, Any], key: str = "env_wrapper") -> Optional[Callable[[gym.Env], gym.Env]]:
+def get_wrapper_class(hyperparams: dict[str, Any], key: str = "env_wrapper") -> Callable[[gym.Env], gym.Env] | None:
     """
     Get one or more Gym environment wrapper class specified as a hyper parameter
     "env_wrapper".
@@ -115,7 +116,7 @@ def get_wrapper_class(hyperparams: dict[str, Any], key: str = "env_wrapper") -> 
             wrapper_kwargs.append(kwargs)
 
         def wrap_env(env: gym.Env) -> gym.Env:
-            for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs):
+            for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs, strict=True):
                 env = wrapper_class(env, **kwargs)
             return env
 
@@ -202,14 +203,14 @@ def get_callback_list(hyperparams: dict[str, Any]) -> list[BaseCallback]:
 def create_test_env(
     env_id: str,
     n_envs: int = 1,
-    stats_path: Optional[str] = None,
+    stats_path: str | None = None,
     seed: int = 0,
-    log_dir: Optional[str] = None,
+    log_dir: str | None = None,
     should_render: bool = True,
-    hyperparams: Optional[dict[str, Any]] = None,
-    env_kwargs: Optional[dict[str, Any]] = None,
-    vec_env_cls: Optional[type[VecEnv]] = None,
-    vec_env_kwargs: Optional[dict[str, Any]] = None,
+    hyperparams: dict[str, Any] | None = None,
+    env_kwargs: dict[str, Any] | None = None,
+    vec_env_cls: type[VecEnv] | None = None,
+    vec_env_kwargs: dict[str, Any] | None = None,
 ) -> VecEnv:
     """
     Create environment for testing a trained agent
@@ -300,7 +301,7 @@ class SimpleLinearSchedule:
     :param initial_value: (float or str) The initial value for the schedule
     """
 
-    def __init__(self, initial_value: Union[float, str]) -> None:
+    def __init__(self, initial_value: float | str) -> None:
         # Force conversion to float
         self.initial_value = float(initial_value)
 
@@ -311,7 +312,7 @@ class SimpleLinearSchedule:
         return f"SimpleLinearSchedule(initial_value={self.initial_value})"
 
 
-def linear_schedule(initial_value: Union[float, str]) -> SimpleLinearSchedule:
+def linear_schedule(initial_value: float | str) -> SimpleLinearSchedule:
     """
     Linear learning rate schedule.
 
@@ -407,7 +408,7 @@ def get_saved_hyperparams(
     stats_path: str,
     norm_reward: bool = False,
     test_mode: bool = False,
-) -> tuple[dict[str, Any], Optional[str]]:
+) -> tuple[dict[str, Any], str | None]:
     """
     Retrieve saved hyperparameters given a path.
     Return empty dict and None if the path is not valid.
@@ -473,7 +474,7 @@ def get_model_path(
     algo: str,
     env_name: EnvironmentName,
     load_best: bool = False,
-    load_checkpoint: Optional[str] = None,
+    load_checkpoint: str | None = None,
     load_last_checkpoint: bool = False,
 ) -> tuple[str, str, str]:
     if exp_id == 0:
