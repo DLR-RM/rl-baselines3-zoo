@@ -116,7 +116,7 @@ def get_wrapper_class(hyperparams: dict[str, Any], key: str = "env_wrapper") -> 
             wrapper_kwargs.append(kwargs)
 
         def wrap_env(env: gym.Env) -> gym.Env:
-            for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs):
+            for wrapper_class, kwargs in zip(wrapper_classes, wrapper_kwargs, strict=True):
                 env = wrapper_class(env, **kwargs)
             return env
 
