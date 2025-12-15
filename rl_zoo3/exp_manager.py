@@ -907,6 +907,9 @@ class ExperimentManager:
         # Save command
         if "command" not in study.user_attrs:
             study.set_user_attr("command", " ".join(sys.orig_argv))
+            # Save default hyperparams
+            for key in sorted(self._hyperparams):
+                study.set_user_attr(key, str(self._hyperparams[key]))
 
         try:
             if self.max_total_trials is not None:
