@@ -522,6 +522,8 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     # For training
     n_sampled_actions_pow = trial.suggest_int("n_sampled_actions_pow", 2, 7)
     sampling_strategy = trial.suggest_categorical("sampling_strategy", ["cem", "uniform", "gaussian"])
+    train_sampling_strategy = trial.suggest_categorical("train_sampling_strategy", ["cem", "uniform", "gaussian"])
+    # train_sampling_strategy = sampling_strategy
 
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 0.002, log=True)
     # Polyak coeff
@@ -544,8 +546,7 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
         "n_sampled_actions_exp_pow": n_sampled_actions_exp_pow,
         "n_sampled_actions_pow": n_sampled_actions_pow,
         "sampling_strategy": sampling_strategy,
-        # For now exp=train sample strategy,
-        "train_sampling_strategy": sampling_strategy,
+        "train_sampling_strategy": train_sampling_strategy,
     }
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
