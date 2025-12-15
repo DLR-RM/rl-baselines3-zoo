@@ -904,6 +904,9 @@ class ExperimentManager:
             load_if_exists=True,
             direction="maximize",
         )
+        # Save command
+        if "command" not in study.user_attrs:
+            study.set_user_attr("command", " ".join(sys.orig_argv))
 
         try:
             if self.max_total_trials is not None:
