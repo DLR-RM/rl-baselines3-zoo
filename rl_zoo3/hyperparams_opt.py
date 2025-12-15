@@ -94,6 +94,8 @@ def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
 
     if "sampling_strategy" in sampled_params:
         hyperparams["policy_kwargs"]["sampling_strategy"] = sampled_params["sampling_strategy"]
+        if "train_sampling_strategy" not in sampled_params:
+            hyperparams["train_sampling_strategy"] = sampled_params["sampling_strategy"]
         del hyperparams["sampling_strategy"]
 
     if "n_sampled_actions_exp" in hyperparams:
