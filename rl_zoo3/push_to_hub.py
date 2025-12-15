@@ -6,7 +6,7 @@ import zipfile
 from copy import deepcopy
 from pathlib import Path
 from pprint import pformat
-from typing import Any, Optional
+from typing import Any
 
 import torch as th
 import yaml
@@ -139,7 +139,7 @@ def package_to_hub(
     commit_message: str,
     is_deterministic: bool = True,
     n_eval_episodes=10,
-    token: Optional[str] = None,
+    token: str | None = None,
     local_repo_path="hub",
     video_length=1000,
     generate_video: bool = False,

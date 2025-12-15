@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Optional, SupportsFloat
+from typing import Any, ClassVar, SupportsFloat
 
 import gymnasium as gym
 import numpy as np
@@ -27,7 +27,7 @@ class TruncatedOnSuccessWrapper(gym.Wrapper):
         self.n_successes = n_successes
         self.current_successes = 0
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
+    def reset(self, seed: int | None = None, options: dict | None = None) -> GymResetReturn:
         self.current_successes = 0
         assert options is None, "Options not supported for now"
         return self.env.reset(seed=seed)
@@ -85,7 +85,7 @@ class ActionSmoothingWrapper(gym.Wrapper):
         # self.alpha = self.smoothing_coef
         # self.beta = np.sqrt(1 - self.alpha ** 2) / (1 - self.alpha)
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
+    def reset(self, seed: int | None = None, options: dict | None = None) -> GymResetReturn:
         self.smoothed_action = None
         assert options is None, "Options not supported for now"
         return self.env.reset(seed=seed)
@@ -113,7 +113,7 @@ class DelayedRewardWrapper(gym.Wrapper):
         self.current_step = 0
         self.accumulated_reward = 0.0
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> GymResetReturn:
+    def reset(self, seed: int | None = None, options: dict | None = None) -> GymResetReturn:
         self.current_step = 0
         self.accumulated_reward = 0.0
         assert options is None, "Options not supported for now"
@@ -172,7 +172,7 @@ class HistoryWrapper(gym.Wrapper[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
     def _create_obs_from_history(self) -> np.ndarray:
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> tuple[np.ndarray, dict]:
+    def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[np.ndarray, dict]:
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
@@ -237,7 +237,7 @@ class HistoryWrapperObsDict(gym.Wrapper):
     def _create_obs_from_history(self) -> np.ndarray:
         return np.concatenate((self.obs_history, self.action_history))
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None) -> tuple[dict[str, np.ndarray], dict]:
+    def reset(self, seed: int | None = None, options: dict | None = None) -> tuple[dict[str, np.ndarray], dict]:
         # Flush the history
         self.obs_history[...] = 0
         self.action_history[...] = 0
