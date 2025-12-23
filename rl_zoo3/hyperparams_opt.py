@@ -513,13 +513,14 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     :param trial:
     :return:
     """
-    one_minus_gamma = trial.suggest_float("one_minus_gamma", 0.0001, 0.03, log=True)
+    # one_minus_gamma = trial.suggest_float("one_minus_gamma", 0.0001, 0.03, log=True)
+    one_minus_gamma = 0.01
     # From 2**5=32 to 2**9=512
     batch_size_pow = trial.suggest_int("batch_size_pow", 2, 9)
-    # From 2**3=8 to 2**7=128
-    # Exploration vs train (gradient update)
-    n_sampled_actions_exp_pow = trial.suggest_int("n_sampled_actions_exp_pow", 2, 7)
-    # For training
+    # For finding best action during data collection
+    # From 2**3=4 to 2**8=256
+    n_sampled_actions_exp_pow = trial.suggest_int("n_sampled_actions_exp_pow", 2, 8)
+    # For finding max during gradient update, from 2**2=4 to 2**7=128
     n_sampled_actions_pow = trial.suggest_int("n_sampled_actions_pow", 2, 7)
     sampling_strategy = trial.suggest_categorical("sampling_strategy", ["cem", "uniform", "gaussian"])
     train_sampling_strategy = trial.suggest_categorical("train_sampling_strategy", ["cem", "uniform", "gaussian"])
@@ -536,6 +537,7 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     trial.set_user_attr("batch_size", 2**batch_size_pow)
     trial.set_user_attr("n_sampled_actions_exp", 2**n_sampled_actions_exp_pow)
     trial.set_user_attr("n_sampled_actions", 2**n_sampled_actions_pow)
+    trial.set_user_attr("sampling_strategy", sampling_strategy)
 
     hyperparams = {
         "one_minus_gamma": one_minus_gamma,
