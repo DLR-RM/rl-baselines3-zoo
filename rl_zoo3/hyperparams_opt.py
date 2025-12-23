@@ -63,7 +63,7 @@ def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
         net_arch = sampled_params["net_arch"]
         del hyperparams["net_arch"]
 
-    for name in ["batch_size", "n_sampled_actions", "n_sampled_actions_exp"]:
+    for name in ["batch_size", "n_sampled_actions", "n_sampled_actions_exp", "n_top", "n_iterations"]:
         if f"{name}_pow" in sampled_params:
             hyperparams[name] = 2 ** sampled_params[f"{name}_pow"]
             del hyperparams[f"{name}_pow"]
@@ -514,6 +514,7 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     :return:
     """
     # one_minus_gamma = trial.suggest_float("one_minus_gamma", 0.0001, 0.03, log=True)
+    # gamma = 0.99
     one_minus_gamma = 0.01
     # From 2**5=32 to 2**9=512
     batch_size_pow = trial.suggest_int("batch_size_pow", 2, 9)
@@ -521,10 +522,24 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     # From 2**3=4 to 2**8=256
     n_sampled_actions_exp_pow = trial.suggest_int("n_sampled_actions_exp_pow", 2, 8)
     # For finding max during gradient update, from 2**2=4 to 2**7=128
-    n_sampled_actions_pow = trial.suggest_int("n_sampled_actions_pow", 2, 7)
-    sampling_strategy = trial.suggest_categorical("sampling_strategy", ["cem", "uniform", "gaussian"])
-    train_sampling_strategy = trial.suggest_categorical("train_sampling_strategy", ["cem", "uniform", "gaussian"])
+    # n_sampled_actions_pow = trial.suggest_int("n_sampled_actions_pow", 2, 7)
+
+    # sampling_strategy = trial.suggest_categorical("sampling_strategy", ["cem", "uniform", "gaussian"])
+    # train_sampling_strategy = trial.suggest_categorical("train_sampling_strategy", ["cem", "uniform", "gaussian"])
+    train_sampling_strategy = sampling_strategy = "cem"
     # train_sampling_strategy = sampling_strategy
+    n_sampled_actions_pow = n_sampled_actions_exp_pow
+
+    # CEM params
+    # n_top: int = 6,
+    n_top_pow = trial.suggest_int("n_top_pow", 0, 5)
+    n_top_pow = min(n_top_pow, n_sampled_actions_pow - 1)
+    # n_iterations: int = 10,
+    n_iterations_pow = trial.suggest_int("n_iterations_pow", 0, 4)
+    # initial_variance: float = 1.0**2,
+    initial_variance = trial.suggest_float("initial_variance", 0.2, 1.5)
+    # extra_noise_std: float = 0.1,
+    extra_noise_std = trial.suggest_float("initial_variance", 0.01, 0.5)
 
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 0.002, log=True)
     # Polyak coeff
@@ -537,7 +552,10 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     trial.set_user_attr("batch_size", 2**batch_size_pow)
     trial.set_user_attr("n_sampled_actions_exp", 2**n_sampled_actions_exp_pow)
     trial.set_user_attr("n_sampled_actions", 2**n_sampled_actions_pow)
+
     trial.set_user_attr("sampling_strategy", sampling_strategy)
+    trial.set_user_attr("n_top", 2**n_top_pow)
+    trial.set_user_attr("n_iterations", 2**n_iterations_pow)
 
     hyperparams = {
         "one_minus_gamma": one_minus_gamma,
@@ -549,6 +567,10 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
         "n_sampled_actions_pow": n_sampled_actions_pow,
         "sampling_strategy": sampling_strategy,
         "train_sampling_strategy": train_sampling_strategy,
+        "n_top_pow": n_top_pow,
+        "n_iterations_pow": n_iterations_pow,
+        "initial_variance": initial_variance,
+        "extra_noise_std": extra_noise_std,
     }
 
     noise_type = trial.suggest_categorical("noise_type", ["ornstein-uhlenbeck", "normal", None])
