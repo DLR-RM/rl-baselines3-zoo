@@ -55,8 +55,9 @@ def convert_onpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
 def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
     hyperparams = sampled_params.copy()
 
-    hyperparams["gamma"] = 1 - sampled_params["one_minus_gamma"]
-    del hyperparams["one_minus_gamma"]
+    if "one_minus_gamma" in sampled_params:
+        hyperparams["gamma"] = 1 - sampled_params["one_minus_gamma"]
+        del hyperparams["one_minus_gamma"]
 
     net_arch = "medium"
     if "net_arch" in sampled_params:
