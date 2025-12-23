@@ -2,6 +2,7 @@ import argparse
 import difflib
 import importlib
 import os
+import sys
 import time
 import uuid
 
@@ -209,6 +210,9 @@ def train() -> None:
             raise ImportError(
                 "if you want to use Weights & Biases to track experiment, please install W&B via `pip install wandb`"
             ) from e
+
+        # Save command used for training in wandb too
+        args.command = " ".join(sys.orig_argv)
 
         run_name = f"{args.env}__{args.algo}__{args.seed}__{int(time.time())}"
         tags = [*args.wandb_tags, f"v{sb3.__version__}"]
