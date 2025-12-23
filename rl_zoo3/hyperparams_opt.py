@@ -539,7 +539,7 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     # initial_variance: float = 1.0**2,
     initial_variance = trial.suggest_float("initial_variance", 0.2, 1.5)
     # extra_noise_std: float = 0.1,
-    extra_noise_std = trial.suggest_float("initial_variance", 0.01, 0.5)
+    extra_noise_std = trial.suggest_float("extra_noise_std", 0.01, 0.5)
 
     learning_rate = trial.suggest_float("learning_rate", 1e-5, 0.002, log=True)
     # Polyak coeff
