@@ -94,6 +94,13 @@ or recording final x position with ``Ant-v3``:
 Note: for known ``GoalEnv`` like ``FetchReach``,
 ``info_keywords=('is_success',)`` is actually the default.
 
+You can also specify environment keyword arguments with:
+
+.. code:: yaml
+
+  env_kwargs:
+    gravity: 0.0
+
 VecEnvWrapper
 -------------
 
