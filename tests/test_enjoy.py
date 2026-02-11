@@ -67,10 +67,10 @@ def test_benchmark(tmp_path):
 
 
 def test_load(tmp_path):
-    algo, env_id = "a2c", "CartPole-v1"
-    # Train and save checkpoints and best model
+    algo, env_id = "a2c", "Pendulum-v1"
+    # Train and save checkpoints and best model with a custom config (that changes the gravity)
     cmd = (
-        f"python train.py --algo {algo} --env {env_id} -n 1000 -f {tmp_path} "
+        f"python train.py -c tests/test_config.yml --algo {algo} --env {env_id} -n 1000 -f {tmp_path} "
         # Enable progress bar
         f"-params n_envs:1 --eval-freq 500 --save-freq 500 -P"
     )

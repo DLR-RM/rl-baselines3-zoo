@@ -1,0 +1,8 @@
+Pendulum-v1:
+  n_envs: 8
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  ent_coef: 0.0
+  # Change gravity
+  env_kwargs:
+    g: 0.0
