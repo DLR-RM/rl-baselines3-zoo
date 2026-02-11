@@ -1,4 +1,4 @@
-## Release 2.8.0a0 (WIP)
+## Release 2.8.0a1 (WIP)
 
 ### Breaking Changes
 - Upgraded to SB3 >= 2.8.0
@@ -7,6 +7,7 @@
 
 ### New Features
 - Added official support for Python 3.13
+- Allow to specify `env_kwargs` in the hyperparam config
 
 ### Bug fixes
 

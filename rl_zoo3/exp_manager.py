@@ -472,7 +472,7 @@ class ExperimentManager:
         if "env_kwargs" in hyperparams.keys():
             self.env_kwargs.update(hyperparams["env_kwargs"])
             del hyperparams["env_kwargs"]
-            
+
         # Delete keys so the dict can be pass to the model constructor
         if "n_envs" in hyperparams.keys():
             del hyperparams["n_envs"]

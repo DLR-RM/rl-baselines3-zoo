@@ -141,12 +141,20 @@ def enjoy() -> None:  # noqa: C901
 
     # load env_kwargs if existing
     env_kwargs = {}
+
+    # env_kwargs defined in the config
+    if "env_kwargs" in hyperparams.keys():
+        env_kwargs.update(hyperparams["env_kwargs"])
+        del hyperparams["env_kwargs"]
+
+    # overwritten from command line argument during training
     args_path = os.path.join(log_path, env_name, "args.yml")
     if os.path.isfile(args_path):
         with open(args_path) as f:
             loaded_args = yaml.load(f, Loader=yaml.UnsafeLoader)
             if loaded_args["env_kwargs"] is not None:
                 env_kwargs = loaded_args["env_kwargs"]
+
     # overwrite with command line arguments
     if args.env_kwargs is not None:
         env_kwargs.update(args.env_kwargs)
