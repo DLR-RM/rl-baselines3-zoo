@@ -152,6 +152,7 @@ def train() -> None:
     )
     parser.add_argument("--wandb-project-name", type=str, default="sb3", help="the wandb's project name")
     parser.add_argument("--wandb-entity", type=str, default=None, help="the entity (team) of wandb's project")
+    parser.add_argument("--wandb-group", type=str, default=None, help="the wandb's group name")
     parser.add_argument(
         "-P",
         "--progress",
@@ -216,6 +217,7 @@ def train() -> None:
             name=run_name,
             project=args.wandb_project_name,
             entity=args.wandb_entity,
+            group=args.wandb_group,
             tags=tags,
             config=vars(args),
             sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
