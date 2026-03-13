@@ -23,7 +23,7 @@ You can use `-P` (`--progress`) option to display a progress bar.
 
 ## Custom Config File
 
-Using a custom config file when it is a yaml file with a which contains a `env_id` entry:
+Use a custom config file when it is a YAML file that contains an `env_id` entry:
 
 ```
 python train.py --algo algo_name --env env_id --conf-file my_yaml.yml
