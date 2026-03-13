@@ -1,15 +1,16 @@
-.. _manager:
+(manager)=
 
+```{eval-rst}
 .. automodule:: rl_zoo3.exp_manager
 
+```
 
-Experiment Manager
-==================
+# Experiment Manager
 
+## Parameters
 
-Parameters
-----------
-
+```{eval-rst}
 .. autoclass:: ExperimentManager
   :members:
   :inherited-members:
+```
