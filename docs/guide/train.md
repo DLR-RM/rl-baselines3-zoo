@@ -8,7 +8,7 @@ The hyperparameters for each environment are defined in
 `hyperparameters/algo_name.yml`.
 
 :::{note}
-Once RL Zoo3 is install, you can do `python -m rl_zoo3.train` from any folder, it is equivalent to `python train.py`
+Once RL Zoo3 is installed, you can run `python -m rl_zoo3.train` from any folder, which is equivalent to `python train.py`.
 :::
 
 If the environment exists in this file, then you can train an agent using:

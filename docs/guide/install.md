@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-RL Zoo requires python 3.8+ and PyTorch >= 1.13
+RL Zoo requires Python 3.10+ and PyTorch >= 2.3
 
 ## Minimal Installation
 
@@ -36,8 +36,8 @@ additionally to download the ROMs
 :::
 
 ```bash
-      apt-get install swig cmake ffmpeg
-      pip install -r requirements.txt
+apt-get install swig cmake ffmpeg
+pip install -r requirements.txt
 pip install -e .[plots,tests]
 ```
 

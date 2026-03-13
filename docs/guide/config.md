@@ -2,7 +2,7 @@
 
 # Configuration
 
-## Hyperparameter yaml syntax
+## Hyperparameter YAML syntax
 
 The syntax used in `hyperparameters/algo_name.yml` for setting
 hyperparameters (likewise the syntax to [overwrite

@@ -59,4 +59,4 @@ each environment.
 :::
 
 Remark: plotting with the `--rliable` option is usually slow as
-confidence interval need to be computed using bootstrap sampling.
+confidence intervals need to be computed using bootstrap sampling.
