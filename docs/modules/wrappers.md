@@ -1,8 +1,8 @@
-.. _wrappers:
+(wrappers)=
 
+# Wrappers
 
-Wrappers
-========
-
+```{eval-rst}
 .. automodule:: rl_zoo3.wrappers
   :members:
+```

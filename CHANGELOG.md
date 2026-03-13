@@ -12,6 +12,7 @@
 ### Bug fixes
 
 ### Documentation
+- Switched to Markdown documentation (using MyST parser)
 
 ### Other
 
