@@ -350,6 +350,9 @@ class ExperimentManager:
             hyperparams = hyperparams_dict[self.env_name.gym_id]
         elif self._is_atari:
             hyperparams = hyperparams_dict["atari"]
+        elif "default" in hyperparams_dict:
+            print("Using 'default' hyperparameters")
+            hyperparams = hyperparams_dict["default"]
         else:
             raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_name.gym_id} in {self.config}")
 
