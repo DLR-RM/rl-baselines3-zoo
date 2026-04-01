@@ -1,4 +1,4 @@
-## Release 2.8.0a1 (WIP)
+## Release 2.8.0 (2026-04-01)
 
 ### Breaking Changes
 - Upgraded to SB3 >= 2.8.0
@@ -8,6 +8,9 @@
 ### New Features
 - Added official support for Python 3.13
 - Allow to specify `env_kwargs` in the hyperparam config
+- Allow to use default hyperparameters for any environment
+- Save training command in Weights & Biases (Wandb)
+- Save training command and default hyperparameters as study attributes
 
 ### Bug fixes
 
@@ -15,7 +18,7 @@
 - Switched to Markdown documentation (using MyST parser)
 
 ### Other
-
+- Fixed unused variables in `plot_from_file.py`
 
 ## Release 2.7.0 (2025-07-25)
 

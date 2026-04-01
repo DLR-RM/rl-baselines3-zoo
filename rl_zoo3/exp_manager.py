@@ -350,6 +350,9 @@ class ExperimentManager:
             hyperparams = hyperparams_dict[self.env_name.gym_id]
         elif self._is_atari:
             hyperparams = hyperparams_dict["atari"]
+        elif "default" in hyperparams_dict:
+            print("Using 'default' hyperparameters")
+            hyperparams = hyperparams_dict["default"]
         else:
             raise ValueError(f"Hyperparameters not found for {self.algo}-{self.env_name.gym_id} in {self.config}")
 
@@ -926,6 +929,12 @@ class ExperimentManager:
             load_if_exists=True,
             direction="maximize",
         )
+        # Save command
+        if "command" not in study.user_attrs:
+            study.set_user_attr("command", " ".join(sys.orig_argv))
+            # Save default hyperparams
+            for key in sorted(self._hyperparams):
+                study.set_user_attr(key, str(self._hyperparams[key]))
 
         try:
             if self.max_total_trials is not None:
