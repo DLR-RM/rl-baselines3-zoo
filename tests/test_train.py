@@ -109,8 +109,6 @@ def test_python_config_file(tmp_path, config_file):
 def test_default_hyperparameters(tmp_path):
     # Test that 'default' hyperparameters are used when env-specific ones are missing.
     # Create a custom config file with a 'default' entry but no specific env entry.
-    import tempfile
-
     config_content = """
 default:
   policy: 'MlpPolicy'
@@ -118,19 +116,27 @@ default:
   n_envs: 1
   n_steps: 32
 """
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False) as f:
-        f.write(config_content)
-        config_path = f.name
+    config_path = tmp_path / "default_hyperparams.yml"
+    config_path.write_text(config_content)
 
-    try:
-        cmd = (
-            f"python train.py -n {N_STEPS} --algo ppo --env CartPole-v1 --log-folder {tmp_path} "
-            f"-conf {config_path} "
-        )
-        return_code = subprocess.call(shlex.split(cmd))
-        _assert_eq(return_code, 0)
-    finally:
-        os.unlink(config_path)
+    cmd = f"python train.py -n {N_STEPS} --algo ppo --env CartPole-v1 --log-folder {tmp_path} " f"-conf {config_path} "
+    return_code = subprocess.call(shlex.split(cmd))
+    _assert_eq(return_code, 0)
+
+    missing_default_config_content = """
+CartPole-v1:
+  policy: 'MlpPolicy'
+  n_timesteps: 200
+"""
+    missing_default_config_path = tmp_path / "missing_default_hyperparams.yml"
+    missing_default_config_path.write_text(missing_default_config_content)
+
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo ppo --env Pendulum-v1 --log-folder {tmp_path} "
+        f"-conf {missing_default_config_path} "
+    )
+    return_code = subprocess.call(shlex.split(cmd))
+    _assert_eq(return_code, 1)
 
 
 def test_gym_packages(tmp_path):
