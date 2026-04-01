@@ -1,4 +1,3 @@
-
 # Default hyperparameters for environments not explicitly listed
 default:
   n_timesteps: !!float 1e6

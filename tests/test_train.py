@@ -113,7 +113,6 @@ def test_default_hyperparameters(tmp_path):
 default:
   policy: 'MlpPolicy'
   n_timesteps: 200
-  n_envs: 1
   n_steps: 32
 """
     config_path = tmp_path / "default_hyperparams.yml"
