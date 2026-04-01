@@ -1,3 +1,11 @@
+# Default hyperparameters for environments not explicitly listed
+default:
+  n_timesteps: !!float 1e6
+  policy: 'LinearPolicy'
+  n_delta: 2
+  n_top: 2
+  delta_std: 0.02
+
 # Tuned
 CartPole-v1:
   n_envs: 1

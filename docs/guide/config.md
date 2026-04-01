@@ -120,3 +120,31 @@ callback:
   - rl_zoo3.callbacks.ParallelTrainCallback:
       gradient_steps: 256
 ```
+
+## Default Hyperparameters
+
+You can use a `default` entry in your hyperparameter YAML file to provide fallback hyperparameters for environments that don't have specific entries.
+This is useful when training on environments for which you don't have tuned hyperparameters.
+
+The `default` hyperparameters will be used when:
+1. The environment is not explicitly listed in the config file
+2. The environment is not an Atari game (which uses the `atari` entry)
+
+Example:
+
+```yaml
+# Specific hyperparameters for CartPole-v1
+CartPole-v1:
+  n_envs: 8
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  learning_rate: 1e-3
+
+# Fallback hyperparameters for any other environment
+default:
+  n_envs: 4
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+```
+
+When training on an environment not explicitly listed, the Zoo will print `Using 'default' hyperparameters` and apply the default settings.

@@ -1,3 +1,13 @@
+
+# Default hyperparameters for environments not explicitly listed
+default:
+  n_timesteps: !!float 1e6
+  policy: 'MlpPolicy'
+  train_freq: 1
+  gradient_steps: 1
+  noise_type: 'normal'
+  noise_std: 0.1
+
 # Tuned
 MountainCarContinuous-v0:
   n_timesteps: 300000
