@@ -106,6 +106,38 @@ def test_python_config_file(tmp_path, config_file):
     _assert_eq(return_code, 0)
 
 
+def test_default_hyperparameters(tmp_path):
+    # Test that 'default' hyperparameters are used when env-specific ones are missing.
+    # Create a custom config file with a 'default' entry but no specific env entry.
+    config_content = """
+default:
+  policy: 'MlpPolicy'
+  n_timesteps: 200
+  n_steps: 32
+"""
+    config_path = tmp_path / "default_hyperparams.yml"
+    config_path.write_text(config_content)
+
+    cmd = f"python train.py -n {N_STEPS} --algo ppo --env CartPole-v1 --log-folder {tmp_path} " f"-conf {config_path} "
+    return_code = subprocess.call(shlex.split(cmd))
+    _assert_eq(return_code, 0)
+
+    missing_default_config_content = """
+CartPole-v1:
+  policy: 'MlpPolicy'
+  n_timesteps: 200
+"""
+    missing_default_config_path = tmp_path / "missing_default_hyperparams.yml"
+    missing_default_config_path.write_text(missing_default_config_content)
+
+    cmd = (
+        f"python train.py -n {N_STEPS} --algo ppo --env Pendulum-v1 --log-folder {tmp_path} "
+        f"-conf {missing_default_config_path} "
+    )
+    return_code = subprocess.call(shlex.split(cmd))
+    _assert_eq(return_code, 1)
+
+
 def test_gym_packages(tmp_path):
     # Update python path so the test_env package is found
     env_variables = os.environ.copy()
