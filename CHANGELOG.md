@@ -1,3 +1,17 @@
+## Release 2.9.0a2 (WIP)
+
+### Breaking Changes
+- Upgraded to SB3 >= 2.9.0, added pandas to extra "plots" dependencies
+
+### New Features
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
 ## Release 2.8.0 (2026-04-01)
 
 ### Breaking Changes
