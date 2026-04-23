@@ -15,7 +15,7 @@ long_description = """
 See https://github.com/DLR-RM/rl-baselines3-zoo
 """
 install_requires = [
-    "sb3_contrib>=2.8.0,<3.0",
+    "sb3_contrib>=2.9.0a2,<3.0",
     "gymnasium>=0.29.1,<1.3.0",
     "huggingface_sb3>=3.0,<4.0",
     "tqdm",
@@ -25,7 +25,7 @@ install_requires = [
     "pytablewriter~=1.2",
     "shimmy~=2.0",
 ]
-plots_requires = ["seaborn", "rliable~=1.2.0", "scipy~=1.10"]
+plots_requires = ["seaborn", "rliable~=1.2.0", "scipy~=1.10", "pandas>=2.2"]
 test_requires = [
     # for MuJoCo envs v4:
     "mujoco>=2.3,<4",
