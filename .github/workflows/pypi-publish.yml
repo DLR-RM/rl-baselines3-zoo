@@ -33,7 +33,9 @@ jobs:
 
       # Create wheel and source dist
       - name: Build
-        run: python -m build
+        run: |
+            python -m build -s
+            python -m build -w
 
       - name: Publish package to PyPI
         if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
