@@ -38,6 +38,16 @@ documentation](https://optuna.readthedocs.io/en/stable/tutorial/10_key_features/
 python train.py --algo ppo --env MountainCar-v0 -optimize --study-name test --storage logs/demo.log
 ```
 
+When running many Optuna trials in parallel, especially with subprocess
+vectorized environments, Linux or macOS may raise `OSError: Too many open
+files`. Check the current soft and hard limits with `ulimit -Sn` and
+`ulimit -Hn`, then increase the limit for the current shell before
+launching the tuning command, for example:
+
+```bash
+ulimit -n 4096
+```
+
 Visualize live using [optuna-dashboard](https://optuna-dashboard.readthedocs.io/en/latest/getting-started.html)
 
 ```bash
