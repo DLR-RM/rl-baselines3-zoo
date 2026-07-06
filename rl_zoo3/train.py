@@ -48,8 +48,8 @@ def train() -> None:
     )
     parser.add_argument(
         "--optimization-log-path",
-        help="Path to save the evaluation log and optimal policy for each hyperparameter tried during optimization. "
-        "Disabled if no argument is passed.",
+        help="Path to save the evaluation log and best model for each hyperparameter trial during optimization. "
+        "The Optuna study report is still saved under --log-folder. Disabled if no argument is passed.",
         type=str,
     )
     parser.add_argument("--eval-episodes", help="Number of episodes to use for evaluation", default=5, type=int)
