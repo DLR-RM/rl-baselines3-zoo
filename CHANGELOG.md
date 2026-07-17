@@ -1,3 +1,16 @@
+## Release 2.9.2 (WIP)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+- Set `learning_starts` to 500 for `parking-v0` in TQC hyperparameters to ensure the first episode is finished
+
+### Documentation
+
+### Other
+
 ## Release 2.9.1 (2026-06-15)
 
 ### Breaking Changes
