@@ -251,6 +251,7 @@ parking-v0:
     goal_selection_strategy='episode',
     n_sampled_goal=4,
   )"
+  learning_starts: 500
 
 # Tuned
 CarRacing-v0:
