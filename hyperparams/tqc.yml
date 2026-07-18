@@ -245,6 +245,7 @@ parking-v0:
   batch_size: 512
   gamma: 0.98
   learning_rate: !!float 1.5e-3
+  learning_starts: 500
   tau: 0.005
   replay_buffer_class: HerReplayBuffer
   replay_buffer_kwargs: "dict(
