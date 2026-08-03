@@ -37,9 +37,22 @@ additionally to download the ROMs
 
 ```bash
 apt-get install swig cmake ffmpeg
-pip install -r requirements.txt
-pip install -e .[plots,tests]
+pip install -e .[extras]
 ```
+
+````{note}
+On macOS, if `pybullet` fails to build (with errors from `stdio.h`), retry with:
+
+```bash
+CFLAGS="-fno-define-target-os-macros" pip install -e .[extras]
+```
+
+or, when using `uv`:
+
+```bash
+CFLAGS="-fno-define-target-os-macros" uv sync --all-extras
+```
+````
 
 Please see [Stable Baselines3 documentation](https://stable-baselines3.readthedocs.io/en/master/) for alternatives to install stable baselines3.
 
