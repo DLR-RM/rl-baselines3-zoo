@@ -45,11 +45,10 @@ jobs:
           # See https://github.com/astral-sh/uv/issues/1497
           # Need Pytorch 2.9+ for Python 3.13
           uv pip install --system torch==2.9.1+cpu --index https://download.pytorch.org/whl/cpu
-          # Install full requirements (for additional envs and test tools)
-          uv pip install --system -r requirements.txt
           # Use headless version
           uv pip install --system opencv-python-headless
-          uv pip install --system -e .[plots,tests]
+          # Install full requirements (for additional envs and test tools)
+          uv pip install --system -e .[extras]
 
       - name: Install specific version of gym
         run: |
