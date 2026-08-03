@@ -8,8 +8,10 @@
 - Set `learning_starts` to 500 for `parking-v0` in TQC hyperparameters to ensure the first episode is finished
 
 ### Documentation
+- Add a note regarding pybullet source installation error on macOS due to legacy code
 
 ### Other
+- Migrate packaging setup from `setup.py` to `pyproject.toml` and integrate `requirements.txt` as a new extra
 
 ## Release 2.9.1 (2026-06-15)
 
