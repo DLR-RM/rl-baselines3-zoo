@@ -48,7 +48,8 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-plots = ["seaborn", "rliable~=1.2.0", "scipy~=1.10", "pandas>=2.2"]
+# NOTE: rliable~=1.2.0 required arch<8.0, which is not compatible with pandas 3.x
+plots = ["seaborn", "rliable~=1.2.0", "scipy~=1.10", "pandas>=2.2,<3"]
 tests = [
     # for MuJoCo envs v4:
     "mujoco>=2.3,<4",
