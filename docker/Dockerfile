@@ -30,7 +30,7 @@ RUN \
     micromamba activate && \
     cd ${CODE_DIR}/rl_zoo3 && \
     uv pip uninstall stable-baselines3 && \
-    uv pip install --system -e ".[extras]" && \
+    uv pip install --system -e ".[plots,tests,extras]" && \
     uv cache clean
 
 CMD /bin/bash

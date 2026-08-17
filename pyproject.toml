@@ -56,7 +56,6 @@ tests = [
     "highway-env>=1.10.1",
 ]
 extras = [
-    "rl_zoo3[plots, tests]",
     "gym==0.26.2",
     "stable-baselines3[extra,tests,docs]>=2.9.0,<3.0",
     "pybullet_envs_gymnasium>=0.6.0",

@@ -37,14 +37,14 @@ additionally to download the ROMs
 
 ```bash
 apt-get install swig cmake ffmpeg
-pip install -e .[extras]
+pip install -e .[plots,tests,extras]
 ```
 
 ````{note}
 On macOS, if `pybullet` fails to build (with errors from `stdio.h`), retry with:
 
 ```bash
-CFLAGS="-fno-define-target-os-macros" pip install -e .[extras]
+CFLAGS="-fno-define-target-os-macros" pip install -e .[plots,tests,extras]
 ```
 
 or, when using `uv`:

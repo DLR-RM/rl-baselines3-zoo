@@ -47,7 +47,7 @@ jobs:
           # Use headless version
           uv pip install --system opencv-python-headless
           # Install full requirements (for additional envs and test tools)
-          uv pip install --system -e .[extras]
+          uv pip install --system -e .[plots,tests,extras]
 
       - name: Install specific version of gym
         run: |
