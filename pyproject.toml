@@ -5,11 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "rl_zoo3"
 description = "A Training Framework for Stable Baselines3 Reinforcement Learning Agents"
-readme = { text = """
-# RL Baselines3 Zoo: A Training Framework for Stable Baselines3 Reinforcement Learning Agents
-
-See https://github.com/DLR-RM/rl-baselines3-zoo
-""", content-type = "text/markdown" }
+readme = "README.md"
 authors = [{ name = "Antonin Raffin", email = "antonin.raffin@dlr.de" }]
 license = "MIT"
 license-files = ["LICENSE"]
@@ -47,6 +43,9 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[tool.setuptools.dynamic]
+version = { attr = "rl_zoo3._version.__version__" }
+
 [project.optional-dependencies]
 # NOTE: rliable~=1.2.0 required arch<8.0, which is not compatible with pandas 3.x
 plots = ["seaborn", "rliable~=1.2.0", "scipy~=1.10", "pandas>=2.2,<3"]
@@ -54,7 +53,7 @@ tests = [
     # for MuJoCo envs v4:
     "mujoco>=2.3,<4",
     # install parking-env to test HER
-    "highway-env>=1.10.1",
+    "highway-env>=1.10.1,<1.11.0",
 ]
 extras = [
     "gym==0.26.2",
@@ -110,7 +109,7 @@ select = ["E", "F", "B", "UP", "C90", "RUF"]
 ignore = ["B028"]
 
 [tool.ruff.lint.per-file-ignores]
-"./rl_zoo3/import_envs.py"= ["F401"]
+"./rl_zoo3/import_envs.py" = ["F401"]
 # "./rl_zoo3/plots/plot_train.py"= ["E501"]
 
 
