@@ -119,6 +119,7 @@ max-complexity = 15
 
 [tool.black]
 line-length = 127
+target-version = ["py310"]
 
 [tool.mypy]
 ignore_missing_imports = true
