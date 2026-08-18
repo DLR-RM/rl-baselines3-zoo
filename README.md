@@ -51,8 +51,12 @@ Note: you can do `python -m rl_zoo3.train` from any folder and you have access t
 
 ```
 apt-get install swig cmake ffmpeg
-pip install -r requirements.txt
-pip install -e .[plots,tests]
+pip install -e .[plots,tests,extras]
+```
+
+**macOS note:** if `pybullet` fails to build (with errors from `stdio.h`), retry with:
+```
+CFLAGS="-fno-define-target-os-macros" pip install -e .[plots,tests,extras]
 ```
 
 Please see [Stable Baselines3 documentation](https://stable-baselines3.readthedocs.io/en/master/) for alternatives to install stable baselines3.
