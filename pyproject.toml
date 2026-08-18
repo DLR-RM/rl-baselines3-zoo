@@ -131,9 +131,9 @@ exclude = """(?x)(
 
 [tool.pytest.ini_options]
 # Deterministic ordering for tests; useful for pytest-xdist.
-env = [
-	"PYTHONHASHSEED=0"
-]
+# env = [
+# 	"PYTHONHASHSEED=0"
+# ]
 
 filterwarnings = [
     # Tensorboard warnings
@@ -150,7 +150,6 @@ disable_warnings = ["couldnt-parse"]
 branch = false
 omit = [
 	"tests/*",
-	"setup.py",
 	"rl_zoo3/plots/*",
 	"rl_zoo3/push_to_hub.py",
 	"scripts/*",
