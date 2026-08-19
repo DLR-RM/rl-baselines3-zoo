@@ -58,6 +58,7 @@ from rl_zoo3.utils import (
     get_class_by_name,
     get_latest_run_id,
     get_wrapper_class,
+    parse_normalize_kwargs,
 )
 
 
@@ -423,10 +424,10 @@ class ExperimentManager:
             # Special case, instead of both normalizing
             # both observation and reward, we can normalize one of the two.
             # in that case `hyperparams["normalize"]` is a string
-            # that can be evaluated as python,
+            # containing VecNormalize keyword arguments,
             # ex: "dict(norm_obs=False, norm_reward=True)"
             if isinstance(self.normalize, str):
-                self.normalize_kwargs = eval(self.normalize)
+                self.normalize_kwargs = parse_normalize_kwargs(self.normalize)
                 self.normalize = True
 
             if isinstance(self.normalize, dict):
