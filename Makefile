@@ -54,15 +54,13 @@ docker-gpu:
 # PyPi package release
 release:
 	# rm -r build/* dist/*
-	python -m build -s
-	python -m build -w
+	python -m build
 	twine upload dist/*
 
 # Test PyPi package release
 test-release:
 	# rm -r build/* dist/*
-	python -m build -s
-	python -m build -w
+	python -m build
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 .PHONY: lint format check-codestyle commit-checks doc spelling docker type pytest

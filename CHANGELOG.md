@@ -1,3 +1,33 @@
+## Release 2.9.2a1 (WIP)
+
+### Breaking Changes
+
+### New Features
+
+### Bug fixes
+- Set `learning_starts` to 500 for `parking-v0` in TQC hyperparameters to ensure the first episode is finished
+
+### Documentation
+- Add a note regarding pybullet source installation error on macOS due to legacy code
+
+### Other
+- Migrate packaging setup from `setup.py` to `pyproject.toml` and integrate `requirements.txt` as a new extra
+
+## Release 2.9.1 (2026-06-15)
+
+### Breaking Changes
+- Upgraded to SB3 >= 2.9.0, added pandas to extra "plots" dependencies
+- Relaxed Gymnasium version range (from `"gymnasium>=0.29.1,<1.3.0"` to `"gymnasium>=0.29.1,<2.0"`)
+
+### New Features
+
+### Bug fixes
+
+### Documentation
+
+### Other
+
+
 ## Release 2.8.0 (2026-04-01)
 
 ### Breaking Changes
