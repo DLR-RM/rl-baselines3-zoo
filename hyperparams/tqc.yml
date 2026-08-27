@@ -86,6 +86,7 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   learning_starts: 10000
   use_sde: True
   policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  normalize: "{'norm_obs': True, 'norm_reward': True}"
 
 # Tuned
 AntBulletEnv-v0:
