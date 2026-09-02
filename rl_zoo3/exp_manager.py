@@ -389,9 +389,19 @@ class ExperimentManager:
             optuna_storage = storage  # type: ignore[assignment]
         study = optuna.load_study(storage=optuna_storage, study_name=study_name)
         if trial_id is not None:
-            params = study.trials[trial_id].params
+            trial = study.trials[trial_id]
         else:
-            params = study.best_trial.params
+            trial = study.best_trial
+
+        print("== trial.user_attrs ==")
+        pprint(trial.user_attrs)
+        print("== trial.params ==")
+        pprint(trial.params)
+
+        # FIXME(antonin): Hack to retrieve params that were deduced
+        # might break the constructor if saving more
+        params = trial.params.copy()
+        params.update(trial.user_attrs)
 
         if convert:
             return HYPERPARAMS_CONVERTER[self.algo](params)

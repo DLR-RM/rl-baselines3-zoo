@@ -120,6 +120,8 @@ def convert_offpolicy_params(sampled_params: dict[str, Any]) -> dict[str, Any]:
         del hyperparams["n_quantiles"]
         hyperparams["policy_kwargs"].update({"n_quantiles": sampled_params["n_quantiles"]})
 
+    # FIXME(antonin): params that are not sampled but deduced are
+    # not shown at test time, need to double check noise type too
     return hyperparams
 
 
@@ -529,6 +531,8 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     # train_sampling_strategy = trial.suggest_categorical("train_sampling_strategy", ["cem", "uniform", "gaussian"])
     train_sampling_strategy = sampling_strategy = "cem"
     # train_sampling_strategy = sampling_strategy
+    # Note(antonin): CEM exp follows the CEM train params
+    # so in theory, only need to pass n_sampled_actions
     n_sampled_actions_pow = n_sampled_actions_exp_pow
 
     # CEM params
