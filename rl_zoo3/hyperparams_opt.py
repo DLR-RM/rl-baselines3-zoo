@@ -525,15 +525,15 @@ def sample_sampledqn_params(trial: optuna.Trial, n_actions: int, n_envs: int, ad
     # From 2**3=4 to 2**8=256
     n_sampled_actions_exp_pow = trial.suggest_int("n_sampled_actions_exp_pow", 2, 8)
     # For finding max during gradient update, from 2**2=4 to 2**7=128
-    # n_sampled_actions_pow = trial.suggest_int("n_sampled_actions_pow", 2, 7)
+    n_sampled_actions_pow = trial.suggest_int("n_sampled_actions_pow", 2, 7)
 
-    # sampling_strategy = trial.suggest_categorical("sampling_strategy", ["cem", "uniform", "gaussian"])
-    # train_sampling_strategy = trial.suggest_categorical("train_sampling_strategy", ["cem", "uniform", "gaussian"])
-    train_sampling_strategy = sampling_strategy = "cem"
+    sampling_strategy = trial.suggest_categorical("sampling_strategy", ["cem", "uniform", "gaussian"])
+    train_sampling_strategy = trial.suggest_categorical("train_sampling_strategy", ["cem", "uniform", "gaussian"])
+    # train_sampling_strategy = sampling_strategy = "cem"
     # train_sampling_strategy = sampling_strategy
     # Note(antonin): CEM exp follows the CEM train params
     # so in theory, only need to pass n_sampled_actions
-    n_sampled_actions_pow = n_sampled_actions_exp_pow
+    # n_sampled_actions_pow = n_sampled_actions_exp_pow
 
     # CEM params
     # n_top: int = 6,
