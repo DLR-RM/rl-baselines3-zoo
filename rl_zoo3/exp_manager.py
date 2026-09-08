@@ -874,22 +874,20 @@ class ExperimentManager:
 
         try:
             model.learn(self.n_timesteps, callback=callbacks, **learn_kwargs)  # type: ignore[arg-type]
-            # Free memory
-            assert model.env is not None
-            model.env.close()
-            eval_env.close()
         except (AssertionError, ValueError) as e:
             # Sometimes, random hyperparams can generate NaN
-            # Free memory
-            assert model.env is not None
-            model.env.close()
-            eval_env.close()
             # Prune hyperparams that generate NaNs
             print(e)
             print("============")
             print("Sampled hyperparams:")
             pprint(sampled_hyperparams)
             raise optuna.exceptions.TrialPruned() from e
+        finally:
+            # Free memory, even if the trial failed with an unexpected error
+            # (otherwise the subprocesses and their pipes leak)
+            assert model.env is not None
+            model.env.close()
+            eval_env.close()
         is_pruned = eval_callback.is_pruned
         reward = eval_callback.last_mean_reward
 
@@ -966,9 +964,13 @@ class ExperimentManager:
                                 states=counted_states,
                             )
                         ],
+                        # Free the per-trial envs/model (kept alive in a
+                        # reference cycle by the callbacks) to avoid leaking
+                        # file descriptors / memory between trials
+                        gc_after_trial=True,
                     )
             else:
-                study.optimize(self.objective, n_jobs=self.n_jobs, n_trials=self.n_trials)
+                study.optimize(self.objective, n_jobs=self.n_jobs, n_trials=self.n_trials, gc_after_trial=True)
         except KeyboardInterrupt:
             pass
 
