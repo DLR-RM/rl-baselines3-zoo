@@ -1,4 +1,4 @@
-## Release 2.9.2a1 (WIP)
+## Release 2.9.2a2 (WIP)
 
 ### Breaking Changes
 
@@ -6,6 +6,7 @@
 
 ### Bug fixes
 - Set `learning_starts` to 500 for `parking-v0` in TQC hyperparameters to ensure the first episode is finished
+- Fixed "too many open files" issue when doing hyperparameter optimization: the trial environments are now closed in a `finally` block and `gc_after_trial=True` is passed to Optuna to free them between trials (also needs latest SB3 master version to fully work)
 
 ### Documentation
 - Add a note regarding pybullet source installation error on macOS due to legacy code
