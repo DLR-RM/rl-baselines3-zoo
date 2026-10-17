@@ -1,4 +1,5 @@
 import argparse
+import ast
 import glob
 import importlib
 import os
@@ -39,6 +40,32 @@ ALGOS: dict[str, type[BaseAlgorithm]] = {
     "trpo": TRPO,
     "ppo_lstm": RecurrentPPO,
 }
+
+
+def parse_normalize_kwargs(normalize_kwargs: str) -> dict[str, Any]:
+    """
+    Safely parse VecNormalize keyword arguments from a string.
+
+    Supports the existing config formats:
+    - "{'norm_obs': True, 'norm_reward': False}"
+    - "dict(norm_obs=True, norm_reward=False)"
+    """
+    try:
+        parsed = ast.literal_eval(normalize_kwargs)
+    except (SyntaxError, ValueError):
+        try:
+            expression = ast.parse(normalize_kwargs, mode="eval").body
+        except SyntaxError:
+            raise ValueError(f"Invalid normalize kwargs: {normalize_kwargs}") from None
+        if not isinstance(expression, ast.Call) or not isinstance(expression.func, ast.Name) or expression.func.id != "dict":
+            raise ValueError(f"Invalid normalize kwargs: {normalize_kwargs}") from None
+        if expression.args or any(keyword.arg is None for keyword in expression.keywords):
+            raise ValueError(f"Invalid normalize kwargs: {normalize_kwargs}")
+        parsed = {keyword.arg: ast.literal_eval(keyword.value) for keyword in expression.keywords}
+
+    if not isinstance(parsed, dict):
+        raise ValueError(f"Invalid normalize kwargs: {normalize_kwargs}")
+    return parsed
 
 
 def flatten_dict_observations(env: gym.Env) -> gym.Env:
@@ -435,7 +462,7 @@ def get_saved_hyperparams(
         # Load normalization params
         if hyperparams["normalize"]:
             if isinstance(hyperparams["normalize"], str):
-                normalize_kwargs = eval(hyperparams["normalize"])
+                normalize_kwargs = parse_normalize_kwargs(hyperparams["normalize"])
                 if test_mode:
                     normalize_kwargs["norm_reward"] = norm_reward
             elif isinstance(hyperparams["normalize"], dict):
