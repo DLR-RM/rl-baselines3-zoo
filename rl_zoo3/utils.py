@@ -1,4 +1,5 @@
 import argparse
+import ast
 import glob
 import importlib
 import os
@@ -435,7 +436,7 @@ def get_saved_hyperparams(
         # Load normalization params
         if hyperparams["normalize"]:
             if isinstance(hyperparams["normalize"], str):
-                normalize_kwargs = eval(hyperparams["normalize"])
+                normalize_kwargs = ast.literal_eval(hyperparams["normalize"])
                 if test_mode:
                     normalize_kwargs["norm_reward"] = norm_reward
             elif isinstance(hyperparams["normalize"], dict):

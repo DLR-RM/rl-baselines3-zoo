@@ -151,3 +151,20 @@ def test_gym_packages(tmp_path):
     )
     return_code = subprocess.call(shlex.split(cmd), env=env_variables)
     _assert_eq(return_code, 0)
+
+
+def test_normalize_field_rejects_arbitrary_code():
+    # Issue #505: the `normalize` field of an untrusted config.yml was evaluated
+    # with `eval()`, allowing arbitrary code execution. It is now parsed with
+    # `ast.literal_eval`, which only accepts literals and raises for calls such
+    # as `os.system(...)`.
+    import ast
+
+    with pytest.raises((ValueError, SyntaxError)):
+        ast.literal_eval("os.system('echo hacked')")
+
+    assert ast.literal_eval("True") is True
+    assert ast.literal_eval("{'norm_obs': True, 'norm_reward': False}") == {
+        "norm_obs": True,
+        "norm_reward": False,
+    }
