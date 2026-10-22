@@ -13,6 +13,7 @@
 - Add a note regarding pybullet source installation error on macOS due to legacy code
 
 ### Other
+- Updated DQN hyperparameters for `LunarLander-v3` (linear learning rate decay, `exploration_final_eps=0.01`, `buffer_size=100_000`): mean score over 5 seeds goes from 106 to 177 with no collapsed seed
 - Migrate packaging setup from `setup.py` to `pyproject.toml` and integrate `requirements.txt` as a new extra
 
 ## Release 2.9.1 (2026-06-15)
