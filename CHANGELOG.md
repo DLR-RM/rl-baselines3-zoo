@@ -1,4 +1,4 @@
-## Release 2.9.2a2 (WIP)
+## Release 2.9.2 (2026-10-26)
 
 ### Breaking Changes
 - Upgraded to SB3 >= 2.9.2
