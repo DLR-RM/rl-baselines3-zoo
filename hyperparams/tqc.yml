@@ -17,7 +17,7 @@ MountainCarContinuous-v0:
   tau: 0.01
   learning_starts: 0
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64])"
+  policy_kwargs: "dict(log_std_init=-3.67, net_arch=[64, 64], use_expln=True)"
 
 Pendulum-v1:
   n_timesteps: 20000
@@ -51,7 +51,7 @@ BipedalWalker-v3:
   gradient_steps: 64
   learning_starts: 10000
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], use_expln=True)"
 
 # Almost tuned
 # History wrapper of size 2 for better performances
@@ -85,7 +85,7 @@ HalfCheetahBulletEnv-v0: &pybullet-defaults
   gradient_steps: 8
   learning_starts: 10000
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], use_expln=True)"
 
 # Tuned
 AntBulletEnv-v0:
@@ -121,7 +121,7 @@ HumanoidBulletEnv-v0:
   learning_starts: 10000
   top_quantiles_to_drop_per_net: 5
   use_sde: True
-  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300])"
+  policy_kwargs: "dict(log_std_init=-3, net_arch=[400, 300], use_expln=True)"
 
 InvertedDoublePendulumBulletEnv-v0:
   <<: *pybullet-defaults
