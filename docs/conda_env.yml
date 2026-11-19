@@ -19,7 +19,7 @@ dependencies:
     - sphinx_copybutton
     - sb3-contrib>=2.4.0a10,<3.0
     - optuna>=3.0,<5.0
-    - huggingface_sb3>=3.0
+    - sb3-team-hf-integration>=3.0
     - rich
     - tqdm
     - pyyaml>=5.1
