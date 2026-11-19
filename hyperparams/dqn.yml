@@ -58,16 +58,16 @@ MountainCar-v0:
 LunarLander-v3:
   n_timesteps: !!float 1e5
   policy: 'MlpPolicy'
-  learning_rate: !!float 6.3e-4
+  learning_rate: lin_6.3e-4
   batch_size: 128
-  buffer_size: 50000
+  buffer_size: 100000
   learning_starts: 0
   gamma: 0.99
   target_update_interval: 250
   train_freq: 4
   gradient_steps: -1
   exploration_fraction: 0.12
-  exploration_final_eps: 0.1
+  exploration_final_eps: 0.01
   policy_kwargs: "dict(net_arch=[256, 256])"
 
 # Tuned
